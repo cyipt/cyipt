@@ -1,0 +1,39 @@
+---
+title: "Progress Report 0"
+author: "The CyIPT Team"
+date: "`r Sys.Date()`"
+output: rmarkdown::pdf_document
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This report provides a brief update on the status of the Cycling Infrastructure Prioritisation Toolkit (CyIPT) following an initial meeting on 2017-03-10.
+
+## Breakdown of WP1
+
+The initial breakdown of tasks for Workpackage 1 (WP1) was as follows:
+
+...
+
+## Case study areas
+
+The following case study areas have been selected
+
+- A small area surrounding a road with low levels of cycling and poor provision for cycling (Chapeltown Road, Leeds)
+- An area of Cambridge that is well-known to team members to test our methods
+- The City of Bristol
+
+We will look to explore these initial case study areas to Nottingham and Coventry. We will remain open to other suggestions for further case study areas and will develop the methods in a way that is generalisable to any region. 
+
+
+## Next steps
+
+- Meet-up and liaise with other ICF grant-winners and policy makers, 2017-03-29
+- Malcolm Morgan to officially commence work on the project at 50% FTE, 2017-04-01, in a contract with UoL that lasts until 2017-03-31
+- 'Tech team' meeting in Cambridge, 2017-04-05
+- Identify barriers in case study areas
+- Develop spreadsheet of costs
+- Classify interventions in case study areas
+- Develop workflow to estimate cost-benefit ratios
