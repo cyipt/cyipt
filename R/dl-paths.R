@@ -29,3 +29,19 @@
 #' qct = opq(bct)
 #' osmdata_xml(q = qct, filename = "../example-data/chapeltown.osm")
 ct = osmdata_sp(qct)
+
+# la data
+library(sf)
+library(dplyr)
+las = st_read("~/npct/pct-bigdata/las-pcycle.geojson")
+summary(las)
+bristol = las[grepl(pattern = "Bristol", las$NAME),]
+plot(bristol)
+library(tmap)
+tmap_mode("view")
+qtm(bristol)
+bristol = st_read("http://geoportal.statistics.gov.uk/datasets/686603e943f948acaa13fb5d2b0f1275_3.kml")
+bristol = filter(bristol, grepl("Bristol", lad16nm))
+qtm(bristol)
+st_write(bristol, "areas/bristol-poly.geojson", update = TRUE)
+
