@@ -28,3 +28,4 @@
 #' bct = getbb("Chapeltown Road")
 #' qct = opq(bct)
 #' osmdata_xml(q = qct, filename = "../example-data/chapeltown.osm")
+ct = osmdata_sp(qct)
