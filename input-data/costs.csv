@@ -2,7 +2,7 @@ Type,cost_min,cost_max,units,example_url,source,description
 Fully segregated,1450,,m,,Typical Costs of Cycling Interventions, Price based on Cyclesuperhighway
 Fully segregated (one side only), 960,,m,,Typical Costs of Cycling Interventions, Price based on Cambridge Huntington Road
 Light segregation,1150,,m,,Typical Costs of Cycling Interventions,
-Light Segregation (oneside only)
+Light Segregation (oneside only),,,m,,,
 On Road Cycle Lane,460,,m,,Typical Costs of Cycling Interventions,
 Off Road Cycle Path,140,190,m,,Typical Costs of Cycling Interventions, A track resurfaced over a significant distance to create a new
 strategic cycle route e.g. a towpath improved from rough track
