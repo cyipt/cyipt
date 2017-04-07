@@ -1,11 +1,23 @@
-Type,cost_min,cost_max,units,example_url,source
-Fully segregated,,,m,,
-Light segregation,,,m,,
-Lane re-allocation ,,,m,,
-Bridge,,,m,,
-2 way cycling,,,m,,
-Permeability – vehicles,,,-,,
-ASL,,,-,,
-Cycle parking,,,spaces,,
-Protected intersection,,,-,,
-Dutch roundabout,,,-,,
+Type,cost_min,cost_max,units,example_url,source,description
+Fully segregated,1450,,m,,Typical Costs of Cycling Interventions, Price based on Cyclesuperhighway
+Fully segregated (one side only), 960,,m,,Typical Costs of Cycling Interventions, Price based on Cambridge Huntington Road
+Light segregation,1150,,m,,Typical Costs of Cycling Interventions,
+Light Segregation (oneside only)
+On Road Cycle Lane,460,,m,,Typical Costs of Cycling Interventions,
+Off Road Cycle Path,140,190,m,,Typical Costs of Cycling Interventions, A track resurfaced over a significant distance to create a new
+strategic cycle route e.g. a towpath improved from rough track
+to tarmac so it becomes an everyday cycle commuting option.
+Lane re-allocation ,,,m,,,
+Cycle Bridge,1000000,5000000,-,,Typical Costs of Cycling Interventions,Cost for new bridge
+2 way cycling,,,m,,,
+20 mph zone (signage),2,3,m,,Typical Costs of Cycling Interventions,
+20 mph zone (road calming),10,15,m,,Typical Costs of Cycling Interventions
+Permeability – vehicles,,,-,,,
+ASL,,,-,,,
+Cycle parking,,,spaces,,,
+Remodel major junction,1560000,1610000,-,,Typical Costs of Cycling Interventions,A large busy road junction that was an obstacle to cycling reengineered
+as a junction suitable to a cyclist-friendly route.
+Cycle crossing at major road,140000,410000,-,,Typical Costs of Cycling Interventions A safe crossing point where a cycle route crosses a large busy
+road that would otherwise be a difficult and dangerous barrier for cyclists.
+Protected intersection,,,-,,,
+Dutch roundabout,,,-,,,
