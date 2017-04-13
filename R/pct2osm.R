@@ -20,6 +20,6 @@ raster <- crop(raster,extent(lines_sp))
 writeRaster(raster,"../example-data/bristol/pct-cenus.tif", "GTiff", overwrite = T)
 ext <- extract(raster,lines_sp, buffer = 2.5, fun = mean, sp = T)
 writeOGR(ext,"../example-data/bristol","pct-cenus_lines", driver = "ESRI Shapefile", overwrite_layer = T)
-
+saveRDS(ext,"ext.Rds")
 
 
