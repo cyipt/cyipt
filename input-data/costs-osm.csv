@@ -1,11 +1,37 @@
-Type,cost_min,cost_max,units,example_url
-Fully segregated,,,m,
-Light segregation,,,m,
-Lane re-allocation ,,,m,
-Bridge,,,m,
-2 way cycling,,,m,
-Permeability – vehicles,,,-,
-ASL,,,-,
-Cycle parking,,,spaces,
-Protected intersection,,,-,
-Dutch roundabout,,,-,
+id,osm_ref,road_direction,cycle_bidirection,cycle_directions,cycle_contraflow,bus_lane,Segregation,element_type,description,cost_min,cost_max,units,example_url,source,notes
+1,L1a,2,0,2,0,0,Paint,line,Cycle lanes on both sides of the road,460,,m,,Typical Costs of Cycling Interventions,
+2,L1b,2,1,2,1,0,Paint,line,Bidirectional cycle lane on one side of the road,,,,,,
+3,L2,2,0,1,0,0,Paint,line,Oneway cycle lane on one side of the road only,,,,,,
+4,L1a,2,0,2,0,0,Kerb,line,Cycle lanes on both sides of the road,1150,,m,,Typical Costs of Cycling Interventions,
+5,L1b,2,1,2,1,0,Kerb,line,Bidirectional cycle lane on one side of the road,,,,,,
+6,L2,2,0,1,0,0,Kerb,line,Oneway cycle lane on one side of the road only,,,m,,,
+7,M1,1,0,2,1,0,Paint,line,Cycle lanes on both sides of oneway road,,,,,,
+8,M2b,1,0,1,0,0,Paint,line,Oneway cycle lane on one side and same direction of the oneway road,,,,,,
+9,M2d,1,1,2,1,0,Paint,line,Two way cycle lanes on one side of road,,,,,,
+10,M3b,1,0,1,1,0,Paint,line,Oneway cycle lane on opposite direction of the oneway road,,,,,,
+11,M1,1,0,2,1,0,Kerb,line,Cycle lanes on both sides of oneway road,,,,,,
+12,M2b,1,0,1,0,0,Kerb,line,Oneway cycle lane on one side and same direction of the oneway road,,,,,,
+13,M2d,1,1,2,1,0,Kerb,line,Two way cycle lanes on one side of road,,,,,,
+14,M3b,1,0,1,1,0,Kerb,line,Oneway cycle lane on opposite direction of the oneway road,,,,,,
+15,T1,2,0,2,0,0,Full,line,Cycle tracks on both sides of the road,1450,,m,,Typical Costs of Cycling Interventions, Price based on Cyclesuperhighway
+16,T2,2,1,2,1,0,Full,line,Bidirectional cycle track one side of the road,,,,,,
+17,T3,1,1,2,1,0,Full,line,Bidirectional cycle track on one side of the one way road,,,,,,
+18,T4,2,0,1,0,0,Full,line,Oneway cycle track on one side of the road,960,,m,,Typical Costs of Cycling Interventions, Price based on Cambridge Huntington Road
+19,S2,2,0,2,0,0,Mixed,line,Cycle track on one side and cycle lane on other side of the road,,,,,,
+20,B1,2,0,2,0,1,Paint,line,Cycle lanes on left and right sides of the road with a bus/taxi only lane,,,,,,
+21,B2,2,0,2,0,1,Paint,line,Cycle lanes on left and right sides of the road after a bus/taxi only lane in right side,,,,,,
+22,B3,2,0,2,0,1,Paint,line,Cycle lane on one side of the road and a shared cycle/bus lane on other side,,,,,,
+23,B4,2,0,1,0,1,Full,line,Cycle track shared with a bus/taxi track in right side of the road,,,,,,
+24,B5,2,0,1,0,1,Paint,line,Cycle lane shared with a bus/taxi lane on one side of the road,,,,,,
+25,B6,1,0,1,1,1,Paint,line,Cycle lane shared with a bus/taxi lane in opposite direction of the oneway road,,,,,,
+26,,,,,,,,line,20 mph zone (signage),2,3,m,,Typical Costs of Cycling Interventions,
+27,,,,,,,,line,20 mph zone (road calming),10,15,m,,Typical Costs of Cycling Interventions,
+28,,,,,,,,point,Cycle parking,99,833,spaces,,Typical Costs of Cycling Interventions,
+29,,,,,,,,,Off Road Cycle Path,140,190,m,,Typical Costs of Cycling Interventions, A track resurfaced over a significant distance to create a new strategic cycle route e.g. a towpath improved from rough track to tarmac so it becomes an everyday cycle commuting option.
+30,,0,2,2,0,0,,line,Cycle Bridge,1000000,5000000,-,,Typical Costs of Cycling Interventions,Cost for new bridge
+31,,,,,,,,,Permeability vehicles,,,-,,,
+32,,,,,,,,,ASL,,,-,,,
+33,,,,,,,,point,Remodel major junction,1560000,1610000,-,,Typical Costs of Cycling Interventions,A large busy road junction that was an obstacle to cycling reengineered as a junction suitable to a cyclist-friendly route.
+34,,,,,,,,point,Cycle crossing at major road,140000,410000,-,,Typical Costs of Cycling Interventions,A safe crossing point where a cycle route crosses a large busy road that would otherwise be a difficult and dangerous barrier for cyclists.
+35,,,,,,,,point,Protected intersection,,,-,,,
+36,,,,,,,,point,Dutch roundabout,,,-,,,
