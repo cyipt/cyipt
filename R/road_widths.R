@@ -1,6 +1,7 @@
 #Estimate road widths
 library(sf)
 library(geosphere)
+library(dplyr)
 #library(rgrass7)
 #library(tmap)
 
@@ -14,7 +15,7 @@ boundary <- st_read(dsn = "areas/bristol-poly.geojson")
 boundary <- st_transform(boundary, 27700) #Change to British Nat Grid
 os <- st_read(dsn = "D:/roadwidth", layer = "SWroads") #1118955
 os <- os[,c("OBJECTID","DESCGROUP","geometry")] #Dump Uneeded Columns
-os <- os[os$DESCGROUP == "Road Or Track",] #Remove Paths and Pavements (for now) #540884
+os <- os[os$DESCGROUP == "Road Or Track" | os$DESCGROUP == "Path",] #Remove Paths and Pavements (for now) #540884
 os <- st_transform(os, 27700) #Change to British Nat Grid
 os <- os[boundary,] #18985 lines
 os <- os[st_is_valid(os),] #remove invalid geometry #18944
@@ -80,115 +81,84 @@ dupid <- osm$id[dup]
 osm_dup <- osm[osm$id %in% dupid,]
 osm_nodup <- osm[!(osm$id %in% dupid),]
 
-nrow(osm) == nrow(osm_dup) + nrow(osm_nodup)
-osm_dup_old <- osm_dup
+nrow(osm) == nrow(osm_dup) + nrow(osm_nodup) #Check that we haven't lost any lines
+rm(dup, dupid)
+rownames(osm_dup) <- c(1:nrow(osm_dup))
+dolist <- as.integer(rownames(osm_dup[!duplicated(osm_dup$id),]))
+#osm_dup_old <- osm_dup
 #Loop THough an check
-for(d in 1:nrow(osm_dup)){
-  osmid <- osm_dup$osm_id[d]
-  osm_sub <- osm_dup[osm_dup$osm_id == osmid,]
-  osids <- osm_dup$OBJECTID[osm_dup$osm_id == osmid]
+
+########################### This loop is unfinished
+#Basic idea find the overlapping polygons and get the lenght of the line in each polygon, then take the longest line and drop the others
+for(d in dolist){
+  #Get the relavant OSM lines and OS polygons
+  osmid <- osm_dup$id[d]
+  osm_sub <- osm_dup[osm_dup$id == osmid,]
+  osm_sub <- osm_sub[1,] #Only need one copy of the line
+  osids <- osm_dup$OBJECTID[osm_dup$id == osmid]
   os_sub <- os[os$OBJECTID %in% osids,]
-  plot(os_sub[1], col = "White")
-  plot(osm_sub[1], add = T)
-  osm_inter <- st_intersection(osm_sub[1,],os_sub)
-  osm_inter$length <- st_length(osm_inter)
-  #totlength <- as.numeric(st_length(osm_sub[1,]))
-  #os_id_keep <- osm_inter$OBJECTID.1[osm_inter$length == max(osm_inter$length)]
-  os_id_rem <- osm_inter$OBJECTID.1[osm_inter$length != max(osm_inter$length)]
-  keep <- (osm_dup$OBJECTID != os_id_rem)
-  osm_dup <- osm_dup[keep,]
-  rm(osmid, osm_sub, osids,os_sub,osm_inter,os_id_rem,keep)
+  #plot(os_sub[1], col = "White")
+  #plot(osm_sub[1], add = T)
+
+  #Find intersections
+  os_sub_str <- st_cast(os_sub, "MULTILINESTRING", group_or_split=TRUE)
+  osm_inter <- st_intersection(osm_sub,os_sub_str)
+  osm_inter <- osm_inter$geoms
+  #plot(osm_inter, add = T, col = "Blue")
+
+  #Split Points and Mulitpoints
+  pORmp <- vector(mode = "logical",length = length(osm_inter))
+  for(e in 1:length(osm_inter)){
+    pORmp[[e]] <- any(class(osm_inter[[e]]) == "MULTIPOINT")
+  }
+  osm_inter_mp <- osm_inter[pORmp]
+  osm_inter_p <- osm_inter[!pORmp]
+  rm(pORmp, osm_inter,os_sub_str)
+
+  #Convert Multipoints into single points
+  osm_inter_mp <- st_cast(st_sfc(osm_inter_mp), "POINT", group_or_split = TRUE)
+  osm_inter_p <- st_cast(st_sfc(osm_inter_p), "POINT", group_or_split = TRUE)
+
+  #Put points back togther
+  osm_inter <- c(osm_inter_p,osm_inter_mp)
+  osm_inter <- st_cast(st_sfc(osm_inter), "POINT", group_or_split = TRUE) #Incase mp or p is empty have to run again
+
+  #Remove Duplicates
+  inter_dup <- duplicated(osm_inter)
+  osm_inter <- osm_inter[!inter_dup]
+  inter_df <- data.frame(id = c(1:length(osm_inter)))
+  inter_df$geom <- osm_inter
+  inter_df <- st_sf(inter_df)
+  rm(osm_inter,osm_inter_p,osm_inter_mp,inter_dup)
+
+  #Buffer Pointsand make into a singe mulipolygon
+  osm_buff <- st_buffer(inter_df, dist = 1)
+  buff_geom <- osm_buff$geom
+  buff_geom <- st_union(buff_geom)
+  #plot(buff_geom, add = T, col = "Red")
+  rm(osm_buff, inter_df)
+
+  #Cut the line with buffered points
+  osm_diff <- st_cast(st_difference(osm_sub,buff_geom), "LINESTRING")
+  osm_diff$length <- as.numeric(st_length(osm_diff, dist_fun = geosphere::distGeo))
+  #plot(osm_diff["length"], add = T)
+
+  #Select the right segment of the line
+  osm_right <- osm_diff[osm_diff$length == max(osm_diff$length),]
+  osm_right <- osm_right[,c("osm_id","id","id2","geometry","length")]
+  #plot(osm_right, add = T, col = "Green", lwd = 3)
+  osm_join <- st_join(osm_right,os_sub, join = st_intersects, left = TRUE)
+
+  #Update Table
+  osm_dup$width[osm_dup$id == osmid] <- osm_join$width[1]
+  rm(osm_join,osm_right,os_sub,osm_diff,osm_sub,buff_geom)
+
 }
 
+osm_dupdup <- duplicated(osm_dup$id)
+osm_duprem <- osm_dup[!osm_dupdup,]
+osm_clean <- rbind(osm_nodup, osm_duprem)
 
 
-
-
-osm_union <- st_union(osm_sub[1,],os_sub)
-osm_diff <- st_difference(osm_sub[1,],os_sub)
-osm_inter <- st_intersection(osm_sub[1,],os_sub)
-osm_dist <- st_disjoint(osm_sub[1,],os_sub)
-
-osm_diff2 <- st_difference(osm_diff[1,],osm_diff[2,])
-
-plot(osm_union[1], col = "Black")
-plot(osm_diff[1], col = "Blue", add = T)
-plot(osm_inter[1], lwd = 3)
-plot(osm_sub[1], add = T)
-plot(os_sub, add = T)
-plot(osm_diff2, lwd = 5, add = T)
-
-
-plot(osm_sub[1,1], col = "Black")
-plot(os_sub[1], col = "White", add = T)
-plot(osm_diff[2,1], add = T, lwd = 15, col = "Blue")
-plot(osm_diff[1,1], add = T, lwd = 10, col = "Pink")
-plot(osm_inter[1,1],add = T, col = "Red", lwd = 4)
-plot(osm_inter[2,1],add = T, col = "Green", lwd = 2 )
-plot(osm_diff2, add = T, col = "Black")
-
-
-
-
-
-
-plot(osm_diff[2,1], add = T, lwd = 2, col = "Red")
-plot(osm_diff[1,1], add = T, lwd = 2, col = "Red")
-
-#Clean out NA from OBJECTID
-for(b in 1:nrow(osm_1)){
-  osm_1$OBJECTID[b] <- if(is.na(osm_1$OBJECTID[b])){0}else{osm_1$OBJECTID[b]}
-}
-
-#Look for unique matches
-osm_1$nmatch <- NULL
-for(a in 1:nrow(osm_1)){
-  osm_1$nmatch[a] <- nrow(osm_1[osm_1$OBJECTID == osm_1$OBJECTID[a],])
-}
-#osm_1$minmatch <- NULL
-#for(c in 1:nrow(osm_1)){
-#  osm_1$minmatch[c] <- if(osm_1$nmatch[c] == min(osm_1$nmatch[osm_1$id == osm_1$id[c]])){TRUE}else{FALSE}
-#}
-
-
-osm_union <- st_union(osm,os)
-
-
-dup <- duplicated(osm_1$id)
-summary(dup)
-diff <- osm_1[dup,]
-qtm(diff)
-
-
-id = 122
-ids = osm_1$OBJECTID[osm_1$id == id]
-id_other = osm_1$id[osm_1$OBJECTID %in% ids]
-ids_other = osm_1$OBJECTID[osm_1$id %in% id]
-plot(os[os$OBJECTID %in% ids,"OBJECTID"], col = "White")
-plot(os[os$OBJECTID %in% ids_other,"OBJECTID"], col = "blue")
-plot(osm_1[osm_1$id == id,"osm_id"], add = T, lwd = 3)
-plot(osm_1[osm_1$id %in% id_other,"osm_id"], add = T, col = "Red")
-test <- osm_1[osm_1$id == id,]
-#qtm(osm_1[osm_1$id == id,"osm_id"])
-osm_1$nmatch[osm_1$osm_id == id]
-
-test2 <- osm_1[osm_1$nmatch == 1,]
-
-qtm1 <- qtm(os)
-qtm2 <- qtm(osm_1)
-tmap_arrange(qtm1,qtm2)
-
-
-
-
-#plot(os[os$OBJECTID %in% id_mean,"OBJECTID"], col = "Red", add = T)
-#plot(osm_2[osm_2$osm_id == id,"osm_id"], add = T, col = "Blue")
-
-#Match Lines with Polygons
-osm
-
-osmid <-3508489
-ids <- osm_old$OBJECTID[osm_old$osm_id == osmid]
-#id <- 306640
-plot(os[os$OBJECTID %in% ids,"OBJECTID"], col = "White")
-plot(osm_old[osm_old$osm_id == osmid,"osm_id"], add = T, col = "Red")
+plot(missing[1:1000,], col = "red")
+plot(os, col = "White", add = T)
