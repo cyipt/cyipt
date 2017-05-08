@@ -58,7 +58,7 @@ rq_nat = readRDS("rq_nat.Rds")
 
 ```{r, echo=FALSE}
 if(!file.exists("osm-lines-quietness-full.Rds")) {
-  download.file(url = "https://github.com/cyipt/example-data/raw/master/bristol/osm-lines-quietness.Rds", destfile = "osm-lines-quietness-full.Rds", mode = "wb")
+  download.file(url = "https://github.com/cyipt/example-data/raw/master/bristol/osm-lines-quietness-full.Rds", destfile = "osm-lines-quietness-full.Rds", mode = "wb")
 }
 
 ```
@@ -72,8 +72,7 @@ osm_lines = readRDS("osm-lines-quietness-full.Rds")
 These can be visualised as follows:
 
 ```{r}
-plot(osm_lines[sample(x = nrow(osm_lines), size = 1000), 1])
-
+plot(osm_lines[sample(x = nrow(osm_lines), size = 100), 1])
 ```
 
 
