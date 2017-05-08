@@ -7,21 +7,21 @@ library(dplyr)
 #Before running convert mulipart to single part
 
 #Read in data drop unneded values
-#boundary <- st_read(dsn = "areas/bristol-poly.geojson")
-#boundary <- st_transform(boundary, 27700) #Change to British Nat Grid
-#os <- st_read(dsn = "D:/roadwidth", layer = "SWroads") #1118955
-#os <- os[,c("OBJECTID","DESCGROUP","geometry")] #Dump Uneeded Columns
-#os <- st_transform(os, 27700) #Change to British Nat Grid
-#os <- os[boundary,] #18985 lines
-#os <- os[st_is_valid(os),] #remove invalid geometry #18944
+boundary <- st_read(dsn = "areas/bristol-poly.geojson")
+boundary <- st_transform(boundary, 27700) #Change to British Nat Grid
+os <- st_read(dsn = "D:/roadwidth", layer = "SWroads") #1118955
+os <- os[,c("OBJECTID","DESCGROUP","geometry")] #Dump Uneeded Columns
+os <- st_transform(os, 27700) #Change to British Nat Grid
+os <- os[boundary,] #18985 lines
+os <- os[st_is_valid(os),] #remove invalid geometry #18944
 
 #Read in OSM Lines
 #Can't figure out how to split lines at each intersection in R so did it in ArcGIS
-#osm <- st_read(dsn ="../example-data/bristol",layer = "osm_split")
-#osm <- st_transform(osm, 27700) #Change to British Nat Grid
-#osm <- osm[boundary,] #35257
-#osm <- osm[,c("osm_id","name","geometry")]
-#osm <- osm[st_is_valid(osm),] #remove invalid geometry #18944
+osm <- st_read(dsn ="../example-data/bristol",layer = "osm_split")
+osm <- st_transform(osm, 27700) #Change to British Nat Grid
+osm <- osm[boundary,] #35257
+osm <- osm[,c("osm_id","name","geometry")]
+osm <- osm[st_is_valid(osm),] #remove invalid geometry #18944
 #remove(boundary)
 
 #Add in a unique idea for each segment of and OSM line
@@ -30,8 +30,8 @@ osm$width <- NA
 osm$widthpath <- NA
 
 #New Combined Loop
-for(a in 1:nrow(osm)){
-#for(a in 588:nrow(osm)){
+#for(a in 1:nrow(osm)){
+for(a in 3323:nrow(osm)){
   #Get OSM Line and OS Polygons Near By
   osm_sub <- osm[a,] #OSM Line
   AOI <- st_buffer(osm_sub, dist = 15) # Area intrest around the line, set to 15 m
@@ -192,7 +192,7 @@ for(a in 1:nrow(osm)){
         #If Roadside is made up of multiple polygons merge them alltogther
         roadside_one <- st_union(roadside)
         roadside <- roadside[1,]
-        roadside$geom <- roadside_one
+        roadside$geometry <- roadside_one
 
         #Get Path width
         roadside$area <- as.numeric(st_area(roadside))
@@ -213,6 +213,7 @@ for(a in 1:nrow(osm)){
         roadside <- st_intersection(road_buff, roadside)
         comb <- st_union(roadside, road_main)
         comb <- comb[,c("id","geoms")]
+        comb <- st_cast(comb, "POLYGON", group_or_split=TRUE)
 
         #Get final width
         #print("Get final width")
@@ -313,9 +314,11 @@ for(a in 1:nrow(osm)){
 
   }
 
-  rm(AOI,comb,osm_sub, road, road_buff, roadside, road_main,b,buff_geom,c,d,e, roadside_geom, roadside_one, roadside_notouch)
+  rm(AOI,comb,osm_sub, road, road_buff, roadside, road_main,b,buff_geom,c,d,e, roadside_geom, roadside_one, roadside_notouch, roadside_only)
 }
 
 
 #Numbers to Check
 #155
+#1218 - missing road?
+
