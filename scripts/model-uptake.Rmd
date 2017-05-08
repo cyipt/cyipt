@@ -1,0 +1,79 @@
+---
+title: "Modelling Cycling Update"
+author: "Robin Lovelace"
+date: "8 May 2017"
+output: github_document
+---
+
+```{r, echo=FALSE}
+knitr::opts_knit$set(base.dir = "..")
+```
+
+
+This document reports on methods and preliminary findings associated with the modelling of cycling uptake associated with infrastructure.
+
+## Input data
+
+The input data comes from 2 main sources, which eventually will work for any region, as specified by the region variable and selected from an appropriate data source:
+
+```{r}
+region = "avon"
+data_source = "https://github.com/npct/pct-data/raw/master/"
+```
+
+
+- Outputs from the PCT project, which reports current cycling levels and estimated 'fastest routes' for cyclists:
+
+```{r, echo=FALSE, eval=FALSE}
+if(!file.exists("l.Rds")) {
+  download.file(paste0(data_source, region, "/l.Rds"), "l.Rds", mode = "wb")
+  download.file(paste0(data_source, region, "/rf.Rds"), "rf.Rds", mode = "wb")
+  download.file(paste0(data_source, region, "/rq.Rds"), "rq.Rds", mode = "wb")
+}
+```
+
+```{r, echo=FALSE, eval=FALSE}
+# load local data - no longer done as lacks busyness
+l = readRDS("l.Rds")
+rf = readRDS("rf.Rds")
+rq = readRDS("rq.Rds")
+```
+
+```{r, echo=FALSE}
+if(!file.exists("l_nat.Rds")) {
+  download.file(url = "https://github.com/npct/pct-bigdata/releases/download/1.6-beta/l_nat.Rds", destfile = "l_nat.Rds", mode = "wb")
+  download.file(url = "https://github.com/npct/pct-bigdata/releases/download/1.7-beta/rf_nat.Rds", destfile = "rf_nat.Rds", mode = "wb")
+  download.file(url = "https://github.com/npct/pct-bigdata/releases/download/1.7-beta/rq_nat.Rds", destfile = "rq_nat.Rds", mode = "wb")
+}
+```
+
+```{r}
+l_nat = readRDS("l_nat.Rds")
+rf_nat = readRDS("rf_nat.Rds")
+rq_nat = readRDS("rq_nat.Rds")
+```
+
+
+- Outputs from the data processing stage of the CyIPT project, which provides data on the current road network from the perspective of cycling.
+
+```{r, echo=FALSE}
+if(!file.exists("osm-lines-quietness-full.Rds")) {
+  download.file(url = "https://github.com/cyipt/example-data/raw/master/bristol/osm-lines-quietness.Rds", destfile = "osm-lines-quietness-full.Rds", mode = "wb")
+}
+
+```
+
+
+```{r}
+osm_lines = readRDS("osm-lines-quietness-full.Rds")
+```
+
+
+These can be visualised as follows:
+
+```{r}
+plot(osm_lines[sample(x = nrow(osm_lines), size = 1000), 1])
+
+```
+
+
