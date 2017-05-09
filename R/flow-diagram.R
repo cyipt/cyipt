@@ -14,7 +14,14 @@ render_graph(g)
 
 mermaid("
 graph LR
-A(OSM)-->D[Road Network]
-B[PCT]-->D[Road Network]
-C[MasterMap]-->D[Road Network]
+A(OSM/CycleStreets)-->D[Road network]
+B[PCT]-->D
+C[MasterMap]-->D
+D[Road Network]-->E(Filter)
+E-->F[Plausible interventions]
+A2[Intervention typology]-->F
+F-->G[Cost estimates]
+A1[Typical costs]-->G
+F-->H[Benefit estimates]
+I5[Regression model]-->H
 ")

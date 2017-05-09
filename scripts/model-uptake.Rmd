@@ -5,6 +5,13 @@ date: "8 May 2017"
 output: github_document
 ---
 
+```{r, echo=FALSE}
+old_dir = getwd()
+if(!grepl(pattern = "scripts", x = old_dir))
+  setwd("scripts")
+```
+
+
 This document reports on methods and preliminary findings associated with the modelling of cycling uptake associated with infrastructure.
 
 ## Input data
@@ -116,38 +123,130 @@ st_geometry(rf) <- NULL
 rq = transmute(lfq$rq, dist_quiet = length / 1000, time_quiet = time, busyness_quiet = busyness, av_incline_quiet = av_incline) 
 st_geometry(rq) <- NULL
 lfq$l = bind_cols(lfq$l, rf, rq)
-
+l = lfq$l
+st_geometry(l) = NULL
 ```
 
 
-## Modelling cycling uptake
+## Modelling raw cyclist counts
 
 In the propensity to cycle tool, we modelled cycling uptake in terms of `pcycle`, the percentage cycling.
 
-In CyIPT, we will estimate the number cycling directly and use inference about the impact of the route network to estimate uptake, using a wide range of variables.
+In this section we will estimate the number cycling directly and use inference about the impact of the route network to estimate uptake, using a wide range of variables.
 
 ```{r}
-names(lfq$l)
+names(l)
 ```
-
 
 The simplest model of cycling update under this framework would be to estimate the number of cyclists as a linear function of total number travelling:
 
 ```{r}
-m1 = lm(formula = bicycle ~ all, data = lfq$l)
+m1 = lm(formula = bicycle ~ all, data = l)
 summary(m1)
+(rmse1 = sqrt(c(crossprod(m1$residuals)) / nrow(l)))
 ```
 
+Already, over half of the number of cyclists using roads can be modelled based on the total number of commuters alone, but we're not capturing any of the variability in the proportion cycling.
 
-Already, over half of the number of cyclists using roads can be modelled based on the total number of commuters alone.
-
-The impact of adding distance is shown below:
+The impact of adding distance can be isolated in the linear term as follows:
 
 ```{r}
-m2 = lm(formula = bicycle ~ all + dist, data = lfq$l)
+m2 = lm(formula = bicycle ~ dist + all, data = l)
 summary(m2)
+(rmse2 = sqrt(c(crossprod(m2$residuals)) / nrow(l)))
 ```
 
-Note that the fit has improved, but only very slightly. This is partly because only a linear function of distance is used. We must use a non-linear function of distance as a predictor.
+Note that the fit has improved, but only very slightly. This is partly because only a linear function of distance is used and it does not interact with `all`. 
+Let's simulate that interaction.
+
+So we can fit an interaction term:
+
+```{r}
+m3 = lm(formula = bicycle ~ all + dist:all, data = l)
+summary(m3)
+(rmse3 = sqrt(c(crossprod(m3$residuals)) / nrow(l)))
+```
+
+
+```{r}
+plot(l$all, l$bicycle)
+points(l$all, m1$fitted.values, col = "red")
+points(l$all, m3$fitted.values, col = "grey")
+```
+
+There are various issues here. We need to model cycling uptake but that is always a function of `all`. We must add additional variables such as hilliness. Further, we must use non-linear function of some predictor variables such as distance. 
 
 The mission is to improve this fit to account for the impact of infrastructure so we can model cycling uptake when the road network changes.
+
+This is where machine learning can come in.
+
+## Boosted regression trees
+
+Machine learning can provide a way to extract knowledge from the input data.
+An implementation is provided by the **xgboost** package:
+
+```{r}
+library(xgboost)
+set.seed(2017)
+l_sub = select(l, bicycle, dist, all)
+xgboost(data = as.matrix(l_sub[-1]), label = l_sub$bicycle, nrounds = 5)
+train = l_sub %>% 
+    sample_frac(size = 0.5)
+```
+
+Note that the RMSE has been more than halved by the use of machine learning.
+The method's compatibility with the `predict()` function allows us to model uptake of cycling when conditions change.
+As a hypothetical example, imagine that all people moved 50%.
+
+Rather than fitting on the complete dataset, we'll build the model on a subset (`train`):
+
+```{R}
+m4 = xgboost(data = as.matrix(train[-1]), label = train$bicycle, nrounds = 5, max_depth = 3)
+m4_fitted = predict(m4, as.matrix(l_sub[-1]))
+plot(l$all, l$bicycle)
+points(l$all, m4_fitted, col = "red")
+(rmse4 = sqrt(c(crossprod(m4_fitted - l_sub$bicycle)) / nrow(l)))
+```
+
+We can query the model results to explore the feature importance:
+
+```{r}
+importance_m4 = xgb.importance(model = m4, feature_names = names(l_sub)[-1])
+xgb.plot.importance(importance_m4)
+```
+
+## A full model
+
+To specify a full model is relatively easy, building on the existing framework:
+
+```{r}
+l_full = select(l, bicycle, all, dist, dist_fast, dist_quiet, av_incline_fast, busyness_fast, busyness_quiet)
+train = sample_frac(l_full, 0.5)
+m5 = xgboost(data = as.matrix(train[-1]), label = train$bicycle, nrounds = 10, max_depth = 5)
+importance_m5 = xgb.importance(model = m5, feature_names = names(l_full)[-1])
+xgb.plot.importance(importance_m5)
+m5_fitted = predict(m5, as.matrix(l_full[-1]))
+(rmse5 = sqrt(c(crossprod(m5_fitted - l_full$bicycle)) / nrow(l)))
+```
+
+## Fitting to the proportion cycling
+
+We know that `bicycle` is intimately related to `all`. It cannot be higher and is a proportion of it. So instead, we can remove `all` from the equation (the number of people travelling on a route should be independent of their propensity to cycle) and instead to fit to `pcycle`:
+
+```{r}
+l_full = select(l, bicycle, all, dist, dist_fast, dist_quiet, av_incline_fast, busyness_fast, busyness_quiet)
+train_df = sample_frac(l_full, 0.5)
+train = as.matrix(train_df[,-c(1, 2)])
+m6 = xgboost(data = train, label = train_df$bicycle / train_df$all, nrounds = 10, max_depth = 5, weight = train_df$all)
+importance_m6 = xgb.importance(model = m6, feature_names = names(l_full)[-c(1, 2)])
+xgb.plot.importance(importance_m6)
+m6_fitted = predict(m6, as.matrix(l_full[-c(1, 2)]))
+(rmse6 = sqrt(c(crossprod(m6_fitted * l$all  - l_full$bicycle)) / nrow(l)))
+```
+
+
+
+```{r}
+setwd(old_dir)
+```
+

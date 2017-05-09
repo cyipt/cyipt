@@ -21,7 +21,7 @@ For the case study region of Bristol, the data is stored in the `example-data` f
 library(sf)
 ```
 
-    ## Linking to GEOS 3.5.0, GDAL 2.1.1, proj.4 4.9.3
+    ## Linking to GEOS 3.5.1, GDAL 2.1.3, proj.4 4.9.2, lwgeom 2.3.2 r15302
 
 ``` r
 library(tidyverse)
@@ -43,7 +43,8 @@ library(tidyverse)
 region = st_read("../areas/bristol-poly.geojson")
 ```
 
-    ## Reading layer `OGRGeoJSON' from data source `C:\Users\georl\Desktop\GitHub\cyipt\areas\bristol-poly.geojson' using driver `GeoJSON'
+    ## Reading layer `OGRGeoJSON' from data source `/home/robin/cyipt/cyipt/areas/bristol-poly.geojson' using driver `GeoJSON'
+    ## converted into: MULTIPOLYGON
     ## Simple feature collection with 1 feature and 21 fields
     ## geometry type:  MULTIPOLYGON
     ## dimension:      XY
@@ -63,7 +64,7 @@ plot(lfq$rq[1], add = T, col = "green")
 plot(region[1], col = "white", lwd = 5, add = T)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 -   Outputs from the data processing stage of the CyIPT project, which provides data on the current road network from the perspective of cycling.
 
@@ -80,7 +81,7 @@ plot(lfq$rf[1:5, 6], add = T, col = "red", lwd = 3)
 plot(lfq$rq[1:5, 6], add = T, col = "green")
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 We can join the relevant variables from the `rf` and `rq` objects onto `l` for modelling:
 
@@ -98,17 +99,19 @@ st_geometry(rf) <- NULL
 rq = transmute(lfq$rq, dist_quiet = length / 1000, time_quiet = time, busyness_quiet = busyness, av_incline_quiet = av_incline) 
 st_geometry(rq) <- NULL
 lfq$l = bind_cols(lfq$l, rf, rq)
+l = lfq$l
+st_geometry(l) = NULL
 ```
 
-Modelling cycling uptake
-------------------------
+Modelling raw cyclist counts
+----------------------------
 
 In the propensity to cycle tool, we modelled cycling uptake in terms of `pcycle`, the percentage cycling.
 
-In CyIPT, we will estimate the number cycling directly and use inference about the impact of the route network to estimate uptake, using a wide range of variables.
+In this section we will estimate the number cycling directly and use inference about the impact of the route network to estimate uptake, using a wide range of variables.
 
 ``` r
-names(lfq$l)
+names(l)
 ```
 
     ##  [1] "is_two_way"               "dist"                    
@@ -153,22 +156,22 @@ names(lfq$l)
     ## [79] "govtarget_sico2"          "gendereq_slco2"          
     ## [81] "gendereq_sico2"           "dutch_slco2"             
     ## [83] "dutch_sico2"              "ebike_slco2"             
-    ## [85] "ebike_sico2"              "geometry"                
-    ## [87] "dist_fast"                "time_fast"               
-    ## [89] "busyness_fast"            "av_incline_fast"         
-    ## [91] "dist_quiet"               "time_quiet"              
-    ## [93] "busyness_quiet"           "av_incline_quiet"
+    ## [85] "ebike_sico2"              "dist_fast"               
+    ## [87] "time_fast"                "busyness_fast"           
+    ## [89] "av_incline_fast"          "dist_quiet"              
+    ## [91] "time_quiet"               "busyness_quiet"          
+    ## [93] "av_incline_quiet"
 
 The simplest model of cycling update under this framework would be to estimate the number of cyclists as a linear function of total number travelling:
 
 ``` r
-m1 = lm(formula = bicycle ~ all, data = lfq$l)
+m1 = lm(formula = bicycle ~ all, data = l)
 summary(m1)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = bicycle ~ all, data = lfq$l)
+    ## lm(formula = bicycle ~ all, data = l)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
@@ -185,18 +188,24 @@ summary(m1)
     ## Multiple R-squared:  0.7304, Adjusted R-squared:  0.7303 
     ## F-statistic:  9137 on 1 and 3372 DF,  p-value: < 2.2e-16
 
-Already, over half of the number of cyclists using roads can be modelled based on the total number of commuters alone.
+``` r
+(rmse1 = sqrt(c(crossprod(m1$residuals)) / nrow(l)))
+```
 
-The impact of adding distance is shown below:
+    ## [1] 7.998234
+
+Already, over half of the number of cyclists using roads can be modelled based on the total number of commuters alone, but we're not capturing any of the variability in the proportion cycling.
+
+The impact of adding distance can be isolated in the linear term as follows:
 
 ``` r
-m2 = lm(formula = bicycle ~ all + dist, data = lfq$l)
+m2 = lm(formula = bicycle ~ dist + all, data = l)
 summary(m2)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = bicycle ~ all + dist, data = lfq$l)
+    ## lm(formula = bicycle ~ dist + all, data = l)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
@@ -205,8 +214,8 @@ summary(m2)
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)    
     ## (Intercept) -2.744940   0.319685  -8.586   <2e-16 ***
-    ## all          0.130425   0.001436  90.802   <2e-16 ***
     ## dist        -0.044669   0.029099  -1.535    0.125    
+    ## all          0.130425   0.001436  90.802   <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -214,6 +223,229 @@ summary(m2)
     ## Multiple R-squared:  0.7306, Adjusted R-squared:  0.7305 
     ## F-statistic:  4571 on 2 and 3371 DF,  p-value: < 2.2e-16
 
-Note that the fit has improved, but only very slightly. This is partly because only a linear function of distance is used. We must use a non-linear function of distance as a predictor.
+``` r
+(rmse2 = sqrt(c(crossprod(m2$residuals)) / nrow(l)))
+```
+
+    ## [1] 7.99544
+
+Note that the fit has improved, but only very slightly. This is partly because only a linear function of distance is used and it does not interact with `all`. Let's simulate that interaction.
+
+So we can fit an interaction term:
+
+``` r
+m3 = lm(formula = bicycle ~ all + dist:all, data = l)
+summary(m3)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = bicycle ~ all + dist:all, data = l)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -101.386   -0.957    0.533    1.511  158.567 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) -1.7684707  0.1696349  -10.43   <2e-16 ***
+    ## all          0.1519905  0.0017050   89.14   <2e-16 ***
+    ## all:dist    -0.0071616  0.0003765  -19.02   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 7.604 on 3371 degrees of freedom
+    ## Multiple R-squared:  0.7566, Adjusted R-squared:  0.7564 
+    ## F-statistic:  5238 on 2 and 3371 DF,  p-value: < 2.2e-16
+
+``` r
+(rmse3 = sqrt(c(crossprod(m3$residuals)) / nrow(l)))
+```
+
+    ## [1] 7.600695
+
+``` r
+plot(l$all, l$bicycle)
+points(l$all, m1$fitted.values, col = "red")
+points(l$all, m3$fitted.values, col = "grey")
+```
+
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-17-1.png)
+
+There are various issues here. We need to model cycling uptake but that is always a function of `all`. We must add additional variables such as hilliness. Further, we must use non-linear function of some predictor variables such as distance.
 
 The mission is to improve this fit to account for the impact of infrastructure so we can model cycling uptake when the road network changes.
+
+This is where machine learning can come in.
+
+Boosted regression trees
+------------------------
+
+Machine learning can provide a way to extract knowledge from the input data. An implementation is provided by the **xgboost** package:
+
+``` r
+library(xgboost)
+```
+
+    ## 
+    ## Attaching package: 'xgboost'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     slice
+
+``` r
+set.seed(2017)
+l_sub = select(l, bicycle, dist, all)
+xgboost(data = as.matrix(l_sub[-1]), label = l_sub$bicycle, nrounds = 5)
+```
+
+    ## [1]  train-rmse:12.223766 
+    ## [2]  train-rmse:9.560989 
+    ## [3]  train-rmse:7.688505 
+    ## [4]  train-rmse:6.360555 
+    ## [5]  train-rmse:5.424933
+
+    ## ##### xgb.Booster
+    ## raw: 13.4 Kb 
+    ## call:
+    ##   xgb.train(params = params, data = dtrain, nrounds = nrounds, 
+    ##     watchlist = watchlist, verbose = verbose, print_every_n = print_every_n, 
+    ##     early_stopping_rounds = early_stopping_rounds, maximize = maximize, 
+    ##     save_period = save_period, save_name = save_name, xgb_model = xgb_model, 
+    ##     callbacks = callbacks)
+    ## params (as set within xgb.train):
+    ##   silent = "1"
+    ## xgb.attributes:
+    ##   niter
+    ## callbacks:
+    ##   cb.print.evaluation(period = print_every_n)
+    ##   cb.evaluation.log()
+    ##   cb.save.model(save_period = save_period, save_name = save_name)
+    ## niter: 5
+    ## evaluation_log:
+    ##     iter train_rmse
+    ##        1  12.223766
+    ##        2   9.560989
+    ## ---                
+    ##        4   6.360555
+    ##        5   5.424933
+
+``` r
+train = l_sub %>% 
+    sample_frac(size = 0.5)
+```
+
+Note that the RMSE has been more than halved by the use of machine learning. The method's compatibility with the `predict()` function allows us to model uptake of cycling when conditions change. As a hypothetical example, imagine that all people moved 50%.
+
+Rather than fitting on the complete dataset, we'll build the model on a subset (`train`):
+
+``` r
+m4 = xgboost(data = as.matrix(train[-1]), label = train$bicycle, nrounds = 5, max_depth = 3)
+```
+
+    ## [1]  train-rmse:11.342885 
+    ## [2]  train-rmse:9.367547 
+    ## [3]  train-rmse:7.962751 
+    ## [4]  train-rmse:6.898021 
+    ## [5]  train-rmse:6.164511
+
+``` r
+m4_fitted = predict(m4, as.matrix(l_sub[-1]))
+plot(l$all, l$bicycle)
+points(l$all, m4_fitted, col = "red")
+```
+
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-19-1.png)
+
+``` r
+(rmse4 = sqrt(c(crossprod(m4_fitted - l_sub$bicycle)) / nrow(l)))
+```
+
+    ## [1] 8.356759
+
+We can query the model results to explore the feature importance:
+
+``` r
+importance_m4 = xgb.importance(model = m4, feature_names = names(l_sub)[-1])
+xgb.plot.importance(importance_m4)
+```
+
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-20-1.png)
+
+A full model
+------------
+
+To specify a full model is relatively easy, building on the existing framework:
+
+``` r
+l_full = select(l, bicycle, all, dist, dist_fast, dist_quiet, av_incline_fast, busyness_fast, busyness_quiet)
+train = sample_frac(l_full, 0.5)
+m5 = xgboost(data = as.matrix(train[-1]), label = train$bicycle, nrounds = 10, max_depth = 5)
+```
+
+    ## [1]  train-rmse:13.916472 
+    ## [2]  train-rmse:10.862797 
+    ## [3]  train-rmse:8.596016 
+    ## [4]  train-rmse:6.965584 
+    ## [5]  train-rmse:5.775204 
+    ## [6]  train-rmse:4.884100 
+    ## [7]  train-rmse:4.259263 
+    ## [8]  train-rmse:3.789751 
+    ## [9]  train-rmse:3.404494 
+    ## [10] train-rmse:3.162457
+
+``` r
+importance_m5 = xgb.importance(model = m5, feature_names = names(l_full)[-1])
+xgb.plot.importance(importance_m5)
+```
+
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-21-1.png)
+
+``` r
+m5_fitted = predict(m5, as.matrix(l_full[-1]))
+(rmse5 = sqrt(c(crossprod(m5_fitted - l_full$bicycle)) / nrow(l)))
+```
+
+    ## [1] 6.652898
+
+Fitting to the proportion cycling
+---------------------------------
+
+We know that `bicycle` is intimately related to `all`. It cannot be higher and is a proportion of it. So instead, we can remove `all` from the equation (the number of people travelling on a route should be independent of their propensity to cycle) and instead to fit to `pcycle`:
+
+``` r
+l_full = select(l, bicycle, all, dist, dist_fast, dist_quiet, av_incline_fast, busyness_fast, busyness_quiet)
+train_df = sample_frac(l_full, 0.5)
+train = as.matrix(train_df[,-c(1, 2)])
+m6 = xgboost(data = train, label = train_df$bicycle / train_df$all, nrounds = 10, max_depth = 5, weight = train_df$all)
+```
+
+    ## [1]  train-rmse:0.298769 
+    ## [2]  train-rmse:0.211525 
+    ## [3]  train-rmse:0.151361 
+    ## [4]  train-rmse:0.110271 
+    ## [5]  train-rmse:0.082836 
+    ## [6]  train-rmse:0.064342 
+    ## [7]  train-rmse:0.053191 
+    ## [8]  train-rmse:0.045392 
+    ## [9]  train-rmse:0.041400 
+    ## [10] train-rmse:0.037972
+
+``` r
+importance_m6 = xgb.importance(model = m6, feature_names = names(l_full)[-c(1, 2)])
+xgb.plot.importance(importance_m6)
+```
+
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-22-1.png)
+
+``` r
+m6_fitted = predict(m6, as.matrix(l_full[-c(1, 2)]))
+(rmse6 = sqrt(c(crossprod(m6_fitted * l$all  - l_full$bicycle)) / nrow(l)))
+```
+
+    ## [1] 5.332836
+
+``` r
+setwd(old_dir)
+```

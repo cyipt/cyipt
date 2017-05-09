@@ -3,14 +3,14 @@ Title: Cycling Infrastructure Prioritisation Toolkit
 Version: 0.0.0.9000
 Authors@R: person("Robin", "Lovelace", email = "rob00x@gmail.com", role = c("aut", "cre"))
 Description: Prioritises cycling infrastructure.
-Depends: R (>= 3.3.3)
+Depends: R (>= 3.3.3),
+  sf,
+  dplyr
 Remotes:
     osmdatar/osmdata
 License: AGPL
 Encoding: UTF-8
 LazyData: true
-Imports: sf,
-    mapview
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
