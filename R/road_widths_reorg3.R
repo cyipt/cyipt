@@ -33,7 +33,7 @@ for(a in 1:nrow(osm)){
 
   #Clean Up Roadside Polygons
   if(nrow(roadside) == 0){
-    print("No Roadside")
+    #print("No Roadside")
   }
   else{
     #Split MulitPolygons into Single Polygons
@@ -65,7 +65,7 @@ for(a in 1:nrow(osm)){
 
   #Clean Up Road Polygons
   if(nrow(road) == 0){
-    print("No Road")
+    #print("No Road")
   }
   else{
     #Split MulitPolygons into Single Polygons
@@ -95,15 +95,11 @@ for(a in 1:nrow(osm)){
     remove(road_geom)
   }
 
-
-
-
-
   print(paste0("Doing Line ",a," of ",nrow(osm)," with ",nrow(road)," roads and ",nrow(roadside)," roadsides at ", Sys.time()))
 
   #Get Road Width
   if(nrow(road) == 0){
-    print("Number of Roads Polygons is Zero")
+    #print("Number of Roads Polygons is Zero")
     #Make some empty objects as they get checked aginst later
     touch <- list()
     road_main <- data.frame()
@@ -137,7 +133,7 @@ for(a in 1:nrow(osm)){
       line_main <- line
     }else{
       #Split Points and Mulitpoints
-      print("Splitting Line")
+      #print("Splitting Line")
       #SF can't hangle mix of points and mulitpoints so have to be split out and then rejoined
       pORmp <- vector(mode = "logical",length = length(osm_inter))
       for(b in 1:length(osm_inter)){
@@ -189,8 +185,8 @@ for(a in 1:nrow(osm)){
     osm$width[a] <- osm_join$width[1]
 
     #Select roaddside touching the road section
-    road_main <- road[road$OBJECTID == osm_join$OBJECTID[1], ]
-    road_main <- road_main[!is.na(road_main$OBJECTID),]
+    road_main <- road[road$id == osm_join$id[1], ]
+    road_main <- road_main[!is.na(road_main$id),]
     touch <- st_touches(road_main, roadside)
     if(length(touch) > 0){ #To deal with an Edge Case when Returns a empty list with lenght one
       if(sum(touch[[1]]) == 0 ){
@@ -206,7 +202,7 @@ for(a in 1:nrow(osm)){
   # Get Path Width
   ###################################
   if(length(touch) > 0 & nrow(road_main) > 0){
-    print("Getting Roadside width with simple case")
+    #print("Getting Roadside width with simple case")
 
     roadside_touch <- roadside[st_touches(road_main, roadside)[[1]],]
     #If Roadside is made up of multiple polygons merge them alltogther
@@ -251,16 +247,16 @@ for(a in 1:nrow(osm)){
     }
 
     #Update table
-    print(paste0("Road and roadise combined width is ",comb$width[1]," of ",nrow(comb)," possible values"))
+    print(paste0("Road and roadside combined width is ",comb$width[1]," of ",nrow(comb)," possible values"))
     osm$widthpath[a] <- comb$width[1]
     rm(roadside_touch, roadside, road_main, road_buff, road, comb, line, e, touch)
     }
   else if(nrow(roadside) > 0 & nrow(road_main) == 0){
     #For cases where there is no road but their is roadside e.g. off road cycle path
-    print("Check for roadside only situation")
+    #print("Check for roadside only situation")
     roadside_only <- roadside[st_intersects(line,roadside)[[1]],]
     if(nrow(roadside_only) == 0){
-      print("No roadside only situation")
+      #print("No roadside only situation")
     }
     else{
       roadside_only$area <- as.numeric(st_area(roadside_only))
@@ -284,7 +280,7 @@ for(a in 1:nrow(osm)){
 
   }
   else{
-    print("Unable to find roadside width")
+    #print("Unable to find roadside width")
     rm(touch, roadside, road_main, road, line)
   }
   rm(osm_inter)
