@@ -446,6 +446,43 @@ m6_fitted = predict(m6, as.matrix(l_full[-c(1, 2)]))
 
     ## [1] 5.332836
 
+Including the relationship between quiet and fast routes:
+
+``` r
+l_full = mutate(l_full, qdf = dist_quiet / dist_fast)
+l_full = mutate(l_full, av_busy_quiet = busyness_quiet / dist_quiet, av_busy_fast = busyness_fast / dist_fast) %>% 
+  select(-dist, -busyness_fast, -busyness_quiet)
+
+train_df = sample_frac(l_full, 0.5) 
+train = as.matrix(train_df[,-c(1, 2)])
+m7 = xgboost(data = train, label = train_df$bicycle / train_df$all, nrounds = 10, max_depth = 5, weight = train_df$all)
+```
+
+    ## [1]  train-rmse:0.300332 
+    ## [2]  train-rmse:0.212271 
+    ## [3]  train-rmse:0.151432 
+    ## [4]  train-rmse:0.109572 
+    ## [5]  train-rmse:0.081056 
+    ## [6]  train-rmse:0.062410 
+    ## [7]  train-rmse:0.050673 
+    ## [8]  train-rmse:0.043054 
+    ## [9]  train-rmse:0.038932 
+    ## [10] train-rmse:0.036164
+
+``` r
+importance_m7 = xgb.importance(model = m7, feature_names = names(l_full)[-c(1, 2)])
+xgb.plot.importance(importance_m7)
+```
+
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-23-1.png)
+
+``` r
+m7_fitted = predict(m7, as.matrix(l_full[-c(1, 2)]))
+(rmse7 = sqrt(c(crossprod(m7_fitted * l$all  - l_full$bicycle)) / nrow(l)))
+```
+
+    ## [1] 5.237587
+
 ``` r
 setwd(old_dir)
 ```
