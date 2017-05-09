@@ -5,30 +5,37 @@ date: "8 May 2017"
 output: github_document
 ---
 
-```{r, echo=FALSE}
-knitr::opts_knit$set(base.dir = "..")
-```
-
-
 This document reports on methods and preliminary findings associated with the modelling of cycling uptake associated with infrastructure.
 
 ## Input data
 
-The input data comes from 2 main sources, which eventually will work for any region, as specified by the region variable and selected from an appropriate data source:
+The first stage is to load region-specific data.
+Eventually these will cover any region, e.g. as specified by the region variable and selected from an appropriate data source:
 
 ```{r}
-region = "avon"
+region_name = "avon"
 data_source = "https://github.com/npct/pct-data/raw/master/"
 ```
 
+For the case study region of Bristol, the data is stored in the `example-data` folder:
 
-- Outputs from the PCT project, which reports current cycling levels and estimated 'fastest routes' for cyclists:
+```{r}
+library(sf)
+library(tidyverse)
+region = st_read("../areas/bristol-poly.geojson")
+```
+
+The main input data comes from 2 main sources:
+
+
+- Outputs from the PCT, which reports current cycling levels and estimated 'fastest routes' for cyclists. After combining the straight lines, quietest routes and fastest routes into a single list object, they can be loaded as follows:
 
 ```{r, echo=FALSE, eval=FALSE}
+# Commented - no longer use this data source
 if(!file.exists("l.Rds")) {
-  download.file(paste0(data_source, region, "/l.Rds"), "l.Rds", mode = "wb")
-  download.file(paste0(data_source, region, "/rf.Rds"), "rf.Rds", mode = "wb")
-  download.file(paste0(data_source, region, "/rq.Rds"), "rq.Rds", mode = "wb")
+  download.file(paste0(data_source, region_name, "/l.Rds"), "l.Rds", mode = "wb")
+  download.file(paste0(data_source, region_name, "/rf.Rds"), "rf.Rds", mode = "wb")
+  download.file(paste0(data_source, region_name, "/rq.Rds"), "rq.Rds", mode = "wb")
 }
 ```
 
@@ -39,7 +46,7 @@ rf = readRDS("rf.Rds")
 rq = readRDS("rq.Rds")
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 if(!file.exists("l_nat.Rds")) {
   download.file(url = "https://github.com/npct/pct-bigdata/releases/download/1.6-beta/l_nat.Rds", destfile = "l_nat.Rds", mode = "wb")
   download.file(url = "https://github.com/npct/pct-bigdata/releases/download/1.7-beta/rf_nat.Rds", destfile = "rf_nat.Rds", mode = "wb")
@@ -47,10 +54,31 @@ if(!file.exists("l_nat.Rds")) {
 }
 ```
 
+```{r, eval=FALSE, echo=FALSE}
+# This code takes the national lines and saves by region
+l_nat = st_as_sf(readRDS("l_nat.Rds"))
+rf_nat = st_as_sf(readRDS("rf_nat.Rds"))
+rq_nat = st_as_sf(readRDS("rq_nat.Rds"))
+l = l_nat[region,]
+l_sel = st_intersects(l_nat, region, sparse = FALSE)[,1]
+l = l_nat[l_sel,]
+rf = rf_nat[l_sel,]
+rq = rq_nat[l_sel,]
+plot(l[6])
+plot(rf[1], add = T, col = "red")
+plot(rq[1], add = T, col = "green")
+plot(region[1], col = "white", lwd = 5, add = T)
+lfq = list(l, rf, rq)
+names(lfq) = c("l", "rf", "rq")
+saveRDS(lfq, "../../example-data/bristol/lfq.Rds")
+```
+
 ```{r}
-l_nat = readRDS("l_nat.Rds")
-rf_nat = readRDS("rf_nat.Rds")
-rq_nat = readRDS("rq_nat.Rds")
+lfq = readRDS("../../example-data/bristol/lfq.Rds")
+plot(lfq$l[6])
+plot(lfq$rf[1], add = T, col = "red")
+plot(lfq$rq[1], add = T, col = "green")
+plot(region[1], col = "white", lwd = 5, add = T)
 ```
 
 
@@ -69,10 +97,57 @@ osm_lines = readRDS("osm-lines-quietness-full.Rds")
 ```
 
 
-These can be visualised as follows:
+These can be visualised as follows, with a sample of 5 routes overlaid on a sample of 1000 OSM line elements:
 
 ```{r}
-plot(osm_lines[sample(x = nrow(osm_lines), size = 100), 1])
+plot(osm_lines[sample(x = nrow(osm_lines), size = 1000), 1])
+plot(lfq$l[1:5, 6], add = T, col = "black")
+plot(lfq$rf[1:5, 6], add = T, col = "red", lwd = 3)
+plot(lfq$rq[1:5, 6], add = T, col = "green")
+```
+
+We can join the relevant variables from the `rf` and `rq` objects onto `l` for modelling:
+
+```{r}
+names(lfq$rf)
+rf = transmute(lfq$rf, dist_fast = length / 1000, time_fast = time, busyness_fast = busyness, av_incline_fast = av_incline) 
+st_geometry(rf) <- NULL
+
+rq = transmute(lfq$rq, dist_quiet = length / 1000, time_quiet = time, busyness_quiet = busyness, av_incline_quiet = av_incline) 
+st_geometry(rq) <- NULL
+lfq$l = bind_cols(lfq$l, rf, rq)
+
 ```
 
 
+## Modelling cycling uptake
+
+In the propensity to cycle tool, we modelled cycling uptake in terms of `pcycle`, the percentage cycling.
+
+In CyIPT, we will estimate the number cycling directly and use inference about the impact of the route network to estimate uptake, using a wide range of variables.
+
+```{r}
+names(lfq$l)
+```
+
+
+The simplest model of cycling update under this framework would be to estimate the number of cyclists as a linear function of total number travelling:
+
+```{r}
+m1 = lm(formula = bicycle ~ all, data = lfq$l)
+summary(m1)
+```
+
+
+Already, over half of the number of cyclists using roads can be modelled based on the total number of commuters alone.
+
+The impact of adding distance is shown below:
+
+```{r}
+m2 = lm(formula = bicycle ~ all + dist, data = lfq$l)
+summary(m2)
+```
+
+Note that the fit has improved, but only very slightly. This is partly because only a linear function of distance is used. We must use a non-linear function of distance as a predictor.
+
+The mission is to improve this fit to account for the impact of infrastructure so we can model cycling uptake when the road network changes.
