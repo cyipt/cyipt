@@ -1,3 +1,8 @@
+-- DfT traffic count processing script
+-- Based on: http://hfcyclists.org.uk/wp/wp-content/uploads/2014/02/dft-roads-all-copy.txt
+-- Written for a PostgreSQL installation
+
+
 -- Import the roads network as a shape first
 -- Also if you haven't imported the westminster, borough and ward boundaries you'll need to do so
 
