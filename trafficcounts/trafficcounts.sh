@@ -21,6 +21,15 @@ downloadUrlMinorRoads=http://data.dft.gov.uk/gb-traffic-matrix/AADF-data-minor-r
 # Set to terminate if error
 set -e
 
+# Ensure credentials file is present, and load credentials
+
+if [ ! -f .credentials.sh ] ; then
+	echo "ERROR: The credentials file .credentials.sh is not present; please copy the template to create it."
+	exit
+fi
+source .credentials.sh
+
+
 #
 # ROAD NETWORK STRUCTURE DATA
 #
@@ -89,4 +98,7 @@ for file in $files ; do
 	fi
 	
 done
+
+# Connect to the database
+mysql -h $hostname -u $username -p$password $database
 
