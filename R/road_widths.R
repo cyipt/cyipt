@@ -181,7 +181,7 @@ for(a in 1:nrow(osm)){
     osm_join <- st_join(line_main,road, join = st_intersects, left = TRUE)
 
     #Update Table
-    print(paste0("Road width is ",osm_join$width[1]," of ",nrow(osm_join)," possible values"))
+    #print(paste0("Road width is ",osm_join$width[1]," of ",nrow(osm_join)," possible values"))
     osm$width[a] <- osm_join$width[1]
 
     #Select roaddside touching the road section
@@ -228,7 +228,7 @@ for(a in 1:nrow(osm)){
     road_buff <- st_buffer(road_main, dist = (1.1 * roadside_touch$width[1]))
     roadside_touch <- st_intersection(road_buff, roadside_touch)
     comb <- st_union(roadside_touch, road_main)
-    comb <- comb[,c("id","geoms")]
+    comb <- comb[,c("id","geometry")]
     comb <- st_buffer(comb,dist = 0.0001) #More robust way to get a single polygon
     #comb <- st_cast(comb, "POLYGON", group_or_split=TRUE)
 
@@ -247,7 +247,7 @@ for(a in 1:nrow(osm)){
     }
 
     #Update table
-    print(paste0("Road and roadside combined width is ",comb$width[1]," of ",nrow(comb)," possible values"))
+    #print(paste0("Road and roadside combined width is ",comb$width[1]," of ",nrow(comb)," possible values"))
     osm$widthpath[a] <- comb$width[1]
     rm(roadside_touch, roadside, road_main, road_buff, road, comb, line, e, touch)
     }
@@ -274,7 +274,7 @@ for(a in 1:nrow(osm)){
 
       #Update table
       osm$widthpath[a] <- roadside_only$width[1]
-      print(paste0("Roadside only width is ",roadside_only$width[1]," of ",nrow(roadside_only)," possible values"))
+      #print(paste0("Roadside only width is ",roadside_only$width[1]," of ",nrow(roadside_only)," possible values"))
       rm(touch, roadside, road_main, road, line)
     }
 
@@ -287,4 +287,4 @@ for(a in 1:nrow(osm)){
 
 }
 
-saveRDS(osm, "../example-data/bristol/osm_data/roads_osm_widths.Rds")
+saveRDS(osm, "../example-data/bristol/osm_data/roads_osm_widths2.Rds")
