@@ -2,3 +2,20 @@ Variable name,Definition
 pcu,Passenger Car Units per hour
 aadf,Estimated annual average daily flows (disagregated by vehicle types)
 aadt,Estimated annual average traffic (vehicles)
+all,Total no. commuters
+bicycle,No. cyclists in Census 2011
+govtarget_slc,No. cyclists in Government Target
+dutch_slc,No. cyclists in Go Dutch
+msoa1,"Start or end zone 1, zone code"
+msoa2,"Start or end zone 2, zone code"
+car_driver,No. car drivers in Census 2011
+dist,Straight line distance (km)
+dist_fast,Fast route distance (km)
+dist_quiet,Quiet route distance (km)
+cirquity,Cirquity (fast distance / straight line distance)
+distq_f,Quiet distance / fast distance
+av_incline_fast,Average incline of fastest route
+av_incline_quiet,Average incline of quietest route
+time_fast,Time of fast route (s)
+time_quiet,Time of quiet route (s)
+
