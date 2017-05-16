@@ -1,0 +1,27 @@
+---
+output: github_document
+---
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+Project management and overview documents for the Cycling Infrastructure Prioritisation Toolkit (CyIPT)
+Funded by the Department for Transport.
+
+Comments/suggestions welcome in the [issue tracker](https://github.com/cyipt/cyipt/issues).
+
+## Definitions and variable names
+
+Variable names are in lowercase and use_underscores, and should be kept updated in [input-data/variables.csv](https://github.com/cyipt/cyipt/blob/master/input-data/variables.csv):
+
+```{r, message=FALSE}
+variables = readr::read_csv("input-data/variables.csv")
+knitr::kable(variables)
+```
+
