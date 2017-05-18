@@ -83,8 +83,8 @@ echo "Data successfully downloaded and converted to CSV file now at $csvFile"
 #
 
 # Download and unpack each dataset
-files=( $downloadUrlMajorRoadsByDirection $downloadUrlMajorRoads $downloadUrlMinorRoadsByDirection )
-for file in $files ; do
+files=("$downloadUrlMajorRoadsByDirection" "$downloadUrlMajorRoads" "$downloadUrlMinorRoads")
+for file in ${files[@]} ; do
 	
 	# Download the zip file if not already downloaded
 	zipFile=`basename $file`
@@ -95,7 +95,7 @@ for file in $files ; do
 	# Unzip the zip file
 	dataFile="${zipFile%.zip}.csv"
 	if [ ! -f $dataFile ] ; then
-		unzip -q $dataFile
+		unzip -q $zipFile
 	fi
 	
 done
