@@ -57,22 +57,23 @@ rm ./"${shapefileFolder}"/*
 rmdir "${shapefileFolder}"
 
 # Convert the linestring to four separate fields
-sed -i '' 's/"LINESTRING (//g' $csvFile
-sed -i '' 's/)"//g' $csvFile
-sed -i '' 's/ /,/g' $csvFile
-sed -i '' 's/WKT/startLongitude,startLatitude,finishLongitude,finishLatitude/g' $csvFile
+sed -i.bak 's/"LINESTRING (//g' $csvFile
+sed -i.bak 's/)"//g' $csvFile
+sed -i.bak 's/ /,/g' $csvFile
+sed -i.bak 's/WKT/startLongitude,startLatitude,finishLongitude,finishLatitude/g' $csvFile
 
 # Convert count point to integer
-sed -i '' 's/.00000000000,/,/g' $csvFile
+sed -i.bak 's/.00000000000,/,/g' $csvFile
 
 # Rename fields
-sed -i '' 's/CP_Number/id/g' $csvFile
-sed -i '' 's/RoadNumber/road/g' $csvFile
+sed -i.bak 's/CP_Number/id/g' $csvFile
+sed -i.bak 's/RoadNumber/road/g' $csvFile
 
 # Reorder fields
-sed -i '' -E 's/^(.+),(.+),(.+),(.+),(.+),(.+)/\5,\6,\1,\2,\3,\4/g' $csvFile
+sed -i.bak -E 's/^(.+),(.+),(.+),(.+),(.+),(.+)/\5,\6,\1,\2,\3,\4/g' $csvFile
 
 # Confirm completion
+rm $csvFile.bak
 echo "Data successfully downloaded and converted to CSV file now at $csvFile"
 
 
