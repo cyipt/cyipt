@@ -107,6 +107,6 @@ for file in ${files[@]} ; do
 	
 done
 
-# Connect to the database
-mysql -h $hostname -u $username -p$password $database
+# Connect to the database and run the SQL script
+mysql --local-infile -h $hostname -u $username -p$password $database < $scriptDir/trafficcounts.sql
 
