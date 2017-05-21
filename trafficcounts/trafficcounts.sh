@@ -109,6 +109,11 @@ for file in ${files[@]} ; do
 	dos2unix $dataFile
 done
 
+# Clean up by-direction data for the following rows; see: http://stackoverflow.com/questions/2675323/mysql-load-null-values-from-csv-data
+# 2006,80441 2006,80442 2006,80443 2006,80444 2006,80445 2006,80446 2006,80447 2006,80448 2006,80462 2006,80495 2006,80509 2006,80566
+sed -i.bak 's/,,,,,,,,,,,,/,\\N,\\N,\\N,\\N,\\N,\\N,\\N,\\N,\\N,\\N,\\N,\\N/' AADF-data-by-direction-major-roads.csv
+rm AADF-data-by-direction-major-roads.csv.bak
+
 # Connect to the database and run the SQL script
 mysql --local-infile -h $hostname -u $username -p$password $database < $scriptDir/trafficcounts.sql
 
