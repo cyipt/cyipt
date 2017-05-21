@@ -9,6 +9,9 @@
 -- Now create and import the three tables
 
 
+SET SESSION sql_mode = 'STRICT_ALL_TABLES';
+
+
 DROP TABLE IF EXISTS major_roads_link_network;
 CREATE TABLE major_roads_link_network (
 	id Integer NOT NULL,
