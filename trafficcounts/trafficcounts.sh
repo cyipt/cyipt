@@ -105,6 +105,8 @@ for file in ${files[@]} ; do
 		unzip -q $zipFile
 	fi
 	
+	# Ensure Unix line endings, to ensure reliable strict SQL import (avoids last INT column being interpreted as e.g. "12\r")
+	dos2unix $dataFile
 done
 
 # Connect to the database and run the SQL script
