@@ -1,6 +1,6 @@
 -- DfT traffic count processing script
 -- Based on: http://hfcyclists.org.uk/wp/wp-content/uploads/2014/02/dft-roads-all-copy.txt
--- Written for a PostgreSQL installation
+-- Written for a PostgreSQL installation; adapted for MySQL
 
 
 -- Import the roads network as a shape first
@@ -19,7 +19,13 @@ CREATE TABLE `major-roads-link-network` (
 	finishLatitude text NOT NULL
 );
 
-COPY major-roads-link-network FROM '/tmp/major-roads-link-network.csv' WITH CSV HEADER;
+-- COPY major-roads-link-network FROM '/tmp/major-roads-link-network.csv' WITH CSV HEADER;
+LOAD DATA INFILE '/tmp/major-roads-link-network.csv'
+	INTO TABLE `major-roads-link-network`
+	FIELDS TERMINATED BY ','
+	OPTIONALLY ENCLOSED BY '"'
+	IGNORE 1 LINES
+;
 
 
 
@@ -55,8 +61,14 @@ FdHGV	Double Precision,
 FdAll_MV Double Precision
 );
 
+-- COPY major_roads_direction FROM 'C:\csvimport\AADF-data-by-direction-major-roads.csv' WITH CSV HEADER;
+LOAD DATA INFILE '/tmp/AADF-data-by-direction-major-roads.csv'
+	INTO TABLE major_roads_direction
+	FIELDS TERMINATED BY ','
+	OPTIONALLY ENCLOSED BY '"'
+	IGNORE 1 LINES
+;
 
-COPY major_roads_direction FROM 'C:\csvimport\AADF-data-by-direction-major-roads.csv' WITH CSV HEADER;
 
 DROP TABLE IF EXISTS major_roads;
 CREATE TABLE major_roads (
@@ -87,7 +99,14 @@ FdHGV	Double Precision,
 FdAll_MV Double Precision
 );
 
-COPY major_roads FROM 'C:\csvimport\AADF-data-major-roads.csv' WITH CSV HEADER;
+-- COPY major_roads FROM 'C:\csvimport\AADF-data-major-roads.csv' WITH CSV HEADER;
+LOAD DATA INFILE '/tmp/AADF-data-major-roads.csv'
+	INTO TABLE major_roads
+	FIELDS TERMINATED BY ','
+	OPTIONALLY ENCLOSED BY '"'
+	IGNORE 1 LINES
+;
+
 
 DROP TABLE IF EXISTS minor_roads;
 CREATE TABLE minor_roads(
@@ -114,11 +133,18 @@ FdHGV	Double Precision,
 FdAll_MV Double Precision
 );
 
-COPY minor_roads FROM 'C:\csvimport\AADF-data-minor-roads.csv' WITH CSV HEADER;
+-- COPY minor_roads FROM 'C:\csvimport\AADF-data-minor-roads.csv' WITH CSV HEADER;
+LOAD DATA INFILE '/tmp/AADF-data-minor-roads.csv'
+	INTO TABLE minor_roads
+	FIELDS TERMINATED BY ','
+	OPTIONALLY ENCLOSED BY '"'
+	IGNORE 1 LINES
+;
 
-DROP TABLE IF EXISTS cptolocate;
+
 
 -- make a simple collated table of all the count points we need to find
+DROP TABLE IF EXISTS cptolocate;
 CREATE TABLE cptolocate AS
 SELECT DISTINCT CP, S_Ref_E, S_Ref_N from (
 SELECT CP, S_Ref_E, S_Ref_N FROM major_roads_direction
