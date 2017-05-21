@@ -1,26 +1,9 @@
-#Prepare  OSM Data
-#The code take in OSM data and remove unneeded columns, then splits lines at junctions
-#It returns two outputs:
-# 1) the split lines with the attributes of the original data
-# 2) The points where the lines are split, i.e. junction locations
-
-#This process is quiet time consuming (around 30 min for a small city), but has some optiisation already applied
-# 1) st_intersection is wrapped in a loop which ensures that it is only applied to geomeries that touch
-# 2) st_difference no optimisation as yet
-
+#Demo Infrastrucutre data
 library(sf)
 library(dplyr)
-library(utils)
 
-#Reading in data
+#Reading and clena up some data
 osm <- readRDS("../example-data/bristol/osm-lines-quietness-full.Rds")
-osm <- st_transform(osm, 27700)
-
-#Test Subsetting
-#bounds <- st_read("../example-data/bristol/mini_bristol.shp")
-#st_crs(bounds) <- 27700
-#osm <- osm[bounds,]
-#osm <- osm[1:1000,]
 
 #A flexible way to chose the variaibles that are kept
 #Don't delete
@@ -68,97 +51,91 @@ osm <- osm[,c("osm_id","name",
               "cs_quietness","cs_speed","cs_pause","cs_cyclable","cs_walkable",
               "geometry")]
 
+#Read in PCT Numbers and width numbers
 
-#Create working dataset
-lines <- osm[,c("osm_id","geometry")]
+pct <- readRDS("../example-data/bristol/osm_data/roads_osm_pct_2011.Rds")
+pct <- pct[,c("osm_id","name","id","census.all","geometry")]
+#pct <- st_transform(pct, 27700)
+st_crs(pct) <- 27700
+width <- readRDS("../example-data/bristol/osm_data/roads_osm_widths2.Rds")
+
+if(!identical(pct$geometry,width$geometry)){
+  print("Data id not idetical, can't proceed")
+  stop()
+}
+width <- as.data.frame(width)
+width <- width[,c("id","width","widthpath")]
+joined <- left_join(pct,width, by = c("id" = "id"))
+rm(pct,width)
 osm <- as.data.frame(osm)
 osm$geometry <- NULL
-
-#Loop TO find Points
-touch <- st_intersects(lines)
-points <- lines[0,]
-
-pb <- txtProgressBar(min = 0, max = length(touch), style = 3)
-for(b in 1:length(touch)){
-  setTxtProgressBar(pb, b)
-  lines_sub <- lines[c(touch[[b]]),]
-  inter_sub <- st_intersection(lines_sub, lines_sub)
-  inter_sub <- inter_sub[,c("osm_id","geometry")]
-  inter_sub <- inter_sub[st_geometry_type(inter_sub) == "POINT" | st_geometry_type(inter_sub) == "MULTIPOINT",]
-  points <- rbind(points,inter_sub)
-}
-close(pb)
+joined <- left_join(joined, osm, by = c("osm_id" = "osm_id"))
+rm(osm)
 
 
-#Remove Duplicates
-dup <- duplicated(points$geometry)
-points <- points[!dup,]
-rm(pb,lines_sub,inter_sub,dup,touch,b)
+#Step 1: Remove Reads with low propencity to cycle
+joined <- joined[joined$census.all > 10,]
 
-#Loop To Split Lines
-buff <- st_buffer(points,0.01)
-inter <- st_intersects(lines,buff)
-cut <- lines[0,]
-pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-for(a in 1:nrow(lines)){
-  setTxtProgressBar(pb, a)
-  line_sub <- lines[a,]
-  buff_sub <- buff[inter[[a]],]
-  if(nrow(buff_sub) == 0){
-    line_cut <- line_sub
-  }else{
-    buff_sub <- st_union(buff_sub)
-    line_cut <- st_difference(line_sub, buff_sub)
+#Step 2: Guess Road Speed if one not provided
+summary(joined$maxspeed)
+for(a in 1:nrow(joined)){
+  if(is.na(joined$maxspeed[a])){
+    type <- joined$highway[a]
+    if(type == "motorway" | type == "motorway_link"){
+      joined$maxspeed[a] <- "70 mph"
+    }else if(type == "trunk" | type == "trunk_link"){
+      joined$maxspeed[a] <- "60 mph"
+    }else if(type == "primary" | type == "residential" | type == "road" | type == "primary_link" | type == "secondary" | type == "secondary_link" | type == "tertiary" | type == "tertiary_link"){
+      joined$maxspeed[a] <- "30 mph"
+    }else if(type == "service" ){
+      joined$maxspeed[a] <- "20 mph"
+    }else if(type == "bridleway" | type ==  "construction" | type ==  "cycleway" | type ==  "demolished" | type ==  "escalator" | type ==  "footway" | type ==  "living_street" | type ==  "steps" | type ==  "track" | type ==  "unclassified"){
+      joined$maxspeed[a] <- "10 mph"
+    }else{
+      joined$maxspeed[a] <- "60 mph"
+    }
   }
-  cut <- rbind(cut,line_cut)
 }
-close(pb)
-rm(buff,line_cut,line_sub,a,buff_sub,inter,pb)
+summary(joined$maxspeed)
 
-#Clean Up Results
-cut <- cut[!duplicated(cut$geometry),]
-
-#Split Mulitlines into Single Lines
-cut_geom <- cut$geometry
-mp <- cut_geom[st_geometry_type(cut_geom) == "MULTILINESTRING"]
-p <- cut_geom[st_geometry_type(cut_geom) == "LINESTRING"]
-rm(cut_geom)
-
-#Convert Multipolygons into single polygons
-mp <- st_cast(st_sfc(mp), "LINESTRING", group_or_split = TRUE)
-p <- st_cast(st_sfc(p), "LINESTRING", group_or_split = TRUE)
-
-#Put polygons back togther
-cut_geom <- c(p,mp)
-cut_geom <- st_cast(st_sfc(cut_geom), "LINESTRING", group_or_split = TRUE) #Incase mp or p is empty have to run again
-rm(p, mp)
-
-#Remove Duplicates
-cut_geom <- cut_geom[!duplicated(cut_geom)]
-cut_sl <- data.frame(id = c(1:length(cut_geom)))
-cut_sl$geometry <- cut_geom
-cut_sl <- st_sf(cut_sl)
-remove(cut_geom)
-
-#Get the Original OSM IDs
-inter <- st_intersects(cut_sl, cut)
-cut_sl$osm_id <- NA
-for(d in 1:nrow(cut_sl)){
-  cut_sl$osm_id[d] <- cut$osm_id[inter[[d]]]
+joined$speed <- NA
+for(c in 1:nrow(joined)){
+  if(joined$maxspeed[c] == "70 mph" | joined$maxspeed[c] == "70" ){
+    joined$speed[c] <- 70
+  }else if(joined$maxspeed[c] == "60 mph"| joined$maxspeed[c] == "60" ){
+    joined$speed[c] <- 60
+  }else if(joined$maxspeed[c] == "50 mph"| joined$maxspeed[c] == "50" ){
+    joined$speed[c] <- 50
+  }else if(joined$maxspeed[c] == "40 mph"| joined$maxspeed[c] == "40" ){
+    joined$speed[c] <- 40
+  }else if(joined$maxspeed[c] == "30 mph"| joined$maxspeed[c] == "30" ){
+    joined$speed[c] <- 30
+  }else if(joined$maxspeed[c] == "20 mph"| joined$maxspeed[c] == "20" ){
+    joined$speed[c] <- 20
+  }else if(joined$maxspeed[c] == "10 mph"| joined$maxspeed[c] == "10" ){
+    joined$speed[c] <- 10
+  }else if(joined$maxspeed[c] == "15 mph"| joined$maxspeed[c] == "15" ){
+    joined$speed[c] <- 15
+  }else if(joined$maxspeed[c] == "5 mph"| joined$maxspeed[c] == "5" ){
+    joined$speed[c] <- 5
+  }else{
+    joined$speed[c] <- 30
+  }
 }
-rm(inter,d)
 
-#Join back in OSM variaibles
-cut_sl <- left_join(cut_sl, osm, by = c("osm_id" = "osm_id"))
+#Step 3; Compare Against Rules Table
+rules <- read.csv("infra_score.csv")
 
-#Save Out Data
-saveRDS(cut_sl, "../example-data/bristol/osm_data/osm-split.Rds")
-saveRDS(points, "../example-data/bristol/osm_data/osm-split-points.Rds")
+joined$infra_score <- NA
+for(b in 1:nrow(joined)){
+  joined$infra_score[b] <- rules$score[rules$speed_min < joined$speed[b] &
+                                       rules$speed_max >= joined$speed[b] &
+                                       rules$pct_min < joined$census.all[b] &
+                                       rules$pct_max >= joined$census.all[b]]
+}
 
-print(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(cut_sl)," lines and ",nrow(points)," points"))
-rm(osm,cut,lines)
-gc()
-
-#Test Save as shape file, can't save all columns due to variaible names problems
-#test <- cut_sl[,c("id","osm_id")]
-#st_write(test, "../example-data/bristol/osm_data/osm-split.shp")
+test <- joined[,"infra_score"]
+names(test)
+names(test) <- c("score","geometry")
+st_write(test,dsn="../example-data/bristol/for_checking/scores2.shp", driver = "ESRI Shapefile")
+?st_write

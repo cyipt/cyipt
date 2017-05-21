@@ -288,3 +288,6 @@ for(a in 1:nrow(osm)){
 }
 
 saveRDS(osm, "../example-data/bristol/osm_data/roads_osm_widths2.Rds")
+sub <- as.data.frame(osm)
+sub <- sub[,c("id","osm_id","name","width","widthpath")]
+write.csv(sub,"../example-data/bristol/osm_data/roads_osm_widths2.csv")
