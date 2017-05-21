@@ -17,22 +17,30 @@ downloadUrlMajorRoadsByDirection=http://data.dft.gov.uk/gb-traffic-matrix/AADF-d
 downloadUrlMajorRoads=http://data.dft.gov.uk/gb-traffic-matrix/AADF-data-major-roads.zip
 downloadUrlMinorRoads=http://data.dft.gov.uk/gb-traffic-matrix/AADF-data-minor-roads.zip
 
+# Working directory (which the database server must be able to read from)
+tmpDir=/tmp/
+
 
 # Set to terminate if error
 set -e
 
-# Ensure credentials file is present, and load credentials
+# Get script directory: see: http://stackoverflow.com/a/246128/180733
+scriptDir="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-if [ ! -f .credentials.sh ] ; then
+# Ensure credentials file is present, and load credentials
+if [ ! -f $scriptDir/.credentials.sh ] ; then
 	echo "ERROR: The credentials file .credentials.sh is not present; please copy the template to create it."
 	exit
 fi
-source .credentials.sh
+source $scriptDir/.credentials.sh
 
 
 #
 # ROAD NETWORK STRUCTURE DATA
 #
+
+# Switch to working directory
+cd $tmpDir
 
 # Download the data if not already downloaded
 zipFile=major-roads-link-network.zip
