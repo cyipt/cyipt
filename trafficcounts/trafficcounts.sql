@@ -161,12 +161,12 @@ LOAD DATA INFILE '/tmp/AADF-data-minor-roads.csv'
 -- Make a simple collated table of all the count points we need to find
 DROP TABLE IF EXISTS cptolocate;
 CREATE TABLE cptolocate AS
-	SELECT DISTINCT CP, S_Ref_E, S_Ref_N FROM (
-		SELECT CP, S_Ref_E, S_Ref_N FROM major_roads_direction
+	SELECT DISTINCT CP, S_Ref_E, S_Ref_N, S_Ref_Longitude AS longitude, S_Ref_Latitude AS latitude FROM (
+		SELECT CP, S_Ref_E, S_Ref_N, S_Ref_Longitude, S_Ref_Latitude FROM major_roads_direction
 		UNION
-		SELECT CP, S_Ref_E, S_Ref_N FROM minor_roads
+		SELECT CP, S_Ref_E, S_Ref_N, S_Ref_Longitude, S_Ref_Latitude FROM minor_roads
 		UNION
-		SELECT CP, S_Ref_E, S_Ref_N FROM major_roads
+		SELECT CP, S_Ref_E, S_Ref_N, S_Ref_Longitude, S_Ref_Latitude FROM major_roads
 	) AS grouped
 ;
 
@@ -175,14 +175,6 @@ SELECT AddGeometryColumn ('public','cptolocate', 'geom_gb', 27700, 'POINT', 2);
 
 -- Create geometry points for the tables in the 27700 SRID
 UPDATE cptolocate SET geom_gb=ST_GeomFromText('POINT('||S_Ref_E||' '||S_Ref_N||')',27700);
-
--- Add columns to the table for lat, long
-ALTER TABLE cptolocate
-	ADD COLUMN latitude text,
-	ADD COLUMN longitude text;
-
--- Extract the latitude and longitude from that point
-UPDATE cptolocate SET longitude=st_x(st_transform(geom_gb,4326)), latitude=st_y(st_transform(geom_gb,4326));
 
 -- Add the spatial index
 CREATE INDEX gist_rgb ON cptolocate USING gist (geom_gb);
