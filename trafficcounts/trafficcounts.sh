@@ -85,7 +85,6 @@ rm $csvFile.bak
 echo "Data successfully downloaded and converted to CSV file now at $csvFile"
 
 
-
 #
 # ROAD DATA
 #

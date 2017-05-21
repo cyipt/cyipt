@@ -9,7 +9,7 @@
 -- Now create and import the three tables
 
 DROP TABLE IF EXISTS major_roads_direction;
-CREATE TABLE major_roads_direction(
+CREATE TABLE major_roads_direction (
 Year	Integer,
 CP	Integer,
 ONS_GOR_Name	text,
@@ -35,14 +35,14 @@ FdHGVA3	Double Precision,
 FdHGVA5	Double Precision,
 FdHGVA6	Double Precision,
 FdHGV	Double Precision,
-FdAll_MV Double Precision	
+FdAll_MV Double Precision
 );
 
 
 COPY major_roads_direction FROM 'C:\csvimport\AADF-data-by-direction-major-roads.csv' WITH CSV HEADER;
 
 DROP TABLE IF EXISTS major_roads;
-CREATE TABLE major_roads(
+CREATE TABLE major_roads (
 Year	Integer,
 CP	Integer,
 ONS_GOR_Name	text,
@@ -67,7 +67,7 @@ FdHGVA3	Double Precision,
 FdHGVA5	Double Precision,
 FdHGVA6	Double Precision,
 FdHGV	Double Precision,
-FdAll_MV Double Precision	
+FdAll_MV Double Precision
 );
 
 COPY major_roads FROM 'C:\csvimport\AADF-data-major-roads.csv' WITH CSV HEADER;
@@ -116,7 +116,7 @@ SELECT AddGeometryColumn ('public','cptolocate', 'geom_gb', 27700, 'POINT', 2);
 UPDATE cptolocate SET geom_gb=ST_GeomFromText('POINT('||S_Ref_E||' '||S_Ref_N||')',27700);
 
 -- Lets add columns to the table for: lat, long
-ALTER TABLE cptolocate 
+ALTER TABLE cptolocate
 	ADD COLUMN latitude text,
 	ADD COLUMN longitude text;
 
@@ -145,8 +145,8 @@ JOIN district_borough_unitary_ward_region as wa on ST_Within(lo.geom_gb, wa.geom
 CREATE TABLE RoadCPLocationsFound AS
 SELECT lo.cp, lo.latitude, lo.longitude, wm.name as westminstername,wm.code as westminstercode, bo.name as boroughname, bo.code as boroughcode, wa.name as wardname, wa.code as wardcode, geom_gb
 FROM cptolocate lo
-LEFT OUTER JOIN RoadCPLocationsWestminster as wm ON lo.cp = wm.cp 
-LEFT OUTER JOIN RoadCPLocationsBorough as bo ON lo.cp = bo.cp 
+LEFT OUTER JOIN RoadCPLocationsWestminster as wm ON lo.cp = wm.cp
+LEFT OUTER JOIN RoadCPLocationsBorough as bo ON lo.cp = bo.cp
 LEFT OUTER JOIN RoadCPLocationsWard as wa ON lo.cp = wa.cp;
 
 -- create the PCU counts and rename the vehicle counts to something meaningful. This uses a subselect as the main query which is a union of the tables in the non-directed major roads data and the minor roads data
@@ -160,7 +160,7 @@ as all_motors,
 FdPC * 0.2 as cycle_pcu, Fd2WMV * 0.4 as p2w_pcu, FdCAR as car_pcu, FdBUS * 2 as bus_pcu, FdLGV as lgv_pcu, FdHGVR2 * 1.5 as mgv_pcu, (FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6) * 2.3 as hgv_pcu,
 Fd2WMV * 0.4 + FdCAR + FdBUS * 2 + FdLGV + FdHGVR2 * 1.5 + (FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6) * 2.3
 as all_motor_pcu
-FROM 
+FROM
 (SELECT year, cp, Road, RCat, FdPC, Fd2WMV, FdCAR, FdBUS, FdLGV, FdHGVR2, FdHGVR3, FdHGVR4, FdHGVA3, FdHGVA5, FdHGVA6 FROM major_roads
 UNION SELECT year, cp, Road, RCat, FdPC, Fd2WMV, FdCAR, FdBUS, FdLGV, FdHGVR2, FdHGVR3, FdHGVR4, FdHGVA3, FdHGVA5, FdHGVA6 FROM minor_roads) AS major_minor_roads;
 
@@ -189,7 +189,7 @@ DROP TABLE IF EXISTS pcu_roads_political;
 
 CREATE TABLE pcu_roads_political AS
 SELECT lo.westminstername, lo.boroughname, lo.wardname, pcu.cp, pcu.road, road_type, pcu.year, cycles, p2w, cars, buses, lgvs, mgvs, hgvs, all_motors, cycle_pcu, p2w_pcu, car_pcu, bus_pcu, lgv_pcu, mgv_pcu, hgv_pcu, all_motor_pcu, lo.latitude, lo.longitude, ST_AsKML(ST_Transform(road.geom,4326)) as road_geom
-FROM pcu_roads pcu 
+FROM pcu_roads pcu
 INNER JOIN RoadCPLocationsFound lo ON pcu.cp = lo.cp
 INNER JOIN x_road_cat ON pcu.rcat = x_road_cat.rcat
 LEFT JOIN major_road_link_network road ON pcu.cp = road.cp;
@@ -203,7 +203,7 @@ Create TABLE aadf_cycles_years AS
   SELECT * FROM
   crosstab(
  'SELECT cp, year, cycles
- FROM pcu_roads 
+ FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int, cycles_00 int, cycles_01 int, cycles_02 int, cycles_03 int, cycles_04 int, cycles_05 int, cycles_06 int, cycles_07 int, cycles_08 int, cycles_09 int, cycles_10 int, cycles_11 int, cycles_12 int);
@@ -215,7 +215,7 @@ Create TABLE aadf_p2w_years AS
   SELECT * FROM
   crosstab(
  'SELECT cp, year,  p2w
- FROM pcu_roads 
+ FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int,  p2w_00 int,  p2w_01 int,  p2w_02 int,  p2w_03 int,  p2w_04 int,  p2w_05 int,  p2w_06 int,  p2w_07 int,  p2w_08 int,  p2w_09 int,  p2w_10 int,  p2w_11 int,  p2w_12 int);
@@ -227,7 +227,7 @@ Create TABLE aadf_cars_years AS
   SELECT * FROM
   crosstab(
  'SELECT cp, year,  cars
- FROM pcu_roads 
+ FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int,  cars_00 int,  cars_01 int,  cars_02 int,  cars_03 int,  cars_04 int,  cars_05 int,  cars_06 int,  cars_07 int,  cars_08 int,  cars_09 int,  cars_10 int,  cars_11 int,  cars_12 int);
@@ -239,7 +239,7 @@ Create TABLE aadf_buses_years AS
   SELECT * FROM
   crosstab(
  'SELECT cp, year, buses
- FROM pcu_roads 
+ FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int, buses_00 int, buses_01 int, buses_02 int, buses_03 int, buses_04 int, buses_05 int, buses_06 int, buses_07 int, buses_08 int, buses_09 int, buses_10 int, buses_11 int, buses_12 int);
@@ -250,7 +250,7 @@ Create TABLE aadf_lgvs_years AS
   SELECT * FROM
   crosstab(
  'SELECT cp, year, lgvs
- FROM pcu_roads 
+ FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int, lgvs_00 int, lgvs_01 int, lgvs_02 int, lgvs_03 int, lgvs_04 int, lgvs_05 int, lgvs_06 int, lgvs_07 int, lgvs_08 int, lgvs_09 int, lgvs_10 int, lgvs_11 int, lgvs_12 int);
@@ -261,31 +261,31 @@ Create TABLE aadf_mgvs_years AS
   SELECT * FROM
   crosstab(
  'SELECT cp, year, mgvs
- FROM pcu_roads 
+ FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int, mgvs_00 int, mgvs_01 int, mgvs_02 int, mgvs_03 int, mgvs_04 int, mgvs_05 int, mgvs_06 int, mgvs_07 int, mgvs_08 int, mgvs_09 int, mgvs_10 int, mgvs_11 int, mgvs_12 int);
 
- 
+
 DROP TABLE IF EXISTS aadf_hgvs_years;
 
 Create TABLE aadf_hgvs_years AS
   SELECT * FROM
   crosstab(
  'SELECT cp, year, hgvs
- FROM pcu_roads 
+ FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int, hgvs_00 int, hgvs_01 int, hgvs_02 int, hgvs_03 int, hgvs_04 int, hgvs_05 int, hgvs_06 int, hgvs_07 int, hgvs_08 int, hgvs_09 int, hgvs_10 int, hgvs_11 int, hgvs_12 int);
 
- 
+
 DROP TABLE IF EXISTS aadf_motors_years;
 
 Create TABLE aadf_motors_years AS
   SELECT * FROM
   crosstab(
  'SELECT cp, year, all_motors
- FROM pcu_roads 
+ FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int, motors_00 int, motors_01 int, motors_02 int, motors_03 int, motors_04 int, motors_05 int, motors_06 int, motors_07 int, motors_08 int, motors_09 int, motors_10 int, motors_11 int, motors_12 int);
@@ -297,7 +297,7 @@ Create TABLE aadf_motor_pcu_years AS
   SELECT * FROM
   crosstab(
  'SELECT cp, year, all_motor_pcu
- FROM pcu_roads 
+ FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int, motor_pcu_00 double precision, motor_pcu_01 double precision, motor_pcu_02 double precision, motor_pcu_03 double precision, motor_pcu_04 double precision, motor_pcu_05 double precision, motor_pcu_06 double precision, motor_pcu_07 double precision, motor_pcu_08 double precision, motor_pcu_09 double precision, motor_pcu_10 double precision, motor_pcu_11 double precision, motor_pcu_12 double precision);
