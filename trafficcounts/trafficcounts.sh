@@ -138,7 +138,7 @@ unzip -j -o $boundaryFile "Data/GB/westminster_const_region.*" "Data/GB/district
 shapefiles=('westminster_const_region' 'district_borough_unitary_region' 'district_borough_unitary_ward_region');
 for shapefile in ${shapefiles[@]} ; do
 	ogr2ogr -f MySQL MySQL:$database,host=$hostname,user=$username,password=$password ${shapefile}.shp -nln $shapefile -update -overwrite -lco engine=MYISAM
-	mysql -h $hostname -u $username -p$password $database -e "ALTER TABLE $shapefile CHANGE `SHAPE` `geom` GEOMETRY NOT NULL;"
+	mysql -h $hostname -u $username -p$password $database -e "ALTER TABLE $shapefile CHANGE SHAPE geom GEOMETRY NOT NULL;"
 	rm ${shapefile}.*
 done
 mysql -h $hostname -u $username -p$password $database -e "DROP TABLE IF EXISTS geometry_columns, spatial_ref_sys;"
