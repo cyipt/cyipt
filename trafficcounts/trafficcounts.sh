@@ -17,6 +17,11 @@ downloadUrlMajorRoadsByDirection=http://data.dft.gov.uk/gb-traffic-matrix/AADF-d
 downloadUrlMajorRoads=http://data.dft.gov.uk/gb-traffic-matrix/AADF-data-major-roads.zip
 downloadUrlMinorRoads=http://data.dft.gov.uk/gb-traffic-matrix/AADF-data-minor-roads.zip
 
+# Download URL for Ordance Survey Boundary-Line™ open data
+# See: https://www.ordnancesurvey.co.uk/opendatadownload/products.html#BDLINE
+# Using scriptably-downloadable MySociety cache at: http://parlvid.mysociety.org/os/
+downloadUrlBoundaryLine=http://parlvid.mysociety.org/os/bdline_gb-2017-05.zip
+
 # Working directory (which the database server must be able to read from)
 tmpDir=/tmp/
 
@@ -114,6 +119,31 @@ done
 sed -i.bak 's/,,,,,,,,,,,,/,\\N,\\N,\\N,\\N,\\N,\\N,\\N,\\N,\\N,\\N,\\N,\\N/' AADF-data-by-direction-major-roads.csv
 rm AADF-data-by-direction-major-roads.csv.bak
 
+
+#
+# BOUNDARY DATA
+#
+
+# Obtain boundary data
+boundaryFile=boundaryline.zip
+if [ ! -f $boundaryFile ] ; then
+	wget -O $boundaryFile $downloadUrlBoundaryLine
+fi
+
+# Extract relevant sections of boundary file
+unzip -j -o $boundaryFile "Data/GB/westminster_const_region.*" "Data/GB/district_borough_unitary_region.*" "Data/GB/district_borough_unitary_ward_region.*"
+
+# Convert boundary data Shapefiles
+# Test ogr2ogr connection to MySQL using: `ogrinfo MYSQL:$database,host=$hostname,user=$username,password=$password` ; see: http://mapserver.org/uk/input/vector/mysql.html
+shapefiles=('westminster_const_region' 'district_borough_unitary_region' 'district_borough_unitary_ward_region');
+for shapefile in ${shapefiles[@]} ; do
+	ogr2ogr -f MySQL MySQL:$database,host=$hostname,user=$username,password=$password ${shapefile}.shp -nln $shapefile -update -overwrite -lco engine=MYISAM
+	rm ${shapefile}.*
+done
+mysql -h $hostname -u $username -p$password $database -e "DROP TABLE IF EXISTS geometry_columns, spatial_ref_sys;"
+
+
 # Connect to the database and run the SQL script
 mysql --local-infile -h $hostname -u $username -p$password $database < $scriptDir/trafficcounts.sql
+
 
