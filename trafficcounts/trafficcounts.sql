@@ -9,8 +9,8 @@
 -- Now create and import the three tables
 
 
-DROP TABLE IF EXISTS `major-roads-link-network`;
-CREATE TABLE `major-roads-link-network` (
+DROP TABLE IF EXISTS major_roads_link_network;
+CREATE TABLE major_roads_link_network (
 	id Integer NOT NULL,
 	road text NOT NULL,
 	startLongitude text NOT NULL,
@@ -19,9 +19,9 @@ CREATE TABLE `major-roads-link-network` (
 	finishLatitude text NOT NULL
 );
 
--- COPY major-roads-link-network FROM '/tmp/major-roads-link-network.csv' WITH CSV HEADER;
+-- COPY major_roads_link_network FROM '/tmp/major-roads-link-network.csv' WITH CSV HEADER;
 LOAD DATA INFILE '/tmp/major-roads-link-network.csv'
-	INTO TABLE `major-roads-link-network`
+	INTO TABLE major_roads_link_network
 	FIELDS TERMINATED BY ','
 	OPTIONALLY ENCLOSED BY '"'
 	IGNORE 1 LINES
