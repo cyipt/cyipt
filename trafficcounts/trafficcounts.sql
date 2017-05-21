@@ -4,7 +4,7 @@
 
 
 -- Import the roads network as a shape first
--- Also if you haven't imported the westminster, borough and ward boundaries you'll need to do so
+-- Also if you haven't imported the westminster, borough and ward boundaries, which come from OS BoundaryLine, you'll need to do so
 
 -- Now create and import the three tables
 
@@ -158,14 +158,17 @@ LOAD DATA INFILE '/tmp/AADF-data-minor-roads.csv'
 
 
 
--- make a simple collated table of all the count points we need to find
+-- Make a simple collated table of all the count points we need to find
 DROP TABLE IF EXISTS cptolocate;
 CREATE TABLE cptolocate AS
-SELECT DISTINCT CP, S_Ref_E, S_Ref_N from (
-SELECT CP, S_Ref_E, S_Ref_N FROM major_roads_direction
-UNION SELECT CP, S_Ref_E, S_Ref_N FROM minor_roads
-UNION SELECT CP, S_Ref_E, S_Ref_N FROM major_roads)
-as grouped;
+	SELECT DISTINCT CP, S_Ref_E, S_Ref_N FROM (
+		SELECT CP, S_Ref_E, S_Ref_N FROM major_roads_direction
+		UNION
+		SELECT CP, S_Ref_E, S_Ref_N FROM minor_roads
+		UNION
+		SELECT CP, S_Ref_E, S_Ref_N FROM major_roads
+	) AS grouped
+;
 
 -- Add a geometry column to the locations we are finding
 SELECT AddGeometryColumn ('public','cptolocate', 'geom_gb', 27700, 'POINT', 2);
@@ -173,7 +176,7 @@ SELECT AddGeometryColumn ('public','cptolocate', 'geom_gb', 27700, 'POINT', 2);
 -- Create geometry points for the tables in the 27700 SRID
 UPDATE cptolocate SET geom_gb=ST_GeomFromText('POINT('||S_Ref_E||' '||S_Ref_N||')',27700);
 
--- Lets add columns to the table for: lat, long
+-- Add columns to the table for lat, long
 ALTER TABLE cptolocate
 	ADD COLUMN latitude text,
 	ADD COLUMN longitude text;
@@ -184,7 +187,7 @@ UPDATE cptolocate SET longitude=st_x(st_transform(geom_gb,4326)), latitude=st_y(
 -- Add the spatial index
 CREATE INDEX gist_rgb ON cptolocate USING gist (geom_gb);
 
--- As used before , these regions are shapefiles imported into postgresql using the shapefile importeer (SRID 27700)
+-- As used before , these regions are shapefiles imported into postgresql using the shapefile importer (SRID 27700)
 CREATE TABLE RoadCPLocationsWestminster AS
 SELECT lo.cp, wm.name, wm.code
 FROM cptolocate as lo
