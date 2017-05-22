@@ -247,6 +247,7 @@ CREATE TABLE pcu_roads AS
 ;
 
 -- Create a conversion table to make the field RCat meaningful
+DROP TABLE IF EXISTS x_road_cat;
 CREATE TABLE x_road_cat (
 	RCat text,
 	road_type text
