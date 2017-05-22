@@ -142,7 +142,7 @@ for shapefile in ${shapefiles[@]} ; do
 	# http://stackoverflow.com/questions/3463942/change-srid-in-mysql
 	# "Limitation: SRS information is stored using the OGC Simple Features for SQL layout" i.e. not in the geom field itself ; see: http://www.gdal.org/drv_mysql.html
 	# 282 seconds:
-	mysql -h $hostname -u $username -p$password $database -e "UPDATE westminster_const_region SET geom = ST_GeomFromGeoJSON(ST_AsGeoJSON(geom), 2, 27700);"
+	mysql -h $hostname -u $username -p$password $database -e "UPDATE $shapefile SET geom = ST_GeomFromGeoJSON(ST_AsGeoJSON(geom), 2, 27700);"
 	rm ${shapefile}.*
 done
 mysql -h $hostname -u $username -p$password $database -e "DROP TABLE IF EXISTS geometry_columns, spatial_ref_sys;"

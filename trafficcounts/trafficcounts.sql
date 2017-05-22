@@ -184,21 +184,25 @@ ALTER TABLE cptolocate CHANGE geom_gb geom_gb POINT NOT NULL;
 CREATE SPATIAL INDEX gist_rgb ON cptolocate (geom_gb);
 
 -- As used before , these regions are shapefiles imported into postgresql using the shapefile importer (SRID 27700)
+DROP TABLE IF EXISTS RoadCPLocationsWestminster;
 CREATE TABLE RoadCPLocationsWestminster AS
 SELECT lo.cp, wm.name, wm.code
 FROM cptolocate as lo
 JOIN westminster_const_region as wm on ST_Within(lo.geom_gb, wm.geom);
 
+DROP TABLE IF EXISTS RoadCPLocationsBorough;
 CREATE TABLE RoadCPLocationsBorough AS
 SELECT lo.cp, bo.name, bo.code
 FROM cptolocate as lo
 JOIN district_borough_unitary_region as bo on ST_Within(lo.geom_gb, bo.geom);
 
+DROP TABLE IF EXISTS RoadCPLocationsWard;
 CREATE TABLE RoadCPLocationsWard AS
 SELECT lo.cp, wa.name, wa.code
 FROM cptolocate as lo
 JOIN district_borough_unitary_ward_region as wa on ST_Within(lo.geom_gb, wa.geom);
 
+DROP TABLE IF EXISTS RoadCPLocationsFound;
 CREATE TABLE RoadCPLocationsFound AS
 SELECT lo.cp, lo.latitude, lo.longitude, wm.name as westminstername,wm.code as westminstercode, bo.name as boroughname, bo.code as boroughcode, wa.name as wardname, wa.code as wardcode, geom_gb
 FROM cptolocate lo
