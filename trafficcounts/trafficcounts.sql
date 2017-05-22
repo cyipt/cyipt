@@ -282,7 +282,8 @@ CREATE TABLE pcu_roads_political AS
 		pcu.year,
 		cycles, p2w, cars, buses, lgvs, mgvs, hgvs, all_motors, cycle_pcu, p2w_pcu, car_pcu, bus_pcu, lgv_pcu, mgv_pcu, hgv_pcu, all_motor_pcu,
 		lo.latitude, lo.longitude,
-		ST_AsKML(ST_Transform(road.geom,4326)) AS road_geom
+--		ST_AsKML(ST_Transform(road.geom,4326)) AS road_geom
+		ST_AsGeoJSON(ST_Transform(road.geom,4326)) AS road_geom
 	FROM pcu_roads AS pcu
 	INNER JOIN RoadCPLocationsFound lo ON pcu.cp = lo.cp
 	INNER JOIN x_road_cat ON pcu.rcat = x_road_cat.rcat
