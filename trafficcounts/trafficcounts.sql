@@ -3,10 +3,10 @@
 -- Written for a PostgreSQL installation; adapted for MySQL
 
 
--- Import the roads network as a shape first
--- Also if you haven't imported the westminster, borough and ward boundaries, which come from OS BoundaryLine, you'll need to do so
+-- If you haven't imported the westminster, borough and ward boundaries, which come from OS BoundaryLine, you'll need to do so
 
--- Now create and import the three tables
+
+-- Import the roads network as a shape first
 
 
 SET SESSION sql_mode = 'STRICT_ALL_TABLES';
@@ -32,6 +32,10 @@ LOAD DATA INFILE '/tmp/major-roads-link-network.csv'
 
 
 
+
+
+
+-- Now create and import the three tables
 
 
 DROP TABLE IF EXISTS major_roads_direction;
@@ -214,18 +218,35 @@ LEFT OUTER JOIN RoadCPLocationsWard as wa ON lo.cp = wa.cp;
 DROP TABLE IF EXISTS pcu_roads;
 
 CREATE TABLE pcu_roads AS
-SELECT year, cp, Road, RCat, FdPC as cycles, Fd2WMV as p2w, FdCAR as cars, FdBUS as buses, FdLGV as lgvs, FdHGVR2 as mgvs, (FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6)
-as hgvs,
-(Fd2WMV + FdCAR + FdBUS + FdLGV + FdHGVR2 + (FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6))
-as all_motors,
-FdPC * 0.2 as cycle_pcu, Fd2WMV * 0.4 as p2w_pcu, FdCAR as car_pcu, FdBUS * 2 as bus_pcu, FdLGV as lgv_pcu, FdHGVR2 * 1.5 as mgv_pcu, (FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6) * 2.3 as hgv_pcu,
-Fd2WMV * 0.4 + FdCAR + FdBUS * 2 + FdLGV + FdHGVR2 * 1.5 + (FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6) * 2.3
-as all_motor_pcu
-FROM
-(SELECT year, cp, Road, RCat, FdPC, Fd2WMV, FdCAR, FdBUS, FdLGV, FdHGVR2, FdHGVR3, FdHGVR4, FdHGVA3, FdHGVA5, FdHGVA6 FROM major_roads
-UNION SELECT year, cp, Road, RCat, FdPC, Fd2WMV, FdCAR, FdBUS, FdLGV, FdHGVR2, FdHGVR3, FdHGVR4, FdHGVA3, FdHGVA5, FdHGVA6 FROM minor_roads) AS major_minor_roads;
+	SELECT
+		year,
+		cp,
+		Road,
+		RCat,
+		FdPC AS cycles,
+		Fd2WMV AS p2w,
+		FdCAR AS cars,
+		FdBUS AS buses,
+		FdLGV AS lgvs,
+		FdHGVR2 AS mgvs,
+		(FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6) AS hgvs,
+		(Fd2WMV + FdCAR + FdBUS + FdLGV + FdHGVR2 + (FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6)) AS all_motors,
+		FdPC * 0.2 AS cycle_pcu,
+		Fd2WMV * 0.4 AS p2w_pcu,
+		FdCAR AS car_pcu,
+		FdBUS * 2 AS bus_pcu,
+		FdLGV AS lgv_pcu,
+		FdHGVR2 * 1.5 AS mgv_pcu,
+		(FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6) * 2.3 AS hgv_pcu,
+		Fd2WMV * 0.4 + FdCAR + FdBUS * 2 + FdLGV + FdHGVR2 * 1.5 + (FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6) * 2.3 AS all_motor_pcu
+	FROM (
+		SELECT year, cp, Road, RCat, FdPC, Fd2WMV, FdCAR, FdBUS, FdLGV, FdHGVR2, FdHGVR3, FdHGVR4, FdHGVA3, FdHGVA5, FdHGVA6 FROM major_roads
+		UNION
+		SELECT year, cp, Road, RCat, FdPC, Fd2WMV, FdCAR, FdBUS, FdLGV, FdHGVR2, FdHGVR3, FdHGVR4, FdHGVA3, FdHGVA5, FdHGVA6 FROM minor_roads
+	) AS major_minor_roads
+;
 
--- a conversion table to make the field RCat meaningful
+-- Create a conversion table to make the field RCat meaningful
 CREATE TABLE x_road_cat (
 	RCat text,
 	road_type text
@@ -245,15 +266,23 @@ INSERT INTO x_road_cat VALUES
 ('UR','Class U road in Rural area'),
 ('UU','Class U road in Urban area');
 
--- make a table to contain all the political details
+-- Make a table to contain all the political details
 DROP TABLE IF EXISTS pcu_roads_political;
 
 CREATE TABLE pcu_roads_political AS
-SELECT lo.westminstername, lo.boroughname, lo.wardname, pcu.cp, pcu.road, road_type, pcu.year, cycles, p2w, cars, buses, lgvs, mgvs, hgvs, all_motors, cycle_pcu, p2w_pcu, car_pcu, bus_pcu, lgv_pcu, mgv_pcu, hgv_pcu, all_motor_pcu, lo.latitude, lo.longitude, ST_AsKML(ST_Transform(road.geom,4326)) as road_geom
-FROM pcu_roads pcu
-INNER JOIN RoadCPLocationsFound lo ON pcu.cp = lo.cp
-INNER JOIN x_road_cat ON pcu.rcat = x_road_cat.rcat
-LEFT JOIN major_road_link_network road ON pcu.cp = road.cp;
+	SELECT
+		lo.westminstername, lo.boroughname, lo.wardname,
+		pcu.cp, pcu.road,
+		road_type,
+		pcu.year,
+		cycles, p2w, cars, buses, lgvs, mgvs, hgvs, all_motors, cycle_pcu, p2w_pcu, car_pcu, bus_pcu, lgv_pcu, mgv_pcu, hgv_pcu, all_motor_pcu,
+		lo.latitude, lo.longitude,
+		ST_AsKML(ST_Transform(road.geom,4326)) AS road_geom
+	FROM pcu_roads AS pcu
+	INNER JOIN RoadCPLocationsFound lo ON pcu.cp = lo.cp
+	INNER JOIN x_road_cat ON pcu.rcat = x_road_cat.rcat
+	LEFT JOIN major_roads_link_network road ON pcu.cp = road.cp
+;
 
 
 -- do cross tabs for: cycles, p2w, cars, buses, lgvs, mgvs, hgvs, all_motors, all_motor_pcu
