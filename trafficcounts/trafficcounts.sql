@@ -14,7 +14,7 @@ SET SESSION sql_mode = 'STRICT_ALL_TABLES';
 
 DROP TABLE IF EXISTS major_roads_link_network;
 CREATE TABLE major_roads_link_network (
-	id Integer NOT NULL,
+	cp Integer NOT NULL,
 	road text NOT NULL,
 	startLongitude text NOT NULL,
 	startLatitude text NOT NULL,
