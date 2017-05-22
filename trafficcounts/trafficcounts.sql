@@ -23,6 +23,8 @@ CREATE TABLE major_roads_link_network (
 	geom LINESTRING NULL
 );
 
+ALTER TABLE major_roads_link_network ADD INDEX (cp);
+
 -- COPY major_roads_link_network FROM '/tmp/major-roads-link-network.csv' WITH CSV HEADER;
 LOAD DATA INFILE '/tmp/major-roads-link-network.csv'
 	INTO TABLE major_roads_link_network
@@ -218,6 +220,9 @@ LEFT OUTER JOIN RoadCPLocationsWestminster as wm ON lo.cp = wm.cp
 LEFT OUTER JOIN RoadCPLocationsBorough as bo ON lo.cp = bo.cp
 LEFT OUTER JOIN RoadCPLocationsWard as wa ON lo.cp = wa.cp;
 
+ALTER TABLE RoadCPLocationsFound ADD INDEX (cp);
+
+
 -- create the PCU counts and rename the vehicle counts to something meaningful. This uses a subselect as the main query which is a union of the tables in the non-directed major roads data and the minor roads data
 DROP TABLE IF EXISTS pcu_roads;
 
@@ -249,6 +254,9 @@ CREATE TABLE pcu_roads AS
 		SELECT year, cp, Road, RCat, FdPC, Fd2WMV, FdCAR, FdBUS, FdLGV, FdHGVR2, FdHGVR3, FdHGVR4, FdHGVA3, FdHGVA5, FdHGVA6 FROM minor_roads
 	) AS major_minor_roads
 ;
+
+ALTER TABLE pcu_roads ADD INDEX (cp);
+
 
 -- Create a conversion table to make the field RCat meaningful
 DROP TABLE IF EXISTS x_road_cat;
