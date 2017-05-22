@@ -139,6 +139,10 @@ shapefiles=('westminster_const_region' 'district_borough_unitary_region' 'distri
 for shapefile in ${shapefiles[@]} ; do
 	ogr2ogr -f MySQL MySQL:$database,host=$hostname,user=$username,password=$password ${shapefile}.shp -nln $shapefile -update -overwrite -lco engine=MYISAM
 	mysql -h $hostname -u $username -p$password $database -e "ALTER TABLE $shapefile CHANGE SHAPE geom GEOMETRY NOT NULL;"
+	# http://stackoverflow.com/questions/3463942/change-srid-in-mysql
+	# "Limitation: SRS information is stored using the OGC Simple Features for SQL layout" i.e. not in the geom field itself ; see: http://www.gdal.org/drv_mysql.html
+	# 282 seconds:
+	mysql -h $hostname -u $username -p$password $database -e "UPDATE westminster_const_region SET geom = ST_GeomFromGeoJSON(ST_AsGeoJSON(geom), 2, 27700);"
 	rm ${shapefile}.*
 done
 mysql -h $hostname -u $username -p$password $database -e "DROP TABLE IF EXISTS geometry_columns, spatial_ref_sys;"
