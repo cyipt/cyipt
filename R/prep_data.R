@@ -76,8 +76,32 @@ osm$geometry <- NULL
 
 #Loop TO find Points
 touch <- st_intersects(lines)
-points <- lines[0,]
 
+#Make and empty df
+#Really Bad way to do this but I can't work out a better way
+length_tot <- sum(lengths(touch))
+points <- lines[1:100,]
+points$osm_id <- 0
+points <- st_cast(points, "POINT")
+#class(points$geometry[1])
+pt1 = st_sfc(st_point(c(0,1)))
+#class(pt1)
+
+for(i in 1:nrow(points)){
+  points$geometry[i] <- pt1
+}
+
+for(j in 1:999999999){
+  if(nrow(points) < length_tot){
+    points <- rbind(points,points)
+  }else{
+    points <- points[1:length_tot,]
+    break
+  }
+}
+
+rownumb <- 1
+print(paste0("Starting Loop to find junction points at ",Sys.time()))
 pb <- txtProgressBar(min = 0, max = length(touch), style = 3)
 for(b in 1:length(touch)){
   setTxtProgressBar(pb, b)
@@ -85,10 +109,19 @@ for(b in 1:length(touch)){
   inter_sub <- st_intersection(lines_sub, lines_sub)
   inter_sub <- inter_sub[,c("osm_id","geometry")]
   inter_sub <- inter_sub[st_geometry_type(inter_sub) == "POINT" | st_geometry_type(inter_sub) == "MULTIPOINT",]
-  points <- rbind(points,inter_sub)
+  if(nrow(inter_sub) != 0){
+    for(c in 1:nrow(inter_sub)){
+      points[rownumb,] <- inter_sub[c,]
+      points$osm_id[rownumb] <- inter_sub$osm_id[c]
+      points$geometry[rownumb] <- inter_sub$geometry[c]
+      rownumb <- rownumb + 1
+    }
+  }
 }
 close(pb)
+print(paste0("Finished Loop to find junction points at ",Sys.time()))
 
+points <- points[points$osm_id != 0,]
 
 #Remove Duplicates
 dup <- duplicated(points$geometry)
@@ -100,6 +133,7 @@ buff <- st_buffer(points,0.01)
 inter <- st_intersects(lines,buff)
 cut <- lines[0,]
 pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
+print(paste0("Starting Loop to split lines at ",Sys.time()))
 for(a in 1:nrow(lines)){
   setTxtProgressBar(pb, a)
   line_sub <- lines[a,]
@@ -114,6 +148,7 @@ for(a in 1:nrow(lines)){
 }
 close(pb)
 rm(buff,line_cut,line_sub,a,buff_sub,inter,pb)
+print(paste0("Finished Loop to split lines at ",Sys.time()))
 
 #Clean Up Results
 cut <- cut[!duplicated(cut$geometry),]
@@ -162,3 +197,7 @@ gc()
 #Test Save as shape file, can't save all columns due to variaible names problems
 #test <- cut_sl[,c("id","osm_id")]
 #st_write(test, "../example-data/bristol/osm_data/osm-split.shp")
+
+#Test Plots
+#plot(cut_sl[1])
+#plot(points[1], add = T)
