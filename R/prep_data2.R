@@ -12,6 +12,67 @@ library(sf)
 library(dplyr)
 library(utils)
 
+#Functions
+#Function To get Points and MultiPoints
+findpoints <- function(b){
+  lines_sub <- lines[c(touch[[b]]),]
+  inter_sub <- st_intersection(lines_sub, lines_sub)
+  inter_sub <- inter_sub[,c("osm_id","geometry")]
+  inter_sub <- inter_sub[st_geometry_type(inter_sub) == "POINT" | st_geometry_type(inter_sub) == "MULTIPOINT",]
+  return(inter_sub)
+}
+
+#Function to split mulitple geomaties into single geometires when a data frame
+splitmulti <- function(x,from,to){
+  #Split into single and mulit
+  mp_var <- x[st_geometry_type(x) == from,]
+  p_var <- x[st_geometry_type(x) == to,]
+  #Separate out geometry
+  mp_geom <- mp_var$geometry
+  p_geom <- p_var$geometry
+  #Remove geometry
+  mp_var$geometry <- NULL
+  p_var$geometry <- NULL
+  #Convert to data frame
+  mp_var <- as.data.frame(mp_var)
+  p_var <- as.data.frame(p_var)
+  #Split geometrys
+  mp_geom_s <- st_cast(st_sfc(mp_geom), to, group_or_split = TRUE)
+  p_geom <- st_cast(st_sfc(p_geom), to, group_or_split = TRUE)
+  #Duplicate variaibles for multis
+  if(to == "POINT"){
+    len <- lengths(mp_geom)/2
+  }else if(to == "LINESTRING"){
+    len <- lengths(mp_geom)
+  }else{
+    print("Can't do this")
+    stop()
+  }
+  mp_var <- mp_var[rep(seq_len(nrow(mp_var)), len),,drop=FALSE]
+  #Put polygons back togther
+  geom <- c(p_geom,mp_geom_s)
+  var <- rbind(p_var,mp_var)
+  geom <- st_cast(st_sfc(geom), to, group_or_split = TRUE) #Incase mp or p is empty have to run again
+  var$geometry <- geom
+  res <- st_as_sf(var)
+  return(res)
+}
+
+#FUnction to Splitlines
+splitlines <- function(a){
+  line_sub <- lines[a,]
+  buff_sub <- buff[inter[[a]],]
+  if(nrow(buff_sub) == 0){
+    line_cut <- line_sub
+  }else{
+    buff_sub <- st_union(buff_sub)
+    line_cut <- st_difference(line_sub, buff_sub)
+  }
+  return(line_cut)
+}
+
+
+
 #Reading in data
 osm <- readRDS("../example-data/bristol/osm-lines-quietness-full.Rds")
 osm <- st_transform(osm, 27700)
@@ -74,117 +135,32 @@ lines <- osm[,c("osm_id","geometry")]
 osm <- as.data.frame(osm)
 osm$geometry <- NULL
 
-#Loop TO find Points
+#Find Points
+print(paste0("Find Points at ",Sys.time()))
 touch <- st_intersects(lines)
+points_list <- lapply(1:length(touch), findpoints)
+points <- do.call("rbind",points_list)
+points <- points[!duplicated(points$geometry),]
+rm(points_list)
 
-#Make and empty df
-#Really Bad way to do this but I can't work out a better way
-length_tot <- sum(lengths(touch))
-points <- lines[1:100,]
-points$osm_id <- 0
-points <- st_cast(points, "POINT")
-#class(points$geometry[1])
-pt1 = st_sfc(st_point(c(0,1)))
-#class(pt1)
+#Split multipoints into points
+print(paste0("Split multipoints to points at ",Sys.time()))
+points <- splitmulti(points,"MULTIPOINT","POINT")
 
-for(i in 1:nrow(points)){
-  points$geometry[i] <- pt1
-}
-
-for(j in 1:999999999){
-  if(nrow(points) < length_tot){
-    points <- rbind(points,points)
-  }else{
-    points <- points[1:length_tot,]
-    break
-  }
-}
-
-rownumb <- 1
-print(paste0("Starting Loop to find junction points at ",Sys.time()))
-pb <- txtProgressBar(min = 0, max = length(touch), style = 3)
-for(b in 1:length(touch)){
-  setTxtProgressBar(pb, b)
-  lines_sub <- lines[c(touch[[b]]),]
-  inter_sub <- st_intersection(lines_sub, lines_sub)
-  inter_sub <- inter_sub[,c("osm_id","geometry")]
-  inter_sub <- inter_sub[st_geometry_type(inter_sub) == "POINT" | st_geometry_type(inter_sub) == "MULTIPOINT",]
-  if(nrow(inter_sub) != 0){
-    for(c in 1:nrow(inter_sub)){
-      points[rownumb,] <- inter_sub[c,]
-      points$osm_id[rownumb] <- inter_sub$osm_id[c]
-      points$geometry[rownumb] <- inter_sub$geometry[c]
-      rownumb <- rownumb + 1
-    }
-  }
-}
-close(pb)
-print(paste0("Finished Loop to find junction points at ",Sys.time()))
-
-points <- points[points$osm_id != 0,]
-
-#Remove Duplicates
-dup <- duplicated(points$geometry)
-points <- points[!dup,]
-rm(pb,lines_sub,inter_sub,dup,touch,b)
+#Remove duplicates
+points <- points[!duplicated(points$geometry),]
 
 #Loop To Split Lines
+print(paste0("Splitting Lines at ",Sys.time()))
 buff <- st_buffer(points,0.01)
 inter <- st_intersects(lines,buff)
-cut <- lines[0,]
-pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-print(paste0("Starting Loop to split lines at ",Sys.time()))
-for(a in 1:nrow(lines)){
-  setTxtProgressBar(pb, a)
-  line_sub <- lines[a,]
-  buff_sub <- buff[inter[[a]],]
-  if(nrow(buff_sub) == 0){
-    line_cut <- line_sub
-  }else{
-    buff_sub <- st_union(buff_sub)
-    line_cut <- st_difference(line_sub, buff_sub)
-  }
-  cut <- rbind(cut,line_cut)
-}
-close(pb)
-rm(buff,line_cut,line_sub,a,buff_sub,inter,pb)
-print(paste0("Finished Loop to split lines at ",Sys.time()))
-
-#Clean Up Results
+cut_list <- lapply(1:nrow(lines), splitlines)
+cut <- do.call("rbind",cut_list)
 cut <- cut[!duplicated(cut$geometry),]
+rm(cut_list)
 
-#Split Mulitlines into Single Lines
-cut_geom <- cut$geometry
-mp <- cut_geom[st_geometry_type(cut_geom) == "MULTILINESTRING"]
-p <- cut_geom[st_geometry_type(cut_geom) == "LINESTRING"]
-rm(cut_geom)
-
-#Convert Multipolygons into single polygons
-mp <- st_cast(st_sfc(mp), "LINESTRING", group_or_split = TRUE)
-p <- st_cast(st_sfc(p), "LINESTRING", group_or_split = TRUE)
-
-#Put polygons back togther
-cut_geom <- c(p,mp)
-cut_geom <- st_cast(st_sfc(cut_geom), "LINESTRING", group_or_split = TRUE) #Incase mp or p is empty have to run again
-rm(p, mp)
-
-#Remove Duplicates
-cut_geom <- cut_geom[!duplicated(cut_geom)]
-cut_sl <- data.frame(id = c(1:length(cut_geom)))
-cut_sl$geometry <- cut_geom
-cut_sl <- st_sf(cut_sl)
-remove(cut_geom)
-
-#Get the Original OSM IDs
-inter <- st_intersects(cut_sl, cut)
-cut_sl$osm_id <- NA
-for(d in 1:nrow(cut_sl)){
-  cut_sl$osm_id[d] <- cut$osm_id[inter[[d]]]
-}
-rm(inter,d)
-
-#Join back in OSM variaibles
-cut_sl <- left_join(cut_sl, osm, by = c("osm_id" = "osm_id"))
+#Split multipoints into points
+cut_sl <- splitmulti(cut,"MULTILINESTRING","LINESTRING")
 
 #Save Out Data
 saveRDS(cut_sl, "../example-data/bristol/osm_data/osm-split.Rds")
@@ -196,7 +172,7 @@ gc()
 
 #Test Save as shape file, can't save all columns due to variaible names problems
 #test <- cut_sl[,c("id","osm_id")]
-#st_write(test, "../example-data/bristol/osm_data/osm-split.shp")
+#st_write(cut_sl, "../example-data/bristol/osm_data/osm-split2.shp")
 
 #Test Plots
 #plot(cut_sl[1])
