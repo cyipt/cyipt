@@ -7,13 +7,6 @@ output:
     toc: true
 ---
 
-```{r, echo=FALSE}
-old_dir = getwd()
-if(!grepl(pattern = "scripts", x = old_dir))
-  setwd("scripts")
-```
-
-
 This document reports on methods and preliminary findings associated with the modelling of cycling uptake associated with infrastructure.
 
 ## Input data
@@ -31,7 +24,7 @@ For the case study region of Bristol, the data is stored in the `example-data` f
 ```{r, message=FALSE, results='hide'}
 library(sf)
 library(tidyverse)
-region = st_read("../areas/bristol-poly.geojson")
+region = st_read("areas/bristol-poly.geojson")
 ```
 
 The input data comes from 3 main sources:
@@ -260,9 +253,5 @@ importance_m7 = xgb.importance(model = m7, feature_names = names(l_full)[-c(1, 2
 xgb.plot.importance(importance_m7)
 m7_fitted = predict(m7, as.matrix(l_full[-c(1, 2)]))
 (rmse7 = sqrt(c(crossprod(m7_fitted * l$all  - l_full$bicycle)) / nrow(l)))
-```
-
-```{r}
-setwd(old_dir)
 ```
 
