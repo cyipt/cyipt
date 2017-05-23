@@ -3,6 +3,12 @@ Modelling Cycling Update
 Robin Lovelace
 8 May 2017
 
+-   [Input data](#input-data)
+-   [Modelling raw cyclist counts](#modelling-raw-cyclist-counts)
+-   [Boosted regression trees](#boosted-regression-trees)
+-   [A full model](#a-full-model)
+-   [Fitting to the proportion cycling](#fitting-to-the-proportion-cycling)
+
 This document reports on methods and preliminary findings associated with the modelling of cycling uptake associated with infrastructure.
 
 Input data
@@ -19,54 +25,32 @@ For the case study region of Bristol, the data is stored in the `example-data` f
 
 ``` r
 library(sf)
-```
-
-    ## Linking to GEOS 3.5.1, GDAL 2.1.3, proj.4 4.9.2, lwgeom 2.3.2 r15302
-
-``` r
 library(tidyverse)
+region = st_read("areas/bristol-poly.geojson")
 ```
 
-    ## Loading tidyverse: ggplot2
-    ## Loading tidyverse: tibble
-    ## Loading tidyverse: tidyr
-    ## Loading tidyverse: readr
-    ## Loading tidyverse: purrr
-    ## Loading tidyverse: dplyr
-
-    ## Conflicts with tidy packages ----------------------------------------------
-
-    ## filter(): dplyr, stats
-    ## lag():    dplyr, stats
-
-``` r
-region = st_read("../areas/bristol-poly.geojson")
-```
-
-    ## Reading layer `OGRGeoJSON' from data source `/home/robin/cyipt/cyipt/areas/bristol-poly.geojson' using driver `GeoJSON'
-    ## converted into: MULTIPOLYGON
-    ## Simple feature collection with 1 feature and 21 fields
-    ## geometry type:  MULTIPOLYGON
-    ## dimension:      XY
-    ## bbox:           xmin: -2.773873 ymin: 51.39755 xmax: -2.510999 ymax: 51.54443
-    ## epsg (SRID):    4326
-    ## proj4string:    +proj=longlat +datum=WGS84 +no_defs
-
-The main input data comes from 2 main sources:
+The input data comes from 3 main sources:
 
 -   Outputs from the PCT, which reports current cycling levels and estimated 'fastest routes' for cyclists. After combining the straight lines, quietest routes and fastest routes into a single list object, they can be loaded as follows:
 
 ``` r
-lfq = readRDS("../../example-data/bristol/lfq.Rds")
+lfq = readRDS("../example-data/bristol/lfq.Rds")
 plot(lfq$l[6])
 plot(lfq$rf[1], add = T, col = "red")
 plot(lfq$rq[1], add = T, col = "green")
 plot(region[1], col = "white", lwd = 5, add = T)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
--   Outputs from the data processing stage of the CyIPT project, which provides data on the current road network from the perspective of cycling.
+-   OSM data, which can be downloaded using the osmdata R package. We have saved the osm route network in the highways tab.
+
+``` r
+osm_data = readRDS("../example-data/bristol/osm-all-highways.Rds")
+ways = osm_data$osm_
+```
+
+-   Data created by the CyIPT project, which provides data on the current road network from the perspective of cycling.
 
 ``` r
 osm_lines = readRDS("osm-lines-quietness-full.Rds")
@@ -81,7 +65,7 @@ plot(lfq$rf[1:5, 6], add = T, col = "red", lwd = 3)
 plot(lfq$rq[1:5, 6], add = T, col = "green")
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 We can join the relevant variables from the `rf` and `rq` objects onto `l` for modelling:
 
@@ -270,7 +254,7 @@ points(l$all, m1$fitted.values, col = "red")
 points(l$all, m3$fitted.values, col = "grey")
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 There are various issues here. We need to model cycling uptake but that is always a function of `all`. We must add additional variables such as hilliness. Further, we must use non-linear function of some predictor variables such as distance.
 
@@ -356,7 +340,7 @@ plot(l$all, l$bicycle)
 points(l$all, m4_fitted, col = "red")
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ``` r
 (rmse4 = sqrt(c(crossprod(m4_fitted - l_sub$bicycle)) / nrow(l)))
@@ -371,7 +355,7 @@ importance_m4 = xgb.importance(model = m4, feature_names = names(l_sub)[-1])
 xgb.plot.importance(importance_m4)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 A full model
 ------------
@@ -400,7 +384,7 @@ importance_m5 = xgb.importance(model = m5, feature_names = names(l_full)[-1])
 xgb.plot.importance(importance_m5)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ``` r
 m5_fitted = predict(m5, as.matrix(l_full[-1]))
@@ -437,7 +421,7 @@ importance_m6 = xgb.importance(model = m6, feature_names = names(l_full)[-c(1, 2
 xgb.plot.importance(importance_m6)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 ``` r
 m6_fitted = predict(m6, as.matrix(l_full[-c(1, 2)]))
@@ -474,7 +458,7 @@ importance_m7 = xgb.importance(model = m7, feature_names = names(l_full)[-c(1, 2
 xgb.plot.importance(importance_m7)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 ``` r
 m7_fitted = predict(m7, as.matrix(l_full[-c(1, 2)]))
@@ -482,7 +466,3 @@ m7_fitted = predict(m7, as.matrix(l_full[-c(1, 2)]))
 ```
 
     ## [1] 5.237587
-
-``` r
-setwd(old_dir)
-```

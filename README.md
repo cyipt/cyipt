@@ -35,3 +35,16 @@ knitr::kable(variables)
 | av\_incline\_quiet | Average incline of quietest route                                    |
 | time\_fast         | Time of fast route (s)                                               |
 | time\_quiet        | Time of quiet route (s)                                              |
+
+``` r
+library(sf)
+region = st_read("areas/bristol-poly.geojson")
+#> Reading layer `OGRGeoJSON' from data source `/home/robin/cyipt/cyipt/areas/bristol-poly.geojson' using driver `GeoJSON'
+#> converted into: MULTIPOLYGON
+#> Simple feature collection with 1 feature and 21 fields
+#> geometry type:  MULTIPOLYGON
+#> dimension:      XY
+#> bbox:           xmin: -2.773873 ymin: 51.39755 xmax: -2.510999 ymax: 51.54443
+#> epsg (SRID):    4326
+#> proj4string:    +proj=longlat +datum=WGS84 +no_defs
+```
