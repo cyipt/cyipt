@@ -72,11 +72,11 @@ plot(rq[1], add = T, col = "green")
 plot(region[1], col = "white", lwd = 5, add = T)
 lfq = list(l, rf, rq)
 names(lfq) = c("l", "rf", "rq")
-saveRDS(lfq, "../../example-data/bristol/lfq.Rds")
+saveRDS(lfq, "../example-data/bristol/lfq.Rds")
 ```
 
 ```{r}
-lfq = readRDS("../../example-data/bristol/lfq.Rds")
+lfq = readRDS("../example-data/bristol/lfq.Rds")
 plot(lfq$l[6])
 plot(lfq$rf[1], add = T, col = "red")
 plot(lfq$rq[1], add = T, col = "green")
@@ -86,7 +86,8 @@ plot(region[1], col = "white", lwd = 5, add = T)
 - OSM data, which can be downloaded using the osmdata R package. We have saved the osm route network in the highways tab.
 
 ```{r}
-ways = readRDS("../../example-data/bristol/osm-all-highways.Rds")
+osm_data = readRDS("../example-data/bristol/osm-all-highways.Rds")
+ways = osm_data$osm_
 ```
 
 
