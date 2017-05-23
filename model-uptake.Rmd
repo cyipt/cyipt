@@ -121,6 +121,71 @@ l = bind_cols(lfq$l, rf, rq)
 st_geometry(l) = NULL
 ```
 
+We can also join segment-level data to routes.
+This is done for one route as follows:
+
+```{r}
+route_single = lfq$rf[1,]
+ways_touching = ways[route_single,]
+```
+
+We can also join all lines that overlap (rather than just touch) the route, but this introduces a buffer whose width must be set and removes some routes that may be relevant to the junctions:
+
+```{r}
+sel_overlap = st_relate(x = ways, route_single) # fails to find centrelines
+summary(sel_overlap)
+
+route_sp = as(object = route_single, Class = "Spatial")
+route_buff_sp = stplanr::buff_geo(route_sp, 100)
+route_buff = as(object = route_buff_sp, "sf")
+sel_overlap = st_within(ways_touching, route_buff, sparse = FALSE)[,1]
+ways_overlap = ways_touching[sel_overlap,]
+
+plot(route_single, lwd = 50)
+# plot(ways, add = T)
+plot(ways_overlap, add = T, lwd = 30, col = "white")
+plot(ways_touching, add = T, lwd = 5)
+plot(route_buff, add = T)
+```
+
+```{r, eval=FALSE, echo=FALSE}
+# failed sp attempt
+ways_touching_sp = as(object = ways_touching, Class = "Spatial")
+route_single_sp = as(route_single, "Spatial")
+sel_overlap = over(ways_touching_sp, route_single_sp, minDimension = 1, returnList = F)
+```
+
+Summary statistics can be pulled from the the results as follows:
+
+```{r}
+mean(ways_touching$quietness, na.rm = T)
+```
+
+We can run this for all routes as follows:
+
+```{r}
+n_cores <- 8 # set max number of cores to 4
+if(parallel:::detectCores() < 4)
+  n_cores <- parallel:::detectCores()
+cl <- parallel::makeCluster(n_cores)
+doParallel::registerDoParallel(cl)
+l$quietness_ways = NA # the variable to calculate
+
+for(i in 1:nrow(l))
+  l$quietness_ways[i] = mean(ways[lfq$rf[i,],]$quietness, na.rm = T) ; print(i)
+
+
+quietness_by_length = l$busyness_fast / l$dist /1000
+summary(quietness_by_length)
+```
+
+The results show the quietness score is related to the 'busynance' of the route provided by CycleStreets.net:
+
+```{r}
+route_single$busyness
+```
+
+
 ## Modelling raw cyclist counts
 
 In the propensity to cycle tool, we modelled cycling uptake in terms of `pcycle`, the percentage cycling.
