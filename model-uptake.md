@@ -35,31 +35,41 @@ The input data comes from 3 main sources:
 
 ``` r
 lfq = readRDS("../example-data/bristol/lfq.Rds")
-plot(lfq$l[6])
-plot(lfq$rf[1], add = T, col = "red")
-plot(lfq$rq[1], add = T, col = "green")
-plot(region[1], col = "white", lwd = 5, add = T)
+# plot(lfq$l[6])
+# plot(lfq$rf[1], add = T, col = "red")
+# plot(lfq$rq[1], add = T, col = "green")
+# plot(region[1], col = "white", lwd = 5, add = T)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-6-1.png)
-
--   OSM data, which can be downloaded using the osmdata R package. We have saved the osm route network in the highways tab.
+-   OSM data, which can be downloaded using the osmdata R package. We have saved the osm route network already:
 
 ``` r
 osm_data = readRDS("../example-data/bristol/osm-all-highways.Rds")
-ways = osm_data$osm_
+ways = osm_data$osm_lines
+ways$osm_id = as.integer(as.character(ways$osm_id))
+sel = sample(nrow(ways), 10000)
+plot(ways[sel, "highway"])
 ```
 
--   Data created by the CyIPT project, which provides data on the current road network from the perspective of cycling.
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-7-1.png)
+
+-   Data created by the CyIPT project, which provides data on the current road network from the perspective of cycling, including:
 
 ``` r
-osm_lines = readRDS("osm-lines-quietness-full.Rds")
+# Quietness
+quietness = readr::read_csv("input-data/scorings/bristol.csv")
+ways = left_join(ways, quietness, by = c("osm_id" = "id"))
+```
+
+``` r
+# PCU
+# ...
 ```
 
 These can be visualised as follows, with a sample of 5 routes overlaid on a sample of 1000 OSM line elements:
 
 ``` r
-plot(osm_lines[sample(x = nrow(osm_lines), size = 1000), 1])
+plot(ways[sel, "quietness"])
 plot(lfq$l[1:5, 6], add = T, col = "black")
 plot(lfq$rf[1:5, 6], add = T, col = "red", lwd = 3)
 plot(lfq$rq[1:5, 6], add = T, col = "green")
