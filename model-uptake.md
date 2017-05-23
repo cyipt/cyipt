@@ -92,10 +92,96 @@ st_geometry(rf) <- NULL
 
 rq = transmute(lfq$rq, dist_quiet = length / 1000, time_quiet = time, busyness_quiet = busyness, av_incline_quiet = av_incline) 
 st_geometry(rq) <- NULL
-lfq$l = bind_cols(lfq$l, rf, rq)
-l = lfq$l
+l = bind_cols(lfq$l, rf, rq)
 st_geometry(l) = NULL
 ```
+
+We can also join segment-level data to routes. This is done for one route as follows:
+
+``` r
+route_single = lfq$rf[1,]
+ways_touching = ways[route_single,]
+```
+
+    ## although coordinates are longitude/latitude, it is assumed that they are planar
+
+We can also join all lines that overlap (rather than just touch) the route, but this introduces a buffer whose width must be set and removes some routes that may be relevant to the junctions:
+
+``` r
+sel_overlap = st_relate(x = ways, route_single) # fails to find centrelines
+```
+
+    ## although coordinates are longitude/latitude, it is assumed that they are planar
+
+``` r
+summary(sel_overlap)
+```
+
+    ##          V1       
+    ##  0F1FF0102:   50  
+    ##  FF1FF0102:28782
+
+``` r
+route_sp = as(object = route_single, Class = "Spatial")
+route_buff_sp = stplanr::buff_geo(route_sp, 100)
+```
+
+    ## Transforming to CRS +proj=aeqd +lat_0=51.43314781 +lon_0=-2.51576802 +x_0=0 +y_0=0 +ellps=WGS84
+
+    ## Running function on a temporary projected version of the Spatial object using the CRS: +proj=aeqd +lat_0=51.43314781 +lon_0=-2.51576802 +x_0=0 +y_0=0 +ellps=WGS84
+
+``` r
+route_buff = as(object = route_buff_sp, "sf")
+sel_overlap = st_within(ways_touching, route_buff, sparse = FALSE)[,1]
+```
+
+    ## although coordinates are longitude/latitude, it is assumed that they are planar
+
+``` r
+ways_overlap = ways_touching[sel_overlap,]
+
+plot(route_single, lwd = 50)
+# plot(ways, add = T)
+plot(ways_overlap, add = T, lwd = 30, col = "white")
+plot(ways_touching, add = T, lwd = 5)
+plot(route_buff, add = T)
+```
+
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-13-1.png)
+
+Summary statistics can be pulled from the the results as follows:
+
+``` r
+mean(ways_touching$quietness, na.rm = T)
+```
+
+    ## [1] 67.45652
+
+We can run this for all routes as follows:
+
+``` r
+for(i in 1:nrow(l))
+  l$quietness_ways[i] = mean(ways[lfq$rf[i,],]$quietness, na.rm = T) ; print(i)
+
+busyness_by_length = l$busyness_fast / l$dist /1000
+summary(quietness_by_length)
+saveRDS(l, "l_cyipt.Rds")
+```
+
+The results show the quietness score is related to the 'busynance' of the route provided by CycleStreets.net:
+
+``` r
+busyness_by_length = l$busyness_fast / l$dist /1000
+plot(busyness_by_length, l$quietness_ways)
+```
+
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-18-1.png)
+
+``` r
+cor(busyness_by_length, l$quietness_ways, use = "complete.obs")
+```
+
+    ## [1] -0.6282964
 
 Modelling raw cyclist counts
 ----------------------------
@@ -154,7 +240,7 @@ names(l)
     ## [87] "time_fast"                "busyness_fast"           
     ## [89] "av_incline_fast"          "dist_quiet"              
     ## [91] "time_quiet"               "busyness_quiet"          
-    ## [93] "av_incline_quiet"
+    ## [93] "av_incline_quiet"         "quietness_ways"
 
 The simplest model of cycling update under this framework would be to estimate the number of cyclists as a linear function of total number travelling:
 
@@ -264,7 +350,7 @@ points(l$all, m1$fitted.values, col = "red")
 points(l$all, m3$fitted.values, col = "grey")
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 There are various issues here. We need to model cycling uptake but that is always a function of `all`. We must add additional variables such as hilliness. Further, we must use non-linear function of some predictor variables such as distance.
 
@@ -350,7 +436,7 @@ plot(l$all, l$bicycle)
 points(l$all, m4_fitted, col = "red")
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ``` r
 (rmse4 = sqrt(c(crossprod(m4_fitted - l_sub$bicycle)) / nrow(l)))
@@ -365,7 +451,7 @@ importance_m4 = xgb.importance(model = m4, feature_names = names(l_sub)[-1])
 xgb.plot.importance(importance_m4)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 A full model
 ------------
@@ -394,7 +480,7 @@ importance_m5 = xgb.importance(model = m5, feature_names = names(l_full)[-1])
 xgb.plot.importance(importance_m5)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ``` r
 m5_fitted = predict(m5, as.matrix(l_full[-1]))
@@ -431,7 +517,7 @@ importance_m6 = xgb.importance(model = m6, feature_names = names(l_full)[-c(1, 2
 xgb.plot.importance(importance_m6)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 ``` r
 m6_fitted = predict(m6, as.matrix(l_full[-c(1, 2)]))
@@ -468,7 +554,7 @@ importance_m7 = xgb.importance(model = m7, feature_names = names(l_full)[-c(1, 2
 xgb.plot.importance(importance_m7)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](model-uptake_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ``` r
 m7_fitted = predict(m7, as.matrix(l_full[-c(1, 2)]))

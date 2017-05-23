@@ -163,26 +163,25 @@ mean(ways_touching$quietness, na.rm = T)
 
 We can run this for all routes as follows:
 
-```{r}
-n_cores <- 8 # set max number of cores to 4
-if(parallel:::detectCores() < 4)
-  n_cores <- parallel:::detectCores()
-cl <- parallel::makeCluster(n_cores)
-doParallel::registerDoParallel(cl)
-l$quietness_ways = NA # the variable to calculate
-
+```{r, eval=FALSE}
 for(i in 1:nrow(l))
   l$quietness_ways[i] = mean(ways[lfq$rf[i,],]$quietness, na.rm = T) ; print(i)
 
-
-quietness_by_length = l$busyness_fast / l$dist /1000
+busyness_by_length = l$busyness_fast / l$dist /1000
 summary(quietness_by_length)
+saveRDS(l, "l_cyipt.Rds")
+```
+
+```{r, echo=FALSE}
+l = readRDS("l_cyipt.Rds")
 ```
 
 The results show the quietness score is related to the 'busynance' of the route provided by CycleStreets.net:
 
 ```{r}
-route_single$busyness
+busyness_by_length = l$busyness_fast / l$dist /1000
+plot(busyness_by_length, l$quietness_ways)
+cor(busyness_by_length, l$quietness_ways, use = "complete.obs")
 ```
 
 
