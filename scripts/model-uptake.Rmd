@@ -2,7 +2,9 @@
 title: "Modelling Cycling Update"
 author: "Robin Lovelace"
 date: "8 May 2017"
-output: github_document
+output:
+  github_document:
+    toc: true
 ---
 
 ```{r, echo=FALSE}
@@ -26,13 +28,13 @@ data_source = "https://github.com/npct/pct-data/raw/master/"
 
 For the case study region of Bristol, the data is stored in the `example-data` folder:
 
-```{r}
+```{r, message=FALSE, results='hide'}
 library(sf)
 library(tidyverse)
 region = st_read("../areas/bristol-poly.geojson")
 ```
 
-The main input data comes from 2 main sources:
+The input data comes from 3 main sources:
 
 
 - Outputs from the PCT, which reports current cycling levels and estimated 'fastest routes' for cyclists. After combining the straight lines, quietest routes and fastest routes into a single list object, they can be loaded as follows:
@@ -44,13 +46,6 @@ if(!file.exists("l.Rds")) {
   download.file(paste0(data_source, region_name, "/rf.Rds"), "rf.Rds", mode = "wb")
   download.file(paste0(data_source, region_name, "/rq.Rds"), "rq.Rds", mode = "wb")
 }
-```
-
-```{r, echo=FALSE, eval=FALSE}
-# load local data - no longer done as lacks busyness
-l = readRDS("l.Rds")
-rf = readRDS("rf.Rds")
-rq = readRDS("rq.Rds")
 ```
 
 ```{r, echo=FALSE, eval=FALSE}
@@ -88,8 +83,14 @@ plot(lfq$rq[1], add = T, col = "green")
 plot(region[1], col = "white", lwd = 5, add = T)
 ```
 
+- OSM data, which can be downloaded using the osmdata R package. We have saved the osm route network in the highways tab.
 
-- Outputs from the data processing stage of the CyIPT project, which provides data on the current road network from the perspective of cycling.
+```{r}
+ways = readRDS("../../example-data/bristol/osm-all-highways.Rds")
+```
+
+
+- Data created by the CyIPT project, which provides data on the current road network from the perspective of cycling.
 
 ```{r, echo=FALSE}
 if(!file.exists("osm-lines-quietness-full.Rds")) {
