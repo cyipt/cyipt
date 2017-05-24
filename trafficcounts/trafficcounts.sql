@@ -19,8 +19,7 @@ CREATE TABLE major_roads_link_network (
 	startLongitude text NOT NULL,
 	startLatitude text NOT NULL,
 	finishLongitude text NOT NULL,
-	finishLatitude text NOT NULL,
-	geom LINESTRING NULL
+	finishLatitude text NOT NULL
 );
 
 ALTER TABLE major_roads_link_network ADD INDEX (cp);
@@ -34,6 +33,7 @@ LOAD DATA INFILE '/tmp/major-roads-link-network.csv'
 ;
 
 -- Create the geometry; this is already in WGS84
+ALTER TABLE major_roads_link_network ADD geom LINESTRING NULL;
 UPDATE major_roads_link_network SET geom = ST_GeomFromText( CONCAT('LINESTRING(', startLongitude, ' ', startLatitude, ',' , finishLongitude, ' ', finishLatitude, ')') );
 ALTER TABLE major_roads_link_network CHANGE geom geom LINESTRING NOT NULL;
 
