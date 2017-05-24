@@ -378,30 +378,39 @@ DELIMITER ;
 
 DROP TABLE IF EXISTS aadf_cycles_years;
 CALL Pivot('cycles');
+ALTER TABLE aadf_cycles_years ADD INDEX (cp);
 
 DROP TABLE IF EXISTS aadf_p2w_years;
 CALL Pivot('p2w');
+ALTER TABLE aadf_p2w_years ADD INDEX (cp);
 
 DROP TABLE IF EXISTS aadf_cars_years;
 CALL Pivot('cars');
+ALTER TABLE aadf_cars_years ADD INDEX (cp);
 
 DROP TABLE IF EXISTS aadf_buses_years;
 CALL Pivot('buses');
+ALTER TABLE aadf_buses_years ADD INDEX (cp);
 
 DROP TABLE IF EXISTS aadf_lgvs_years;
 CALL Pivot('lgvs');
+ALTER TABLE aadf_lgvs_years ADD INDEX (cp);
 
 DROP TABLE IF EXISTS aadf_mgvs_years;
 CALL Pivot('mgvs');
+ALTER TABLE aadf_mgvs_years ADD INDEX (cp);
 
 DROP TABLE IF EXISTS aadf_hgvs_years;
 CALL Pivot('hgvs');
+ALTER TABLE aadf_hgvs_years ADD INDEX (cp);
 
 DROP TABLE IF EXISTS aadf_all_motors_years;
 CALL Pivot('all_motors');
+ALTER TABLE aadf_all_motors_years ADD INDEX (cp);
 
 DROP TABLE IF EXISTS aadf_all_motors_pcu_years;
 CALL Pivot('all_motors_pcu');
+ALTER TABLE aadf_all_motors_pcu_years ADD INDEX (cp);
 
 
 
