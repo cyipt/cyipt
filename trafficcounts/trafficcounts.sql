@@ -299,7 +299,118 @@ CREATE TABLE pcu_roads_political AS
 ;
 
 
--- do cross tabs for: cycles, p2w, cars, buses, lgvs, mgvs, hgvs, all_motors, all_motor_pcu
+/*
+
+The following original pivot queries use the Postgres -specific crosstab() function:
+https://www.postgresql.org/docs/9.2/static/tablefunc.html
+
+The workaround for MySQL is unfortunately:
+
+SELECT
+	cp
+	,GROUP_CONCAT(IF(`year` = 2000, cycles, NULL)) AS cycles_00
+	,GROUP_CONCAT(IF(`year` = 2001, cycles, NULL)) AS cycles_01
+	[...]
+	,GROUP_CONCAT(IF(`year` = 2016, cycles, NULL)) AS cycles_16
+FROM pcu_roads
+GROUP BY cp
+ORDER BY cp ASC
+;
+
+However, the writing-out of the clauses can be simplified using the principles of the Pivot procedure here:
+http://buysql.com/mysql/14-how-to-automate-pivot-tables.html
+http://mysql.rjweb.org/doc.php/pivot
+https://stackoverflow.com/questions/12004603/mysql-pivot-row-into-dynamic-number-of-columns
+
+Therefore the following Stored Procedure will do this, and can be run as follows:
+CALL Pivot('cycles');	// Creates table aadf_cycles_years, containing fields cp,cycles_00,cycles_01,...
+
+This also avoids the problem in the Postgres version that requires hard-coded field lists to be updated each year
+
+*/
+
+
+
+-- do cross tabs for: cycles, p2w, cars, buses, lgvs, mgvs, hgvs, all_motors, all_motors_pcu
+
+
+
+-- MySQL version, using stored procedure:
+
+DELIMITER //
+DROP   PROCEDURE IF EXISTS Pivot //
+CREATE PROCEDURE Pivot(
+	IN fieldname VARCHAR(255)	-- Fieldname, e.g. 'cycles' will read the cycles field and generate cycles_00, cycles_01, etc.
+	)
+	DETERMINISTIC
+	SQL SECURITY INVOKER
+BEGIN
+	
+	SET @@group_concat_max_len = 10000;
+	
+	-- Compile the GROUP_CONCAT clauses
+	SET @sql = NULL;
+	SELECT
+	  GROUP_CONCAT(DISTINCT
+	    CONCAT(
+	      'GROUP_CONCAT(IF(year = ', year, ', ', fieldname, ', NULL)) AS ', fieldname, '_', SUBSTRING(year, 3)
+	    )
+	  ) INTO @sql
+	FROM pcu_roads;
+	
+	-- Compile the main query
+	SET @sql = CONCAT('SELECT cp, ', @sql, ' FROM pcu_roads GROUP BY cp ORDER BY cp ASC');
+	
+	-- Set the query to create a table
+	SET @sql = CONCAT('CREATE TABLE aadf_' , fieldname, '_years AS ', @sql);
+	
+	-- Perform the query
+	select @sql;
+	PREPARE _sql FROM @sql;
+	EXECUTE _sql;
+	DEALLOCATE PREPARE _sql;
+
+END;
+//
+DELIMITER ;
+
+
+
+DROP TABLE IF EXISTS aadf_cycles_years;
+CALL Pivot('cycles');
+
+DROP TABLE IF EXISTS aadf_p2w_years;
+CALL Pivot('p2w');
+
+DROP TABLE IF EXISTS aadf_cars_years;
+CALL Pivot('cars');
+
+DROP TABLE IF EXISTS aadf_buses_years;
+CALL Pivot('buses');
+
+DROP TABLE IF EXISTS aadf_lgvs_years;
+CALL Pivot('lgvs');
+
+DROP TABLE IF EXISTS aadf_mgvs_years;
+CALL Pivot('mgvs');
+
+DROP TABLE IF EXISTS aadf_hgvs_years;
+CALL Pivot('hgvs');
+
+DROP TABLE IF EXISTS aadf_all_motors_years;
+CALL Pivot('all_motors');
+
+DROP TABLE IF EXISTS aadf_all_motors_pcu_years;
+CALL Pivot('all_motors_pcu');
+
+
+
+
+/*
+
+
+-- Postgres version:
+
 
 DROP TABLE IF EXISTS aadf_cycles_years;
 
