@@ -135,11 +135,16 @@ fi
 # Extract relevant sections of boundary file
 unzip -j -o $boundaryFile "Data/GB/westminster_const_region.*" "Data/GB/district_borough_unitary_region.*" "Data/GB/district_borough_unitary_ward_region.*"
 
+# Get intial MySQL value
+mysqlInitialMaxAllowedPacket=$(mysql -s -N -h $hostname -u $username -p$password $database -e "SELECT @@global.max_allowed_packet;")
+
 # Convert boundary data Shapefiles
 # Test ogr2ogr connection to MySQL using: `ogrinfo MYSQL:$database,host=$hostname,user=$username,password=$password` ; see: http://mapserver.org/uk/input/vector/mysql.html
 shapefiles=('westminster_const_region' 'district_borough_unitary_region' 'district_borough_unitary_ward_region');
 for shapefile in ${shapefiles[@]} ; do
+	mysql -h $hostname -u $username -p$password $database -e "SET GLOBAL max_allowed_packet=(32*1024*1024);"
 	ogr2ogr -f MySQL MySQL:$database,host=$hostname,user=$username,password=$password ${shapefile}.shp -nln $shapefile -update -overwrite -lco engine=MYISAM
+	mysql -h $hostname -u $username -p$password $database -e "SET GLOBAL max_allowed_packet=${mysqlInitialMaxAllowedPacket};"
 	mysql -h $hostname -u $username -p$password $database -e "ALTER TABLE $shapefile CHANGE SHAPE geom GEOMETRY NOT NULL;"
 	# http://stackoverflow.com/questions/3463942/change-srid-in-mysql
 	# "Limitation: SRS information is stored using the OGC Simple Features for SQL layout" i.e. not in the geom field itself ; see: http://www.gdal.org/drv_mysql.html
