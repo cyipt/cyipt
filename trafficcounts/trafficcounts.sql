@@ -359,7 +359,7 @@ Create TABLE aadf_lgvs_years AS
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int, lgvs_00 int, lgvs_01 int, lgvs_02 int, lgvs_03 int, lgvs_04 int, lgvs_05 int, lgvs_06 int, lgvs_07 int, lgvs_08 int, lgvs_09 int, lgvs_10 int, lgvs_11 int, lgvs_12 int);
 
- DROP TABLE IF EXISTS aadf_mgvs_years;
+DROP TABLE IF EXISTS aadf_mgvs_years;
 
 Create TABLE aadf_mgvs_years AS
   SELECT * FROM
@@ -406,40 +406,50 @@ Create TABLE aadf_motor_pcu_years AS
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
  AS ct(cp int, motor_pcu_00 double precision, motor_pcu_01 double precision, motor_pcu_02 double precision, motor_pcu_03 double precision, motor_pcu_04 double precision, motor_pcu_05 double precision, motor_pcu_06 double precision, motor_pcu_07 double precision, motor_pcu_08 double precision, motor_pcu_09 double precision, motor_pcu_10 double precision, motor_pcu_11 double precision, motor_pcu_12 double precision);
 
--- make a table of max year and CP
+-- Make a table of max year and CP
 DROP TABLE IF EXISTS aadf_uk_cp_maxyear;
 
-CREATE TABLE aadf_uk_cp_maxyear as
-SELECT cp as maxyear_cp, max(year) as maxyear
-FROM pcu_roads_political
-GROUP BY cp;
+CREATE TABLE aadf_uk_cp_maxyear AS
+	SELECT cp AS maxyear_cp, MAX(year) as maxyear
+	FROM pcu_roads_political
+	GROUP BY cp
+;
 
--- make a big table of all the count points, this combines all of the pivoted years and uses as the main table (aliased as pol) a subselect query which makes sure you only get the full data for the last year it had a full count. This enables us to create a very flat table ideally suited to google fusion tables.
 
-DROP TABLE IF EXISTS aadf_uk_counts_pcu_2003_2012;
+-- Make a big table of all the count points
+-- This combines all of the pivoted years and uses as the main table (aliased as pol) a subselect query which makes sure you only get the full data for the last year it had a full count. This enables us to create a very flat table ideally suited to google fusion tables.
 
-CREATE TABLE aadf_uk_counts_pcu_2003_2012 AS
-SELECT pol.westminstername, pol.boroughname, pol.wardname, pol.cp, pol.road, pol.road_type, pol.maxyear, pol.cycle_pcu, pol.p2w_pcu, pol.car_pcu, pol.bus_pcu, pol.lgv_pcu, pol.mgv_pcu, pol.hgv_pcu, pol.latitude, pol.longitude, pol.road_geom,
-cycles_00, cycles_01, cycles_02, cycles_03, cycles_04, cycles_05, cycles_06, cycles_07, cycles_08, cycles_09, cycles_10, cycles_11, cycles_12,
-p2w_00, p2w_01, p2w_02, p2w_03, p2w_04, p2w_05, p2w_06, p2w_07, p2w_08, p2w_09, p2w_10, p2w_11, p2w_12,
-cars_00, cars_01, cars_02, cars_03, cars_04, cars_05, cars_06, cars_07, cars_08, cars_09, cars_10, cars_11, cars_12,
-buses_00, buses_01, buses_02, buses_03, buses_04, buses_05, buses_06, buses_07, buses_08, buses_09, buses_10, buses_11, buses_12,
-lgvs_00, lgvs_01, lgvs_02, lgvs_03, lgvs_04, lgvs_05, lgvs_06, lgvs_07, lgvs_08, lgvs_09, lgvs_10, lgvs_11, lgvs_12,
-mgvs_00, mgvs_01, mgvs_02, mgvs_03, mgvs_04, mgvs_05, mgvs_06, mgvs_07, mgvs_08, mgvs_09, mgvs_10, mgvs_11, mgvs_12,
-hgvs_00, hgvs_01, hgvs_02, hgvs_03, hgvs_04, hgvs_05, hgvs_06, hgvs_07, hgvs_08, hgvs_09, hgvs_10, hgvs_11, hgvs_12,
-motors_00, motors_01, motors_02, motors_03, motors_04, motors_05, motors_06, motors_07, motors_08, motors_09, motors_10, motors_11, motors_12,
-motor_pcu_00, motor_pcu_01, motor_pcu_02, motor_pcu_03, motor_pcu_04, motor_pcu_05, motor_pcu_06, motor_pcu_07, motor_pcu_08, motor_pcu_09, motor_pcu_10, motor_pcu_11, motor_pcu_12
-FROM (SELECT * FROM pcu_roads_political pol INNER JOIN aadf_uk_cp_maxyear my on pol.cp = my.maxyear_cp  AND my.maxyear = pol.year) as pol
-LEFT JOIN aadf_cycles_years on pol.cp = aadf_cycles_years.cp
-LEFT JOIN aadf_p2w_years on pol.cp = aadf_p2w_years.cp
-LEFT JOIN aadf_cars_years on pol.cp = aadf_cars_years.cp
-LEFT JOIN aadf_buses_years on pol.cp = aadf_buses_years.cp
-LEFT JOIN aadf_lgvs_years on pol.cp = aadf_lgvs_years.cp
-LEFT JOIN aadf_mgvs_years on pol.cp = aadf_mgvs_years.cp
-LEFT JOIN aadf_hgvs_years on pol.cp = aadf_hgvs_years.cp
-LEFT JOIN aadf_motors_years on pol.cp = aadf_motors_years.cp
-LEFT JOIN aadf_motor_pcu_years on pol.cp = aadf_motor_pcu_years.cp
-WHERE (pol.road_geom is not null OR pol.latitude is not null)
+DROP TABLE IF EXISTS aadf_uk_counts_pcu;
+
+CREATE TABLE aadf_uk_counts_pcu AS
+SELECT
+	pol.westminstername, pol.boroughname, pol.wardname, pol.cp, pol.road, pol.road_type, pol.maxyear, pol.cycle_pcu, pol.p2w_pcu, pol.car_pcu, pol.bus_pcu, pol.lgv_pcu, pol.mgv_pcu, pol.hgv_pcu, pol.latitude, pol.longitude, pol.road_geom,
+	cycles_00, cycles_01, cycles_02, cycles_03, cycles_04, cycles_05, cycles_06, cycles_07, cycles_08, cycles_09, cycles_10, cycles_11, cycles_12,
+	p2w_00, p2w_01, p2w_02, p2w_03, p2w_04, p2w_05, p2w_06, p2w_07, p2w_08, p2w_09, p2w_10, p2w_11, p2w_12,
+	cars_00, cars_01, cars_02, cars_03, cars_04, cars_05, cars_06, cars_07, cars_08, cars_09, cars_10, cars_11, cars_12,
+	buses_00, buses_01, buses_02, buses_03, buses_04, buses_05, buses_06, buses_07, buses_08, buses_09, buses_10, buses_11, buses_12,
+	lgvs_00, lgvs_01, lgvs_02, lgvs_03, lgvs_04, lgvs_05, lgvs_06, lgvs_07, lgvs_08, lgvs_09, lgvs_10, lgvs_11, lgvs_12,
+	mgvs_00, mgvs_01, mgvs_02, mgvs_03, mgvs_04, mgvs_05, mgvs_06, mgvs_07, mgvs_08, mgvs_09, mgvs_10, mgvs_11, mgvs_12,
+	hgvs_00, hgvs_01, hgvs_02, hgvs_03, hgvs_04, hgvs_05, hgvs_06, hgvs_07, hgvs_08, hgvs_09, hgvs_10, hgvs_11, hgvs_12,
+	motors_00, motors_01, motors_02, motors_03, motors_04, motors_05, motors_06, motors_07, motors_08, motors_09, motors_10, motors_11, motors_12,
+	motor_pcu_00, motor_pcu_01, motor_pcu_02, motor_pcu_03, motor_pcu_04, motor_pcu_05, motor_pcu_06, motor_pcu_07, motor_pcu_08, motor_pcu_09, motor_pcu_10, motor_pcu_11, motor_pcu_12
+FROM
+	(
+		SELECT *
+		FROM pcu_roads_political pol
+		INNER JOIN aadf_uk_cp_maxyear my ON pol.cp = my.maxyear_cp AND my.maxyear = pol.year
+	) AS pol
+	LEFT JOIN aadf_cycles_years on pol.cp = aadf_cycles_years.cp
+	LEFT JOIN aadf_p2w_years on pol.cp = aadf_p2w_years.cp
+	LEFT JOIN aadf_cars_years on pol.cp = aadf_cars_years.cp
+	LEFT JOIN aadf_buses_years on pol.cp = aadf_buses_years.cp
+	LEFT JOIN aadf_lgvs_years on pol.cp = aadf_lgvs_years.cp
+	LEFT JOIN aadf_mgvs_years on pol.cp = aadf_mgvs_years.cp
+	LEFT JOIN aadf_hgvs_years on pol.cp = aadf_hgvs_years.cp
+	LEFT JOIN aadf_motors_years on pol.cp = aadf_motors_years.cp
+	LEFT JOIN aadf_motor_pcu_years on pol.cp = aadf_motor_pcu_years.cp
+WHERE
+	(pol.road_geom is not null OR pol.latitude is not null)
 
 
 -- done!
