@@ -1,3 +1,4 @@
 .credentials.sh
 *.zip
 *.csv
+!trafficcounts-extract.csv
