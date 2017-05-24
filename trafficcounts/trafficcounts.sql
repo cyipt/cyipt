@@ -297,6 +297,7 @@ CREATE TABLE pcu_roads_political AS
 	INNER JOIN x_road_cat ON pcu.rcat = x_road_cat.rcat
 	LEFT JOIN major_roads_link_network road ON pcu.cp = road.cp
 ;
+ALTER TABLE pcu_roads_political ADD INDEX (cp);
 
 
 /*
@@ -542,12 +543,13 @@ CREATE TABLE aadf_uk_cp_maxyear AS
 
 -- Make a big table of all the count points
 -- This combines all of the pivoted years and uses as the main table (aliased as pol) a subselect query which makes sure you only get the full data for the last year it had a full count. This enables us to create a very flat table ideally suited to google fusion tables.
+-- Takes 12 seconds to run
 
 DROP TABLE IF EXISTS aadf_uk_counts_pcu;
 
 CREATE TABLE aadf_uk_counts_pcu AS
 SELECT
-	pol.westminstername, pol.boroughname, pol.wardname, pol.cp, pol.road, pol.road_type, pol.maxyear, pol.cycle_pcu, pol.p2w_pcu, pol.car_pcu, pol.bus_pcu, pol.lgv_pcu, pol.mgv_pcu, pol.hgv_pcu, pol.latitude, pol.longitude, pol.road_geom,
+	pol.cp, pol.westminstername, pol.boroughname, pol.wardname, pol.road, pol.road_type, pol.maxyear, pol.cycle_pcu, pol.p2w_pcu, pol.car_pcu, pol.bus_pcu, pol.lgv_pcu, pol.mgv_pcu, pol.hgv_pcu, pol.latitude, pol.longitude, pol.road_geom,
 	cycles_00, cycles_01, cycles_02, cycles_03, cycles_04, cycles_05, cycles_06, cycles_07, cycles_08, cycles_09, cycles_10, cycles_11, cycles_12, cycles_13, cycles_14, cycles_15, cycles_16,
 	p2w_00, p2w_01, p2w_02, p2w_03, p2w_04, p2w_05, p2w_06, p2w_07, p2w_08, p2w_09, p2w_10, p2w_11, p2w_12, p2w_13, p2w_14, p2w_15, p2w_16,
 	cars_00, cars_01, cars_02, cars_03, cars_04, cars_05, cars_06, cars_07, cars_08, cars_09, cars_10, cars_11, cars_12, cars_13, cars_14, cars_15, cars_16,
