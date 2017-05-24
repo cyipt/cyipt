@@ -29,6 +29,8 @@ tmpDir=/tmp/
 # Set to terminate if error
 set -e
 
+date
+
 # Get script directory: see: http://stackoverflow.com/a/246128/180733
 scriptDir="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -152,3 +154,4 @@ mysql -h $hostname -u $username -p$password $database -e "DROP TABLE IF EXISTS g
 mysql --local-infile -h $hostname -u $username -p$password $database < $scriptDir/trafficcounts.sql
 
 
+date
