@@ -247,7 +247,7 @@ CREATE TABLE pcu_roads AS
 		FdLGV AS lgv_pcu,
 		FdHGVR2 * 1.5 AS mgv_pcu,
 		(FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6) * 2.3 AS hgv_pcu,
-		Fd2WMV * 0.4 + FdCAR + FdBUS * 2 + FdLGV + FdHGVR2 * 1.5 + (FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6) * 2.3 AS all_motor_pcu
+		Fd2WMV * 0.4 + FdCAR + FdBUS * 2 + FdLGV + FdHGVR2 * 1.5 + (FdHGVR3 + FdHGVR4 + FdHGVA3 + FdHGVA5 + FdHGVA6) * 2.3 AS all_motors_pcu
 	FROM (
 		SELECT year, cp, Road, RCat, FdPC, Fd2WMV, FdCAR, FdBUS, FdLGV, FdHGVR2, FdHGVR3, FdHGVR4, FdHGVA3, FdHGVA5, FdHGVA6 FROM major_roads
 		UNION
@@ -288,7 +288,7 @@ CREATE TABLE pcu_roads_political AS
 		pcu.cp, pcu.road,
 		road_type,
 		pcu.year,
-		cycles, p2w, cars, buses, lgvs, mgvs, hgvs, all_motors, cycle_pcu, p2w_pcu, car_pcu, bus_pcu, lgv_pcu, mgv_pcu, hgv_pcu, all_motor_pcu,
+		cycles, p2w, cars, buses, lgvs, mgvs, hgvs, all_motors, cycle_pcu, p2w_pcu, car_pcu, bus_pcu, lgv_pcu, mgv_pcu, hgv_pcu, all_motors_pcu,
 		lo.latitude, lo.longitude,
 --		ST_AsKML(ST_Transform(road.geom,4326)) AS road_geom
 		ST_AsGeoJSON(road.geom) AS road_geom
@@ -383,28 +383,32 @@ Create TABLE aadf_hgvs_years AS
  AS ct(cp int, hgvs_00 int, hgvs_01 int, hgvs_02 int, hgvs_03 int, hgvs_04 int, hgvs_05 int, hgvs_06 int, hgvs_07 int, hgvs_08 int, hgvs_09 int, hgvs_10 int, hgvs_11 int, hgvs_12 int);
 
 
-DROP TABLE IF EXISTS aadf_motors_years;
+DROP TABLE IF EXISTS aadf_all_motors_years;
 
-Create TABLE aadf_motors_years AS
+Create TABLE aadf_all_motors_years AS
   SELECT * FROM
   crosstab(
  'SELECT cp, year, all_motors
  FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
- AS ct(cp int, motors_00 int, motors_01 int, motors_02 int, motors_03 int, motors_04 int, motors_05 int, motors_06 int, motors_07 int, motors_08 int, motors_09 int, motors_10 int, motors_11 int, motors_12 int);
+ AS ct(cp int, all_motors_00 int, all_motors_01 int, all_motors_02 int, all_motors_03 int, all_motors_04 int, all_motors_05 int, all_motors_06 int, all_motors_07 int, all_motors_08 int, all_motors_09 int, all_motors_10 int, all_motors_11 int, all_motors_12 int);
 
 
-DROP TABLE IF EXISTS aadf_motor_pcu_years;
+DROP TABLE IF EXISTS aadf_all_motors_pcu_years;
 
-Create TABLE aadf_motor_pcu_years AS
+Create TABLE aadf_all_motors_pcu_years AS
   SELECT * FROM
   crosstab(
- 'SELECT cp, year, all_motor_pcu
+ 'SELECT cp, year, all_motors_pcu
  FROM pcu_roads
  ORDER BY cp ASC',
  'SELECT DISTINCT year FROM pcu_roads ORDER BY year ASC')
- AS ct(cp int, motor_pcu_00 double precision, motor_pcu_01 double precision, motor_pcu_02 double precision, motor_pcu_03 double precision, motor_pcu_04 double precision, motor_pcu_05 double precision, motor_pcu_06 double precision, motor_pcu_07 double precision, motor_pcu_08 double precision, motor_pcu_09 double precision, motor_pcu_10 double precision, motor_pcu_11 double precision, motor_pcu_12 double precision);
+ AS ct(cp int, all_motors_pcu_00 double precision, all_motors_pcu_01 double precision, all_motors_pcu_02 double precision, all_motors_pcu_03 double precision, all_motors_pcu_04 double precision, all_motors_pcu_05 double precision, all_motors_pcu_06 double precision, all_motors_pcu_07 double precision, all_motors_pcu_08 double precision, all_motors_pcu_09 double precision, all_motors_pcu_10 double precision, all_motors_pcu_11 double precision, all_motors_pcu_12 double precision);
+
+
+*/
+
 
 -- Make a table of max year and CP
 DROP TABLE IF EXISTS aadf_uk_cp_maxyear;
@@ -431,8 +435,8 @@ SELECT
 	lgvs_00, lgvs_01, lgvs_02, lgvs_03, lgvs_04, lgvs_05, lgvs_06, lgvs_07, lgvs_08, lgvs_09, lgvs_10, lgvs_11, lgvs_12, lgvs_13, lgvs_14, lgvs_15, lgvs_16,
 	mgvs_00, mgvs_01, mgvs_02, mgvs_03, mgvs_04, mgvs_05, mgvs_06, mgvs_07, mgvs_08, mgvs_09, mgvs_10, mgvs_11, mgvs_12, mgvs_13, mgvs_14, mgvs_15, mgvs_16,
 	hgvs_00, hgvs_01, hgvs_02, hgvs_03, hgvs_04, hgvs_05, hgvs_06, hgvs_07, hgvs_08, hgvs_09, hgvs_10, hgvs_11, hgvs_12, hgvs_13, hgvs_14, hgvs_15, hgvs_16,
-	motors_00, motors_01, motors_02, motors_03, motors_04, motors_05, motors_06, motors_07, motors_08, motors_09, motors_10, motors_11, motors_12, motors_13, motors_14, motors_15, motors_16,
-	motor_pcu_00, motor_pcu_01, motor_pcu_02, motor_pcu_03, motor_pcu_04, motor_pcu_05, motor_pcu_06, motor_pcu_07, motor_pcu_08, motor_pcu_09, motor_pcu_10, motor_pcu_11, motor_pcu_12, motor_pcu_13, motor_pcu_14, motor_pcu_15, motor_pcu_16
+	all_motors_00, all_motors_01, all_motors_02, all_motors_03, all_motors_04, all_motors_05, all_motors_06, all_motors_07, all_motors_08, all_motors_09, all_motors_10, all_motors_11, all_motors_12, all_motors_13, all_motors_14, all_motors_15, all_motors_16,
+	all_motors_pcu_00, all_motors_pcu_01, all_motors_pcu_02, all_motors_pcu_03, all_motors_pcu_04, all_motors_pcu_05, all_motors_pcu_06, all_motors_pcu_07, all_motors_pcu_08, all_motors_pcu_09, all_motors_pcu_10, all_motors_pcu_11, all_motors_pcu_12, all_motors_pcu_13, all_motors_pcu_14, all_motors_pcu_15, all_motors_pcu_16
 FROM
 	(
 		SELECT *
@@ -446,8 +450,8 @@ FROM
 	LEFT JOIN aadf_lgvs_years on pol.cp = aadf_lgvs_years.cp
 	LEFT JOIN aadf_mgvs_years on pol.cp = aadf_mgvs_years.cp
 	LEFT JOIN aadf_hgvs_years on pol.cp = aadf_hgvs_years.cp
-	LEFT JOIN aadf_motors_years on pol.cp = aadf_motors_years.cp
-	LEFT JOIN aadf_motor_pcu_years on pol.cp = aadf_motor_pcu_years.cp
+	LEFT JOIN aadf_all_motors_years on pol.cp = aadf_all_motors_years.cp
+	LEFT JOIN aadf_all_motors_pcu_years on pol.cp = aadf_all_motors_pcu_years.cp
 WHERE
 	(pol.road_geom is not null OR pol.latitude is not null)
 
