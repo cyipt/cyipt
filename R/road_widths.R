@@ -4,7 +4,7 @@ library(dplyr)
 
 #Read in data
 os <- readRDS("../example-data/bristol/os_data/roads.Rds")
-osm <- readRDS("../example-data/bristol/osm_data/roads_osm.Rds")
+osm <- readRDS("../example-data/bristol/osm_data/osm-split.Rds")
 
 #New Combined Loop
 for(a in 1:nrow(osm)){
@@ -287,7 +287,7 @@ for(a in 1:nrow(osm)){
 
 }
 
-saveRDS(osm, "../example-data/bristol/osm_data/roads_osm_widths2.Rds")
+saveRDS(osm, "../example-data/bristol/osm_data/osm-split-roadwidths.Rds")
 sub <- as.data.frame(osm)
 sub <- sub[,c("id","osm_id","name","width","widthpath")]
-write.csv(sub,"../example-data/bristol/osm_data/roads_osm_widths2.csv")
+write.csv(sub,"../example-data/bristol/osm_data/osm-split-roadwiths.csv")
