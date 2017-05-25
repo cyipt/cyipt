@@ -291,6 +291,7 @@ CREATE TABLE pcu_roads_political AS
 		cycles, p2w, cars, buses, lgvs, mgvs, hgvs, all_motors, cycle_pcu, p2w_pcu, car_pcu, bus_pcu, lgv_pcu, mgv_pcu, hgv_pcu, all_motors_pcu,
 		lo.latitude, lo.longitude,
 --		ST_AsKML(ST_Transform(road.geom,4326)) AS road_geom
+		road.startLongitude, road.startLatitude, road.finishLongitude, road.finishLatitude,
 		ST_AsGeoJSON(road.geom) AS road_geom
 	FROM pcu_roads AS pcu
 	INNER JOIN RoadCPLocationsFound lo ON pcu.cp = lo.cp
@@ -549,7 +550,8 @@ DROP TABLE IF EXISTS aadf_uk_counts_pcu;
 
 CREATE TABLE aadf_uk_counts_pcu AS
 SELECT
-	pol.cp, pol.westminstername, pol.boroughname, pol.wardname, pol.road, pol.road_type, pol.maxyear, pol.cycle_pcu, pol.p2w_pcu, pol.car_pcu, pol.bus_pcu, pol.lgv_pcu, pol.mgv_pcu, pol.hgv_pcu, pol.latitude, pol.longitude, pol.road_geom,
+	pol.cp, pol.westminstername, pol.boroughname, pol.wardname, pol.road, pol.road_type, pol.maxyear, pol.cycle_pcu, pol.p2w_pcu, pol.car_pcu, pol.bus_pcu, pol.lgv_pcu, pol.mgv_pcu, pol.hgv_pcu,
+	pol.latitude, pol.longitude, pol.startLongitude, pol.startLatitude, pol.finishLongitude, pol.finishLatitude,  pol.road_geom,
 	cycles_00, cycles_01, cycles_02, cycles_03, cycles_04, cycles_05, cycles_06, cycles_07, cycles_08, cycles_09, cycles_10, cycles_11, cycles_12, cycles_13, cycles_14, cycles_15, cycles_16,
 	p2w_00, p2w_01, p2w_02, p2w_03, p2w_04, p2w_05, p2w_06, p2w_07, p2w_08, p2w_09, p2w_10, p2w_11, p2w_12, p2w_13, p2w_14, p2w_15, p2w_16,
 	cars_00, cars_01, cars_02, cars_03, cars_04, cars_05, cars_06, cars_07, cars_08, cars_09, cars_10, cars_11, cars_12, cars_13, cars_14, cars_15, cars_16,
