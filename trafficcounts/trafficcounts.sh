@@ -143,7 +143,7 @@ mysqlInitialMaxAllowedPacket=$(mysql -s -N -h $hostname -u $username -p$password
 shapefiles=('westminster_const_region' 'district_borough_unitary_region' 'district_borough_unitary_ward_region');
 for shapefile in ${shapefiles[@]} ; do
 	mysql -h $hostname -u $username -p$password $database -e "SET GLOBAL max_allowed_packet=(32*1024*1024);"
-	ogr2ogr -f MySQL MySQL:$database,host=$hostname,user=$username,password=$password ${shapefile}.shp -nln $shapefile -update -overwrite -lco engine=MYISAM
+	ogr2ogr -f MySQL MySQL:$database,host=$hostname,user=$username,password=$password ${shapefile}.shp -t_srs crs:84 -nln $shapefile -update -overwrite -lco engine=MYISAM
 	mysql -h $hostname -u $username -p$password $database -e "SET GLOBAL max_allowed_packet=${mysqlInitialMaxAllowedPacket};"
 	mysql -h $hostname -u $username -p$password $database -e "ALTER TABLE $shapefile CHANGE SHAPE geom GEOMETRY NOT NULL;"
 	# http://stackoverflow.com/questions/3463942/change-srid-in-mysql

@@ -181,19 +181,19 @@ CREATE TABLE cptolocate AS
 ;
 
 -- Add a geometry column to the locations we are finding
--- SELECT AddGeometryColumn ('public','cptolocate', 'geom_gb', 27700, 'POINT', 2);
+-- SELECT AddGeometryColumn ('public','cptolocate', 'geom_gb', 4326, 'POINT', 2);
 ALTER TABLE cptolocate ADD geom_gb POINT;
 
--- Create geometry points for the tables in the 27700 SRID
--- UPDATE cptolocate SET geom_gb=ST_GeomFromText('POINT('||S_Ref_E||' '||S_Ref_N||')',27700);
-UPDATE cptolocate SET geom_gb = ST_GeomFromText( CONCAT('POINT(', S_Ref_E, ' ', S_Ref_N, ')') , 27700);
+-- Create geometry points for the tables
+-- UPDATE cptolocate SET geom_gb=ST_GeomFromText('POINT('||S_Ref_E||' '||S_Ref_N||')',4326);
+UPDATE cptolocate SET geom_gb = ST_GeomFromText( CONCAT('POINT(', S_Ref_E, ' ', S_Ref_N, ')') , 4326);
 
 -- Add the spatial index
 -- CREATE INDEX gist_rgb ON cptolocate USING gist (geom_gb);
 ALTER TABLE cptolocate CHANGE geom_gb geom_gb POINT NOT NULL;
 CREATE SPATIAL INDEX gist_rgb ON cptolocate (geom_gb);
 
--- As used before , these regions are shapefiles imported into postgresql using the shapefile importer (SRID 27700)
+-- As used before, these regions are shapefiles imported into the database using the shapefile importer
 DROP TABLE IF EXISTS RoadCPLocationsWestminster;
 CREATE TABLE RoadCPLocationsWestminster AS
 SELECT lo.cp, wm.name, wm.code
