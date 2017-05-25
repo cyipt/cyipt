@@ -155,8 +155,16 @@ done
 mysql -h $hostname -u $username -p$password $database -e "DROP TABLE IF EXISTS geometry_columns, spatial_ref_sys;"
 
 
+# Clear data from any previous run
+rm -f $tmpDir/trafficcounts.data.csv
+rm -f $tmpDir/trafficcounts.headers.csv
+
 # Connect to the database and run the SQL script
 mysql --local-infile -h $hostname -u $username -p$password $database < $scriptDir/trafficcounts.sql
+
+# Combine the CSV header and data files, clearing data from any previous run
+rm -f $scriptDir/trafficcounts.csv
+cat $tmpDir/trafficcounts.data.csv $tmpDir/trafficcounts.headers.csv > $scriptDir/trafficcounts.csv
 
 
 date

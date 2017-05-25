@@ -578,4 +578,27 @@ WHERE
 	(pol.road_geom is not null OR pol.latitude is not null)
 
 
+-- Export the data
+SELECT
+	*
+	FROM aadf_uk_counts_pcu
+INTO OUTFILE '/tmp/trafficounts.data.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+;
+
+
+-- Export headers (as MySQL unfortunately can't include these at the same time); see: https://stackoverflow.com/a/13603727
+SET SESSION group_concat_max_len = 1000000;
+SELECT
+	GROUP_CONCAT(CONCAT('"',COLUMN_NAME,'"'))
+	FROM INFORMATION_SCHEMA.COLUMNS
+	WHERE TABLE_NAME = 'aadf_uk_counts_pcu'
+	ORDER BY ORDINAL_POSITION
+INTO OUTFILE '/tmp/trafficounts.headers.csv'
+LINES TERMINATED BY '\n'
+;
+
+
 -- done!
