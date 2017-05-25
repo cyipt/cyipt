@@ -30,52 +30,33 @@ lines <- osm[,c("id","geometry")] #Create a working dataset
 junctions <- readRDS("../example-data/bristol/osm_data/osm-split-points.Rds")
 #osm <- osm[1:100, ] # Testing subset
 
-#Remove Lines around Junctions
-#buff <- st_buffer(junctions, 20)
-#buff2 <- aggregate(buff, by = as.list(rep(1,nrow(buff))), FUN = sum)
-#buff3 <- st_combine(buff)
-#buff2 <- st_union(buff)
-#diff <- st_difference(lines, buff) #about 5 min for 2000 lines
-#line_buff <- st_buffer(lines, 1)
-#diff2 <- st_difference(line_buff, buff)
-#diff3 <- st_difference(line_buff, buff)
-#diff2 <- diff2[!duplicated(diff2$geometry),]
-#diff <- st_difference(lines, buff)
-#diff <- diff[!duplicated(diff$geometry),]
-#st_write(buff,"../example-data/bristol/for_checking/buff2.shp")
-#st_write(lines,"../example-data/bristol/for_checking/lines.shp")
-#st_write(diff,"../example-data/bristol/for_checking/diff.shp")
-#st_write(diff2,"../example-data/bristol/for_checking/diff2.shp")
-
-#Start Again With a loop
-#Some lines are lost if they are totally inside the buffer
+#Apply Method For Cutting Lines
+buff <- st_buffer(junctions, 10)
 inter <- st_intersects(lines,buff)
-cut <- lines[0,]
-pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-for(a in 1:nrow(lines)){
-  setTxtProgressBar(pb, a)
+
+#FUnction to cut lines at points
+cutlines <- function(a){
   line_sub <- lines[a,]
   buff_sub <- buff[inter[[a]],]
-  #plot(line_sub[1], col = "Black", lwd = 3)
-  #plot(buff_sub[1], add = T)
   if(nrow(buff_sub) == 0){
     line_cut <- line_sub
   }else{
     buff_sub <- st_union(buff_sub)
     line_cut <- st_difference(line_sub, buff_sub)
   }
-  #plot(line_cut[1], col = "Red", lwd = 2)
-  cut <- rbind(cut,line_cut)
+  return(line_cut)
 }
-close(pb)
+
+cut_list <- lapply(1:nrow(lines), cutlines)
+cut <- do.call("rbind",cut_list)
 cut <- cut[!duplicated(cut$geometry),]
+#rm(cut_list)
+
 st_write(cut,"../example-data/bristol/for_checking/cut.shp")
-
-
 
 #Buffer Lines to small polygons
 cut <- as(cut, "Spatial") #Raster does not work with sf so converte back to SP
-lines_poly <- gBuffer(cut, byid = T, width = 1)
+lines_poly <- gBuffer(cut, byid = T, width = 3)
 pct <- raster("../example-data/pct/census-all.tif")
 pct <- crop(pct,extent(cut))
 vx <- velox(pct)
@@ -84,8 +65,17 @@ cut$pct_census <- floor(counts[,1])
 
 #COnvert Back to sf
 cut <- st_as_sf(cut)
-st_write(cut,"../example-data/bristol/for_checking/cut_velox.shp")
 
+#Convert to df
+cut_df <- as.data.frame(cut)
+cut_df$geometry <- NULL
+
+#Join Back
+osm <- left_join(osm,cut_df, by = c("id" = "id"))
+
+
+st_write(osm,"../example-data/bristol/for_checking/cut_velox4.shp")
+st_write(buff,"../example-data/bristol/for_checking/cut_buffs.shp")
 #writeOGR(lines,"../example-data/bristol/for_checking",layer = "veloxpct",driver = "ESRI Shapefile", overwrite_layer = T)
 
 

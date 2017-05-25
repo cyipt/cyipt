@@ -161,13 +161,20 @@ rm(cut_list)
 
 #Split multipoints into points
 cut_sl <- splitmulti(cut,"MULTILINESTRING","LINESTRING")
+rm(cut)
+
+#Join Variaibles back togther
+
+result <- left_join(cut_sl,osm, by = c("osm_id" = "osm_id"))
+rm(cut_sl)
+result$id <- 1:nrow(result)
 
 #Save Out Data
-saveRDS(cut_sl, "../example-data/bristol/osm_data/osm-split.Rds")
+saveRDS(result, "../example-data/bristol/osm_data/osm-split.Rds")
 saveRDS(points, "../example-data/bristol/osm_data/osm-split-points.Rds")
 
-print(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(cut_sl)," lines and ",nrow(points)," points"))
-rm(osm,cut,lines)
+print(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(result)," lines and ",nrow(points)," points"))
+rm(osm,lines)
 gc()
 
 #Test Save as shape file, can't save all columns due to variaible names problems
