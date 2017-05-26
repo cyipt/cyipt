@@ -578,13 +578,14 @@ FROM
 	LEFT JOIN aadf_all_motors_pcu_years on pol.cp = aadf_all_motors_pcu_years.cp
 WHERE
 	(pol.road_geom is not null OR pol.latitude is not null)
+;
 
 
 -- Export the data
 SELECT
 	*
 	FROM aadf_uk_counts_pcu
-INTO OUTFILE '/tmp/trafficounts.data.csv'
+INTO OUTFILE '/tmp/trafficcounts.data.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
@@ -598,7 +599,7 @@ SELECT
 	FROM INFORMATION_SCHEMA.COLUMNS
 	WHERE TABLE_NAME = 'aadf_uk_counts_pcu'
 	ORDER BY ORDINAL_POSITION
-INTO OUTFILE '/tmp/trafficounts.headers.csv'
+INTO OUTFILE '/tmp/trafficcounts.headers.csv'
 LINES TERMINATED BY '\n'
 ;
 
