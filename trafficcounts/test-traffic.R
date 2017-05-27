@@ -8,4 +8,7 @@ tc # 174 vars, 33k rows
 summary(as.factor(tc$road)) # 10k, 1/3rd
 plot(tc$longitude, tc$latitude) # UK coverage
 
-
+# Pick a single road
+roadname = "A4018"
+t1 = filter(tc, road == roadname)
+t1
