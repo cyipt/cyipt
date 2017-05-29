@@ -54,29 +54,31 @@ sel_buff = st_intersects(wt, tbuff, sparse = FALSE)
 # using a matrix (fast, but faster with st_join)
 sel_buff_any = apply(sel_buff, 1, any)
 sel_buff_which = unlist(apply(sel_buff, 1, which))
-wt$pcu_100 = NA # empty col
-wt$all_motors_pcu_16[sel_buff_any] = tbuff$all_motors_pcu_16[sel_buff_which]
+tbuff = tbuff %>% rename(pcu = all_motors_pcu_16)
+wt = st_join(wt, tbuff["pcu"])
 
 # with voronoi polygons
-v = dismo::voronoi(xy = st_coordinates(t1), ext = raster::extent(st_coordinates(wt)[,1:2]))
+all_coords = rbind(st_coordinates(wt)[,1:2], st_coordinates(t1)[,1:2])
+ext = raster::extent(all_coords)
+v = dismo::voronoi(xy = st_coordinates(t1), ext = ext)
 v_sf = as(v, "sf")
 st_crs(v_sf) = st_crs(t1)
-plot(v_sf)
 v_sf = st_join(x = v_sf, y = t1["all_motors_pcu_16"])
-wt$pcu_v = st_join(wt, v_sf["all_motors_pcu_16"], FUN = mean)$all_motors_pcu_16
-plot(wt, add = T)
+v_sf = v_sf %>% rename(pcu_v = all_motors_pcu_16)
+wt$pcu_v = st_join(wt, v_sf["pcu_v"], FUN = mean)$pcu_v
 
 # plot results
-qtm(wt, lines.col = "all_motors_pcu_16", lines.lwd = 30) +
+qtm(wt, lines.col = "pcu", lines.lwd = 30) +
   qtm(wt, lines.col = "pcu_v", lines.lwd = 10) +
   qtm(t1)
 
-wt_out = select(wt, osm_id, pcu_100, pcu_v)
+wt_out = select(wt, osm_id, pcu, pcu_v)
 st_geometry(wt_out) = NULL
 # write_csv(wt_out, "pcu_data_osm.csv")
 
 # for all counters in Bristol
 rm(wt)
+if(exists("wt_out")) rm(wt_out)
 region = st_read("areas/bristol-poly.geojson")
 tc_region = tc %>% filter(st_intersects(., region, sparse = F))
 qtm(tc_region) # it works!
@@ -86,7 +88,9 @@ for(i in seq_along(t_roads)) {
   count_num = round(i / length(t_roads) * 100)
   message(paste0(count_num), " % done")
   roadname = t_roads[i]
-  t1 = t1 = filter(tc, road == roadname)
+  if(is.na(roadname))
+    next()
+  t1 = filter(tc, road == roadname)
   wt = filter(ways, ref == roadname)
 
   tbuff = geo_buffer(shp = t1, dist = 100)
@@ -114,18 +118,24 @@ for(i in seq_along(t_roads)) {
   wt = st_join(wt, tbuff["pcu"])
 
   # voronoi join
-  v = dismo::voronoi(xy = st_coordinates(t1), ext = raster::extent(st_coordinates(wt)[,1:2]))
-  v_sf = as(v, "sf")
-  st_crs(v_sf) = st_crs(t1)
-  v_sf = st_join(x = v_sf, y = t1["all_motors_pcu_16"])
-  v_sf = v_sf %>% rename(pcu_v = all_motors_pcu_16)
-  wt$pcu_v = st_join(wt, v_sf["pcu_v"], FUN = mean)$pcu_v
+  all_coords = rbind(st_coordinates(wt)[,1:2], st_coordinates(t1)[,1:2])
+  ext = raster::extent(all_coords)
+  if(nrow(t1) <= 1) {
+    wt$pcu_v = NA
+  } else {
+    v = dismo::voronoi(xy = st_coordinates(t1), ext = ext)
+    v_sf = as(v, "sf")
+    st_crs(v_sf) = st_crs(t1)
+    v_sf = st_join(x = v_sf, y = t1["all_motors_pcu_16"])
+    v_sf = v_sf %>% rename(pcu_v = all_motors_pcu_16)
+    wt$pcu_v = st_join(wt, v_sf["pcu_v"], FUN = mean)$pcu_v
 
-  qtm(wt, lines.col = "pcu", lines.lwd = 30) +
-    qtm(wt, lines.col = "pcu_v", lines.lwd = 10) +
-    qtm(t1)
+    qtm(wt, lines.col = "pcu", lines.lwd = 30) +
+      qtm(wt, lines.col = "pcu_v", lines.lwd = 10) +
+      qtm(t1)
+  }
 
-  st_geometry(wt_out) = NULL
+  st_geometry(wt) = NULL
 
   if(i == 1) {
     wt_out = select(wt, osm_id, pcu, pcu_v)
