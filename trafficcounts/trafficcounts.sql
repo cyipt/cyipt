@@ -580,6 +580,15 @@ WHERE
 	(pol.road_geom is not null OR pol.latitude is not null)
 ;
 
+-- Change road_geom to text as no need to use specific `json` type, which has more limited client support
+ALTER TABLE aadf_uk_counts_pcu CHANGE road_geom road_geom TEXT CHARSET=utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+
+-- Add spatial index, in the event of API-based use
+ALTER TABLE aadf_uk_counts_pcu ADD lonLat POINT NULL COMMENT 'Spatial point' AFTER longitude;
+UPDATE aadf_uk_counts_pcu SET lonLat = ST_GeomFromText( CONCAT('POINT(', longitude, ' ', latitude, ')') );
+ALTER TABLE aadf_uk_counts_pcu CHANGE lonLat lonLat POINT NOT NULL COMMENT 'Spatial point';
+ALTER TABLE aadf_uk_counts_pcu ADD SPATIAL INDEX (lonLat);
+
 
 -- Export the data
 SELECT
