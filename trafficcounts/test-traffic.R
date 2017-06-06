@@ -39,16 +39,16 @@ plot(tc[1]) # UK coverage
 
 # add lines
 linelist = vector(mode = "list", length = nrow(tc))
+
 for(i in 1:length(linelist)) {
-  linemat = linemat = matrix(c(tc$startLongitude[i], tc$startLatitude[i],
-                               tc$finishLongitude[i], tc$finishLatitude[i]), ncol = 2, byrow = TRUE)
-  linelist[[i]] = st_linestring(x = linemat)
+    linemat = matrix(c(tc$startLongitude[i], tc$startLatitude[i],
+                       tc$finishLongitude[i], tc$finishLatitude[i]), ncol = 2, byrow = TRUE)
+    linelist[[i]] = st_linestring(x = linemat)
 }
 
 tc$geom_line = st_sfc(linelist)
 plot(tc$geom_line[tc$is_line])
 
-plot(l[1])
 # Pick a single road
 roadname = "A4018"
 t1 = filter(tc, road == roadname)
@@ -98,6 +98,7 @@ if(exists("wt_out")) rm(wt_out)
 tc_region = tc %>% filter(st_intersects(., region, sparse = F))
 qtm(tc_region) # it works!
 t_roads = unique(tc_region$road)
+i = 23 # NA
 i = 5 # for testing
 for(i in seq_along(t_roads)) {
   count_num = round(i / length(t_roads) * 100)
@@ -106,13 +107,21 @@ for(i in seq_along(t_roads)) {
 
   # For points with no road name (2/3rds...)
   if(is.na(roadname)) {
-    next()
-  }
+    # spatal join with tbuff data
+      t1 = filter(tc_region, is.na(road))
+      tbuff = geo_buffer(shp = t1, dist = 20)
+      plot(tbuff[1])
+      tbuff = tbuff %>% rename(aadt = all_motors_16)
+      wt = ways[tbuff,]
+      wt = st_join(wt, tbuff["aadt"], FUN = mean)
 
-  t1 = filter(tc_region, road == roadname)
+  } else {
+
+    t1 = filter(tc_region, road == roadname)
   wt = filter(ways, ref == roadname)
 
   tbuff = geo_buffer(shp = t1, dist = 20)
+  tbuff = tbuff %>% rename(aadt = all_motors_16)
   sel_buff = st_intersects(wt, tbuff, sparse = FALSE)
   wt_all = ways[tbuff,]
 
@@ -121,7 +130,6 @@ for(i in seq_along(t_roads)) {
     wt = ways[tbuff,]
     if(nrow(wt) == 0) {
       message(paste0("No road & spatial matches found for the road "), roadname)
-      next()
     }
   }
 
@@ -136,12 +144,36 @@ for(i in seq_along(t_roads)) {
     tbuff = geo_buffer(t_lines, dist = line_lengths / 5)
     tbuff = st_sf(t1, tbuff)
     tbuff = tbuff %>% rename(aadt = all_motors_16)
-    plot(tbuff)
-    wt = st_join(wt, tbuff)
+    plot(tbuff["aadt"])
+    plot(wt, add = T)
+    # st_within(wt, tbuff)
+    wt = wt[tbuff,]
+    if(nrow(wt) == 0) {
+      next()
+    }
+      wt = st_join(wt, tbuff["aadt"], join = st_within, FUN = mean)
+
   } else { # otherwise use point buffers
     # spatal join with tbuff data
-    tbuff = tbuff %>% rename(aadt = all_motors_16)
+
     wt = st_join(wt, tbuff["aadt"])
+    # voronoi join
+    all_coords = rbind(st_coordinates(wt)[,1:2], st_coordinates(t1)[,1:2])
+    ext = raster::extent(all_coords)
+
+    if(nrow(t1) > 1) {
+      v = dismo::voronoi(xy = st_coordinates(t1), ext = ext)
+      v_sf = as(v, "sf")
+      st_crs(v_sf) = st_crs(t1)
+      v_sf = st_join(x = v_sf, y = t1["all_motors_16"])
+      v_sf = v_sf %>% rename(aadt_v = all_motors_16)
+      wt$aadt_v = st_join(wt, v_sf["aadt_v"], FUN = mean)$aadt_v
+
+      qtm(wt, lines.col = "aadt", lines.lwd = 30) +
+        qtm(wt, lines.col = "aadt_v", lines.lwd = 10) +
+        qtm(t1)
+    }
+  }
   }
 
   # # find roads associated with un-matched counters - not implemented
@@ -149,27 +181,10 @@ for(i in seq_along(t_roads)) {
   # sel_traf_any = apply(sel_buff, 2, any)
   # t_unmatched = tbuff[!sel_traf_any,]
 
-
-
-  # voronoi join
-  all_coords = rbind(st_coordinates(wt)[,1:2], st_coordinates(t1)[,1:2])
-  ext = raster::extent(all_coords)
-  if(nrow(t1) <= 1) {
-    wt$aadt_v = NA
-  } else {
-    v = dismo::voronoi(xy = st_coordinates(t1), ext = ext)
-    v_sf = as(v, "sf")
-    st_crs(v_sf) = st_crs(t1)
-    v_sf = st_join(x = v_sf, y = t1["all_motors_16"])
-    v_sf = v_sf %>% rename(aadt_v = all_motors_16)
-    wt$aadt_v = st_join(wt, v_sf["aadt_v"], FUN = mean)$aadt_v
-
-    qtm(wt, lines.col = "aadt", lines.lwd = 30) +
-      qtm(wt, lines.col = "aadt_v", lines.lwd = 10) +
-      qtm(t1)
-  }
-
   st_geometry(wt) = NULL
+
+  if(is.null(wt$aadt_v))
+    wt$aadt_v = NA
 
   if(i == 1) {
     wt_out = select(wt, osm_id, aadt, aadt_v)
@@ -178,4 +193,33 @@ for(i in seq_along(t_roads)) {
   }
 }
 
+# plot and export
+ways_t = ways[ways$osm_id %in% wt_out$osm_id,]
+ways_t = left_join(ways_t, wt_out)
+qtm(ways_t, lines.col = "aadt", lines.lwd = 20) +
+  qtm(tbuff)
 
+qtm(ways_t, lines.col = "aadt", lines.lwd = 30) +
+  qtm(ways_t, lines.col = "aadt_v", lines.lwd = 10) +
+  qtm(tc_region)
+
+# benchmarks
+
+# geo_line = function(i) {
+#   linemat = matrix(c(tc$startLongitude[i], tc$startLatitude[i],
+#                      tc$finishLongitude[i], tc$finishLatitude[i]), ncol = 2, byrow = TRUE)
+#   st_linestring(x = linemat)
+# }
+
+# system.time({
+#   ll = lapply(X = 1:nrow(tc), FUN = geo_line)
+# })
+#
+#
+# identical(ll, linelist)
+#
+# system.time(for(i in 1:length(linelist)) {
+#   linemat = matrix(c(tc$startLongitude[i], tc$startLatitude[i],
+#                      tc$finishLongitude[i], tc$finishLatitude[i]), ncol = 2, byrow = TRUE)
+#   linelist[[i]] = st_linestring(x = linemat)
+# })
