@@ -96,7 +96,9 @@ ways = left_join(ways, quietness, by = c("osm_id" = "id"))
 
 ```{r}
 # PCU
-# ...
+pcu = readr::read_csv("trafficcounts/trafficcounts-osm.csv")
+ways = left_join(ways, pcu)
+summary(ways$aadt)
 ```
 
 These can be visualised as follows, with a sample of 5 routes overlaid on a sample of 1000 OSM line elements:
@@ -118,7 +120,6 @@ st_geometry(rf) <- NULL
 rq = transmute(lfq$rq, dist_quiet = length / 1000, time_quiet = time, busyness_quiet = busyness, av_incline_quiet = av_incline) 
 st_geometry(rq) <- NULL
 l = bind_cols(lfq$l, rf, rq)
-st_geometry(l) = NULL
 ```
 
 We can also join segment-level data to routes.
@@ -141,19 +142,13 @@ route_buff = as(object = route_buff_sp, "sf")
 sel_overlap = st_within(ways_touching, route_buff, sparse = FALSE)[,1]
 ways_overlap = ways_touching[sel_overlap,]
 
-plot(route_single, lwd = 50)
+plot(route_single[1], lwd = 50)
 # plot(ways, add = T)
 plot(ways_overlap, add = T, lwd = 30, col = "white")
 plot(ways_touching, add = T, lwd = 5)
 plot(route_buff, add = T)
 ```
 
-```{r, eval=FALSE, echo=FALSE}
-# failed sp attempt
-ways_touching_sp = as(object = ways_touching, Class = "Spatial")
-route_single_sp = as(route_single, "Spatial")
-sel_overlap = over(ways_touching_sp, route_single_sp, minDimension = 1, returnList = F)
-```
 
 Summary statistics can be pulled from the the results as follows:
 
@@ -163,25 +158,35 @@ mean(ways_touching$quietness, na.rm = T)
 
 We can run this for all routes as follows:
 
-```{r, eval=FALSE}
-for(i in 1:nrow(l))
-  l$quietness_ways[i] = mean(ways[lfq$rf[i,],]$quietness, na.rm = T) ; print(i)
+```{r}
+# for(i in 1:nrow(l))
+#   l$quietness[i] = mean(ways[lfq$rf[i,],]$quietness, na.rm = T) ; print(i)
+summary(ways$quietness)
+ways_no_quiet = filter(ways, !is.na(quietness))
+l_joined = st_join(lfq$rf, ways_no_quiet["quietness"], FUN = mean)
+l$quietness = l_joined$quietness
+ways_pcu = filter(ways, !is.na(aadt))
+l_pcu = st_join(lfq$rf, ways_pcu["aadt"], FUN = mean)
+l$aadt = l_pcu$aadt
 
+cor(l$busyness_fast, l$quietness, use = "complete.obs")
 busyness_by_length = l$busyness_fast / l$dist /1000
-summary(quietness_by_length)
-saveRDS(l, "l_cyipt.Rds")
+cor(busyness_by_length, l$quietness, use = "complete.obs")
+cor(l$quietness, l$aadt, use = "complete.obs")
+# idea: use a buffer
+saveRDS(l, "../example-data/bristol/l_cyipt.Rds")
 ```
 
 ```{r, echo=FALSE}
-l = readRDS("l_cyipt.Rds")
+l = readRDS("../example-data/bristol/l_cyipt.Rds")
 ```
 
 The results show the quietness score is related to the 'busynance' of the route provided by CycleStreets.net:
 
 ```{r}
 busyness_by_length = l$busyness_fast / l$dist /1000
-plot(busyness_by_length, l$quietness_ways)
-cor(busyness_by_length, l$quietness_ways, use = "complete.obs")
+plot(busyness_by_length, l$quietness)
+cor(busyness_by_length, l$quietness, use = "complete.obs")
 ```
 
 
@@ -243,6 +248,7 @@ Machine learning can provide a way to extract knowledge from the input data.
 An implementation is provided by the **xgboost** package:
 
 ```{r}
+st_geometry(l) = NULL # remove geometry cols
 library(xgboost)
 set.seed(2017)
 l_sub = select(l, bicycle, dist, all)
@@ -274,16 +280,17 @@ xgb.plot.importance(importance_m4)
 
 ## A full model
 
-To specify a full model is relatively easy, building on the existing framework:
+To specify a full model is relatively easy, building on the existing framework (and training against the full dataset):
 
 ```{r}
-l_full = select(l, bicycle, all, dist, dist_fast, dist_quiet, av_incline_fast, busyness_fast, busyness_quiet)
-train = sample_frac(l_full, 0.5)
+l_full = select(l, bicycle, all, dist, cirquity = dist_fast / dist, qdf = dist_quiet / dist_fast, av_incline_fast, busyness_fast = busyness_fast / dist, busyness_quiet = busyness_quiet / dist, aadt)
+train = sample_frac(l_full, 1)
 m5 = xgboost(data = as.matrix(train[-1]), label = train$bicycle, nrounds = 10, max_depth = 5)
 importance_m5 = xgb.importance(model = m5, feature_names = names(l_full)[-1])
 xgb.plot.importance(importance_m5)
 m5_fitted = predict(m5, as.matrix(l_full[-1]))
 (rmse5 = sqrt(c(crossprod(m5_fitted - l_full$bicycle)) / nrow(l)))
+cor(m5_fitted * l$all, l_full$bicycle)^2
 ```
 
 ## Fitting to the proportion cycling
@@ -291,29 +298,34 @@ m5_fitted = predict(m5, as.matrix(l_full[-1]))
 We know that `bicycle` is intimately related to `all`. It cannot be higher and is a proportion of it. So instead, we can remove `all` from the equation (the number of people travelling on a route should be independent of their propensity to cycle) and instead to fit to `pcycle`:
 
 ```{r}
-l_full = select(l, bicycle, all, dist, dist_fast, dist_quiet, av_incline_fast, busyness_fast, busyness_quiet)
-train_df = sample_frac(l_full, 0.5)
+train_df = sample_frac(l_full, 1)
 train = as.matrix(train_df[,-c(1, 2)])
 m6 = xgboost(data = train, label = train_df$bicycle / train_df$all, nrounds = 10, max_depth = 5, weight = train_df$all)
 importance_m6 = xgb.importance(model = m6, feature_names = names(l_full)[-c(1, 2)])
 xgb.plot.importance(importance_m6)
 m6_fitted = predict(m6, as.matrix(l_full[-c(1, 2)]))
 (rmse6 = sqrt(c(crossprod(m6_fitted * l$all  - l_full$bicycle)) / nrow(l)))
+cor(m6_fitted * l$all, l_full$bicycle)^2
 ```
 
-Including the relationship between quiet and fast routes:
+This is an impressive result: more than 95% of the variability in the number of cyclists can be predicted by our model, which includes infrastructure variables such as traffic (AADT) and busynance.
+
+On this foundation we can estimate effectiveness.
+
+## Geographically inferred quietness
+
+This model uses aggregated data from the OSM network which we can modify:
 
 ```{r}
-l_full = mutate(l_full, qdf = dist_quiet / dist_fast)
-l_full = mutate(l_full, av_busy_quiet = busyness_quiet / dist_quiet, av_busy_fast = busyness_fast / dist_fast) %>% 
-  select(-dist, -busyness_fast, -busyness_quiet)
+l_full = select(l, bicycle, all, dist, cirquity = dist_fast / dist, qdf = dist_quiet / dist_fast, av_incline_fast, quietness, aadt)
 
-train_df = sample_frac(l_full, 0.5) 
+train_df = sample_frac(l_full, 1) 
 train = as.matrix(train_df[,-c(1, 2)])
 m7 = xgboost(data = train, label = train_df$bicycle / train_df$all, nrounds = 10, max_depth = 5, weight = train_df$all)
 importance_m7 = xgb.importance(model = m7, feature_names = names(l_full)[-c(1, 2)])
 xgb.plot.importance(importance_m7)
 m7_fitted = predict(m7, as.matrix(l_full[-c(1, 2)]))
 (rmse7 = sqrt(c(crossprod(m7_fitted * l$all  - l_full$bicycle)) / nrow(l)))
+cor(m7_fitted * l$all, l_full$bicycle)^2
 ```
 
