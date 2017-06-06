@@ -196,12 +196,15 @@ for(i in seq_along(t_roads)) {
 # plot and export
 ways_t = ways[ways$osm_id %in% wt_out$osm_id,]
 ways_t = left_join(ways_t, wt_out)
-qtm(ways_t, lines.col = "aadt", lines.lwd = 20) +
-  qtm(tbuff)
+ways_t = filter(ways_t, !is.na(aadt))
+ways_t = select(ways_t, -aadt_v)
 
 qtm(ways_t, lines.col = "aadt", lines.lwd = 30) +
-  qtm(ways_t, lines.col = "aadt_v", lines.lwd = 10) +
   qtm(tc_region)
+
+# save outputs
+ways_t = select(ways_t, osm_id, aadt)
+readr::write_csv(ways_t, "trafficcounts/trafficcounts-osm.csv")
 
 # benchmarks
 
