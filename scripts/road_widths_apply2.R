@@ -22,7 +22,7 @@ options(nwarnings = 10000)
 
 #Big Function
 getroadwidths <- function(a){
-  warning(paste0("Doing Line ",a))
+  #warning(paste0("Doing Line ",a))
   line <- osm[a,] #OSM Line
 
   #Pre subset for speed
@@ -69,7 +69,7 @@ getroadwidths <- function(a){
     widthpathres <- NA
     widthres <- NA
     endint <- Sys.time()
-    warning(paste0("Did no data in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
+    #warning(paste0("Did no data in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
   }else if(nrow(road) > 0 & nrow(roadside) > 0){
     #################################################################
     #Road and Roadside Approach
@@ -152,7 +152,7 @@ getroadwidths <- function(a){
     rm(road_main)
 
     endint <- Sys.time()
-    warning(paste0("Did road and roadside in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
+    #warning(paste0("Did road and roadside in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
   }else if(nrow(road) > 0 & nrow(roadside) == 0){
     ########################################################
     #Road Only approach
@@ -198,7 +198,7 @@ getroadwidths <- function(a){
     widthres <- osm_join$width[1]
     rm(line_main, osm_join)
     endint <- Sys.time()
-    warning(paste0("Did road only ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
+    #warning(paste0("Did road only ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
   }else if(nrow(road) == 0 & nrow(roadside) > 0){
     ######################################################
     #Roadside only approauch
@@ -213,7 +213,7 @@ getroadwidths <- function(a){
       widthpathres <- roadside$width[1]
     }
     endint <- Sys.time()
-    warning(paste0("Did roadside only in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
+    #warning(paste0("Did roadside only in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
 
   }else{
     #######################################################
@@ -234,6 +234,7 @@ starttime <- Sys.time()
 res <- lapply(1:nrow(osm), getroadwidths)
 res <- do.call("rbind", res)
 
+#Add Results Column
 osm$width <- NA
 osm$widthpath <- NA
 
@@ -251,14 +252,10 @@ for(b in 1:nrow(osm)){
 }
 
 
-#Add Results Column
-
 endtime <- Sys.time()
 print(paste0("Did ",nrow(osm)," rows in ", round(difftime(endtime, starttime, units = "secs"),2), " seconds"))
 
 #})
-
-test <- as.data.frame(res)
 
 warnms <- warnings()
 warnms <- names(warnms)
@@ -269,4 +266,4 @@ saveRDS(osm, "../example-data/bristol/osm_data/osm-split-roadwidths.Rds")
 sub <- as.data.frame(osm)
 sub <- sub[,c("id","osm_id","name","width","widthpath")]
 write.csv(sub,"../example-data/bristol/osm_data/osm-split-roadwiths.csv")
-st_write(osm[c("id","osm_id","name","width","widthpath")], "../example-data/bristol/for_checking/roadwidths7.shp")
+st_write(osm[c("id","osm_id","name","width","widthpath")], "../example-data/bristol/for_checking/roadwidths8.shp")
