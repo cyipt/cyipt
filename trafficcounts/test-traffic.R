@@ -4,10 +4,16 @@
 library(tidyverse)
 library(tmap)
 library(sf)
+library(osmdata)
 devtools::install()
-library(cyipt)
+source("R/geobuffer.R")
 
+region = st_read("areas/bristol-poly.geojson")
 
+q = opq(st_bbox(region)) %>%
+  add_feature(key = "highway")
+res = osmdata_sf(q = q)
+ways = res$osm_lines
 # checking and preprocessing tc data
 tc = read_csv("trafficcounts/trafficcounts.csv")
 names(tc)
@@ -79,7 +85,6 @@ st_geometry(wt_out) = NULL
 # for all counters in Bristol
 rm(wt)
 if(exists("wt_out")) rm(wt_out)
-region = st_read("areas/bristol-poly.geojson")
 tc_region = tc %>% filter(st_intersects(., region, sparse = F))
 qtm(tc_region) # it works!
 t_roads = unique(tc_region$road)
@@ -88,13 +93,18 @@ for(i in seq_along(t_roads)) {
   count_num = round(i / length(t_roads) * 100)
   message(paste0(count_num), " % done")
   roadname = t_roads[i]
-  if(is.na(roadname))
+
+  # For points with no road name (2/3rds...)
+  if(is.na(roadname)) {
     next()
-  t1 = filter(tc, road == roadname)
+  }
+
+  t1 = filter(tc_region, road == roadname)
   wt = filter(ways, ref == roadname)
 
-  tbuff = geo_buffer(shp = t1, dist = 100)
+  tbuff = geo_buffer(shp = t1, dist = 20)
   sel_buff = st_intersects(wt, tbuff, sparse = FALSE)
+  wt_all = ways[tbuff,]
 
   # geo link (if road name link fail)
   if(nrow(wt) == 0) {
@@ -105,8 +115,9 @@ for(i in seq_along(t_roads)) {
     }
   }
 
-  qtm(wt) + # plot roads for checking
-    qtm(t1)
+  qtm(tbuff) + # plot roads for checking
+    qtm(wt) +
+    qtm(wt_all, lines.col = "green") # all matching
 
   # # find roads associated with un-matched counters - not implemented
   # sel_buff_any = apply(sel_buff, 1, any)
