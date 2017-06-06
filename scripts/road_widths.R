@@ -1,3 +1,6 @@
+#Code has stagne bug where when no os polygons roads are sometimes given widht of 11.4 and width path 22.5
+
+
 #Estimate road widths
 library(sf)
 library(dplyr)
@@ -6,6 +9,11 @@ library(dplyr)
 os <- readRDS("../example-data/bristol/os_data/roads.Rds")
 osm <- readRDS("../example-data/bristol/osm_data/osm-split.Rds")
 
+#test subsetting
+osm <- osm[1:1000,]
+
+
+starttime <- Sys.time()
 #New Combined Loop
 for(a in 1:nrow(osm)){
   #Get OSM Line and OS Polygons Near By
@@ -95,7 +103,7 @@ for(a in 1:nrow(osm)){
     remove(road_geom)
   }
 
-  print(paste0("Doing Line ",a," of ",nrow(osm)," with ",nrow(road)," roads and ",nrow(roadside)," roadsides at ", Sys.time()))
+  #print(paste0("Doing Line ",a," of ",nrow(osm)," with ",nrow(road)," roads and ",nrow(roadside)," roadsides at ", Sys.time()))
 
   #Get Road Width
   if(nrow(road) == 0){
@@ -287,7 +295,13 @@ for(a in 1:nrow(osm)){
 
 }
 
-saveRDS(osm, "../example-data/bristol/osm_data/osm-split-roadwidths.Rds")
-sub <- as.data.frame(osm)
-sub <- sub[,c("id","osm_id","name","width","widthpath")]
-write.csv(sub,"../example-data/bristol/osm_data/osm-split-roadwiths.csv")
+
+endtime <- Sys.time()
+print(paste0("Did ",nrow(osm)," rows in ", round(difftime(endtime, starttime, units = "secs"),2), " seconds"))
+
+
+
+#saveRDS(osm, "../example-data/bristol/osm_data/osm-split-roadwidths.Rds")
+#sub <- as.data.frame(osm)
+#sub <- sub[,c("id","osm_id","name","width","widthpath")]
+#write.csv(sub,"../example-data/bristol/osm_data/osm-split-roadwiths.csv")
