@@ -5,21 +5,21 @@ library(tidyverse)
 library(tmap)
 library(sf)
 library(osmdata)
-devtools::install()
+# devtools::install()
 source("R/geobuffer.R")
 
 region = st_read("areas/bristol-poly.geojson")
 
 q = opq(st_bbox(region)) %>%
   add_feature(key = "highway")
-res = osmdata_sf(q = q)
-ways = res$osm_lines
+# res = osmdata_sf(q = q)
+# ways = res$osm_lines
 # checking and preprocessing tc data
 tc = read_csv("trafficcounts/trafficcounts.csv")
 names(tc)
 # sapply(tc, class) # check col types
 col_types = rep("c", times = ncol(tc))
-col_types[grepl(pattern = "pcu|[0-9]|latitude|longi", names(tc))] = "d"
+col_types[grepl(pattern = "pcu|[0-9]|ati|ongi", names(tc))] = "d"
 col_types = paste0(col_types, collapse = "")
 # read-in again with correct column types
 tc = read_csv("trafficcounts/trafficcounts.csv", col_types = col_types)
@@ -27,6 +27,8 @@ tc # 174 vars, 33k rows
 # Explore linking variables (to assign to osm)
 summary(as.factor(tc$road))[1:9] / nrow(tc) * 100 # ~1/3rd rd names are NA:
 tc$road[tc$road %in% c("C", "U")] = NA
+summary(is.na(tc$startLatitude)) # around 50% have no start lat
+tc$is_line = !is.na(tc$startLatitude)
 
 # Make spatial
 ts = st_sfc(st_multipoint(cbind(tc$longitude, tc$latitude)))
@@ -34,6 +36,19 @@ ts = ts %>% st_cast(to = "POINT")
 tc = st_sf(tc, ts, crs = 4326)
 plot(tc[1]) # UK coverage
 
+
+# add lines
+linelist = vector(mode = "list", length = nrow(tc))
+for(i in 1:length(linelist)) {
+  linemat = linemat = matrix(c(tc$startLongitude[i], tc$startLatitude[i],
+                               tc$finishLongitude[i], tc$finishLatitude[i]), ncol = 2, byrow = TRUE)
+  linelist[[i]] = st_linestring(x = linemat)
+}
+
+tc$geom_line = st_sfc(linelist)
+plot(tc$geom_line[tc$is_line])
+
+plot(l[1])
 # Pick a single road
 roadname = "A4018"
 t1 = filter(tc, road == roadname)
@@ -52,16 +67,11 @@ qtm(wt) # a single road composed of 119 osm elements
 tbuff = geo_buffer(shp = t1, dist = 100)
 sel_buff = st_intersects(wt, tbuff, sparse = FALSE)
 
-# # using a for loop (slow)
-# for(i in 1:nrow(t1)) {
-#   wt$pcu_100[sel_buff[,i]] = tbuff$all_motors_pcu_16[i]
-# }
-
 # using a matrix (fast, but faster with st_join)
 sel_buff_any = apply(sel_buff, 1, any)
 sel_buff_which = unlist(apply(sel_buff, 1, which))
-tbuff = tbuff %>% rename(pcu = all_motors_pcu_16)
-wt = st_join(wt, tbuff["pcu"])
+tbuff = tbuff %>% rename(aadt =all_motors_16)
+wt = st_join(wt, tbuff["aadt"])
 
 # with voronoi polygons
 all_coords = rbind(st_coordinates(wt)[,1:2], st_coordinates(t1)[,1:2])
@@ -69,18 +79,18 @@ ext = raster::extent(all_coords)
 v = dismo::voronoi(xy = st_coordinates(t1), ext = ext)
 v_sf = as(v, "sf")
 st_crs(v_sf) = st_crs(t1)
-v_sf = st_join(x = v_sf, y = t1["all_motors_pcu_16"])
-v_sf = v_sf %>% rename(pcu_v = all_motors_pcu_16)
-wt$pcu_v = st_join(wt, v_sf["pcu_v"], FUN = mean)$pcu_v
+v_sf = st_join(x = v_sf, y = t1["all_motors_16"])
+v_sf = v_sf %>% rename(aadt_v = all_motors_16)
+wt$aadt_v = st_join(wt, v_sf["aadt_v"], FUN = mean)$aadt_v
 
 # plot results
-qtm(wt, lines.col = "pcu", lines.lwd = 30) +
-  qtm(wt, lines.col = "pcu_v", lines.lwd = 10) +
+qtm(wt, lines.col = "aadt", lines.lwd = 30) +
+  qtm(wt, lines.col = "aadt_v", lines.lwd = 10) +
   qtm(t1)
 
-wt_out = select(wt, osm_id, pcu, pcu_v)
+wt_out = select(wt, osm_id, aadt, aadt_v)
 st_geometry(wt_out) = NULL
-# write_csv(wt_out, "pcu_data_osm.csv")
+# write_csv(wt_out, "aadt_data_osm.csv")
 
 # for all counters in Bristol
 rm(wt)
@@ -119,39 +129,52 @@ for(i in seq_along(t_roads)) {
     qtm(wt) +
     qtm(wt_all, lines.col = "green") # all matching
 
+  # link by road lengths (ideal case)
+  t_lines = t1$geom_line[t1$is_line]
+  if(length(t_lines) == nrow(t1)) {
+    line_lengths = geo_projected(t_lines, st_length)
+    tbuff = geo_buffer(t_lines, dist = line_lengths / 5)
+    tbuff = st_sf(t1, tbuff)
+    tbuff = tbuff %>% rename(aadt = all_motors_16)
+    plot(tbuff)
+    wt = st_join(wt, tbuff)
+  } else { # otherwise use point buffers
+    # spatal join with tbuff data
+    tbuff = tbuff %>% rename(aadt = all_motors_16)
+    wt = st_join(wt, tbuff["aadt"])
+  }
+
   # # find roads associated with un-matched counters - not implemented
   # sel_buff_any = apply(sel_buff, 1, any)
   # sel_traf_any = apply(sel_buff, 2, any)
   # t_unmatched = tbuff[!sel_traf_any,]
 
-  # spatal join with tbuff data
-  tbuff = tbuff %>% rename(pcu = all_motors_pcu_16)
-  wt = st_join(wt, tbuff["pcu"])
+
 
   # voronoi join
   all_coords = rbind(st_coordinates(wt)[,1:2], st_coordinates(t1)[,1:2])
   ext = raster::extent(all_coords)
   if(nrow(t1) <= 1) {
-    wt$pcu_v = NA
+    wt$aadt_v = NA
   } else {
     v = dismo::voronoi(xy = st_coordinates(t1), ext = ext)
     v_sf = as(v, "sf")
     st_crs(v_sf) = st_crs(t1)
-    v_sf = st_join(x = v_sf, y = t1["all_motors_pcu_16"])
-    v_sf = v_sf %>% rename(pcu_v = all_motors_pcu_16)
-    wt$pcu_v = st_join(wt, v_sf["pcu_v"], FUN = mean)$pcu_v
+    v_sf = st_join(x = v_sf, y = t1["all_motors_16"])
+    v_sf = v_sf %>% rename(aadt_v = all_motors_16)
+    wt$aadt_v = st_join(wt, v_sf["aadt_v"], FUN = mean)$aadt_v
 
-    qtm(wt, lines.col = "pcu", lines.lwd = 30) +
-      qtm(wt, lines.col = "pcu_v", lines.lwd = 10) +
+    qtm(wt, lines.col = "aadt", lines.lwd = 30) +
+      qtm(wt, lines.col = "aadt_v", lines.lwd = 10) +
       qtm(t1)
   }
 
   st_geometry(wt) = NULL
 
   if(i == 1) {
-    wt_out = select(wt, osm_id, pcu, pcu_v)
+    wt_out = select(wt, osm_id, aadt, aadt_v)
     } else {
-    wt_out = bind_rows(wt_out, select(wt, osm_id, pcu, pcu_v))
+    wt_out = bind_rows(wt_out, select(wt, osm_id, aadt, aadt_v))
   }
 }
 

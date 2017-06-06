@@ -23,7 +23,7 @@ geo_projected = function(shp, fun, crs_temp = geo_select_aeq(shp),  ...){
   shp_projected = st_transform(shp, crs_temp)
   message(paste0("Running function on a temporary projected version of the Spatial object using the CRS: ", crs_temp$proj4string))
   res = fun(shp_projected, ...)
-  if(is(res, "sf"))
+  if(grepl("sf", x = class(res)))
     res = st_transform(res, crs_orig)
   res
 }
