@@ -204,6 +204,7 @@ qtm(ways_t, lines.col = "aadt", lines.lwd = 30) +
 
 # save outputs
 ways_t = select(ways_t, osm_id, aadt)
+st_geometry(ways_t) = NULL
 readr::write_csv(ways_t, "trafficcounts/trafficcounts-osm.csv")
 
 # benchmarks
