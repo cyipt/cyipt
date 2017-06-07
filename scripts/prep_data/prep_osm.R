@@ -4,13 +4,10 @@
 # 1) the split lines with the attributes of the original data
 # 2) The points where the lines are split, i.e. junction locations
 
-#This process is quiet time consuming (around 2 hours for a small city), but has some optiisation already applied
-# 1) st_intersection is wrapped in a loop which ensures that it is only applied to geomeries that touch
-# 2) st_difference no optimisation as yet
-
 library(sf)
 library(dplyr)
-library(utils)
+
+source("R/functions.R")
 
 #Functions
 #Function To get Points and MultiPoints
@@ -20,42 +17,6 @@ findpoints <- function(b){
   inter_sub <- inter_sub[,c("osm_id","geometry")]
   inter_sub <- inter_sub[st_geometry_type(inter_sub) == "POINT" | st_geometry_type(inter_sub) == "MULTIPOINT",]
   return(inter_sub)
-}
-
-#Function to split mulitple geomaties into single geometires when a data frame
-splitmulti <- function(x,from,to){
-  #Split into single and mulit
-  mp_var <- x[st_geometry_type(x) == from,]
-  p_var <- x[st_geometry_type(x) == to,]
-  #Separate out geometry
-  mp_geom <- mp_var$geometry
-  p_geom <- p_var$geometry
-  #Remove geometry
-  mp_var$geometry <- NULL
-  p_var$geometry <- NULL
-  #Convert to data frame
-  mp_var <- as.data.frame(mp_var)
-  p_var <- as.data.frame(p_var)
-  #Split geometrys
-  mp_geom_s <- st_cast(st_sfc(mp_geom), to, group_or_split = TRUE)
-  p_geom <- st_cast(st_sfc(p_geom), to, group_or_split = TRUE)
-  #Duplicate variaibles for multis
-  if(to == "POINT"){
-    len <- lengths(mp_geom)/2
-  }else if(to == "LINESTRING"){
-    len <- lengths(mp_geom)
-  }else{
-    print("Can't do this")
-    stop()
-  }
-  mp_var <- mp_var[rep(seq_len(nrow(mp_var)), len),,drop=FALSE]
-  #Put polygons back togther
-  geom <- c(p_geom,mp_geom_s)
-  var <- rbind(p_var,mp_var)
-  geom <- st_cast(st_sfc(geom), to, group_or_split = TRUE) #Incase mp or p is empty have to run again
-  var$geometry <- geom
-  res <- st_as_sf(var)
-  return(res)
 }
 
 #FUnction to Splitlines
@@ -71,20 +32,16 @@ splitlines <- function(a){
   return(line_cut)
 }
 
-
-
 #Reading in data
 osm <- readRDS("../example-data/bristol/osm-lines-quietness-full.Rds")
 osm <- st_transform(osm, 27700)
 
 #Test Subsetting
-#bounds <- st_read("../example-data/bristol/mini_bristol.shp")
-#st_crs(bounds) <- 27700
-#osm <- osm[bounds,]
-#osm <- osm[1:1000,]
+bounds <- st_read("areas/bristol-poly.geojson")
+bounds <- st_transform(bounds, 27700)
+osm <- osm[bounds,]
 
 #A flexible way to chose the variaibles that are kept
-#Don't delete
 osm <- osm[,c("osm_id","name",
               #"FIXME","abutters","access","access.backward","access.conditional","access.motor_vehicle","addr.city",
               #"addr.housename","addr.housenumber","addr.interpolation","addr.postcode","addr.street","agricultural","alt_name","ambulance","amenity","area","attraction",
@@ -129,7 +86,6 @@ osm <- osm[,c("osm_id","name",
               "cs_quietness","cs_speed","cs_pause","cs_cyclable","cs_walkable",
               "geometry")]
 
-
 #Create working dataset
 lines <- osm[,c("osm_id","geometry")]
 osm <- as.data.frame(osm)
@@ -164,23 +120,27 @@ cut_sl <- splitmulti(cut,"MULTILINESTRING","LINESTRING")
 rm(cut)
 
 #Join Variaibles back togther
-
 result <- left_join(cut_sl,osm, by = c("osm_id" = "osm_id"))
 rm(cut_sl)
 result$id <- 1:nrow(result)
+rm(bounds,buff,lines,inter,touch)
+
+
+res_geom <- result[,c("id","osm_id","geometry")]
+res_val <- as.data.frame(result)
+res_val$geometry <- NULL
+res_val <- res_val[,c("id",names(res_val)[!(names(res_val) %in% "id")])]
+row.names(points) <- 1:nrow(points)
 
 #Save Out Data
-saveRDS(result, "../example-data/bristol/osm_data/osm-split.Rds")
-saveRDS(points, "../example-data/bristol/osm_data/osm-split-points.Rds")
+saveRDS(res_geom, "../example-data/bristol/results/osm-lines.Rds")
+st_write(res_geom,"../example-data/bristol/results/osm-lines.geojson")
+saveRDS(points, "../example-data/bristol/results/junction-points.Rds")
+st_write(points,"../example-data/bristol/results/junction-points.geojson")
+write.csv(res_val, "../example-data/bristol/results/osm-variables.csv")
 
 print(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(result)," lines and ",nrow(points)," points"))
-rm(osm,lines)
+rm(osm)
 gc()
 
-#Test Save as shape file, can't save all columns due to variaible names problems
-#test <- cut_sl[,c("id","osm_id")]
-#st_write(cut_sl, "../example-data/bristol/osm_data/osm-split2.shp")
 
-#Test Plots
-#plot(cut_sl[1])
-#plot(points[1], add = T)

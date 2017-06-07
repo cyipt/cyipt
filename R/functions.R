@@ -1,6 +1,6 @@
 #Useful Functions
 
-
+##########################################################
 #Split a line into segments
 #From http://rstudio-pubs-static.s3.amazonaws.com/10685_1f7266d60db7432486517a111c76ac8b.html
 SegmentSpatialLines <- function(sl, length = 0, n.parts = 0, merge.last = FALSE) {
@@ -27,43 +27,7 @@ SegmentSpatialLines <- function(sl, length = 0, n.parts = 0, merge.last = FALSE)
   return(SpatialLines(newlines))
 }
 
-
-
-#COnvert Multipart Lines/Ploygons to Single Parts as data frame
-
-multi2single <- function(x,from,to){
-  #Slit into single part and mulipart
-  p_vars <- x[st_geometry_type(x) == to,]
-  mp_vars <- x[st_geometry_type(x) == from,]
-  #Separate geometry from variaibles
-  p_geom <- p_vars$geometry
-  mp_geom <- mp_vars$geometry
-  #Change to Data Frame
-  p_vars <- as.data.frame(p_vars)
-  p_vars <- p_vars[,!(names(p_vars) %in% "geometry"), drop = FALSE]
-  mp_vars <- as.data.frame(mp_vars)
-  mp_vars <- mp_vars[,!(names(mp_vars) %in% "geometry"), drop = FALSE]
-
-  #Duplicate Variables
-  mp_vars <- mp_vars[rep(seq_len(nrow(mp_vars)), lengths(mp_geom)),,drop = FALSE]
-
-  #Convert Multipolygons into single polygons
-  p_geom <- st_cast(st_sfc(p_geom), to , group_or_split = TRUE)
-  mp_geom <- st_cast(st_sfc(mp_geom), to , group_or_split = TRUE)
-
-  #Put back togther
-  geom <- c(p_geom,mp_geom)
-  geom <- st_cast(st_sfc(geom), to, group_or_split = TRUE) #Incase mp or p is empty have to run again
-  vars <- rbind(p_vars,mp_vars)
-  vars$geometry <- geom
-
-  #Remove Duplicates
-  vars <- vars[!duplicated(vars$geometry),]
-  vars <- st_sf(vars)
-  return(vars)
-}
-
-
+############################################################################
 #Function to split mulitple geomaties into single geometires when a data frame
 splitmulti <- function(x,from,to){
   #Split into single and mulit
@@ -101,8 +65,9 @@ splitmulti <- function(x,from,to){
   res <- st_as_sf(var)
   return(res)
 }
-#Calcualte Widths
 
+###################################################################
+#Calcualte Widths
 width_estimate <- function(x){
   x$area <- as.numeric(st_area(x))
   x$perimeter <- as.numeric(st_length(x, dist_fun = geosphere::distGeo))
@@ -118,8 +83,39 @@ width_apply <- function(a,p){
   }
   return(width)
 }
-#width_apply(c(1,2,3),c(4,5,6))
 
+####################################################################
+#OLD CODE ?
+#COnvert Multipart Lines/Ploygons to Single Parts as data frame
 
+multi2single <- function(x,from,to){
+  #Slit into single part and mulipart
+  p_vars <- x[st_geometry_type(x) == to,]
+  mp_vars <- x[st_geometry_type(x) == from,]
+  #Separate geometry from variaibles
+  p_geom <- p_vars$geometry
+  mp_geom <- mp_vars$geometry
+  #Change to Data Frame
+  p_vars <- as.data.frame(p_vars)
+  p_vars <- p_vars[,!(names(p_vars) %in% "geometry"), drop = FALSE]
+  mp_vars <- as.data.frame(mp_vars)
+  mp_vars <- mp_vars[,!(names(mp_vars) %in% "geometry"), drop = FALSE]
 
+  #Duplicate Variables
+  mp_vars <- mp_vars[rep(seq_len(nrow(mp_vars)), lengths(mp_geom)),,drop = FALSE]
 
+  #Convert Multipolygons into single polygons
+  p_geom <- st_cast(st_sfc(p_geom), to , group_or_split = TRUE)
+  mp_geom <- st_cast(st_sfc(mp_geom), to , group_or_split = TRUE)
+
+  #Put back togther
+  geom <- c(p_geom,mp_geom)
+  geom <- st_cast(st_sfc(geom), to, group_or_split = TRUE) #Incase mp or p is empty have to run again
+  vars <- rbind(p_vars,mp_vars)
+  vars$geometry <- geom
+
+  #Remove Duplicates
+  vars <- vars[!duplicated(vars$geometry),]
+  vars <- st_sf(vars)
+  return(vars)
+}
