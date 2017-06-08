@@ -1,29 +1,47 @@
-#Code has stagne bug where when no os polygons roads are sometimes given widht of 11.4 and width path 22.5
+#Estimate road widths
+library(sf)
+library(dplyr)
+options(nwarnings = 10000) #Keep all the warnings
+
 
 #Load In functions
 source("R/functions.R")
 
-
-
-#Estimate road widths
-library(sf)
-library(dplyr)
-
 #Read in data
 os <- readRDS("../example-data/bristol/os_data/roads.Rds")
-osm <- readRDS("../example-data/bristol/osm_data/osm-split.Rds")
+osm <- readRDS("../example-data/bristol/results/osm-lines.Rds")
+pct <- read.csv("../example-data/bristol/results/pct-census.csv")
+pct$osm_id <- NULL #Don't need this as identical to OSM
+pct$X <- NULL
+osm <- left_join(osm,pct, by = c("id" = "id"))
+rm(pct)
+osm <- osm[osm$pct_census > 0,] #To reduce processing time only find widths of roads with cycling demand
 
-#test subsetting
-#osm <- osm[1:1000,]
+#Performacne Tweak, Preallocate object to a gid to reduce processing time
+os_cent <- st_centroid(os)
+osm_cent <- st_centroid(osm)
+grid <- st_make_grid(osm, n = c(10,10), "polygons")
+grid_osm <- st_intersects(osm_cent, grid)
+grid_os <- st_intersects(grid, os_cent)
+rm(grid, os_cent, osm_cent)
 
 #Big Function
 getroadwidths <- function(a){
-  #Get OSM Line and OS Polygons Near By
+  #warning(paste0("Doing Line ",a))
   line <- osm[a,] #OSM Line
+
+  #Pre subset for speed
+  gridno <- grid_osm[[a]]
+  os_grids <- grid_os[gridno][[1]]
+  os_presub <- os[os_grids,]
+
+  #Get OSM Line and OS Polygons Near By
   line <- line["geometry"]
-  AOI <- st_buffer(line, dist = 15) # Area intrest around the line, set to 15 m
+  AOI <- st_buffer(line, dist = 15, nQuadSegs = 1) # Area intrest around the line, set to 15 m
   AOI <- AOI["geometry"]
-  os_sub <- os[st_intersects(AOI,os)[[1]],] # Get OS Polys that intersect the AOI
+  os_sub <- os_presub[st_intersects(AOI,os_presub)[[1]],] #Faster selection from smaller dataset
+  rm(gridno,os_grids,os_presub)
+
   roadside <- os_sub[os_sub$DESCGROUP == "Roadside", ]
   roadside <- st_intersection(AOI, roadside)
   names(roadside) <- c(names(roadside)[1:2],"geometry")
@@ -41,39 +59,34 @@ getroadwidths <- function(a){
   road <- road[st_intersects(line,road)[[1]],]
   rm(os_sub, AOI)
 
-  #Split Muilpart into single part
-  roadside <- multi2single(roadside,"MULTIPOLYGON","POLYGON")
-  road <- multi2single(road,"MULTIPOLYGON","POLYGON")
-
-  #print(paste0("Doing Line ",a," of ",nrow(osm)," with ",nrow(road)," roads and ",nrow(roadside)," roadsides at ", Sys.time()))
-
-  #Get Road Width
-  if(nrow(road) == 0){
-    #print("Number of Roads Polygons is Zero")
-    #Make some empty objects as they get checked aginst later
+  #THe big if statments
+  if(nrow(road) == 0 & nrow(roadside) == 0){
+    startint <- Sys.time()
+    #No Data so skip everthing
+    widthpathres <- NA
     widthres <- NA
-    touch <- list()
-    road_main <- data.frame()
-    #line_main <- line
-  }
-  else{
+    endint <- Sys.time()
+    #warning(paste0("Did no data in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
+  }else if(nrow(road) > 0 & nrow(roadside) > 0){
+    #################################################################
+    #Road and Roadside Approach
+    startint <- Sys.time()
+    roadside <- multi2single(roadside,"MULTIPOLYGON","POLYGON")
+    road <- multi2single(road,"MULTIPOLYGON","POLYGON")
 
     road$width <- width_estimate(road)
-
     ##Find intersections
     #Get Intersection Points
     road_str <- st_cast(road, "MULTILINESTRING", group_or_split=TRUE)
     osm_inter <- st_intersection(line,road_str)
-    #osm_inter <- osm_inter$geometry
     rm(road_str)
 
     #Check if line crosses polygon boundaries, if so then split line and take longest part
     if(length(osm_inter) == 0){
-      #print("Line does not cross polygon boundaries")
+      #Line does not cross polygon boundaries, use whole line
       line_main <- line
     }else{
       #Split Points and Mulitpoints
-      #print("Splitting Line")
       osm_inter <- splitmulti(osm_inter,"MULTIPOINT","POINT")
 
       #Buffer Pointsand make into a singe mulipolygon
@@ -97,103 +110,154 @@ getroadwidths <- function(a){
     osm_join <- st_join(line_main,road, join = st_intersects, left = TRUE)
 
     #Update Table
-    #print(paste0("Road width is ",osm_join$width[1]," of ",nrow(osm_join)," possible values"))
     widthres <- osm_join$width[1]
 
     #Select roaddside touching the road section
-    road_main <- road[road$id == osm_join$id[1], ]
-    road_main <- road_main[!is.na(road_main$id),]
-    touch <- st_touches(road_main, roadside)
-    if(length(touch) > 0){ #To deal with an Edge Case when Returns a empty list with lenght one
-      if(sum(touch[[1]]) == 0 ){
-        rm(touch)
-        touch <- list()
-      }
-    }
-
+    road_main <- road[road$OBJECTID == osm_join$OBJECTID[1], ] # Changed from id to OBJECTID don't know why it used to be id
+    road_main <- road_main[!is.na(road_main$OBJECTID),]
     rm(line_main, osm_join)
-  }
-
-  ###################################
-  # Get Path Width
-  ###################################
-  if(length(touch) > 0 & nrow(road_main) > 0){
-    #print("Getting Roadside width with simple case")
-
-    roadside_touch <- roadside[st_touches(road_main, roadside)[[1]],]
-    #If Roadside is made up of multiple polygons merge them alltogther
-    roadside_one <- st_union(roadside_touch)
-    roadside_touch <- roadside_touch[1,]
-    roadside_touch$geometry <- roadside_one
-    rm(roadside_one)
-
-    #Get Path width
-    roadside_touch$width <- width_estimate(roadside_touch)
-
-    road_buff <- st_buffer(road_main, dist = (1.1 * roadside_touch$width[1]))
-    roadside_touch <- st_intersection(road_buff, roadside_touch)
-    comb <- st_union(roadside_touch, road_main)
-    comb <- comb[,c("id","geometry")]
-    comb <- st_buffer(comb,dist = 0.0001) #More robust way to get a single polygon
-    #comb <- st_cast(comb, "POLYGON", group_or_split=TRUE)
-
-    #Get final width
-    comb$width <- width_estimate(comb)
-
-    #Update table
-    #print(paste0("Road and roadside combined width is ",comb$width[1]," of ",nrow(comb)," possible values"))
-    widthpathres <- comb$width[1]
-    rm(roadside_touch, roadside, road_main, road_buff, road, comb, line, e, touch)
-  }
-  else if(nrow(roadside) > 0 & nrow(road_main) == 0){
-    #For cases where there is no road but their is roadside e.g. off road cycle path
-    #print("Check for roadside only situation")
-    roadside_only <- roadside[st_intersects(line,roadside)[[1]],]
-    if(nrow(roadside_only) == 0){
-      #print("No roadside only situation")
+    if(nrow(road_main) == 0){
+      #Can't do anything
       widthpathres <- NA
-    }
-    else{
-      roadside_only$width <- width_estimate(roadside_only)
+    }else{
+      touch <- st_touches(road_main, roadside, sparse = FALSE)
+      #Get the paths that touch the road and trim off any traling edges at 5m
+      #Not this means that paths wider than 5 meters are capped at 5m
+      roadside_touch <- roadside[touch,]
+      if(nrow(roadside_touch) == 0){
+        #Can't do anything
+        widthpathres <- NA
+      }else{
+        roadside_one <- st_union(roadside_touch)
+        roadside_touch <- roadside_touch[1,]
+        roadside_touch$geometry <- roadside_one
+        rm(roadside_one)
+        road_buff <- st_buffer(road_main, dist = 5)
+        roadside_touch <- st_intersection(roadside_touch, road_buff)
+        comb <- st_union(roadside_touch, road_main)
+        comb <- comb[,c("OBJECTID","geometry")]
+        comb <- splitmulti(comb, "MULTIPOLYGON", "POLYGON")
+        comb <- comb[1,] #Union can create multiple copies just take first
+        #comb <- st_buffer(comb, dist = 0.001) #To deal with mulipolgons
 
-      #Update table
-      widthpathres <- roadside_only$width[1]
-      #print(paste0("Roadside only width is ",roadside_only$width[1]," of ",nrow(roadside_only)," possible values"))
-      rm(touch, roadside, road_main, road, line)
-    }
+        #Get final width
+        widthpathres <- width_estimate(comb)
+        rm(roadside_touch, road_buff, comb, touch)
+      }
 
-  }
-  else{
-    #print("Unable to find roadside width")
+    }
+    rm(road_main)
+
+    endint <- Sys.time()
+    #warning(paste0("Did road and roadside in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
+  }else if(nrow(road) > 0 & nrow(roadside) == 0){
+    ########################################################
+    #Road Only approach
+    startint <- Sys.time()
     widthpathres <- NA
-    rm(touch, roadside, road_main, road, line)
+    road <- multi2single(road,"MULTIPOLYGON","POLYGON")
+    road$width <- width_estimate(road)
+    ##Find intersections
+    #Get Intersection Points
+    road_str <- st_cast(road, "MULTILINESTRING", group_or_split=TRUE)
+    osm_inter <- st_intersection(line,road_str)
+    rm(road_str)
+
+    #Check if line crosses polygon boundaries, if so then split line and take longest part
+    if(length(osm_inter) == 0){
+      #Line does not cross polygon boundaries, use whole line
+      line_main <- line
+    }else{
+      #Split Points and Mulitpoints
+      osm_inter <- splitmulti(osm_inter,"MULTIPOINT","POINT")
+
+      #Buffer Pointsand make into a singe mulipolygon
+      osm_buff <- st_buffer(osm_inter, dist = 0.01)
+      buff_geom <- osm_buff$geom
+      buff_geom <- st_union(buff_geom)
+      rm(osm_buff, osm_inter)
+
+      #Cut the line with buffered points
+      osm_diff <- st_cast(st_difference(line,buff_geom), "LINESTRING")
+      osm_diff$length <- as.numeric(st_length(osm_diff, dist_fun = geosphere::distGeo))
+
+      #Select the right segment of the line
+      line_main <- osm_diff[osm_diff$length == max(osm_diff$length),]
+      rm(osm_diff, buff_geom)
+    }
+
+    #Join line and polygon to get the road width
+    line_main <- line_main[,"geometry", drop = FALSE]
+    line_main$sub <- 1:nrow(line_main) #Can't do the join without a variaible
+    osm_join <- st_join(line_main,road, join = st_intersects, left = TRUE)
+
+    #Update Table
+    widthres <- osm_join$width[1]
+    rm(line_main, osm_join)
+    endint <- Sys.time()
+    #warning(paste0("Did road only ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
+  }else if(nrow(road) == 0 & nrow(roadside) > 0){
+    ######################################################
+    #Roadside only approauch
+    startint <- Sys.time()
+    widthres <- NA
+    roadside <- multi2single(roadside,"MULTIPOLYGON","POLYGON")
+    roadside <- roadside[st_intersects(line,roadside)[[1]],] #Find Roadside that intersects the line
+    if(nrow(roadside) == 0){
+      widthpathres <- NA #None found
+    }else{
+      roadside$width <- width_estimate(roadside)
+      widthpathres <- roadside$width[1]
+    }
+    endint <- Sys.time()
+    #warning(paste0("Did roadside only in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
+
+  }else{
+    #######################################################
+    #Something has gone wrong
+    warning("Oh my god, a horrible failure has occured")
+    stop()
   }
 
+  #Produce the Final Result
   finalres <- c(widthres,widthpathres)
   return(finalres)
-  rm(finalres,widthres,widthpathres)
+  rm(finalres,widthres,widthpathres, road, roadside, line)
 }
 
+#profvis({
 #Apply FUnction
-
 starttime <- Sys.time()
-
 res <- lapply(1:nrow(osm), getroadwidths)
 res <- do.call("rbind", res)
 
 #Add Results Column
-osm$width <- res[,1]
-osm$widthpath <- res[,2]
+osm$width <- NA
+osm$widthpath <- NA
+
+for(b in 1:nrow(osm)){
+  width <- res[b,1][[1]]
+  widthpath <- res[b,2][[1]]
+  if(is.null(width)){
+    width <- NA
+  }
+  if(is.null(widthpath)){
+    widthpath <- NA
+  }
+  osm$width[b] <- width
+  osm$widthpath[b] <- widthpath
+}
 
 endtime <- Sys.time()
-
 print(paste0("Did ",nrow(osm)," rows in ", round(difftime(endtime, starttime, units = "secs"),2), " seconds"))
+#})
 
+warnms <- warnings()
+warnms <- names(warnms)
+warnms <- warnms[warnms != "attribute variables are assumed to be spatially constant throughout all geometries"]
 
+vals <- as.data.frame(osm)
+vals <- vals[,c("id","osm_id","width","widthpath")]
 
+write.csv(vals,"../example-data/bristol/results/widths.csv", row.names = FALSE)
 
-
-saveRDS(osm, "../example-data/bristol/osm_data/osm-split-roadwidths.Rds")
-#sub <- as.data.frame(osm)
-#sub <- sub[,c("id","osm_id","name","width","widthpath")]
-#write.csv(sub,"../example-data/bristol/osm_data/osm-split-roadwiths.csv")
