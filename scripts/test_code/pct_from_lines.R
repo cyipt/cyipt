@@ -1,3 +1,7 @@
+#Need to fix
+#Roads that touch the same road at both ends still get the incorect PCT value
+
+
 library(sp)
 library(sf)
 library(rgdal)
@@ -62,65 +66,89 @@ getpctvalues <- function(a){
   rf_presub <- rf[rf_grid,]
   sel <- st_intersects(osm_sub, rf_presub)[[1]]
   if(sum(lengths(sel)) == 0){
-    #Do Nothing
     #SOmething the lines run paralelle very colse to each other
-    sel2 <- st_intersects(buff, rf_presub)[[1]]
-    if(sum(lengths(sel2)) == 0){
-      #Do Nothing
+    #split the buff and check for intersection at both ends
+    buff <- st_cast(buff,"POLYGON", group_or_split = T)
+    if(length(buff) == 1){
+      #Do nothing, edge case where a looped road exists whith same start and end point
       count <- 0
     }else{
-      #Split out the lines that are very close
-      rf_sub <- rf_presub[sel2,]
-      cuts <- st_difference(rf_sub,buff)
-      cutsl <- splitmulti(cuts, "MULTILINESTRING", "LINESTRING")
-      cutsl$len <- as.numeric(st_length(cutsl))
-      cutsl <- cutsl[cutsl$len > (0.95 * len) & cutsl$len < (1.05 * len),] #Get segments that are withing 5% lenf of the line
-      count <- sum(rf_sub$bicycle_16p)
-      #lengths(cuts_geom)
+      sel2 <- st_intersects(buff[1], rf_presub)[[1]]
+      sel3 <- st_intersects(buff[2], rf_presub)[[1]]
+      sel4 <- sel2[sel2 %in% sel3]
+      if(sum(lengths(sel4)) == 0){
+        #Do Nothing
+        count <- 0
+      }else{
+        #Split out the lines that are very close
+        rf_sub <- rf_presub[sel4,]
+        cuts <- st_difference(rf_sub,buff)
+        cutsl <- splitmulti(cuts, "MULTILINESTRING", "LINESTRING")
+        cutsl$len <- as.numeric(st_length(cutsl))
+        cutsl <- cutsl[cutsl$len > (0.95 * len) & cutsl$len < (1.05 * len),] #Get segments that are withing 5% lenf of the line
+        count <- sum(rf_sub$bicycle_16p)
+        #lengths(cuts_geom)
+      }
+      rm(buff,sel2,sel3,sel4)
     }
-
 
   }else{
     rf_sub <- rf_presub[sel,]
-    #Let have a look
-    #print(paste0("A = ",a))
-    #pbuff <- st_buffer(osm_sub[1], 200)
-    #plot(pbuff, col = "White")
-    #plot(rf_sub[1], col = "Black", add = T)
-    #plot(osm_sub[1], col = "Red", lwd = 3, add = T)
     count <- sum(rf_sub$bicycle_16p)
   }
   return(count)
 }
 
+rm(bounds)
+
+m = 1
 n = nrow(osm)
-start <- Sys.time()
-#profvis({
-res <- lapply(1:n,getpctvalues)
-res <- unlist(res)
-#})
-end <- Sys.time()
-#print(paste0("Did ",n," lines in ",difftime(end,start,units = "secs")," in serial mode"))
 
-#Testing In Parallele
+###########################################################
+# Serial Version of Code
 #start <- Sys.time()
-#cl <- makeCluster(5)
-#clusterExport(cl=cl, varlist=c("osm", "rf","grid_osm","grid_rf"))
-#clusterEvalQ(cl, {library(sf)}; {splitmulti()}) #Need to load splitmuliin corectly
-#respar <- parLapply(cl, 1:n,getpctvalues)
-#stopCluster(cl)
-#respar <- unlist(respar)
+#profvis({
+#res <- lapply(1:n,getpctvalues)
+#res <- unlist(res)
+#})
 #end <- Sys.time()
-#print(paste0("Did ",n," lines in ",difftime(end,start,units = "secs")," in parallel mode"))
-#identical(res,respar)
+#print(paste0("Did ",n," lines in ",difftime(end,start,units = "secs")," in serial mode"))
+##########################################################
 
-osm$pct_census <- respar
+
+##########################################################
+#Parallel
+start <- Sys.time()
+fun <- function(cl){
+  parLapply(cl, m:n,getpctvalues)
+}
+cl <- makeCluster(5)
+clusterExport(cl=cl, varlist=c("osm", "rf","grid_osm","grid_rf"))
+clusterEvalQ(cl, {library(sf); source("R/functions.R")}) #; {splitmulti()}) #Need to load splitmuliin corectly
+respar <- fun(cl)
+stopCluster(cl)
+respar <- unlist(respar)
+end <- Sys.time()
+print(paste0("Did ",n," lines in ",difftime(end,start,units = "secs")," in parallel mode"))
+#identical(res,respar)
+##########################################################
+
+#osm_test <- osm[m:n,]
+#osm_test$pct_census <- respar
+rm(respar)
+
+########
+
+
+
+osm$pct_census <- respar # CHange to res for serial version
+
 sub <- osm[osm$pct_census > 0,]
 sub2 <- osm[osm$pct_census == 0,]
 #qtm(sub, lines.col = "pct_census", lines.lwd = 6, popup.vars = c("id","osm_id","pct_census") )
 
 tm_shape(sub)+
-  tm_lines(col = "pct_census",lwd = 6, popup.vars = c("id","osm_id","pct_census")) +
+  tm_lines(col = "pct_census",lwd = 6, popup.vars = c("id","osm_id","pct_census"))# +
 tm_shape(sub2)+
   tm_lines(col = "black",lwd = 4, popup.vars = c("id","osm_id","pct_census"))
 
@@ -128,6 +156,9 @@ tm_shape(sub2)+
 #qtm(rf_presub) +
 #  qtm(osm_sub, lines.lwd = 5, lines.col = "black")
 
+
+#rm(respar)
+#osm$pct_census <- NULL
 #a = 19
 #osm_sub <- osm[a,]
 #sel <- st_intersects(osm_sub, rf)[[1]]
