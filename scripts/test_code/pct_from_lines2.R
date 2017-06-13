@@ -65,7 +65,8 @@ getpctvalues <- function(a){
   rf_grid <- rf_grid[!duplicated(rf_grid)]
   rf_presub <- rf[rf_grid,]
   sel <- st_intersects(osm_sub, rf_presub)[[1]]
-    if(sum(lengths(sel)) == 0){
+
+  if(sum(lengths(sel)) == 0){
     #SOmething the lines run paralelle very colse to each other
     #split the buff and check for intersection at both ends
     buff <- st_cast(buff,"POLYGON", group_or_split = T)
@@ -77,6 +78,9 @@ getpctvalues <- function(a){
       sel3 <- st_intersects(buff[2], rf_presub)[[1]]
       sel4 <- sel2[sel2 %in% sel3]
       if(sum(lengths(sel4)) == 0){
+        #Do Nothing
+        count <- 0
+      }else{
         #Check for cul-de-sacs where road toched the same road at both ends
         grd <- grid_osm[[a]]
         osm_other <- osm[grid_osm %in% grd,]
@@ -106,11 +110,14 @@ getpctvalues <- function(a){
           cutsl <- cutsl[cutsl$len > (0.95 * len) & cutsl$len < (1.05 * len),] #Get segments that are withing 5% lenf of the line
           count <- sum(rf_sub$bicycle_16p)
           #lengths(cuts_geom)
+          #plot(rf_sub, add = T, lwd = 2, col = "Green")
         }
+      }
       rm(buff,sel2,sel3,sel4)
     }
 
   }else{
+    #plot(rf_presub[sel,], add = T, lwd = 2, col = "Green")
     rf_sub <- rf_presub[sel,]
     count <- sum(rf_sub$bicycle_16p)
   }
