@@ -1,7 +1,7 @@
 #Demo Infrastrucutre data
 library(sf)
 library(dplyr)
-library(gdata)
+#library(gdata)
 
 #Read in Data
 osm <- readRDS("../example-data/bristol/results/osm-lines.Rds")
@@ -85,15 +85,28 @@ osm$aadt[is.na(osm$aadt)] <- 0
 
 #Step 4; Compare Against Rules Table
 osm$infra_score <- NA
+not_road <- c("bridleway","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")
 for(b in 1:nrow(osm)){
-  osm$infra_score[b] <- rules$Cycle.Route.Provision[rules$speed_min < osm$speed[b] &
-                                                    rules$speed_max >= osm$speed[b] & #Nb equals different for speed as speedlimits are usually at maximum end
-                                                    rules$pct_min <= osm$pct_census[b] &
-                                                    rules$pct_max > osm$pct_census[b] &
-                                                    rules$AADT_min <= osm$aadt[b] &
-                                                    rules$AADT_max > osm$aadt[b]
-                                                    ]
+  if(osm$highway[b] %in% not_road){
+    if(osm$pct_census[b] > 50){
+      osm$infra_score[b] <- "Track/Path"
+    }else{
+      osm$infra_score[b] <- "None"
+    }
+
+  }else{
+    osm$infra_score[b] <- rules$Cycle.Route.Provision[rules$speed_min < osm$speed[b] &
+                                                        rules$speed_max >= osm$speed[b] & #Nb equals different for speed as speedlimits are usually at maximum end
+                                                        rules$pct_min <= osm$pct_census[b] &
+                                                        rules$pct_max > osm$pct_census[b] &
+                                                        rules$AADT_min <= osm$aadt[b] &
+                                                        rules$AADT_max > osm$aadt[b]
+                                                      ]
+  }
+
 }
+
+
 
 saveRDS(osm,"../example-data/bristol/results/osm-select-infra.Rds")
 

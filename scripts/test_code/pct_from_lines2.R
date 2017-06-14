@@ -48,11 +48,11 @@ getpctvalues <- function(a){
   #Trim off the ends of the line
   points <- st_cast(osm_sub$geometry, "POINT")
   points <- points[c(1,length(points))] #Get first and last point on the lines
-  len <- as.numeric(st_length(osm_sub))
-  if(len < 1){ # To hanel very small lines
-    cutlen <- len/2.1
+  len <- as.numeric(st_distance(points[1],points[2])) #Change to distance between points to deal with curved roads
+  if(len < 4 & len != 0){ # To hanel very small lines
+    cutlen <- len/2.5
   }else{
-    cutlen <- 0.5
+    cutlen <- 2
   }
   buff <- st_buffer(points, cutlen) #Make small circiels around the ends
   buff <- st_union(buff)
@@ -81,9 +81,9 @@ getpctvalues <- function(a){
         #Do Nothing
         count <- 0
       }else{
-        #Check for cul-de-sacs where road toched the same road at both ends
+        #Check for cul-de-sacs where road touched the same road at both ends
         grd <- grid_osm[[a]]
-        osm_other <- osm[grid_osm %in% grd,]
+        osm_other <- osm[sapply(grid_osm,function(x)any(x %in% grd)),] #Needed to hand lines in multiple grids
         osm_other1 <- osm_other[unique(unlist(st_intersects(buff[1],osm_other))),]
         osm_other2 <- osm_other[unique(unlist(st_intersects(buff[2],osm_other))),]
         osm_other1 <- osm_other1[!(osm_other1$id %in% a),]
@@ -93,7 +93,7 @@ getpctvalues <- function(a){
           #No cul-de-sac case
           lenother <- 0
         }else{
-          lenother <- as.numeric(st_length(osm_other[osm_other$id == match,]))
+          lenother <- as.numeric(st_length(osm_other[osm_other$id == match[1],])) # In some edge cases drops data (i.e. mutiple clu-de-sacs)
         }
         #plot(osm_other1[1], add = T, col = "Green", lwd = 3)
         #plot(osm_other2[1], add = T, col = "Yellow", lwd = 3)
@@ -126,20 +126,21 @@ getpctvalues <- function(a){
 
 rm(bounds)
 
-m = 1
-n = nrow(osm)
+
 
 ###########################################################
 # Serial Version of Code
 #start <- Sys.time()
 #profvis({
-#res <- lapply(1:n,getpctvalues)
+#res <- lapply(m:n,getpctvalues)
 #res <- unlist(res)
 #})
 #end <- Sys.time()
 #print(paste0("Did ",n," lines in ",difftime(end,start,units = "secs")," in serial mode"))
 ##########################################################
 
+m = 1
+n = nrow(osm)
 
 ##########################################################
 #Parallel
@@ -168,15 +169,19 @@ print(paste0("Did ",n," lines in ",difftime(end,start,units = "secs")," in paral
 
 osm$pct_census <- respar # CHange to res for serial version
 
-sub <- osm[osm$pct_census > 0,]
+#sub <- osm[osm$pct_census > 0,]
 #sub2 <- osm[osm$pct_census == 0,]
 #qtm(sub, lines.col = "pct_census", lines.lwd = 6, popup.vars = c("id","osm_id","pct_census") )
 
-tm_shape(sub)+
-  tm_lines(col = "pct_census",lwd = 6, popup.vars = c("id","osm_id","pct_census"))# +
+#tm_shape(sub)+
+  #tm_lines(col = "pct_census",lwd = 6, popup.vars = c("id","osm_id","pct_census")) +
 #tm_shape(sub2)+
-#  tm_lines(col = "black",lwd = 4, popup.vars = c("id","osm_id","pct_census"))
+  #tm_lines(col = "black",lwd = 4, popup.vars = c("id","osm_id","pct_census"))
 
+
+result <- as.data.frame(osm)
+result <- result[,c("id","osm_id","pct_census")]
+write.csv(result,"../example-data/bristol/results/pct-census.csv")
 
 #qtm(rf_presub) +
 #  qtm(osm_sub, lines.lwd = 5, lines.col = "black")

@@ -1,14 +1,16 @@
+a = 28568
+#a = 6094
 
 for(a in 300:350){
   osm_sub <- osm[a,]
   #Trim off the ends of the line
   points <- st_cast(osm_sub$geometry, "POINT")
   points <- points[c(1,length(points))] #Get first and last point on the lines
-  len <- as.numeric(st_length(osm_sub))
-  if(len < 1){ # To hanel very small lines
-    cutlen <- len/2.1
+  len <- len <- as.numeric(st_distance(points[1],points[2])) #Change to distance between points to deal with curved roads
+  if(len < 4){ # To hanel very small lines
+    cutlen <- len/2.5
   }else{
-    cutlen <- 0.5
+    cutlen <- 2
   }
   buff <- st_buffer(points, cutlen) #Make small circiels around the ends
   buff <- st_union(buff)
@@ -23,7 +25,7 @@ for(a in 300:350){
   sel <- st_intersects(osm_sub, rf_presub)[[1]]
 
   #Test Plotting###########
-  testbuf <- st_buffer(osm_sub, 50)
+  testbuf <- st_buffer(osm_sub, 1)
   plot(testbuf[1], col = "White", lwd = 0.1)
   plot(osm_sub[1], add = T, col = "Black", lwd = 8)
   plot(rf_presub[1], add = T, col = "Red")
@@ -46,7 +48,8 @@ for(a in 300:350){
       }else{
         #Check for cul-de-sacs where road toched the same road at both ends
         grd <- grid_osm[[a]]
-        osm_other <- osm[grid_osm %in% grd,]
+        #osm_other <- osm[grid_osm %in% grd,]
+        osm_other <- osm[sapply(grid_osm,function(x)any(x %in% grd)),] #Needed to hand lines in multiple grids
         osm_other1 <- osm_other[unique(unlist(st_intersects(buff[1],osm_other))),]
         osm_other2 <- osm_other[unique(unlist(st_intersects(buff[2],osm_other))),]
         osm_other1 <- osm_other1[!(osm_other1$id %in% a),]
@@ -90,8 +93,8 @@ for(a in 300:350){
 
 names(rf_presub) <- c("ID","busyness","bicycle","geometry")
 
-st_write(osm_sub,"../example-data/bristol/for_checking/osm_sub2.shp")
-st_write(rf_presub, "../example-data/bristol/for_checking/rf_presub2.shp")
-st_write(buff,"../example-data/bristol/for_checking/buff.shp")
+st_write(osm_sub,"../example-data/bristol/for_checking/osm_sub5.shp")
+st_write(rf_presub, "../example-data/bristol/for_checking/rf_presub5.shp")
+st_write(buff,"../example-data/bristol/for_checking/buff5.shp")
 
 
