@@ -28,7 +28,7 @@ osm <- left_join(osm,traffic, by = c("osm_id" = "osm_id"))
 rm(vars,pct,width,traffic)
 
 #Step 1: Remove Reads with low propencity to cycle
-osm <- osm[osm$pct_census > 9,]
+#osm <- osm[osm$pct_census > 9,]
 
 #Step 2: Guess Road Speed if one not provided
 summary(osm$maxspeed)
@@ -105,6 +105,71 @@ for(b in 1:nrow(osm)){
   }
 
 }
+
+
+#Step 5: Summarise existing infrastructure
+osm$existing_infra <- NA
+for(c in 1:nrow(osm)){
+  #cycleways
+  if(osm$highway[c] == "cycleway"){
+    osm$existing_infra[c] <- "Track/Path"
+  #Footways
+  }else if(osm$highway[c] == "footway"){
+    if(is.na(osm$bicycle[c])){
+      osm$existing_infra[c] <- "Track/Path"
+    }else if(osm$bicycle[c] != "no" & osm$bicycle[c] != "dismount"){
+      osm$existing_infra[c] <- "Track/Path"
+    }else{
+      osm$existing_infra[c] <- NA
+    }
+  #Living_streets
+  }else if(osm$highway[c] == "living_street"){
+    osm$existing_infra[c] <- "Cycle Street"
+  #Path
+  }else if(osm$highway[c] == "path"){
+    if(is.na(osm$bicycle[c])){
+      osm$existing_infra[c] <- "Track/Path"
+    }else if(osm$bicycle[c] != "no" & osm$bicycle[c] != "dismount"){
+      osm$existing_infra[c] <- "Track/Path"
+    }else{
+      osm$existing_infra[c] <- NA
+    }
+  #Highways
+  }else if(!is.na(osm$cycleway[c]) & osm$cycleway[c] != "no"){ #Has the cycleway tag
+    #osm$existing_infra[c] <- paste0("Highway - ",osm$cycleway[c])
+    if(osm$cycleway[c] == "lane" | osm$cycleway[c] == "opposite" | osm$cycleway[c] == "opposite_lane"){
+      osm$existing_infra[c] <- "Cycle Lanes"
+    }else if(osm$cycleway[c] == "track" | osm$cycleway[c] == "opposite_track"){
+      osm$existing_infra[c] <- "Cycle Tracks"
+    }else if(osm$cycleway[c] == "shared" | osm$cycleway[c] == "share_busway"){
+      osm$existing_infra[c] <- "Shared Lanes"
+    }else{
+      osm$existing_infra[c] <- paste0("Highway - ",osm$cycleway[c])
+    }
+
+  #Has left or right cycleway tags
+  }else if(!is.na(osm$cycleway.left[c]) | !is.na(osm$cycleway.right[c]) | !is.na(osm$cycleway.otherside[c])){
+    lft <- as.character(osm$cycleway.left[c])
+    if(is.na(lft)){lft <- "None"}
+    rgt <- as.character(osm$cycleway.right[c])
+    if(is.na(rgt)){rgt <- "None"}
+    oth <- as.character(osm$cycleway.otherside[c])
+    if(is.na(oth)){oth <- "None"}
+
+    if(lft == "lane" | rgt == "lane" | oth == "lane" | lft == "designated" | rgt == "designated" | oth == "designated"){
+      osm$existing_infra[c] <- "Cycle Lanes"
+    }else if(lft == "track" | rgt == "track" | oth == "track" | lft == "opposite_track" | rgt == "opposite_track" | oth == "opposite_track"){
+      osm$existing_infra[c] <- "Cycle Tracks"
+    }else if(lft == "share_busway" | rgt == "share_busway" | oth == "share_busway"){
+      osm$existing_infra[c] <- "Shared Lane"
+    }else{
+      osm$existing_infra[c] <- paste0("Other Cycle Infrastructure")
+    }
+  }else{
+    #No Nothing
+  }
+}
+
 
 
 
