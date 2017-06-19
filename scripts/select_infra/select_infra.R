@@ -142,7 +142,7 @@ for(c in 1:nrow(osm)){
     }else if(osm$cycleway[c] == "track" | osm$cycleway[c] == "opposite_track"){
       osm$existing_infra[c] <- "Cycle Tracks"
     }else if(osm$cycleway[c] == "shared" | osm$cycleway[c] == "share_busway"){
-      osm$existing_infra[c] <- "Shared Lanes"
+      osm$existing_infra[c] <- "Shared Lane"
     }else{
       osm$existing_infra[c] <- paste0("Highway - ",osm$cycleway[c])
     }
@@ -166,12 +166,34 @@ for(c in 1:nrow(osm)){
       osm$existing_infra[c] <- paste0("Other Cycle Infrastructure")
     }
   }else{
-    #No Nothing
+    #Do Nothing
   }
 }
+
+#Step 6: Compare existing and proposed
+osm$action <- as.factor(paste0(osm$existing_infra," -> ",osm$infra_score))
+osm$infra_score <- as.factor(osm$infra_score)
+
+
+costs <- read.csv("../cyipt/input-data/costs2.csv")
+costs$id <- NULL
+
+osm <- left_join(osm,costs, by = c("action" = "type"))
+#Step 7: Find lenghts and total costs
+osm$length <- as.numeric(st_length(osm))
+osm$cost.total <- as.integer(osm$cost.per.m * osm$length)
+
+
+
+
+
+tm_shape(osm[osm$change != "no",]) +
+  tm_lines(col = "cost.total", lwd = 5, alpha = 1,
+           title.col = "Change",
+           popup.vars = c("infra_score","existing_infra", "highway", "cycleway"))
 
 
 
 
 saveRDS(osm,"../example-data/bristol/results/osm-select-infra.Rds")
-
+#plot(test[test$infra_score == "None",])
