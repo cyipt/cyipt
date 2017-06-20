@@ -1,30 +1,30 @@
-id,type,change,cost-per-m
-1,Cycle Lanes -> Cycle Lanes,no,0
-2,Cycle Lanes -> Cycle Lanes with light segregation,upgrade,1150
-3,Cycle Lanes -> Cycle Street,downgrade,0
-4,Cycle Lanes -> Segregated Cycle Track,upgrade,1450
-5,Cycle Lanes -> Stepped Cycle Tracks,upgrade,1150
-6,Cycle Lanes -> Track/Path,ERROR,0
-7,Cycle Street -> Cycle Street,no,0
-8,Cycle Tracks -> Cycle Lanes,downgrade,0
-9,Cycle Tracks -> Cycle Street,downgrade,0
-10,Cycle Tracks -> Stepped Cycle Tracks,downgrade,0
-11,NA -> Cycle Lanes,upgrade,460
-12,NA -> Cycle Lanes with light segregation,upgrade,1150
-13,NA -> Cycle Street,upgrade,3
-14,NA -> Segregated Cycle Track,upgrade,1450
-15,NA -> Stepped Cycle Tracks,upgrade,1150
-16,NA -> Track/Path,upgrade,140
-17,Other Cycle Infrastructure -> Cycle Street,downgrade,0
-18,Shared Lane -> Cycle Street,no,0
-19,Shared Lane -> Segregated Cycle Track,upgrade,1450
-20,Shared Lane -> Stepped Cycle Tracks,upgrade,1150
-21,Track/Path -> Track/Path,upgrade,140
-22,Cycle Lanes -> None,downgrade,0
-23,Cycle Street -> None,downgrade,0
-24,Cycle Tracks -> None,downgrade,0
-25,NA -> None,no,0
-26,Shared Lane -> None,downgrade,0
-27,Shared Lanes -> None,downgrade,0
-28,Track/Path -> None,no,0
-29,Other Cycle Infrastructure -> None,downgrade,0
+type,change,cost-per-m
+Cycle Lanes -> Cycle Lanes,no,0
+Cycle Lanes -> Cycle Lanes with light segregation,upgrade,1150
+Cycle Lanes -> Cycle Street,downgrade,0
+Cycle Lanes -> Segregated Cycle Track,upgrade,1450
+Cycle Lanes -> Stepped Cycle Tracks,upgrade,1150
+Cycle Lanes -> Track/Path,ERROR,0
+Cycle Street -> Cycle Street,no,0
+Cycle Tracks -> Cycle Lanes,downgrade,0
+Cycle Tracks -> Cycle Street,downgrade,0
+Cycle Tracks -> Stepped Cycle Tracks,downgrade,0
+None -> Cycle Lanes,upgrade,460
+None -> Cycle Lanes with light segregation,upgrade,1150
+None -> Cycle Street,upgrade,3
+None -> Segregated Cycle Track,upgrade,1450
+None -> Stepped Cycle Tracks,upgrade,1150
+None -> Track/Path,upgrade,140
+Other Cycle Infrastructure -> Cycle Street,downgrade,0
+Shared Lane -> Cycle Street,no,0
+Shared Lane -> Segregated Cycle Track,upgrade,1450
+Shared Lane -> Stepped Cycle Tracks,upgrade,1150
+Track/Path -> Track/Path,no,0
+Cycle Lanes -> None,downgrade,0
+Cycle Street -> None,downgrade,0
+Cycle Tracks -> None,downgrade,0
+None -> None,no,0
+Shared Lane -> None,downgrade,0
+Shared Lanes -> None,downgrade,0
+Track/Path -> None,no,0
+Other Cycle Infrastructure -> None,downgrade,0

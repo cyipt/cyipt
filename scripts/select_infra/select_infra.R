@@ -4,11 +4,11 @@ library(dplyr)
 #library(gdata)
 
 #Read in Data
-osm <- readRDS("../example-data/bristol/results/osm-lines.Rds")
-vars <- read.csv("../example-data/bristol/results/osm-variables.csv")
-pct <- read.csv("../example-data/bristol/results/pct-census.csv")
-width <- read.csv("../example-data/bristol/results/widths.csv")
-traffic <- read.csv("../cyipt/trafficcounts/trafficcounts-osm.csv")
+osm <- readRDS("../example-data/cambridge/results/osm-lines.Rds")
+vars <- read.csv("../example-data/cambridge/results/osm-variables.csv")
+pct <- read.csv("../example-data/cambridge/results/pct-census.csv")
+#width <- read.csv("../example-data/cambridge/results/widths.csv")
+#traffic <- read.csv("../cyipt/trafficcounts/trafficcounts-osm.csv")
 rules <- read.csv("../cyipt/input-data/InfraSelectionRules.csv", stringsAsFactors = FALSE)
 
 #Remove Unneded Columns
@@ -23,7 +23,7 @@ pct$X <- NULL
 osm <- left_join(osm,vars, by = c("id" = "id"))
 osm <- left_join(osm,pct, by = c("id" = "id"))
 #osm <- left_join(osm,width, by = c("id" = "id"))
-osm <- left_join(osm,traffic, by = c("osm_id" = "osm_id"))
+#osm <- left_join(osm,traffic, by = c("osm_id" = "osm_id"))
 
 rm(vars,pct,width,traffic)
 
@@ -171,29 +171,37 @@ for(c in 1:nrow(osm)){
 }
 
 #Step 6: Compare existing and proposed
-osm$action <- as.factor(paste0(osm$existing_infra," -> ",osm$infra_score))
-osm$infra_score <- as.factor(osm$infra_score)
+osm$existing_infra[is.na(osm$existing_infra)] <- "None"
 
 
-costs <- read.csv("../cyipt/input-data/costs2.csv")
-costs$id <- NULL
+osm$action <- paste0(osm$existing_infra," -> ",osm$infra_score)
+
+#Remove
+#osm$infra_score <- osm$infra_score
+
+
+costs <- read.csv("../cyipt/input-data/costs2.csv", stringsAsFactors = FALSE)
+#costs$id <- NULL
+
+#stop()
 
 osm <- left_join(osm,costs, by = c("action" = "type"))
 #Step 7: Find lenghts and total costs
 osm$length <- as.numeric(st_length(osm))
 osm$cost.total <- as.integer(osm$cost.per.m * osm$length)
 
+#test <- osm[osm$infra_score != "None",]
 
 
 
 
-tm_shape(osm[osm$change != "no",]) +
-  tm_lines(col = "cost.total", lwd = 5, alpha = 1,
-           title.col = "Change",
-           popup.vars = c("infra_score","existing_infra", "highway", "cycleway"))
+#tm_shape(osm[osm$change != "no",]) +
+#  tm_lines(col = "cost.total", lwd = 5, alpha = 1,
+#           title.col = "Change",
+#           popup.vars = c("infra_score","existing_infra", "highway", "cycleway"))
 
 
 
 
-saveRDS(osm,"../example-data/bristol/results/osm-select-infra.Rds")
+saveRDS(osm,"../example-data/cambridge/results/osm-select-infra.Rds")
 #plot(test[test$infra_score == "None",])
