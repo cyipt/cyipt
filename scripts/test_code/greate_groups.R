@@ -1,105 +1,305 @@
-sub <- osm[osm$change != "no",]
-sub2 <- sub[sub$infra_score == "Segregated Cycle Track",]
-buff <- st_buffer(sub2, 1)
+library(sf)
+library(igraph)
 
-dist <- st_distance(sub2[1:5,])
+#Input Data
+osm <- readRDS("../example-data/bristol/results/osm-select-infra.Rds")
+buff_dists = 20
+
+
+#Agg Groups Column
+osm$group_id <- NA
+
+grp_start = 0
+#############################################################
+#Step 1: Segregated Cycle Track
+sub <- osm[osm$infra_score == "Segregated Cycle Track" & osm$change == "upgrade",]
+sub <- sub[,c("id")]
+buff <- st_buffer(sub, buff_dists)
+#Find Instersections
 inter <- st_intersects(buff,buff)
-summary(lengths(inter))
-
-
 edges <- do.call(rbind, lapply(inter, function(x) {
   if (length(x) > 1) cbind(head(x, -1), tail(x, -1)) else NULL
 }))
-edges
-
-library(igraph)
+#Find Groups
 g <- graph.data.frame(edges, directed=FALSE)
 g <- split(V(g)$name, clusters(g)$membership)
-
 grps <- list()
 for(a in 1:length(g)){
   grps[[a]] <- as.numeric(unlist(g[a]))
 }
-
-sub2$group_id <- NA
-
-for(b in 1:nrow(sub2)){
+#Assing Groups
+for(b in 1:nrow(sub)){
   res <- which(sapply(grps,`%in%`, x = b))
   if(length(res) == 0){
-    sub2$group_id[b] <- 0
+    sub$group_id[b] <- NA
   }else{
-    sub2$group_id[b] <- res
+    sub$group_id[b] <- res + grp_start
   }
 
 }
+#Update Main Table
+for(c in 1:nrow(sub)){
+  osm$group_id[osm$id == sub$id[c]] <- sub$group_id[c]
+}
+#Cleanup and get next group number
+grp_start <- max(sub$group_id, na.rm = T)
+rm(sub,buff,edges,a,b,c,g,grps,res,inter)
 
-plot(sub2["group_id"])
+##################################################################################################
+#Step 2: Stepped Cycle Tracks
+sub <- osm[osm$infra_score == "Stepped Cycle Tracks" & osm$change == "upgrade",]
+sub <- sub[,c("id")]
+buff <- st_buffer(sub, buff_dists)
+#Find Instersections
+inter <- st_intersects(buff,buff)
+edges <- do.call(rbind, lapply(inter, function(x) {
+  if (length(x) > 1) cbind(head(x, -1), tail(x, -1)) else NULL
+}))
+#Find Groups
+g <- graph.data.frame(edges, directed=FALSE)
+g <- split(V(g)$name, clusters(g)$membership)
+grps <- list()
+for(a in 1:length(g)){
+  grps[[a]] <- as.numeric(unlist(g[a]))
+}
+#Assing Groups
+for(b in 1:nrow(sub)){
+  res <- which(sapply(grps,`%in%`, x = b))
+  if(length(res) == 0){
+    sub$group_id[b] <- NA
+  }else{
+    sub$group_id[b] <- res + grp_start
+  }
 
-tm_shape(sub2) +
-  tm_lines(col = "group_id", lwd = 5, alpha = 1,
-           title.col = "ID",
-           popup.vars = c("infra_score","existing_infra", "highway", "cycleway"))
+}
+#Update Main Table
+for(c in 1:nrow(sub)){
+  osm$group_id[osm$id == sub$id[c]] <- sub$group_id[c]
+}
+#Cleanup and get next group number
+grp_start <- max(sub$group_id, na.rm = T)
+rm(sub,buff,edges,a,b,c,g,grps,res,inter)
 
 
-conclusions <- data.frame(project = unique(sub2$group_id), cost = 0)
 
-for(c in 1:nrow(conclusions)){
-  conclusions$cost[c] <- sum(sub2$cost.total[sub2$group_id == conclusions$project[c]])
+##################################################################################################
+#Step 3: Cycle Lanes with light segregation
+sub <- osm[osm$infra_score == "Cycle Lanes with light segregation" & osm$change == "upgrade",]
+sub <- sub[,c("id")]
+buff <- st_buffer(sub, buff_dists)
+#Find Instersections
+inter <- st_intersects(buff,buff)
+edges <- do.call(rbind, lapply(inter, function(x) {
+  if (length(x) > 1) cbind(head(x, -1), tail(x, -1)) else NULL
+}))
+#Find Groups
+g <- graph.data.frame(edges, directed=FALSE)
+g <- split(V(g)$name, clusters(g)$membership)
+grps <- list()
+for(a in 1:length(g)){
+  grps[[a]] <- as.numeric(unlist(g[a]))
+}
+#Assing Groups
+for(b in 1:nrow(sub)){
+  res <- which(sapply(grps,`%in%`, x = b))
+  if(length(res) == 0){
+    sub$group_id[b] <- NA
+  }else{
+    sub$group_id[b] <- res + grp_start
+  }
+
+}
+#Update Main Table
+for(c in 1:nrow(sub)){
+  osm$group_id[osm$id == sub$id[c]] <- sub$group_id[c]
+}
+#Cleanup and get next group number
+grp_start <- max(sub$group_id, na.rm = T)
+rm(sub,buff,edges,a,b,c,g,grps,res,inter)
+
+
+##################################################################################################
+#Step 4: Track/Path
+sub <- osm[osm$infra_score == "Track/Path" & osm$change == "upgrade",]
+sub <- sub[,c("id")]
+buff <- st_buffer(sub, buff_dists)
+#Find Instersections
+inter <- st_intersects(buff,buff)
+edges <- do.call(rbind, lapply(inter, function(x) {
+  if (length(x) > 1) cbind(head(x, -1), tail(x, -1)) else NULL
+}))
+#Find Groups
+g <- graph.data.frame(edges, directed=FALSE)
+g <- split(V(g)$name, clusters(g)$membership)
+grps <- list()
+for(a in 1:length(g)){
+  grps[[a]] <- as.numeric(unlist(g[a]))
+}
+#Assing Groups
+for(b in 1:nrow(sub)){
+  res <- which(sapply(grps,`%in%`, x = b))
+  if(length(res) == 0){
+    sub$group_id[b] <- NA
+  }else{
+    sub$group_id[b] <- res + grp_start
+  }
+
+}
+#Update Main Table
+for(c in 1:nrow(sub)){
+  osm$group_id[osm$id == sub$id[c]] <- sub$group_id[c]
+}
+#Cleanup and get next group number
+grp_start <- max(sub$group_id, na.rm = T)
+rm(sub,buff,edges,a,b,c,g,grps,res,inter)
+
+
+##################################################################################################
+#Step 5: Cycle Lanes
+sub <- osm[osm$infra_score == "Cycle Lanes" & osm$change == "upgrade",]
+sub <- sub[,c("id")]
+buff <- st_buffer(sub, buff_dists)
+#Find Instersections
+inter <- st_intersects(buff,buff)
+edges <- do.call(rbind, lapply(inter, function(x) {
+  if (length(x) > 1) cbind(head(x, -1), tail(x, -1)) else NULL
+}))
+#Find Groups
+g <- graph.data.frame(edges, directed=FALSE)
+g <- split(V(g)$name, clusters(g)$membership)
+grps <- list()
+for(a in 1:length(g)){
+  grps[[a]] <- as.numeric(unlist(g[a]))
+}
+#Assing Groups
+for(b in 1:nrow(sub)){
+  res <- which(sapply(grps,`%in%`, x = b))
+  if(length(res) == 0){
+    sub$group_id[b] <- NA
+  }else{
+    sub$group_id[b] <- res + grp_start
+  }
+
+}
+#Update Main Table
+for(c in 1:nrow(sub)){
+  osm$group_id[osm$id == sub$id[c]] <- sub$group_id[c]
+}
+#Cleanup and get next group number
+grp_start <- max(sub$group_id, na.rm = T)
+rm(sub,buff,edges,a,b,c,g,grps,res,inter)
+
+
+
+##################################################################################################
+#Step 6: Cycle Street
+sub <- osm[osm$infra_score == "Cycle Street" & osm$change == "upgrade",]
+sub <- sub[,c("id")]
+buff <- st_buffer(sub, buff_dists)
+#Find Instersections
+inter <- st_intersects(buff,buff)
+edges <- do.call(rbind, lapply(inter, function(x) {
+  if (length(x) > 1) cbind(head(x, -1), tail(x, -1)) else NULL
+}))
+#Find Groups
+g <- graph.data.frame(edges, directed=FALSE)
+g <- split(V(g)$name, clusters(g)$membership)
+grps <- list()
+for(a in 1:length(g)){
+  grps[[a]] <- as.numeric(unlist(g[a]))
+}
+#Assing Groups
+for(b in 1:nrow(sub)){
+  res <- which(sapply(grps,`%in%`, x = b))
+  if(length(res) == 0){
+    sub$group_id[b] <- NA
+  }else{
+    sub$group_id[b] <- res + grp_start
+  }
+
+}
+#Update Main Table
+for(c in 1:nrow(sub)){
+  osm$group_id[osm$id == sub$id[c]] <- sub$group_id[c]
+}
+#Cleanup and get next group number
+grp_start <- max(sub$group_id, na.rm = T)
+rm(sub,buff,edges,a,b,c,g,grps,res,inter)
+
+
+
+
+
+print(paste0("There are ",length(unique(osm$group_id))," groups using a buffer lenght of ",buff_dists))
+print(paste0(nrow(osm[is.na(osm$group_id) & osm$change == "upgrade",])," of ",nrow(osm[osm$change == "upgrade",])," lines were not classified"))
+
+library(tmap)
+tmap_mode("view")
+tmap_style("col_blind")
+qtm(osm[osm$change == "upgrade",], lines.col = "group_id", lines.lwd = 3)
+
+
+#Creat Polygons Around each scheme
+schemepoly <- function(a){
+  sub <- osm$geometry[osm$group_id == a]
+  buf <- st_buffer(sub,10)
+  buf <- st_union(buf)
+  poly <- st_convex_hull(buf)
+  return(poly)
 }
 
 
-
-test <- sub2[sub2$group_id == 1,]
-test2 <- st_cast(test, "LINESTRING")
-test3 <- st_union(test)
-st_geometry_type(test3)
-test4 <- st_cast(test3, "LINESTRING")
-
-
-sub3 <- sub2[,"group_id"]
-
-
-buff <- st_buffer(sub3, 50)
+l <- sapply(1:max(osm$group_id, na.rm = T),schemepoly)
+schemes <- data.frame(group = 1:max(osm$group_id, na.rm = T),
+                      type = NA,
+                      length = NA,
+                      cost = NA,
+                      geometry = NA)
+schemes$geometry <- st_sfc(l)
+schemes <- st_as_sf(schemes)
+st_crs(schemes) <- 27700
+schemes <- st_transform(schemes, 27700)
 
 
-any(grps %in% 1)
-
-test <- list(rep(c(1:2), 21))
-
-grps <- vector(mode = "list", length = 21)
-
-
-
-test[[1]] <- as.numeric(unlist(g[1]))
-
-
-
-
-
-
-
-list2vec <- function(x){
-  return(as.numeric(unlist(g[x])))
+for(d in 1:nrow(schemes)){
+  id <- schemes$group[d]
+  schemes$type[d] <- osm$infra_score[osm$group_id == id][1]
+  schemes$length[d] <- sum(osm$length[osm$group_id == id])
+  schemes$cost[d] <- sum(osm$cost.total[osm$group_id == id])
 }
 
-grps <- lapply(1:length(g),list2vec)
-class(grps)
-class(grps[1])
 
-test <- any(grps %in% 1)
+style <- c("Red","Orange","Green","Blue","Purple","Yellow")
+qtm(schemes, fill = "type", style = style)
 
-test <- list(1:length(g))
+schemes$type <- as.factor(schemes$type)
 
-g3 <- unlist(g2, recursive=FALSE)
-m1 <- do.call(rbind, g2)
+pal <- colorFactor(c("red","green","blue","orange","yellow","purple"), schemes$type)
+popup <- paste("Scheme Number:", schemes$group, "<br>",
+               "Infrastrucutre Type: ", schemes$type, "<br>",
+               "Total Length: ", schemes$length, "<br>",
+               "Total Cost: ", schemes$cost)
 
-sub2$group_id
-
-a = 1
-test <- any(g2 %in% a)
-test <- sapply(grid_osm,function(x)any(x %in% grd))
+schemes <- st_transform(schemes, 4326)
 
 
+leaflet(schemes) %>%
+  #Base map options
+  addProviderTiles("OpenMapSurfer.Grayscale", group = "Greyscale") %>%
+
+  #Existing Infrastructure
+  addPolygons(data = schemes,
+              color = ~pal(schemes$type),
+              weight = 4,
+              popup = popup,
+              highlightOptions = highlightOptions(color = "black", weight = 4,
+                                                  bringToFront = TRUE)) %>%
+  addLegend(pal = pal,
+            values = ~type,
+            opacity = 1,
+            title = "Existing Cycling Infrastructure")
 
 
-list2vec(3)
+
+
+
