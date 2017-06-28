@@ -1,0 +1,60 @@
+type,change,cost.per.m
+Road - Cycling Allowed Lane Lane -> Cycle Street,different kind,3
+Road - Cycling Allowed Lane None -> Cycle Street,different kind,3
+Road - Cycling Allowed None Lane -> Cycle Street,different kind,3
+Road - Cycling Allowed None Shared -> Cycle Street,different kind,3
+Road - Cycling Allowed None Track -> Cycle Street,different kind,3
+Cycleway Lane Lane -> None,downgrade,0
+Cycleway None None -> None,downgrade,0
+Cycleway Shared Shared -> None,downgrade,0
+Cycleway Track Track -> None,downgrade,0
+Living Street None Lane -> None,downgrade,0
+Living Street None None -> None,downgrade,0
+Road - Cycling Allowed Lane Lane -> None,downgrade,0
+Road - Cycling Allowed Lane None -> None,downgrade,0
+Road - Cycling Allowed None Lane -> None,downgrade,0
+Road - Cycling Allowed None Shared -> None,downgrade,0
+Road - Cycling Allowed None Track -> None,downgrade,0
+Road - Cycling Allowed Shared Lane -> None,downgrade,0
+Road - Cycling Allowed Shared None -> None,downgrade,0
+Road - Cycling Allowed Shared Shared -> None,downgrade,0
+Road - Cycling Allowed Track Track -> Cycle Lanes,downgrade,0
+Road - Cycling Allowed Track Track -> None,downgrade,0
+Shared Path Lane Lane -> None,downgrade,0
+Shared Path Track Track -> None,downgrade,0
+Road - Cycling Allowed None Track -> Cycle Lanes,mixed,230
+Cycleway Lane Lane -> Track/Path,no change,0
+Cycleway None None -> Track/Path,no change,0
+Cycleway Shared Shared -> Track/Path,no change,0
+Cycleway Track Track -> Track/Path,no change,0
+Living Street None None -> Cycle Street,no change,0
+Road - Cycling Allowed Lane Lane -> Cycle Lanes,no change,0
+Road - Cycling Allowed Track Track -> Stepped Cycle Tracks,no change,0
+Shared Path Lane Lane -> Track/Path,no change,0
+Path - Cycling Forbidden None None -> None,no need,0
+Road - Cycling Allowed None None -> None,no need,0
+Road - Cycling Forbidden None None -> None,no need,0
+Shared Path None None -> None,no need,0
+Road - Cycling Allowed Lane Lane -> Cycle Lanes with light segregation,upgrade,1150
+Road - Cycling Allowed Lane Lane -> Segregated Cycle Track,upgrade,1450
+Road - Cycling Allowed Lane Lane -> Stepped Cycle Tracks,upgrade,1150
+Road - Cycling Allowed Lane None -> Cycle Lanes with light segregation,upgrade,1150
+Road - Cycling Allowed Lane None -> Stepped Cycle Tracks,upgrade,1450
+Road - Cycling Allowed None Lane -> Stepped Cycle Tracks,upgrade,1450
+Road - Cycling Allowed None None -> Cycle Lanes,upgrade,460
+Road - Cycling Allowed None None -> Cycle Lanes with light segregation,upgrade,1150
+Road - Cycling Allowed None None -> Cycle Street,upgrade,3
+Road - Cycling Allowed None None -> Segregated Cycle Track,upgrade,1450
+Road - Cycling Allowed None None -> Stepped Cycle Tracks,upgrade,1150
+Road - Cycling Allowed None Shared -> Stepped Cycle Tracks,upgrade,1150
+Road - Cycling Allowed Shared None -> Segregated Cycle Track,upgrade,1450
+Road - Cycling Allowed Shared None -> Stepped Cycle Tracks,upgrade,1150
+Road - Cycling Allowed Shared Shared -> Stepped Cycle Tracks,upgrade,1150
+Road - Cycling Forbidden None None -> Segregated Cycle Track,upgrade,1450
+Shared Path None None -> Track/Path,upgrade,180
+Road - Cycling Allowed Lane None -> Cycle Lanes,upgrade (one side),230
+Road - Cycling Allowed None Lane -> Cycle Lanes,upgrade (one side),230
+Path - Cycling Forbidden None None -> Track/Path,upgrade,180
+Cycleway bmx_track bmx_track -> None,no change,0
+Other Road Type None None -> None,no need,0
+Other Road Type None None -> Segregated Cycle Track,upgrade,1450

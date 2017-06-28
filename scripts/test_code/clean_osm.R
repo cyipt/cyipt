@@ -117,8 +117,10 @@ for(a in 1:nrow(osm)){
 osm$roadtype2 <- paste0(osm$roadtype," ",osm$leftside," ",osm$rightside)
 
 
-
 sumry <- osm[,c("id","roadtype","leftside","rightside","roadtype2")]
-st_write(sumry,"../example-data_old/bristol/simpleroad2.shp")
+sumry <- as.data.frame(sumry)
+
+write.csv(sumry,"../example-data/bristol/results/roadtypes.csv", row.names = FALSE)
+#st_write(sumry,"../example-data_old/bristol/simpleroad2.shp")
 
 
