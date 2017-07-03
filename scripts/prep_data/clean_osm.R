@@ -2,6 +2,13 @@
 
 skip <- TRUE
 
+#testing
+osm <- readRDS("../example-data/bristol/results/osm-select-infra.Rds")
+####
+
+time <- 24*60*60
+
+Sys.sleep(time)
 
 #List folders
 
@@ -29,7 +36,7 @@ for(a in 2:length(regions)){
             osm$maxspeed[b] <- "30 mph"
           }else if(type == "service" ){
             osm$maxspeed[b] <- "20 mph"
-          }else if(type == "bridleway" | type ==  "construction" | type ==  "cycleway" | type ==  "demolished" | type ==  "escalator" | type ==  "footway" | type ==  "living_street" | type ==  "steps" | type ==  "track" | type ==  "unclassified"){
+          }else if(type == "path" | type == "bridleway" | type ==  "construction" | type ==  "cycleway" | type ==  "demolished" | type ==  "escalator" | type ==  "footway" | type ==  "living_street" | type ==  "steps" | type ==  "track" | type ==  "unclassified"){
             osm$maxspeed[b] <- "10 mph"
           }else{
             osm$maxspeed[b] <- "60 mph"
@@ -166,6 +173,281 @@ for(a in 2:length(regions)){
             osm$roadtype[f] <- "Shared Path"
           }
       }
+
+
+      #Step 3: One way
+      osm$onewaysummary <- NA
+      osm$oneway.bicycle <- as.character(osm$oneway.bicycle)
+      for(g in 1:nrow(osm)){
+        if(is.na(osm$oneway[g])){
+          osm$onewaysummary[g] <- "Two Way Road"
+        }else{
+          if(osm$oneway[g] == "Yes" | osm$oneway[g] == "yes" |osm$oneway[g] == "-1"){
+            if(is.na(osm$oneway.bicycle[g])){
+              osm$onewaysummary[g] <- "One Way Road"
+            }else{
+              if(osm$oneway.bicycle[g] == "no" | osm$oneway.bicycle[g] == "No"){
+                osm$onewaysummary[g] <- "One Way Road - two way cycling"
+              }else{
+                osm$onewaysummary[g] <- "One Way Road"
+              }
+            }
+          }else if(osm$highway[g] == "motorway"  | osm$highway[g] == "motorway_link"){
+            osm$onewaysummary[g] <- "One Way Road"
+          }else{
+            osm$onewaysummary[g] <- "Two Way Road"
+          }
+        }
+
+      }
+
+
+      #Step 4: Lanes in each direction
+      for(i in 1:nrow(osm)){
+        if(is.na(osm$lanes.forward[i])){
+          if(!is.na(osm$oneway[i])){
+            if(osm$oneway[i] == "-1"){
+              #Oneway so no forward lanes
+              osm$lanes.forward[i] <- 0
+            }else if(osm$oneway[i] == "yes" | osm$oneway[i] == "Yes"){
+              #One way in this direction
+              if(is.na(osm$lanes[i])){
+                #No general lanes info
+                if(osm$highway[i] == "motoway"){
+                  osm$lanes.forward[i] <- 3
+                }else if(osm$highway[i] == "trunk"){
+                  osm$lanes.forward[i] <- 2
+                }else if(osm$highway[i] == "residential" |
+                         osm$highway[i] == "living_street" |
+                         osm$highway[i] == "tertiary" |
+                         osm$highway[i] == "tertiary_link" |
+                         osm$highway[i] == "living_street" |
+                         osm$highway[i] == "motorway_link" |
+                         osm$highway[i] == "primary" |
+                         osm$highway[i] == "primary_link" |
+                         osm$highway[i] == "road" |
+                         osm$highway[i] == "secondary" |
+                         osm$highway[i] == "secondary_link" |
+                         osm$highway[i] == "service" |
+                         osm$highway[i] == "trunk_link" |
+                         osm$highway[i] == "unclassified"){
+                  osm$lanes.forward[i] <- 1
+                }else{
+                  osm$lanes.forward[i] <- 0
+                }
+              }else{
+                #one way so lanes forward equals lanes
+                osm$lanes.forward[i] <- osm$lanes[i]
+
+              }
+
+            }else{
+              #Not one way so may have backwards lanes
+              if(is.na(osm$lanes[i])){
+                #No general lanes info
+                if(osm$highway[i] == "motoway"){
+                  osm$lanes.forward[i] <- 3
+                }else if(osm$highway[i] == "trunk"){
+                  osm$lanes.forward[i] <- 2
+                }else if(osm$highway[i] == "residential" |
+                         osm$highway[i] == "living_street" |
+                         osm$highway[i] == "tertiary" |
+                         osm$highway[i] == "tertiary_link" |
+                         osm$highway[i] == "living_street" |
+                         osm$highway[i] == "motorway_link" |
+                         osm$highway[i] == "primary" |
+                         osm$highway[i] == "primary_link" |
+                         osm$highway[i] == "road" |
+                         osm$highway[i] == "secondary" |
+                         osm$highway[i] == "secondary_link" |
+                         osm$highway[i] == "service" |
+                         osm$highway[i] == "trunk_link" |
+                         osm$highway[i] == "unclassified"){
+                  osm$lanes.forward[i] <- 1
+                }else{
+                  osm$lanes.forward[i] <- 0
+                }
+              }else{
+                #Some General Lanes information
+                if(osm$lanes[i] == 1){
+                  #One lane so assign to forward
+                  osm$lanes.forward[i] <- 1
+                }else if(osm$lanes[i] %% 2 == 0) {
+                  #Even lanes so divide
+                  osm$lanes.forward[i] <- osm$lanes[i]/2
+                }else{
+                  #Odd number of lanes so check
+                  if(is.na(osm$lanes.backward[i])){
+                    #No data so assign smaller number
+                    osm$lanes.forward[i] <- ceiling(osm$lanes[i]/2)
+                  }else{
+                    #Subtract one from other
+                    osm$lanes.forward[i] <- osm$lanes[i] - osm$lanes.backward[i]
+                  }
+                }
+
+              }
+
+            }
+          }else{
+            #Not one way so may have backwards lanes
+            if(is.na(osm$lanes[i])){
+              #No general lanes info
+              if(osm$highway[i] == "motoway"){
+                osm$lanes.forward[i] <- 3
+              }else if(osm$highway[i] == "trunk"){
+                osm$lanes.forward[i] <- 2
+              }else if(osm$highway[i] == "residential" |
+                       osm$highway[i] == "living_street" |
+                       osm$highway[i] == "tertiary" |
+                       osm$highway[i] == "tertiary_link" |
+                       osm$highway[i] == "living_street" |
+                       osm$highway[i] == "motorway_link" |
+                       osm$highway[i] == "primary" |
+                       osm$highway[i] == "primary_link" |
+                       osm$highway[i] == "road" |
+                       osm$highway[i] == "secondary" |
+                       osm$highway[i] == "secondary_link" |
+                       osm$highway[i] == "service" |
+                       osm$highway[i] == "trunk_link" |
+                       osm$highway[i] == "unclassified"){
+                osm$lanes.forward[i] <- 1
+              }else{
+                osm$lanes.forward[i] <- 0
+              }
+            }else{
+              #Some General Lanes information
+              if(osm$lanes[i] == 1){
+                #One lane so assign to forward
+                osm$lanes.forward[i] <- 1
+              }else if(osm$lanes[i] %% 2 == 0) {
+                #Even lanes so divide
+                osm$lanes.forward[i] <- osm$lanes[i]/2
+              }else{
+                #Odd number of lanes so check
+                if(is.na(osm$lanes.backward[i])){
+                  #No data so assign smaller number
+                  osm$lanes.forward[i] <- ceiling(osm$lanes[i]/2)
+                }else{
+                  #Subtract one from other
+                  osm$lanes.forward[i] <- osm$lanes[i] - osm$lanes.backward[i]
+                }
+              }
+
+            }
+          }
+        }
+      }
+
+
+
+
+      for(i in 1:nrow(osm)){
+        if(is.na(osm$lanes.backward[i])){
+          if(!is.na(osm$oneway[i])){
+            if(osm$oneway[i] == "yes" | osm$oneway[i] == "Yes"){
+              #Oneway so no backwards lanes
+              osm$lanes.backward[i] <- 0
+            }else{
+              #Not one way so may have backwards lanes
+              if(is.na(osm$lanes[i])){
+                #No general lanes info
+                if(osm$highway[i] == "motoway"){
+                  osm$lanes.backward[i] <- 3
+                }else if(osm$highway[i] == "trunk"){
+                  osm$lanes.backward[i] <- 2
+                }else if(osm$highway[i] == "residential" |
+                         osm$highway[i] == "living_street" |
+                         osm$highway[i] == "tertiary" |
+                         osm$highway[i] == "tertiary_link" |
+                         osm$highway[i] == "living_street" |
+                         osm$highway[i] == "motorway_link" |
+                         osm$highway[i] == "primary" |
+                         osm$highway[i] == "primary_link" |
+                         osm$highway[i] == "road" |
+                         osm$highway[i] == "secondary" |
+                         osm$highway[i] == "secondary_link" |
+                         osm$highway[i] == "service" |
+                         osm$highway[i] == "trunk_link" |
+                         osm$highway[i] == "unclassified"){
+                  osm$lanes.backward[i] <- 1
+                }else{
+                  osm$lanes.backward[i] <- 0
+                }
+              }else{
+                #Some General Lanes information
+                if(osm$lanes[i] == 1){
+                  #One lane so assign to forward
+                  osm$lanes.backward[i] <- 0
+                }else if(osm$lanes[i] %% 2 == 0) {
+                  #Even lanes so divide
+                  osm$lanes.backward[i] <- osm$lanes[i]/2
+                }else{
+                  #Odd number of lanes so check
+                  if(is.na(osm$lanes.forward[i])){
+                    #No data so assign smaller number
+                    osm$lanes.backward[i] <- floor(osm$lanes[i]/2)
+                  }else{
+                    #Subtract one from other
+                    osm$lanes.backward[i] <- osm$lanes[i] - osm$lanes.forward[i]
+                  }
+                }
+
+              }
+
+            }
+          }else{
+            #Not one way so may have backwards lanes
+            if(is.na(osm$lanes[i])){
+              #No general lanes info
+              if(osm$highway[i] == "motoway"){
+                osm$lanes.backward[i] <- 3
+              }else if(osm$highway[i] == "trunk"){
+                osm$lanes.backward[i] <- 2
+              }else if(osm$highway[i] == "residential" |
+                       osm$highway[i] == "living_street" |
+                       osm$highway[i] == "tertiary" |
+                       osm$highway[i] == "tertiary_link" |
+                       osm$highway[i] == "living_street" |
+                       osm$highway[i] == "motorway_link" |
+                       osm$highway[i] == "primary" |
+                       osm$highway[i] == "primary_link" |
+                       osm$highway[i] == "road" |
+                       osm$highway[i] == "secondary" |
+                       osm$highway[i] == "secondary_link" |
+                       osm$highway[i] == "service" |
+                       osm$highway[i] == "trunk_link" |
+                       osm$highway[i] == "unclassified"){
+                osm$lanes.backward[i] <- 1
+              }else{
+                osm$lanes.backward[i] <- 0
+              }
+            }else{
+              #Some General Lanes information
+              if(osm$lanes[i] == 1){
+                #One lane so assign to forward
+                osm$lanes.backward[i] <- 0
+              }else if(osm$lanes[i] %% 2 == 0) {
+                #Even lanes so divide
+                osm$lanes.backward[i] <- osm$lanes[i]/2
+              }else{
+                #Odd number of lanes so check
+                if(is.na(osm$lanes.forward[i])){
+                  #No data so assign smaller number
+                  osm$lanes.backward[i] <- floor(osm$lanes[i]/2)
+                }else{
+                  #Subtract one from other
+                  osm$lanes.backward[i] <- osm$lanes[i] - osm$lanes.forward[i]
+                }
+              }
+
+            }
+          }
+        }
+      }
+
+
+
 
       osm$roadtype2 <- paste0(osm$roadtype," ",osm$leftside," ",osm$rightside)
 
