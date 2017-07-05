@@ -1,0 +1,93 @@
+roadtype,onewaysummary,junction,sidewalk,lanes.forward,lanes.backward,leftside,rightside,busway.left,busway.right,count,id
+Road - Cycling Allowed,Two Way,no,both,1,1,None,None,no,no,16001,1
+Shared Path,Two Way,no,Not Applicable,0,0,Not Applicable,Not Applicable,no,no,7373,2
+Road - Cycling Allowed,Two Way,no,no,0,0,None,None,no,no,4831,3
+Road - Cycling Allowed,One Way,no,both,1,0,None,None,no,no,1778,4
+Cycleway,Two Way,no,Not Applicable,0,0,Not Applicable,Not Applicable,no,no,1430,5
+Path - Cycling Forbidden,Two Way,no,Not Applicable,0,0,Not Applicable,Not Applicable,no,no,671,6
+Road - Cycling Allowed,One Way,no,no,0,0,None,None,no,no,609,7
+Road - Cycling Allowed,One Way,no,both,2,0,None,None,no,no,547,8
+Road - Cycling Allowed,Two Way,no,both,2,2,None,None,no,no,239,9
+Road - Cycling Allowed,One Way,no,left,1,0,None,None,no,no,203,10
+Road - Cycling Allowed,Two Way,no,left,1,1,None,None,no,no,156,11
+Road - Cycling Allowed,One Way,roundabout,both,1,0,None,None,no,no,139,12
+Road - Cycling Forbidden,One Way,no,no,2,0,None,None,no,no,116,13
+Road - Cycling Allowed,Two Way,no,right,1,1,None,None,no,no,106,14
+Road - Cycling Allowed,One Way,roundabout,both,2,0,None,None,no,no,100,15
+Road - Cycling Allowed,Two Way,no,both,1,1,Lane,None,no,no,74,16
+Living Street,Two Way,no,both,1,1,None,None,no,no,73,17
+Road - Cycling Allowed,One Way,no,both,1,0,None,Lane,no,no,72,18
+Road - Cycling Allowed,Two Way,no,both,1,1,Lane,Lane,no,no,60,19
+Road - Cycling Allowed,Two Way,no,no,1,1,None,None,no,no,54,20
+Road - Cycling Allowed,Two Way,no,both,1,1,None,Lane,no,no,43,21
+Road - Cycling Forbidden,One Way,no,no,1,0,None,None,no,no,38,22
+Cycleway,One Way,no,Not Applicable,0,0,Not Applicable,Not Applicable,no,no,37,23
+Road - Cycling Allowed,One Way,no,both,1,0,Lane,Lane,no,no,29,24
+Road - Cycling Allowed,One Way,no,left,2,0,None,None,no,no,29,25
+Road - Cycling Allowed,One Way,no,both,1,0,Lane,None,no,no,28,26
+Road - Cycling Allowed,One Way,no,both,3,0,None,None,no,no,28,27
+Road - Cycling Allowed,One Way,no,no,1,0,None,None,no,no,28,28
+Road - Cycling Forbidden,One Way,no,no,4,0,None,None,no,no,28,29
+Road - Cycling Forbidden,One Way,no,no,3,0,None,None,no,no,27,30
+Road - Cycling Allowed,One Way - Two Way Cycling,no,both,1,0,None,Lane,no,no,26,31
+Road - Cycling Allowed,Two Way,no,both,0,0,None,None,no,no,23,32
+Road - Cycling Allowed,Two Way,no,both,1,0,None,None,no,no,20,33
+Road - Cycling Allowed,Two Way,no,left,0,0,None,None,no,no,20,34
+Road - Cycling Allowed,One Way,no,right,1,0,None,None,no,no,20,35
+Road - Cycling Allowed,Two Way,no,both,1,1,share_busway,share_busway,no,lane,18,36
+Road - Cycling Allowed,Two Way,no,both,2,1,None,None,no,no,15,37
+Road - Cycling Allowed,One Way,no,both,2,0,share_busway,None,lane,no,14,38
+Road - Cycling Allowed,One Way,no,both,2,0,Lane,None,no,no,14,39
+Road - Cycling Allowed,One Way,no,both,4,0,None,None,no,no,13,40
+Road - Cycling Allowed,Two Way,no,left,1,1,share_busway,None,lane,lane,11,41
+Road - Cycling Allowed,Two Way,no,left,2,2,None,None,no,no,10,42
+Road - Cycling Allowed,One Way,no,both,1,0,share_busway,None,lane,no,9,43
+Road - Cycling Allowed,One Way,no,both,2,0,Lane,Lane,no,no,8,44
+Road - Cycling Allowed,Two Way,no,both,1,1,share_busway,None,lane,no,8,45
+Road - Cycling Allowed,One Way,no,both,1,0,share_busway,share_busway,no,no,8,46
+Road - Cycling Allowed,One Way,no,no,2,0,None,None,no,no,7,47
+Road - Cycling Allowed,Two Way,no,left,1,2,share_busway,None,lane,lane,7,48
+Road - Cycling Allowed,Two Way,no,both,2,2,Lane,Lane,no,no,7,49
+Road - Cycling Allowed,Two Way,no,both,1,2,None,None,no,no,6,50
+Shared Path,One Way,no,Not Applicable,0,0,Not Applicable,Not Applicable,no,no,6,51
+Road - Cycling Allowed,Two Way,no,right,0,0,None,None,no,no,6,52
+Road - Cycling Allowed,Two Way,no,both,2,2,share_busway,None,lane,no,6,53
+Road - Cycling Allowed,One Way,no,both,2,0,Track,Track,no,no,6,54
+Road - Cycling Allowed,One Way,no,both,1,0,None,Track,no,no,6,55
+Road - Cycling Allowed,Two Way,no,both,1,1,Track,Track,no,no,5,56
+Road - Cycling Allowed,Two Way,no,both,1,1,None,share_busway,no,lane,5,57
+Road - Cycling Forbidden,One Way,no,no,6,0,None,None,no,no,4,58
+Road - Cycling Allowed,Two Way,no,both,2,1,Lane,Lane,no,no,4,59
+Road - Cycling Allowed,One Way,roundabout,left,1,0,None,None,no,no,4,60
+Road - Cycling Allowed,One Way,roundabout,both,4,0,None,None,no,no,4,61
+Road - Cycling Allowed,One Way,no,both,0,0,None,None,no,no,4,62
+Road - Cycling Allowed,One Way - Two Way Cycling,no,both,1,0,None,None,no,no,4,63
+Road - Cycling Allowed,One Way,no,no,2,0,share_busway,None,lane,lane,4,64
+Road - Cycling Allowed,One Way,no,no,1,0,Lane,None,no,no,3,65
+Road - Cycling Allowed,One Way,no,right,2,0,None,None,no,no,3,66
+Road - Cycling Allowed,Two Way,no,both,1,2,None,share_busway,no,lane,3,67
+Road - Cycling Allowed,One Way - Two Way Cycling,no,both,1,0,Lane,Lane,no,no,3,68
+Road - Cycling Allowed,One Way,no,both,1,0,share_busway,share_busway,lane,no,3,69
+Road - Cycling Allowed,Two Way,no,left,1,2,None,None,no,no,3,70
+Road - Cycling Allowed,Two Way,no,both,2,2,share_busway,share_busway,no,no,3,71
+Road - Cycling Allowed,Two Way,no,both,1,2,Lane,Lane,no,lane,2,72
+Road - Cycling Allowed,Two Way,no,both,1,2,Lane,Lane,no,no,2,73
+Road - Cycling Allowed,Two Way,no,both,2,1,Lane,None,no,no,2,74
+Road - Cycling Allowed,One Way,no,left,1,0,None,Track,no,no,2,75
+Road - Cycling Allowed,One Way,no,right,2,0,Lane,None,no,no,2,76
+Road - Cycling Allowed,One Way,no,left,1,0,Lane,None,no,no,2,77
+Road - Cycling Allowed,One Way,no,left,1,0,None,Lane,no,no,2,78
+Road - Cycling Allowed,Two Way,no,both,2,2,Lane,None,no,no,1,79
+Road - Cycling Allowed,Two Way,no,both,1,2,share_busway,None,lane,lane,1,80
+Road - Cycling Allowed,One Way - Two Way Cycling,no,left,1,0,None,Lane,no,no,1,81
+Living Street,One Way,no,both,1,0,None,Lane,no,no,1,82
+Road - Cycling Allowed,Two Way,no,no,0,0,Track,Track,no,no,1,83
+Road - Cycling Allowed,One Way,roundabout,both,4,0,Lane,Lane,no,no,1,84
+Road - Cycling Allowed,Two Way,no,both,1,1,None,None,lane,lane,1,85
+Road - Cycling Allowed,Two Way,no,both,2,1,None,Lane,no,no,1,86
+Road - Cycling Allowed,One Way,no,right,1,0,None,Lane,no,no,1,87
+Road - Cycling Allowed,Two Way,no,both,1,1,share_busway,Lane,lane,no,1,88
+Road - Cycling Allowed,Two Way,no,left,1,2,Lane,Lane,no,lane,1,89
+Road - Cycling Allowed,One Way,no,no,3,0,None,None,no,no,1,90
+Road - Cycling Allowed,Two Way,no,both,2,2,share_busway,share_busway,lane,no,1,91
+Road - Cycling Allowed,One Way,no,both,2,0,share_busway,share_busway,lane,no,1,92
