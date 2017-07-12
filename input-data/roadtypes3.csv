@@ -1,0 +1,219 @@
+,roadtype,onewaysummary,junction,sidewalk,leftside,lanes.psv.forward,lanes.forward,lanes.backward,lanes.psv.backward,rightside,count
+4081683,Cycleway,One Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,42
+3444527,Cycleway,Two Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,705
+4338356,Living Street,One Way,no,both,None,0,1,0,0,Lane,1
+4313466,Living Street,Two Way,no,both,None,0,1,1,0,None,43
+3509728,Main Road - Cycling Allowed,One Way,no,both,Lane,0,1,0,0,Lane,15
+3730254,Main Road - Cycling Allowed,One Way,no,both,Lane,0,1,0,0,None,12
+4316811,Main Road - Cycling Allowed,One Way,no,no,Lane,0,1,0,0,None,1
+193371060,Main Road - Cycling Allowed,One Way,no,left,Lane,0,1,0,0,None,1
+3511571,Main Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,Lane,5
+3416737,Main Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,None,633
+3418635,Main Road - Cycling Allowed,One Way,roundabout,left,None,0,1,0,0,None,138
+3449995,Main Road - Cycling Allowed,One Way,no,separate,None,0,1,0,0,None,8
+3512363,Main Road - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,90
+3787742,Main Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,None,22
+4273591,Main Road - Cycling Allowed,One Way,roundabout,no,None,0,1,0,0,None,1
+31714669,Main Road - Cycling Allowed,One Way,no,right,None,0,1,0,0,None,6
+31239132,Main Road - Cycling Allowed,One Way,no,both,None,0,1,0,1,None,2
+95588254,Main Road - Cycling Allowed,One Way,no,both,None,1,1,0,0,Lane,1
+5856820,Main Road - Cycling Allowed,One Way,no,separate,None,1,1,0,0,None,2
+107296526,Main Road - Cycling Allowed,One Way,no,both,None,1,1,0,0,None,6
+177212283,Main Road - Cycling Allowed,One Way,no,left,None,1,1,0,0,None,1
+3894322,Main Road - Cycling Allowed,One Way,no,both,share_busway,1,1,0,0,None,4
+203794617,Main Road - Cycling Allowed,One Way,no,both,share_busway,1,1,0,0,share_busway,2
+3871959,Main Road - Cycling Allowed,One Way,no,both,Lane,0,2,0,0,Lane,1
+193358601,Main Road - Cycling Allowed,One Way,no,right,Lane,0,2,0,0,None,1
+3418636,Main Road - Cycling Allowed,One Way,no,both,None,0,2,0,0,None,57
+3530414,Main Road - Cycling Allowed,One Way,no,left,None,0,2,0,0,None,7
+3532741,Main Road - Cycling Allowed,One Way,no,no,None,0,2,0,0,None,1
+119858257,Main Road - Cycling Allowed,One Way,no,separate,None,0,2,0,0,None,1
+58410945,Main Road - Cycling Allowed,One Way,no,left,None,0,2,1,0,None,1
+421698472,Main Road - Cycling Allowed,One Way,no,no,None,0,2,1,0,None,1
+4002513,Main Road - Cycling Allowed,One Way,roundabout,left,None,0,3,0,0,None,10
+25663572,Main Road - Cycling Allowed,One Way,no,both,None,0,3,0,0,None,5
+119858268,Main Road - Cycling Allowed,One Way,no,separate,None,0,3,0,0,None,1
+426405243,Main Road - Cycling Allowed,One Way,no,no,None,0,3,0,0,None,1
+4019352,Main Road - Cycling Allowed,One Way - Two Way Cycling,no,both,Lane,0,1,1,0,Lane,1
+37354499,Main Road - Cycling Allowed,One Way - Two Way Cycling,no,both,None,0,1,1,0,Lane,2
+27036047,Main Road - Cycling Allowed,Two Way,no,both,None,0,1,0,0,None,6
+3871962,Main Road - Cycling Allowed,Two Way,no,both,Lane,0,1,1,0,Lane,21
+4913330,Main Road - Cycling Allowed,Two Way,no,left,Lane,0,1,1,0,Lane,1
+3877196,Main Road - Cycling Allowed,Two Way,no,both,Lane,0,1,1,0,None,26
+25663302,Main Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,Lane,11
+3416740,Main Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,None,845
+3450000,Main Road - Cycling Allowed,Two Way,no,no,None,0,1,1,0,None,14
+4340891,Main Road - Cycling Allowed,Two Way,no,left,None,0,1,1,0,None,31
+24417664,Main Road - Cycling Allowed,Two Way,no,separate,None,0,1,1,0,None,4
+31012194,Main Road - Cycling Allowed,Two Way,no,right,None,0,1,1,0,None,20
+42279686,Main Road - Cycling Allowed,Two Way,no,both,Track,0,1,1,0,Track,5
+3533296,Main Road - Cycling Allowed,Two Way,no,both,Lane,0,1,1,1,Lane,2
+308478950,Main Road - Cycling Allowed,Two Way,no,left,Lane,0,1,1,1,Lane,1
+3730325,Main Road - Cycling Allowed,Two Way,no,both,None,0,1,1,1,share_busway,2
+4081677,Main Road - Cycling Allowed,Two Way,no,both,None,1,1,1,0,None,4
+250047661,Main Road - Cycling Allowed,Two Way,no,both,share_busway,1,1,1,0,Lane,1
+37283365,Main Road - Cycling Allowed,Two Way,no,both,share_busway,1,1,1,0,None,2
+3547290,Main Road - Cycling Allowed,Two Way,no,both,share_busway,1,1,1,1,share_busway,4
+143866633,Main Road - Cycling Allowed,Two Way,no,both,Lane,0,1,2,0,Lane,2
+3508421,Main Road - Cycling Allowed,Two Way,no,both,None,0,1,2,0,None,4
+3445574,Main Road - Cycling Allowed,Two Way,no,both,Lane,0,2,1,0,Lane,3
+382893358,Main Road - Cycling Allowed,Two Way,no,both,Lane,0,2,1,0,None,2
+135422563,Main Road - Cycling Allowed,Two Way,no,both,None,0,2,1,0,Lane,1
+107813253,Main Road - Cycling Allowed,Two Way,no,both,None,0,2,1,0,None,1
+3509173,Main Road Link - Cycling Allowed,One Way,no,both,None,0,1,0,0,None,28
+36990372,Main Road Link - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,2
+36996492,Main Road Link - Cycling Allowed,One Way,no,right,None,0,1,0,0,None,1
+4002730,Main Road Link - Cycling Allowed,One Way,no,no,None,0,2,0,0,None,1
+4866744,Main Road Link - Cycling Allowed,One Way,no,both,None,0,2,0,0,None,5
+431578441,Main Road Link - Cycling Allowed,One Way,no,left,None,0,2,0,0,None,1
+22818603,Main Road Link - Cycling Allowed,Two Way,no,both,None,0,1,1,0,None,3
+3445487,Minor Road - Cycling Allowed,One Way,no,no,None,0,0,0,0,None,726
+4313634,Minor Road - Cycling Allowed,One Way,no,both,None,0,0,0,0,None,1
+4898739,Minor Road - Cycling Allowed,One Way,roundabout,no,None,0,0,0,0,None,2
+107530721,Minor Road - Cycling Allowed,One Way,no,left,None,0,0,0,0,None,1
+457660153,Minor Road - Cycling Allowed,One Way,no,separate,None,0,0,0,0,None,1
+99699330,Minor Road - Cycling Allowed,One Way,no,no,Track,0,0,0,0,Track,1
+35668532,Minor Road - Cycling Allowed,One Way,no,no,Lane,1,0,0,0,Lane,1
+4078708,Minor Road - Cycling Allowed,One Way,no,no,None,1,0,0,0,Lane,2
+25662620,Minor Road - Cycling Allowed,One Way,no,no,None,1,0,0,0,None,13
+217415907,Minor Road - Cycling Allowed,One Way,no,both,None,1,0,0,0,None,1
+234727417,Minor Road - Cycling Allowed,One Way,no,both,Lane,0,1,0,0,Lane,5
+24803640,Minor Road - Cycling Allowed,One Way,no,both,Lane,0,1,0,0,None,3
+25664458,Minor Road - Cycling Allowed,One Way,no,no,Lane,0,1,0,0,None,1
+3567401,Minor Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,Lane,11
+3508394,Minor Road - Cycling Allowed,One Way,roundabout,left,None,0,1,0,0,None,36
+3508397,Minor Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,None,333
+3819569,Minor Road - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,19
+4308355,Minor Road - Cycling Allowed,One Way,no,right,None,0,1,0,0,None,5
+22649928,Minor Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,None,9
+24038082,Minor Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,Track,2
+83709119,Minor Road - Cycling Allowed,One Way,no,left,None,0,1,0,0,Track,1
+326839640,Minor Road - Cycling Allowed,One Way,no,left,None,0,1,0,1,None,1
+202758341,Minor Road - Cycling Allowed,One Way,no,both,opposite_share_busway,0,1,0,1,opposite_share_busway,2
+3528793,Minor Road - Cycling Allowed,One Way,no,both,None,1,1,0,0,None,13
+38849171,Minor Road - Cycling Allowed,One Way,no,no,None,1,1,0,0,None,2
+177212276,Minor Road - Cycling Allowed,One Way,no,left,None,1,1,0,0,None,2
+4494633,Minor Road - Cycling Allowed,One Way,no,both,None,0,2,0,0,None,5
+27377348,Minor Road - Cycling Allowed,One Way,no,no,None,0,2,0,0,None,1
+487390190,Minor Road - Cycling Allowed,One Way - Two Way Cycling,no,no,None,0,0,0,0,Lane,1
+23482084,Minor Road - Cycling Allowed,One Way - Two Way Cycling,no,no,None,0,0,0,0,None,1
+3547126,Minor Road - Cycling Allowed,One Way - Two Way Cycling,no,both,None,0,1,1,0,Lane,12
+22612814,Minor Road - Cycling Allowed,One Way - Two Way Cycling,no,both,None,1,1,1,0,Lane,1
+3416742,Minor Road - Cycling Allowed,Two Way,no,no,None,0,0,0,0,None,5368
+4308342,Minor Road - Cycling Allowed,Two Way,no,right,None,0,0,0,0,None,8
+4321271,Minor Road - Cycling Allowed,Two Way,no,left,None,0,0,0,0,None,16
+25661978,Minor Road - Cycling Allowed,Two Way,no,both,None,0,0,0,0,None,10
+79612052,Minor Road - Cycling Allowed,Two Way,no,separate,None,0,0,0,0,None,1
+8613917,Minor Road - Cycling Allowed,Two Way,no,no,Track,0,0,0,0,Track,3
+72130148,Minor Road - Cycling Allowed,Two Way,no,no,None,1,0,0,0,None,21
+39984417,Minor Road - Cycling Allowed,Two Way,no,no,None,0,1,0,0,None,2
+158410898,Minor Road - Cycling Allowed,Two Way,no,both,None,0,1,0,0,None,6
+3730153,Minor Road - Cycling Allowed,Two Way,no,both,Lane,0,1,1,0,Lane,7
+3416749,Minor Road - Cycling Allowed,Two Way,no,both,Lane,0,1,1,0,None,11
+4019424,Minor Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,Lane,4
+3508423,Minor Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,None,1165
+3790592,Minor Road - Cycling Allowed,Two Way,no,left,None,0,1,1,0,None,31
+4295477,Minor Road - Cycling Allowed,Two Way,no,no,None,0,1,1,0,None,25
+12356693,Minor Road - Cycling Allowed,Two Way,no,right,None,0,1,1,0,None,8
+202758340,Minor Road - Cycling Allowed,Two Way,no,both,opposite_share_busway,0,1,1,1,opposite_share_busway,1
+3528791,Minor Road - Cycling Allowed,Two Way,no,both,None,1,1,1,0,None,9
+308143170,Minor Road - Cycling Allowed,Two Way,no,no,None,1,1,1,0,None,2
+67553246,Minor Road - Cycling Allowed,Two Way,no,both,None,1,1,1,1,None,1
+42279691,Minor Road - Cycling Allowed,Two Way,no,no,None,0,1,3,0,None,1
+246058951,Minor Road - Cycling Allowed,Two Way,no,no,None,0,2,1,0,None,1
+246058948,Minor Road - Cycling Allowed,Two Way,no,no,None,0,2,2,0,None,1
+3391098,motorway - Cycling Forbidden,One Way,no,no,None,0,2,0,0,None,37
+2954396,motorway - Cycling Forbidden,One Way,no,no,None,0,3,0,0,None,63
+2954398,motorway - Cycling Forbidden,One Way,no,no,None,0,4,0,0,None,21
+3391107,motorway - Cycling Forbidden,One Way,no,no,None,0,5,0,0,None,2
+3391092,motorway_link - Cycling Forbidden,One Way,no,no,None,0,1,0,0,None,43
+3391104,motorway_link - Cycling Forbidden,One Way,no,no,None,0,2,0,0,None,30
+3449747,motorway_link - Cycling Forbidden,One Way,no,no,None,0,3,0,0,None,7
+133451913,motorway_link - Cycling Forbidden,One Way,no,no,None,0,4,0,0,None,2
+105066274,Path - Cycling Forbidden,One Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,12
+139630411,Path - Cycling Forbidden,One Way,no,Not Applicable,Not Applicable,1,0,0,0,Not Applicable,1
+457086549,Path - Cycling Forbidden,Two Way,no,both,Not Applicable,0,0,0,0,None,9
+4019258,Path - Cycling Forbidden,Two Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,846
+173587176,Residential Road Link - Cycling Allowed,One Way,no,both,Lane,0,1,0,0,Lane,3
+4315782,Residential Road Link - Cycling Allowed,One Way,no,both,None,0,1,0,0,Lane,25
+162281033,Residential Road Link - Cycling Allowed,One Way,no,right,None,0,1,0,0,Lane,1
+431568740,Residential Road Link - Cycling Allowed,One Way,no,left,None,0,1,0,0,Lane,1
+3509731,Residential Road Link - Cycling Allowed,One Way,no,both,None,0,1,0,0,None,358
+3547130,Residential Road Link - Cycling Allowed,One Way,roundabout,left,None,0,1,0,0,None,8
+4234850,Residential Road Link - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,23
+4308332,Residential Road Link - Cycling Allowed,One Way,no,right,None,0,1,0,0,None,3
+4315554,Residential Road Link - Cycling Allowed,One Way,no,no,None,0,1,0,0,None,7
+26792457,Residential Road Link - Cycling Allowed,One Way,no,both,None,0,1,0,0,Track,2
+4315797,Residential Road Link - Cycling Allowed,One Way,no,left,None,1,1,0,0,None,1
+4323357,Residential Road Link - Cycling Allowed,One Way - Two Way Cycling,no,left,None,0,1,1,0,Lane,1
+7998676,Residential Road Link - Cycling Allowed,One Way - Two Way Cycling,no,both,None,0,1,1,0,Lane,8
+4013386,Residential Road Link - Cycling Allowed,Two Way,no,both,None,0,1,0,0,None,8
+30053169,Residential Road Link - Cycling Allowed,Two Way,no,no,None,0,1,0,0,None,1
+173587177,Residential Road Link - Cycling Allowed,Two Way,no,both,Lane,0,1,1,0,Lane,2
+193020322,Residential Road Link - Cycling Allowed,Two Way,no,both,Lane,0,1,1,0,None,1
+8094356,Residential Road Link - Cycling Allowed,Two Way,no,both,None,0,1,1,0,Lane,2
+3508420,Residential Road Link - Cycling Allowed,Two Way,no,both,None,0,1,1,0,None,7669
+4073831,Residential Road Link - Cycling Allowed,Two Way,no,no,None,0,1,1,0,None,45
+4308328,Residential Road Link - Cycling Allowed,Two Way,no,left,None,0,1,1,0,None,52
+4308341,Residential Road Link - Cycling Allowed,Two Way,no,right,None,0,1,1,0,None,58
+4316058,Residential Road Link - Cycling Allowed,Two Way,no,b],None,0,1,1,0,None,1
+311635143,Residential Road Link - Cycling Allowed,Two Way,no,both,None,1,1,1,0,None,1
+125976200,Segregated Cycleway,One Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,4
+4019152,Segregated Cycleway,Two Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,80
+367067494,Segregated Cycleway,Two Way,no,Not Applicable,Not Applicable,0,1,1,0,Not Applicable,1
+5843709,Segregated Shared Path,Two Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,42
+4301891,Shared Path,One Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,6
+4019154,Shared Path,Two Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,7419
+158054997,Shared Path,Two Way,no,Not Applicable,Not Applicable,0,1,1,0,Not Applicable,1
+90145481,Trunk Road - Cycling Allowed,One Way,no,both,share_busway,1,0,0,0,share_busway,1
+27376667,Trunk Road - Cycling Allowed,One Way,no,both,Lane,0,1,0,0,Lane,2
+4007141,Trunk Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,None,25
+27035926,Trunk Road - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,2
+43549285,Trunk Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,None,1
+458389643,Trunk Road - Cycling Allowed,One Way,no,both,None,1,1,0,0,None,1
+361213646,Trunk Road - Cycling Allowed,One Way,no,no,share_busway,1,1,0,0,None,1
+38081796,Trunk Road - Cycling Allowed,One Way,no,both,Lane,0,2,0,0,Lane,4
+229352771,Trunk Road - Cycling Allowed,One Way,no,left,Lane,0,2,0,0,Lane,2
+117066428,Trunk Road - Cycling Allowed,One Way,no,both,Lane,0,2,0,0,None,5
+3399171,Trunk Road - Cycling Allowed,One Way,roundabout,left,None,0,2,0,0,None,85
+3399177,Trunk Road - Cycling Allowed,One Way,no,both,None,0,2,0,0,None,283
+3526281,Trunk Road - Cycling Allowed,One Way,no,left,None,0,2,0,0,None,9
+4494635,Trunk Road - Cycling Allowed,One Way,no,right,None,0,2,0,0,None,2
+436023602,Trunk Road - Cycling Allowed,One Way,no,no,None,0,2,0,0,None,2
+31727028,Trunk Road - Cycling Allowed,One Way,no,both,Track,0,2,0,0,Track,4
+439241536,Trunk Road - Cycling Allowed,One Way,no,both,None,1,2,0,0,None,2
+4435555,Trunk Road - Cycling Allowed,One Way,no,both,share_busway,1,2,0,0,None,6
+458390143,Trunk Road - Cycling Allowed,One Way,no,both,share_busway,1,2,0,0,share_busway,1
+148725402,Trunk Road - Cycling Allowed,One Way,no,both,Lane,0,3,0,0,Lane,1
+3418638,Trunk Road - Cycling Allowed,One Way,no,left,None,0,3,0,0,None,15
+4002737,Trunk Road - Cycling Allowed,One Way,no,both,None,0,3,0,0,None,15
+34639887,Trunk Road - Cycling Allowed,One Way,roundabout,left,Lane,0,4,0,0,Lane,1
+4003166,Trunk Road - Cycling Allowed,One Way,no,both,None,0,4,0,0,None,7
+34639899,Trunk Road - Cycling Allowed,One Way,roundabout,left,None,0,4,0,0,None,3
+131881913,Trunk Road - Cycling Allowed,One Way,no,separate,None,0,4,0,0,None,1
+133638238,Trunk Road - Cycling Allowed,Two Way,no,left,share_busway,1,0,0,1,None,2
+4002679,Trunk Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,None,25
+4494637,Trunk Road - Cycling Allowed,Two Way,no,left,None,0,1,1,0,None,2
+94524265,Trunk Road - Cycling Allowed,Two Way,no,both,None,0,1,2,0,None,6
+133638239,Trunk Road - Cycling Allowed,Two Way,no,left,None,0,1,2,0,None,1
+4002766,Trunk Road - Cycling Allowed,Two Way,no,both,share_busway,1,1,2,1,None,1
+164051498,Trunk Road - Cycling Allowed,Two Way,no,left,share_busway,1,1,2,1,None,4
+479811779,Trunk Road - Cycling Allowed,Two Way,no,both,None,0,2,1,0,None,1
+31726979,Trunk Road - Cycling Allowed,Two Way,no,both,None,0,2,1,1,None,4
+156201908,Trunk Road - Cycling Allowed,Two Way,no,both,Lane,0,2,2,0,Lane,2
+3730713,Trunk Road - Cycling Allowed,Two Way,no,both,Lane,0,2,2,0,None,1
+3217222,Trunk Road - Cycling Allowed,Two Way,no,both,None,0,2,2,0,None,77
+4002665,Trunk Road - Cycling Allowed,Two Way,no,left,None,0,2,2,0,None,3
+107437561,Trunk Road - Cycling Allowed,Two Way,no,both,share_busway,1,2,2,0,None,3
+458390142,Trunk Road - Cycling Allowed,Two Way,no,both,share_busway,1,2,2,0,share_busway,1
+121381300,Trunk Road Link - Cycling Allowed,One Way,no,both,Lane,0,1,0,0,Lane,2
+3511578,Trunk Road Link - Cycling Allowed,One Way,no,both,Lane,0,1,0,0,None,1
+4296144,Trunk Road Link - Cycling Allowed,One Way,no,both,None,0,1,0,0,Lane,1
+3418639,Trunk Road Link - Cycling Allowed,One Way,no,both,None,0,1,0,0,None,46
+3418640,Trunk Road Link - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,6
+185368220,Trunk Road Link - Cycling Allowed,One Way,no,both,None,1,1,0,0,None,1
+124609515,Trunk Road Link - Cycling Allowed,One Way,no,both,Lane,0,2,0,0,Lane,2
+203304419,Trunk Road Link - Cycling Allowed,One Way,no,left,Lane,0,2,0,0,Lane,1
+4002663,Trunk Road Link - Cycling Allowed,One Way,no,both,None,0,2,0,0,None,9
+88288931,Trunk Road Link - Cycling Allowed,One Way,no,right,None,0,3,0,0,None,3
+4860965,Trunk Road Link - Cycling Allowed,Two Way,no,both,None,0,1,1,0,None,5
