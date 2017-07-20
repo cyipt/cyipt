@@ -27,6 +27,12 @@ For the case study region of Bristol, the data is stored in the `example-data` f
 ``` r
 library(sf)
 library(tidyverse)
+```
+
+    ## Warning: Installed Rcpp (0.12.12) different from Rcpp used to build dplyr (0.12.11).
+    ## Please reinstall dplyr to avoid random crashes or undefined behavior.
+
+``` r
 region = st_read("areas/bristol-poly.geojson")
 ```
 
@@ -52,7 +58,7 @@ sel = sample(nrow(ways), 10000)
 plot(ways[sel, "highway"])
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](model-uptake_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-1.png)
 
 -   Data created by the CyIPT project, which provides data on the current road network from the perspective of cycling, including:
 
@@ -95,7 +101,7 @@ plot(lfq$rf[1:5, 6], add = T, col = "red", lwd = 3)
 plot(lfq$rq[1:5, 6], add = T, col = "green")
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](model-uptake_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-10-1.png)
 
 We can join the relevant variables from the `rf` and `rq` objects onto `l` for modelling:
 
@@ -166,7 +172,7 @@ plot(ways_touching, add = T, lwd = 5)
 plot(route_buff, add = T)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](model-uptake_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
 
 Summary statistics can be pulled from the the results as follows:
 
@@ -182,48 +188,25 @@ We can run this for all routes as follows:
 # for(i in 1:nrow(l))
 #   l$quietness[i] = mean(ways[lfq$rf[i,],]$quietness, na.rm = T) ; print(i)
 summary(ways$quietness)
-```
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-    ##   10.00   50.00   60.00   63.27   80.00  100.00   10994
-
-``` r
 ways_no_quiet = filter(ways, !is.na(quietness))
-l_joined = st_join(lfq$rf, ways_no_quiet["quietness"], FUN = mean)
-```
-
-    ## although coordinates are longitude/latitude, it is assumed that they are planar
-
-``` r
+# depreciated version
+source("https://raw.githubusercontent.com/r-spatial/sf/752c12eae34efe734d70ebbc420b99d90cbcc5ef/R/join.R")
+rm(list = ls(pattern = "left_join"))
+l_joined = st_join(lfq$rf, ways_no_quiet["quietness"], FUN = mean) # old way
 l$quietness = l_joined$quietness
+# sel_intersects = st_intersects(ways_no_quiet, lfq$rf) # takes some time!
+# length(sel_intersects)
+# find mean busyness for each 
+# head(sel_intersects)
+# head(unlist(sel_intersects))
 ways_pcu = filter(ways, !is.na(aadt))
 l_pcu = st_join(lfq$rf, ways_pcu["aadt"], FUN = mean)
-```
-
-    ## although coordinates are longitude/latitude, it is assumed that they are planar
-
-``` r
 l$aadt = l_pcu$aadt
 
 cor(l$busyness_fast, l$quietness, use = "complete.obs")
-```
-
-    ## [1] -0.5018063
-
-``` r
 busyness_by_length = l$busyness_fast / l$dist /1000
 cor(busyness_by_length, l$quietness, use = "complete.obs")
-```
-
-    ## [1] -0.628843
-
-``` r
 cor(l$quietness, l$aadt, use = "complete.obs")
-```
-
-    ## [1] 0.05059979
-
-``` r
 # idea: use a buffer
 saveRDS(l, "../example-data/bristol/l_cyipt.Rds")
 ```
@@ -235,7 +218,7 @@ busyness_by_length = l$busyness_fast / l$dist /1000
 plot(busyness_by_length, l$quietness)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](model-uptake_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-17-1.png)
 
 ``` r
 cor(busyness_by_length, l$quietness, use = "complete.obs")
@@ -411,7 +394,7 @@ points(l$all, m1$fitted.values, col = "red")
 points(l$all, m3$fitted.values, col = "grey")
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](model-uptake_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-22-1.png)
 
 There are various issues here. We need to model cycling uptake but that is always a function of `all`. We must add additional variables such as hilliness. Further, we must use non-linear function of some predictor variables such as distance.
 
@@ -498,7 +481,7 @@ plot(l$all, l$bicycle)
 points(l$all, m4_fitted, col = "red")
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](model-uptake_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-1.png)
 
 ``` r
 (rmse4 = sqrt(c(crossprod(m4_fitted - l_sub$bicycle)) / nrow(l)))
@@ -513,7 +496,7 @@ importance_m4 = xgb.importance(model = m4, feature_names = names(l_sub)[-1])
 xgb.plot.importance(importance_m4)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](model-uptake_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-25-1.png)
 
 A full model
 ------------
@@ -521,41 +504,42 @@ A full model
 To specify a full model is relatively easy, building on the existing framework (and training against the full dataset):
 
 ``` r
-l_full = select(l, bicycle, all, dist, cirquity = dist_fast / dist, qdf = dist_quiet / dist_fast, av_incline_fast, busyness_fast = busyness_fast / dist, busyness_quiet = busyness_quiet / dist, aadt)
+l_full = mutate(l, bicycle, all, dist, cirquity = dist_fast / dist, qdf = dist_quiet / dist_fast, av_incline_fast, busyness_fast = busyness_fast / dist, busyness_quiet = busyness_quiet / dist, aadt)
+l_full = select(l_full, bicycle, all, dist, cirquity, qdf, av_incline_fast, busyness_fast, busyness_quiet, aadt)
 train = sample_frac(l_full, 1)
 m5 = xgboost(data = as.matrix(train[-1]), label = train$bicycle, nrounds = 10, max_depth = 5)
 ```
 
-    ## [1]  train-rmse:12.199140 
-    ## [2]  train-rmse:9.468425 
-    ## [3]  train-rmse:7.482561 
-    ## [4]  train-rmse:6.038436 
-    ## [5]  train-rmse:5.019599 
-    ## [6]  train-rmse:4.184638 
-    ## [7]  train-rmse:3.598002 
-    ## [8]  train-rmse:3.204336 
-    ## [9]  train-rmse:2.942655 
-    ## [10] train-rmse:2.744984
+    ## [1]  train-rmse:12.201223 
+    ## [2]  train-rmse:9.482461 
+    ## [3]  train-rmse:7.535289 
+    ## [4]  train-rmse:6.118704 
+    ## [5]  train-rmse:5.153230 
+    ## [6]  train-rmse:4.461695 
+    ## [7]  train-rmse:3.977563 
+    ## [8]  train-rmse:3.611012 
+    ## [9]  train-rmse:3.315060 
+    ## [10] train-rmse:3.138710
 
 ``` r
 importance_m5 = xgb.importance(model = m5, feature_names = names(l_full)[-1])
 xgb.plot.importance(importance_m5)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](model-uptake_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-26-1.png)
 
 ``` r
 m5_fitted = predict(m5, as.matrix(l_full[-1]))
 (rmse5 = sqrt(c(crossprod(m5_fitted - l_full$bicycle)) / nrow(l)))
 ```
 
-    ## [1] 2.744985
+    ## [1] 3.138711
 
 ``` r
 cor(m5_fitted * l$all, l_full$bicycle)^2
 ```
 
-    ## [1] 0.7934169
+    ## [1] 0.7962587
 
 Fitting to the proportion cycling
 ---------------------------------
@@ -568,36 +552,36 @@ train = as.matrix(train_df[,-c(1, 2)])
 m6 = xgboost(data = train, label = train_df$bicycle / train_df$all, nrounds = 10, max_depth = 5, weight = train_df$all)
 ```
 
-    ## [1]  train-rmse:0.300056 
-    ## [2]  train-rmse:0.211693 
-    ## [3]  train-rmse:0.150132 
-    ## [4]  train-rmse:0.108016 
-    ## [5]  train-rmse:0.078411 
-    ## [6]  train-rmse:0.058402 
-    ## [7]  train-rmse:0.044450 
-    ## [8]  train-rmse:0.035583 
-    ## [9]  train-rmse:0.029534 
-    ## [10] train-rmse:0.024763
+    ## [1]  train-rmse:0.300382 
+    ## [2]  train-rmse:0.212606 
+    ## [3]  train-rmse:0.152117 
+    ## [4]  train-rmse:0.110719 
+    ## [5]  train-rmse:0.082872 
+    ## [6]  train-rmse:0.064637 
+    ## [7]  train-rmse:0.053434 
+    ## [8]  train-rmse:0.045947 
+    ## [9]  train-rmse:0.041975 
+    ## [10] train-rmse:0.039525
 
 ``` r
 importance_m6 = xgb.importance(model = m6, feature_names = names(l_full)[-c(1, 2)])
 xgb.plot.importance(importance_m6)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](model-uptake_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-27-1.png)
 
 ``` r
 m6_fitted = predict(m6, as.matrix(l_full[-c(1, 2)]))
 (rmse6 = sqrt(c(crossprod(m6_fitted * l$all  - l_full$bicycle)) / nrow(l)))
 ```
 
-    ## [1] 2.505916
+    ## [1] 3.315995
 
 ``` r
 cor(m6_fitted * l$all, l_full$bicycle)^2
 ```
 
-    ## [1] 0.9763972
+    ## [1] 0.9560041
 
 This is an impressive result: more than 95% of the variability in the number of cyclists can be predicted by our model, which includes infrastructure variables such as traffic (AADT) and busynance.
 
@@ -609,40 +593,41 @@ Geographically inferred quietness
 This model uses aggregated data from the OSM network which we can modify:
 
 ``` r
-l_full = select(l, bicycle, all, dist, cirquity = dist_fast / dist, qdf = dist_quiet / dist_fast, av_incline_fast, quietness, aadt)
+l_full_all = mutate(l, bicycle, all, dist, cirquity = dist_fast / dist, qdf = dist_quiet / dist_fast, av_incline_fast, quietness, aadt)
+l_full = select(l_full_all, bicycle, all, dist, cirquity, qdf, av_incline_fast, quietness, aadt)
 
 train_df = sample_frac(l_full, 1) 
 train = as.matrix(train_df[,-c(1, 2)])
 m7 = xgboost(data = train, label = train_df$bicycle / train_df$all, nrounds = 10, max_depth = 5, weight = train_df$all)
 ```
 
-    ## [1]  train-rmse:0.300111 
-    ## [2]  train-rmse:0.212119 
-    ## [3]  train-rmse:0.151099 
-    ## [4]  train-rmse:0.109452 
-    ## [5]  train-rmse:0.080908 
-    ## [6]  train-rmse:0.062026 
-    ## [7]  train-rmse:0.050076 
-    ## [8]  train-rmse:0.042270 
-    ## [9]  train-rmse:0.038055 
-    ## [10] train-rmse:0.035564
+    ## [1]  train-rmse:0.300494 
+    ## [2]  train-rmse:0.212862 
+    ## [3]  train-rmse:0.152456 
+    ## [4]  train-rmse:0.111009 
+    ## [5]  train-rmse:0.083210 
+    ## [6]  train-rmse:0.065127 
+    ## [7]  train-rmse:0.054016 
+    ## [8]  train-rmse:0.046889 
+    ## [9]  train-rmse:0.042570 
+    ## [10] train-rmse:0.040297
 
 ``` r
 importance_m7 = xgb.importance(model = m7, feature_names = names(l_full)[-c(1, 2)])
 xgb.plot.importance(importance_m7)
 ```
 
-![](model-uptake_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](model-uptake_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png)
 
 ``` r
 m7_fitted = predict(m7, as.matrix(l_full[-c(1, 2)]))
 (rmse7 = sqrt(c(crossprod(m7_fitted * l$all  - l_full$bicycle)) / nrow(l)))
 ```
 
-    ## [1] 3.227748
+    ## [1] 3.460846
 
 ``` r
 cor(m7_fitted * l$all, l_full$bicycle)^2
 ```
 
-    ## [1] 0.9605347
+    ## [1] 0.9523151

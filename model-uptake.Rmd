@@ -158,13 +158,21 @@ mean(ways_touching$quietness, na.rm = T)
 
 We can run this for all routes as follows:
 
-```{r}
+```{r, eval=FALSE}
 # for(i in 1:nrow(l))
 #   l$quietness[i] = mean(ways[lfq$rf[i,],]$quietness, na.rm = T) ; print(i)
 summary(ways$quietness)
 ways_no_quiet = filter(ways, !is.na(quietness))
-l_joined = st_join(lfq$rf, ways_no_quiet["quietness"], FUN = mean)
+# depreciated version
+source("https://raw.githubusercontent.com/r-spatial/sf/752c12eae34efe734d70ebbc420b99d90cbcc5ef/R/join.R")
+rm(list = ls(pattern = "left_join"))
+l_joined = st_join(lfq$rf, ways_no_quiet["quietness"], FUN = mean) # old way
 l$quietness = l_joined$quietness
+# sel_intersects = st_intersects(ways_no_quiet, lfq$rf) # takes some time!
+# length(sel_intersects)
+# find mean busyness for each 
+# head(sel_intersects)
+# head(unlist(sel_intersects))
 ways_pcu = filter(ways, !is.na(aadt))
 l_pcu = st_join(lfq$rf, ways_pcu["aadt"], FUN = mean)
 l$aadt = l_pcu$aadt
@@ -283,7 +291,8 @@ xgb.plot.importance(importance_m4)
 To specify a full model is relatively easy, building on the existing framework (and training against the full dataset):
 
 ```{r}
-l_full = select(l, bicycle, all, dist, cirquity = dist_fast / dist, qdf = dist_quiet / dist_fast, av_incline_fast, busyness_fast = busyness_fast / dist, busyness_quiet = busyness_quiet / dist, aadt)
+l_full = mutate(l, bicycle, all, dist, cirquity = dist_fast / dist, qdf = dist_quiet / dist_fast, av_incline_fast, busyness_fast = busyness_fast / dist, busyness_quiet = busyness_quiet / dist, aadt)
+l_full = select(l_full, bicycle, all, dist, cirquity, qdf, av_incline_fast, busyness_fast, busyness_quiet, aadt)
 train = sample_frac(l_full, 1)
 m5 = xgboost(data = as.matrix(train[-1]), label = train$bicycle, nrounds = 10, max_depth = 5)
 importance_m5 = xgb.importance(model = m5, feature_names = names(l_full)[-1])
@@ -317,7 +326,8 @@ On this foundation we can estimate effectiveness.
 This model uses aggregated data from the OSM network which we can modify:
 
 ```{r}
-l_full = select(l, bicycle, all, dist, cirquity = dist_fast / dist, qdf = dist_quiet / dist_fast, av_incline_fast, quietness, aadt)
+l_full_all = mutate(l, bicycle, all, dist, cirquity = dist_fast / dist, qdf = dist_quiet / dist_fast, av_incline_fast, quietness, aadt)
+l_full = select(l_full_all, bicycle, all, dist, cirquity, qdf, av_incline_fast, quietness, aadt)
 
 train_df = sample_frac(l_full, 1) 
 train = as.matrix(train_df[,-c(1, 2)])
