@@ -1,8 +1,9 @@
 # road scenarios
-
+knitr::knit(input = "model-uptake.Rmd")
 typology = readr::read_csv("input-data/roadtypes4.csv")
 rc = readRDS("../example-data/bristol/results/osm-schemes.Rds")
-osm_data = readRDS("../example-data/bristol/osm-all-highways.Rds")
-ways = osm_data$osm_lines
-lfq = readRDS("../example-data/bristol/lfq.Rds")
-
+source("R/geobuffer.R")
+ways$length = geo_projected(ways, st_length)
+summary(ways$length)
+ways_long = dplyr::filter(ways, length > 500)
+l_joined = st_join(lfq$rf, ways_no_quiet["quietness"], FUN = mean) # old way
