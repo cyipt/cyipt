@@ -128,6 +128,8 @@ This is done for one route as follows:
 ```{r}
 route_single = lfq$rf[1,]
 ways_touching = ways[route_single,]
+source("R/geobuffer.R")
+ways$length = geo_projected(ways, st_length) %>% as.numeric()
 ```
 
 We can also join all lines that overlap (rather than just touch) the route, but this introduces a buffer whose width must be set and removes some routes that may be relevant to the junctions:
@@ -154,6 +156,10 @@ Summary statistics can be pulled from the the results as follows:
 
 ```{r}
 mean(ways_touching$quietness, na.rm = T)
+# depreciated version
+source("https://raw.githubusercontent.com/r-spatial/sf/752c12eae34efe734d70ebbc420b99d90cbcc5ef/R/join.R")
+stjoin_old = st_join
+rm(list = ls(pattern = "_join"))
 ```
 
 We can run this for all routes as follows:
@@ -163,9 +169,6 @@ We can run this for all routes as follows:
 #   l$quietness[i] = mean(ways[lfq$rf[i,],]$quietness, na.rm = T) ; print(i)
 summary(ways$quietness)
 ways_no_quiet = filter(ways, !is.na(quietness))
-# depreciated version
-source("https://raw.githubusercontent.com/r-spatial/sf/752c12eae34efe734d70ebbc420b99d90cbcc5ef/R/join.R")
-rm(list = ls(pattern = "left_join"))
 l_joined = st_join(lfq$rf, ways_no_quiet["quietness"], FUN = mean) # old way
 l$quietness = l_joined$quietness
 # sel_intersects = st_intersects(ways_no_quiet, lfq$rf) # takes some time!
@@ -339,3 +342,21 @@ m7_fitted = predict(m7, as.matrix(l_full[-c(1, 2)]))
 cor(m7_fitted * l$all, l_full$bicycle)^2
 ```
 
+Let's take a look at the impact of the `cycleway` variable:
+
+```{r}
+ways_cycleway = filter(ways, !is.na(cycleway))
+ways_cycleway$length_cycleway = ways_cycleway$length
+l_cycleway = stjoin_old(lfq$rf, ways_cycleway["length_cycleway"], FUN = sum)
+summary(l_cycleway$length_cycleway)
+l_full$length_cycleway = l_cycleway$length_cycleway
+
+train_df = sample_frac(l_full, 1) 
+train = as.matrix(train_df[,-c(1, 2)])
+m8 = xgboost(data = train, label = train_df$bicycle / train_df$all, nrounds = 10, max_depth = 5, weight = train_df$all)
+importance_m8 = xgb.importance(model = m8, feature_names = names(l_full)[-c(1, 2)])
+xgb.plot.importance(importance_m8)
+m8_fitted = predict(m8, as.matrix(l_full[-c(1, 2)]))
+(rmse8 = sqrt(c(crossprod(m8_fitted * l$all  - l_full$bicycle)) / nrow(l)))
+cor(m8_fitted * l$all, l_full$bicycle)^2
+```
