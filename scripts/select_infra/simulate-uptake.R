@@ -15,3 +15,6 @@ uptake = predict(m8, as.matrix(l_full[-c(1, 2)]))
 cor(uptake * l$all, l_full$bicycle)^2
 mean(uptake)
 mean(l_full$bicycle / l_full$all)
+
+# communicate result:
+knitr::spin(hair = "scripts/select_infra/simulate-uptake.R")
