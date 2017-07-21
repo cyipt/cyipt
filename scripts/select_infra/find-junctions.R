@@ -7,7 +7,8 @@ ways = osm_data$osm_lines
 points = osm_data$osm_points
 jp = filter(points, !is.na(junction))
 jw = filter(ways, !is.na(junction))
-
+roundabouts = filter(jw, junction == "roundabout")
+nrow(roundabouts)
 library(tmap)
 tmap_mode("view")
-qtm(jw)
+qtm(roundabouts)
