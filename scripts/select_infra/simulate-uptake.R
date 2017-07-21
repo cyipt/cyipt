@@ -17,4 +17,4 @@ mean(uptake)
 mean(l_full$bicycle / l_full$all)
 
 # communicate result:
-knitr::spin(hair = "scripts/select_infra/simulate-uptake.R")
+# knitr::spin(hair = "scripts/select_infra/simulate-uptake.R")
