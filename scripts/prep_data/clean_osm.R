@@ -76,49 +76,47 @@ for(a in 2:length(regions)){
         if(is.na(osm$maxspeed[b])){
           type <- osm$highway[b]
           if(type == "motorway" | type == "motorway_link"){
-            osm$maxspeed[b] <- "70 mph"
+            osm$maxspeed[b] <- 70
           }else if(type == "trunk" | type == "trunk_link"){
-            osm$maxspeed[b] <- "60 mph"
+            osm$maxspeed[b] <- 60
           }else if(type == "primary" | type == "residential" | type == "road" | type == "primary_link" | type == "secondary" | type == "secondary_link" | type == "tertiary" | type == "tertiary_link"){
-            osm$maxspeed[b] <- "30 mph"
+            osm$maxspeed[b] <- 30
           }else if(type == "service" ){
-            osm$maxspeed[b] <- "20 mph"
+            osm$maxspeed[b] <- 20
           }else if(type == "path" | type == "bridleway" | type ==  "construction" | type ==  "cycleway" | type ==  "demolished" | type ==  "escalator" | type ==  "footway" | type ==  "living_street" | type ==  "steps" | type ==  "track" | type ==  "unclassified"){
-            osm$maxspeed[b] <- "10 mph"
+            osm$maxspeed[b] <- 10
           }else{
-            osm$maxspeed[b] <- "60 mph"
+            osm$maxspeed[b] <- 60
           }
         }
       }
 
-
-      osm$speed <- NA
       for(c in 1:nrow(osm)){
         if(osm$maxspeed[c] == "70 mph" | osm$maxspeed[c] == "70" ){
-          osm$speed[c] <- 70
+          osm$maxspeed[c] <- 70
         }else if(osm$maxspeed[c] == "60 mph"| osm$maxspeed[c] == "60" ){
-          osm$speed[c] <- 60
+          osm$maxspeed[c] <- 60
         }else if(osm$maxspeed[c] == "50 mph"| osm$maxspeed[c] == "50" ){
-          osm$speed[c] <- 50
+          osm$maxspeed[c] <- 50
         }else if(osm$maxspeed[c] == "40 mph"| osm$maxspeed[c] == "40" ){
-          osm$speed[c] <- 40
+          osm$maxspeed[c] <- 40
         }else if(osm$maxspeed[c] == "30 mph"| osm$maxspeed[c] == "30" ){
-          osm$speed[c] <- 30
+          osm$maxspeed[c] <- 30
         }else if(osm$maxspeed[c] == "20 mph"| osm$maxspeed[c] == "20" ){
-          osm$speed[c] <- 20
+          osm$maxspeed[c] <- 20
         }else if(osm$maxspeed[c] == "10 mph"| osm$maxspeed[c] == "10" ){
-          osm$speed[c] <- 10
+          osm$maxspeed[c] <- 10
         }else if(osm$maxspeed[c] == "15 mph"| osm$maxspeed[c] == "15" ){
-          osm$speed[c] <- 15
+          osm$maxspeed[c] <- 15
         }else if(osm$maxspeed[c] == "5 mph"| osm$maxspeed[c] == "5" ){
-          osm$speed[c] <- 5
+          osm$maxspeed[c] <- 5
         }else{
-          osm$speed[c] <- 30
+          osm$maxspeed[c] <- 30
         }
       }
 
-      #remove maxspeed as no longer needed
-      osm$maxspeed <- NULL
+      #convert to number
+      osm$maxspeed <- as.integer(osm$maxspeed)
 
       #Step 5: footways
       summary(osm$sidewalk)
@@ -247,6 +245,15 @@ for(a in 2:length(regions)){
       osm$lanes.psv <- as.integer(osm$lanes.psv)
       osm$lanes.psv.backward <- as.integer(osm$lanes.psv.backward)
       osm$lanes.psv.forward <- as.integer(osm$lanes.psv.forward)
+
+      #Sometimes used odd tag lanes:bus:forward
+      for(r in 1:nrow(osm)){
+        if(is.na(osm$lanes.psv.forward[r]) & !is.na(osm$lanes.bus.forward[r])){
+          osm$lanes.psv.forward[r] <- osm$lanes.bus.forward[r]
+        }
+      }
+
+
 
       #Step 7b: Bus Lanes
       for(l in 1:nrow(osm)){
@@ -598,72 +605,97 @@ for(a in 2:length(regions)){
       #osm$busway.left <- as.character(osm$busway.left)
       osm$cycleway.right <- as.character(osm$cycleway.right)
       #osm$busway.right <- as.character(osm$busway.right)
-      osm$leftside <- NA
+      #osm$leftside <- NA
 
       for(d in 1:nrow(osm)){
         if(osm$highway[d] %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")){
           #Left and right lanes are not a valid concept
-          osm$leftside[d] <- "Not Applicable"
+          osm$cycleway.left[d] <- "no"
         }else{
           if(!is.na(osm$cycleway.left[d])){
-            #Take the existing value
-            osm$leftside[d] <- osm$cycleway.left[d]
+            #Keep the existing value
+
           }else if(!is.na(osm$cycleway[d])){
-            if(osm$cycleway[d] == "No"){
+            if(osm$cycleway[d] %in% c("No","no")){
               #Do Nothing
-            }else if(osm$cycleway[d] == "opposite" | osm$cycleway[d] == "opposite_lane" | osm$cycleway[d] == "opposite_track"){
+              osm$cycleway.left[d] <- "no"
+            }else if(osm$cycleway[d] %in% c("opposite","opposite_lane","opposite_track","opposite_share_busway")){
               #Do nothing as this is on the right side
+              osm$cycleway.left[d] <- "no"
             }else{
-              osm$leftside[d] <- osm$cycleway[d]
+              osm$cycleway.left[d] <- osm$cycleway[d]
             }
-          }#else if(!osm$busway.left[d] == "no"){
-         #   osm$leftside[d] <- paste0("bus - ",osm$cycleway.left[d])
-         # }
+          }else{
+            #No data
+            osm$cycleway.left[d] <- "no"
+          }
         }
       }
-
-      osm$rightside <- NA
+      osm$cycleway.left[osm$cycleway.left == "designated"] <- "no" #unclear how this is used so assuming no actual lanes
+      osm$cycleway.left <- as.factor(osm$cycleway.left)
+      summary(osm$cycleway.left)
+      #osm$rightside <- NA
 
       for(e in 1:nrow(osm)){
         if(osm$highway[e] %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")){
           #Left and right lanes are not a valid concept
-          osm$rightside[e] <- "Not Applicable"
+          osm$cycleway.right[e] <- "no"
         }else{
           if(!is.na(osm$cycleway.right[e])){
-            osm$rightside[e] <- osm$cycleway.right[e]
+            #Keep the existing value
           }else if(!is.na(osm$cycleway[e])){
-            if(osm$cycleway[e] == "No"){
+            if(osm$cycleway[e] %in% c("No","no")){
               #Do Nothing
-            }else if(osm$cycleway[e] == "opposite" | osm$cycleway[e] == "opposite_lane" | osm$cycleway[e] == "opposite_track"){
+              osm$cycleway.right[e] <- "no"
+            }else if(osm$cycleway[e] %in% c("opposite","opposite_lane")){
               #Do something as this is on the right side
-              osm$rightside[e] <- osm$cycleway[e]
+              osm$cycleway.right[e] <- "lane"
+            }else if(osm$cycleway[e] == "opposite_track"){
+              osm$cycleway.right[e] <- "track"
             }else{
-              osm$rightside[e] <- osm$cycleway[e]
+              osm$cycleway.right[e] <- osm$cycleway[e]
             }
-          }#else if(!osm$busway.right[e] == "no"){
-          #  osm$rightside[e] <- paste0("bus - ",osm$cycleway.right[e])
-          #}
+          }else{
+            #No data
+            osm$cycleway.right[e] <- "no"
+          }
         }
       }
 
       #Cleanup Results
-      osm$rightside[is.na(osm$rightside)] <- "None"
-      osm$rightside[osm$rightside == "no"] <- "None"
-      osm$rightside[osm$rightside == "lane" | osm$rightside == "opposite" | osm$rightside == "opposite_lane" | osm$rightside == "yes" | osm$leftside == "designated"] <- "Lane"
-      #osm$rightside[osm$rightside == "share_busway" | osm$rightside == "shared"] <- "Shared"
-      osm$rightside[osm$rightside == "track" | osm$rightside == "opposite_track" ] <- "Track"
+      osm$cycleway.right[osm$cycleway.right == "designated"] <- "no" #unclear how this is used so assuming no actual lanes
+      osm$cycleway.right[is.na(osm$cycleway.right)] <- "no"
+      osm$cycleway.right[osm$cycleway.right %in% c("opposite","opposite_lane","yes")] <- "lane"
+      osm$cycleway.right[osm$cycleway.right == "opposite_track" ] <- "track"
+      osm$cycleway.right[osm$cycleway.right == "opposite_share_busway" ] <- "share_busway"
+      osm$cycleway.right <- as.factor(osm$cycleway.right)
+      summary(osm$cycleway.right)
 
-      osm$leftside[is.na(osm$leftside)] <- "None"
-      osm$leftside[osm$leftside == "no"] <- "None"
-      osm$leftside[osm$leftside == "lane" | osm$leftside == "opposite" | osm$leftside == "opposite_lane" | osm$leftside == "yes" | osm$leftside == "designated"] <- "Lane"
+      #Check for errors
+      #If doubt assume no cycle infrastrucutre
+      osm$cycleway.left[osm$cycleway.left == "share_busway" & osm$lanes.psv.forward == 0,] <- "no"
+      osm$cycleway.right[osm$cycleway.right == "share_busway" & osm$lanes.psv.backward == 0,] <- "no"
+
+      #Paths Don't have lanes
+      osm$lanes.backward[osm$roadtype %in% c("Shared Path","Path - Cycling Forbidden","Segregated Shared Path","Cycleway")] <- 0
+      osm$lanes.forward[osm$roadtype %in% c("Shared Path","Path - Cycling Forbidden","Segregated Shared Path","Cycleway")] <- 0
+
+      #One way roads don't have back lanes
+      osm$lanes.backward[osm$onewaysummary == "One Way"] <- 0
+
+
+
+      #osm$leftside[is.na(osm$leftside)] <- "None"
+      #osm$leftside[osm$leftside == "no"] <- "None"
+      #osm$leftside[osm$leftside == "lane" | osm$leftside == "opposite" | osm$leftside == "opposite_lane" | osm$leftside == "yes" | osm$leftside == "designated"] <- "Lane"
       #osm$leftside[osm$leftside == "share_busway" | osm$leftside == "shared"] <- "Shared"
-      osm$leftside[osm$leftside == "track" | osm$leftside == "opposite_track" ] <- "Track"
+      #osm$leftside[osm$leftside == "track" | osm$leftside == "opposite_track" ] <- "Track"
 
 
       #Get the unique combinations of characteristics
 
-      uni <- as.data.frame(osm[,c("roadtype","onewaysummary","junction","sidewalk","leftside","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","rightside")])
-      uni <- uni[,c("roadtype","onewaysummary","junction","sidewalk","leftside","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","rightside")]
+      uni <- as.data.frame(osm[,c("roadtype","onewaysummary","junction","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right")])
+      uni <- uni[,c("roadtype","onewaysummary","junction","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right")]
       uni <- uni[!duplicated(uni),]
       uni$count <- NA
       for(m in 1:nrow(uni)){
@@ -673,54 +705,14 @@ for(a in 2:length(regions)){
                                  osm$sidewalk == uni$sidewalk[m] &
                                  osm$lanes.forward == uni$lanes.forward[m] &
                                  osm$lanes.backward == uni$lanes.backward[m] &
-                                 osm$leftside == uni$leftside[m] &
-                                 osm$rightside == uni$rightside[m] &
+                                 osm$cycleway.left == uni$cycleway.left[m] &
+                                 osm$cycleway.right == uni$cycleway.right[m] &
                                  osm$lanes.psv.forward == uni$lanes.psv.forward[m] &
                                  osm$lanes.psv.backward == uni$lanes.psv.backward[m],])
       }
 
-      write.csv(uni,"../cyipt/input-data/roadtypes4.csv")
+      write.csv(uni,"../cyipt/input-data/roadtypes5.csv")
 
-
-      #COmpare expected width to actual width
-
-      osm$width.calc <- NA
-      osm$widthpath.calc <- NA
-
-      for(p in 1:nrow(osm)){
-        if(osm$highway[p] %in% c("motorway","motorway_link","primary","primary_link","secondary","secondary_link","tertiary","tertiary_link","trunk","trunk_link" )){
-          #Busy road with wide lanes
-          osm$width.calc[p] <- 3.65 * (osm$lanes.forward[p] + osm$lanes.backward[p])
-          if(osm$sidewalk[p] == "both"){
-            pathwidth <- 4
-          }else if(osm$sidewalk[p] %in% c("left","right")){
-            pathwidth <- 2
-          }else{
-            pathwidth <- 0
-          }
-          osm$widthpath.calc[p] <- osm$width.calc[p] + pathwidth
-        }else if(osm$highway[p] %in% c("living_street", "pedestrian", "residential", "service", "unclassified", "road")){
-          #Quiet roads with narrow lanes
-          if(osm$sidewalk[p] == "both"){
-            pathwidth <- 4
-          }else if(osm$sidewalk[p] %in% c("left","right")){
-            pathwidth <- 2
-          }else{
-            pathwidth <- 0
-          }
-          osm$width.calc[p] <- 2.75 * (osm$lanes.forward[p] + osm$lanes.backward[p])
-          osm$widthpath.calc[p] <- osm$width.calc[p] + pathwidth
-        }else{
-          #Non Road
-          osm$width.calc[p] <- 0
-          osm$widthpath.calc[p] <- 2
-          pathwidth <- 0
-        }
-        rm(pathwidth)
-      }
-
-
-      osm$roadtype2 <- paste0(osm$roadtype," ",osm$leftside," ",osm$rightside)
 
       write.csv(osm,paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-variables-clean.csv"), row.names = FALSE)
     }

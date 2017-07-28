@@ -1,0 +1,214 @@
+"","roadtype","onewaysummary","junction","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right","count"
+"2954396","motorway - Cycling Forbidden","One Way","no","no","no",0,3,0,0,"no",63
+"2954398","motorway - Cycling Forbidden","One Way","no","no","no",0,4,0,0,"no",21
+"3217222","Trunk Road - Cycling Allowed","Two Way","no","no","no",0,2,2,0,"no",74
+"3391092","motorway_link - Cycling Forbidden","One Way","no","no","no",0,1,0,0,"no",43
+"3391098","motorway - Cycling Forbidden","One Way","no","no","no",0,2,0,0,"no",37
+"3391104","motorway_link - Cycling Forbidden","One Way","no","no","no",0,2,0,0,"no",30
+"3391107","motorway - Cycling Forbidden","One Way","no","no","no",0,5,0,0,"no",2
+"3399171","Trunk Road - Cycling Allowed","One Way","roundabout","no","no",0,2,0,0,"no",85
+"3399177","Trunk Road - Cycling Allowed","One Way","no","no","no",0,2,0,0,"no",283
+"3416737","Main Road - Cycling Allowed","One Way","no","no","no",0,1,0,0,"no",623
+"3416740","Main Road - Cycling Allowed","Two Way","no","no","no",0,1,1,0,"no",696
+"3416742","Minor Road - Cycling Allowed","Two Way","no","no","no",0,0,0,0,"no",5368
+"3416749","Minor Road - Cycling Allowed","Two Way","no","no","lane",0,1,1,0,"no",11
+"3418635","Main Road - Cycling Allowed","One Way","roundabout","no","no",0,1,0,0,"no",135
+"3418636","Main Road - Cycling Allowed","One Way","no","no","no",0,2,0,0,"no",57
+"3418638","Trunk Road - Cycling Allowed","One Way","no","left","no",0,3,0,0,"no",15
+"3418639","Trunk Road Link - Cycling Allowed","One Way","no","no","no",0,1,0,0,"no",46
+"3418640","Trunk Road Link - Cycling Allowed","One Way","no","left","no",0,1,0,0,"no",6
+"3444527","Cycleway","Two Way","no","Not Applicable","no",0,0,0,0,"no",705
+"3445487","Minor Road - Cycling Allowed","One Way","no","no","no",0,0,0,0,"no",726
+"3445574","Main Road - Cycling Allowed","Two Way","no","no","lane",0,2,1,0,"lane",3
+"3449747","motorway_link - Cycling Forbidden","One Way","no","no","no",0,3,0,0,"no",7
+"3449995","Main Road - Cycling Allowed","One Way","no","both","no",0,1,0,0,"no",40
+"3508394","Minor Road - Cycling Allowed","One Way","roundabout","no","no",0,1,0,0,"no",36
+"3508397","Minor Road - Cycling Allowed","One Way","no","no","no",0,1,0,0,"no",329
+"3508420","Residential Road - Cycling Allowed","Two Way","no","no","no",0,1,1,0,"no",7081
+"3508421","Main Road - Cycling Allowed","Two Way","no","no","no",0,1,2,0,"no",4
+"3508423","Minor Road - Cycling Allowed","Two Way","no","no","no",0,1,1,0,"no",1123
+"3509173","Main Road Link - Cycling Allowed","One Way","no","no","no",0,1,0,0,"no",28
+"3509728","Main Road - Cycling Allowed","One Way","no","no","lane",0,1,0,0,"lane",15
+"3509731","Residential Road - Cycling Allowed","One Way","no","no","no",0,1,0,0,"no",348
+"3511571","Main Road - Cycling Allowed","One Way","no","no","no",0,1,0,0,"lane",4
+"3511578","Trunk Road Link - Cycling Allowed","One Way","no","no","lane",0,1,0,0,"no",1
+"3511958","Minor Road - Cycling Allowed","One Way","no","both","no",0,1,0,0,"no",13
+"3512363","Main Road - Cycling Allowed","One Way","no","left","no",0,1,0,0,"no",90
+"3526281","Trunk Road - Cycling Allowed","One Way","no","left","no",0,2,0,0,"no",9
+"3528791","Minor Road - Cycling Allowed","Two Way","no","no","no",1,1,1,0,"no",8
+"3528793","Minor Road - Cycling Allowed","One Way","no","no","no",1,1,0,0,"no",12
+"3530414","Main Road - Cycling Allowed","One Way","no","left","no",0,2,0,0,"no",8
+"3533039","Main Road - Cycling Allowed","Two Way","no","both","no",0,1,1,0,"no",167
+"3533296","Main Road - Cycling Allowed","Two Way","no","no","no",0,1,1,1,"share_busway",2
+"3547126","Minor Road - Cycling Allowed","One Way - Two Way Cycling","no","no","no",0,1,1,0,"lane",10
+"3547130","Residential Road - Cycling Allowed","One Way","roundabout","no","no",0,1,0,0,"no",8
+"3547290","Main Road - Cycling Allowed","Two Way","no","no","share_busway",1,1,1,1,"share_busway",3
+"3567401","Minor Road - Cycling Allowed","One Way","no","no","no",0,1,0,0,"lane",9
+"3567778","Trunk Road - Cycling Allowed","Two Way","no","both","no",0,2,2,0,"no",3
+"3578228","Residential Road - Cycling Allowed","Two Way","no","both","no",0,1,1,0,"no",634
+"3730153","Minor Road - Cycling Allowed","Two Way","no","no","lane",0,1,1,0,"lane",7
+"3730254","Main Road - Cycling Allowed","One Way","no","no","lane",0,1,0,0,"no",13
+"3730325","Main Road - Cycling Allowed","Two Way","no","both","no",0,1,1,1,"share_busway",2
+"3730713","Trunk Road - Cycling Allowed","Two Way","no","no","lane",0,2,2,0,"no",1
+"3790592","Minor Road - Cycling Allowed","Two Way","no","left","no",0,1,1,0,"no",31
+"3791500","Minor Road - Cycling Allowed","Two Way","no","both","no",0,1,1,0,"no",67
+"3819569","Minor Road - Cycling Allowed","One Way","no","left","no",0,1,0,0,"no",19
+"3871959","Main Road - Cycling Allowed","One Way","no","no","lane",0,2,0,0,"lane",1
+"3871962","Main Road - Cycling Allowed","Two Way","no","both","lane",0,1,1,0,"lane",11
+"3877196","Main Road - Cycling Allowed","Two Way","no","no","lane",0,1,1,0,"no",22
+"3894322","Main Road - Cycling Allowed","One Way","no","no","share_busway",1,1,0,0,"no",4
+"4002513","Main Road - Cycling Allowed","One Way","roundabout","no","no",0,3,0,0,"no",10
+"4002663","Trunk Road Link - Cycling Allowed","One Way","no","no","no",0,2,0,0,"no",9
+"4002665","Trunk Road - Cycling Allowed","Two Way","no","left","no",0,2,2,0,"no",3
+"4002679","Trunk Road - Cycling Allowed","Two Way","no","no","no",0,1,1,0,"no",24
+"4002730","Main Road Link - Cycling Allowed","One Way","no","no","no",0,2,0,0,"no",6
+"4002737","Trunk Road - Cycling Allowed","One Way","no","no","no",0,3,0,0,"no",15
+"4002766","Trunk Road - Cycling Allowed","Two Way","no","no","share_busway",1,1,2,1,"no",1
+"4003166","Trunk Road - Cycling Allowed","One Way","no","no","no",0,4,0,0,"no",7
+"4007141","Trunk Road - Cycling Allowed","One Way","no","no","no",0,1,0,0,"no",26
+"4013386","Residential Road - Cycling Allowed","Two Way","no","no","no",0,1,0,0,"no",9
+"4019152","Segregated Cycleway","Two Way","no","Not Applicable","no",0,0,0,0,"no",80
+"4019154","Shared Path","Not Applicable","no","Not Applicable","no",0,0,0,0,"no",7426
+"4019258","Path - Cycling Forbidden","Not Applicable","no","Not Applicable","no",0,0,0,0,"no",868
+"4019352","Main Road - Cycling Allowed","One Way - Two Way Cycling","no","both","lane",0,1,1,0,"lane",1
+"4019424","Minor Road - Cycling Allowed","Two Way","no","no","no",0,1,1,0,"lane",3
+"4078708","Minor Road - Cycling Allowed","One Way","no","no","no",1,0,0,0,"lane",2
+"4081677","Main Road - Cycling Allowed","Two Way","no","no","no",1,1,1,0,"no",4
+"4081683","Cycleway","One Way","no","Not Applicable","no",0,0,0,0,"no",42
+"4234850","Residential Road - Cycling Allowed","One Way","no","left","no",0,1,0,0,"no",23
+"4296144","Trunk Road Link - Cycling Allowed","One Way","no","no","no",0,1,0,0,"lane",1
+"4308328","Residential Road - Cycling Allowed","Two Way","no","left","no",0,1,1,0,"no",52
+"4308332","Residential Road - Cycling Allowed","One Way","no","right","no",0,1,0,0,"no",3
+"4308341","Residential Road - Cycling Allowed","Two Way","no","right","no",0,1,1,0,"no",58
+"4308342","Minor Road - Cycling Allowed","Two Way","no","right","no",0,0,0,0,"no",8
+"4308347","Residential Road - Cycling Allowed","One Way","no","both","no",0,1,0,0,"no",17
+"4308355","Minor Road - Cycling Allowed","One Way","no","right","no",0,1,0,0,"no",5
+"4311051","Main Road - Cycling Allowed","One Way","roundabout","left","no",0,1,0,0,"no",4
+"4313466","Living Street","Two Way","no","no","no",0,1,1,0,"no",43
+"4313634","Minor Road - Cycling Allowed","One Way","no","both","no",0,0,0,0,"no",2
+"4315782","Residential Road - Cycling Allowed","One Way","no","both","no",0,1,0,0,"lane",5
+"4315797","Residential Road - Cycling Allowed","One Way","no","left","no",1,1,0,0,"no",1
+"4315897","Minor Road - Cycling Allowed","One Way - Two Way Cycling","no","both","no",0,1,1,0,"lane",2
+"4321271","Minor Road - Cycling Allowed","Two Way","no","left","no",0,0,0,0,"no",16
+"4323357","Residential Road - Cycling Allowed","One Way - Two Way Cycling","no","left","no",0,1,1,0,"lane",1
+"4338356","Living Street","One Way","no","no","no",0,1,0,0,"lane",1
+"4340891","Main Road - Cycling Allowed","Two Way","no","left","no",0,1,1,0,"no",31
+"4435555","Trunk Road - Cycling Allowed","One Way","no","no","share_busway",1,2,0,0,"no",6
+"4436654","Residential Road - Cycling Allowed","One Way","no","no","no",0,1,0,0,"lane",20
+"4494633","Minor Road - Cycling Allowed","One Way","no","no","no",0,2,0,0,"no",6
+"4494635","Trunk Road - Cycling Allowed","One Way","no","right","no",0,2,0,0,"no",2
+"4494637","Trunk Road - Cycling Allowed","Two Way","no","left","no",0,1,1,0,"no",2
+"4860965","Trunk Road Link - Cycling Allowed","Two Way","no","no","no",0,1,1,0,"no",5
+"4898739","Minor Road - Cycling Allowed","One Way","roundabout","no","no",0,0,0,0,"no",2
+"4913330","Main Road - Cycling Allowed","Two Way","no","left","lane",0,1,1,0,"lane",1
+"5843709","Segregated Shared Path","Not Applicable","no","Not Applicable","no",0,0,0,0,"no",42
+"5856820","Main Road - Cycling Allowed","One Way","no","both","no",1,1,0,0,"no",2
+"7998676","Residential Road - Cycling Allowed","One Way - Two Way Cycling","no","both","no",0,1,1,0,"lane",2
+"8094356","Residential Road - Cycling Allowed","Two Way","no","no","no",0,1,1,0,"lane",2
+"8613917","Minor Road - Cycling Allowed","Two Way","no","no","track",0,0,0,0,"track",3
+"12356693","Minor Road - Cycling Allowed","Two Way","no","right","no",0,1,1,0,"no",8
+"15508650","Residential Road - Cycling Allowed","One Way - Two Way Cycling","no","no","no",0,1,1,0,"lane",6
+"22612814","Minor Road - Cycling Allowed","One Way - Two Way Cycling","no","both","no",1,1,1,0,"lane",1
+"22634491","Main Road - Cycling Allowed","One Way","no","both","no",0,1,0,0,"lane",1
+"22818603","Main Road Link - Cycling Allowed","Two Way","no","no","no",0,1,1,0,"no",3
+"22888053","Main Road - Cycling Allowed","Two Way","no","both","lane",0,1,1,0,"no",4
+"23482084","Minor Road - Cycling Allowed","One Way - Two Way Cycling","no","no","no",0,0,0,0,"no",1
+"24038082","Minor Road - Cycling Allowed","One Way","no","no","no",0,1,0,0,"track",1
+"24803640","Minor Road - Cycling Allowed","One Way","no","no","lane",0,1,0,0,"no",4
+"25650311","Minor Road - Cycling Allowed","One Way","no","both","no",1,1,0,0,"no",3
+"25661978","Minor Road - Cycling Allowed","Two Way","no","both","no",0,0,0,0,"no",11
+"25662420","Minor Road - Cycling Allowed","One Way","no","both","no",0,1,0,0,"lane",2
+"25662620","Minor Road - Cycling Allowed","One Way","no","no","no",1,0,0,0,"no",14
+"25663250","Minor Road - Cycling Allowed","Two Way","no","both","no",1,1,1,0,"no",3
+"25663302","Main Road - Cycling Allowed","Two Way","no","both","no",0,1,1,0,"lane",3
+"25663572","Main Road - Cycling Allowed","One Way","no","both","no",0,3,0,0,"no",3
+"25663735","Main Road - Cycling Allowed","One Way","no","both","no",0,2,0,0,"no",3
+"26792457","Residential Road - Cycling Allowed","One Way","no","no","no",0,1,0,0,"track",2
+"27035926","Trunk Road - Cycling Allowed","One Way","no","left","no",0,1,0,0,"no",2
+"27036047","Main Road - Cycling Allowed","Two Way","no","no","no",0,1,0,0,"no",6
+"27376667","Trunk Road - Cycling Allowed","One Way","no","no","lane",0,1,0,0,"lane",2
+"31012194","Main Road - Cycling Allowed","Two Way","no","right","no",0,1,1,0,"no",20
+"31239132","Main Road - Cycling Allowed","One Way","no","no","no",0,1,0,1,"no",2
+"31714669","Main Road - Cycling Allowed","One Way","no","right","no",0,1,0,0,"no",6
+"31726979","Trunk Road - Cycling Allowed","Two Way","no","no","no",0,2,1,1,"no",4
+"31727028","Trunk Road - Cycling Allowed","One Way","no","no","track",0,2,0,0,"track",4
+"31753922","Main Road - Cycling Allowed","Two Way","no","no","lane",0,1,1,0,"lane",10
+"34639887","Trunk Road - Cycling Allowed","One Way","roundabout","no","lane",0,4,0,0,"lane",1
+"34639899","Trunk Road - Cycling Allowed","One Way","roundabout","no","no",0,4,0,0,"no",3
+"35668532","Minor Road - Cycling Allowed","One Way","no","no","lane",1,0,0,0,"lane",1
+"36990372","Main Road Link - Cycling Allowed","One Way","no","left","no",0,1,0,0,"no",2
+"36996492","Main Road Link - Cycling Allowed","One Way","no","right","no",0,1,0,0,"no",1
+"37283365","Main Road - Cycling Allowed","Two Way","no","no","share_busway",1,1,1,0,"no",2
+"37354499","Main Road - Cycling Allowed","One Way - Two Way Cycling","no","both","no",0,1,1,0,"lane",1
+"38081796","Trunk Road - Cycling Allowed","One Way","no","no","lane",0,2,0,0,"lane",4
+"39984417","Minor Road - Cycling Allowed","Two Way","no","no","no",0,1,0,0,"no",7
+"42279686","Main Road - Cycling Allowed","Two Way","no","no","track",0,1,1,0,"track",5
+"42279691","Minor Road - Cycling Allowed","Two Way","no","no","no",0,1,3,0,"no",1
+"67553246","Minor Road - Cycling Allowed","Two Way","no","no","no",1,1,1,1,"no",1
+"72130148","Minor Road - Cycling Allowed","Two Way","no","no","no",1,0,0,0,"no",21
+"83709119","Minor Road - Cycling Allowed","One Way","no","left","no",0,1,0,0,"track",1
+"88288931","Trunk Road Link - Cycling Allowed","One Way","no","right","no",0,3,0,0,"no",3
+"90145481","Trunk Road - Cycling Allowed","One Way","no","no","share_busway",1,0,0,0,"share_busway",1
+"94524265","Trunk Road - Cycling Allowed","Two Way","no","no","no",0,1,2,0,"no",6
+"95588254","Main Road - Cycling Allowed","One Way","no","no","no",1,1,0,0,"lane",1
+"99699330","Minor Road - Cycling Allowed","One Way","no","no","track",0,0,0,0,"track",1
+"107296526","Main Road - Cycling Allowed","One Way","no","no","no",1,1,0,0,"no",6
+"107437561","Trunk Road - Cycling Allowed","Two Way","no","no","share_busway",1,2,2,0,"no",3
+"107530721","Minor Road - Cycling Allowed","One Way","no","left","no",0,0,0,0,"no",1
+"107813253","Main Road - Cycling Allowed","Two Way","no","no","no",0,2,1,0,"no",1
+"117066428","Trunk Road - Cycling Allowed","One Way","no","no","lane",0,2,0,0,"no",5
+"121381300","Trunk Road Link - Cycling Allowed","One Way","no","no","lane",0,1,0,0,"lane",2
+"124609515","Trunk Road Link - Cycling Allowed","One Way","no","no","lane",0,2,0,0,"lane",1
+"125976200","Segregated Cycleway","One Way","no","Not Applicable","no",0,0,0,0,"no",4
+"128223818","Main Road - Cycling Allowed","One Way","no","no","no",0,3,0,0,"no",4
+"131881913","Trunk Road - Cycling Allowed","One Way","no","both","no",0,4,0,0,"no",1
+"133451913","motorway_link - Cycling Forbidden","One Way","no","no","no",0,4,0,0,"no",2
+"133638238","Trunk Road - Cycling Allowed","Two Way","no","left","share_busway",1,0,0,1,"no",2
+"133638239","Trunk Road - Cycling Allowed","Two Way","no","left","no",0,1,2,0,"no",1
+"135422563","Main Road - Cycling Allowed","Two Way","no","no","no",0,2,1,0,"lane",1
+"139670724","Minor Road - Cycling Allowed","One Way","no","both","no",0,1,0,0,"track",1
+"143866633","Main Road - Cycling Allowed","Two Way","no","both","no",0,1,2,0,"no",2
+"148725402","Trunk Road - Cycling Allowed","One Way","no","no","lane",0,3,0,0,"lane",1
+"156201908","Trunk Road - Cycling Allowed","Two Way","no","no","lane",0,2,2,0,"lane",2
+"162281033","Residential Road - Cycling Allowed","One Way","no","right","no",0,1,0,0,"lane",1
+"164051498","Trunk Road - Cycling Allowed","Two Way","no","left","share_busway",1,1,2,1,"no",4
+"173587176","Residential Road - Cycling Allowed","One Way","no","no","lane",0,1,0,0,"lane",3
+"173587177","Residential Road - Cycling Allowed","Two Way","no","no","lane",0,1,1,0,"lane",2
+"177209532","Main Road - Cycling Allowed","Two Way","no","no","no",0,1,1,0,"lane",8
+"177212276","Minor Road - Cycling Allowed","One Way","no","left","no",1,1,0,0,"no",2
+"177212283","Main Road - Cycling Allowed","One Way","no","left","no",1,1,0,0,"no",1
+"185368220","Trunk Road Link - Cycling Allowed","One Way","no","no","no",1,1,0,0,"no",1
+"193020322","Residential Road - Cycling Allowed","Two Way","no","no","lane",0,1,1,0,"no",1
+"193358599","Minor Road - Cycling Allowed","Two Way","no","both","no",0,1,1,0,"lane",1
+"193358601","Main Road - Cycling Allowed","One Way","no","right","lane",0,2,0,0,"no",1
+"193371060","Main Road - Cycling Allowed","One Way","no","left","lane",0,1,0,0,"no",1
+"193380439","Main Road - Cycling Allowed","One Way - Two Way Cycling","no","no","no",0,1,1,0,"lane",1
+"202758340","Minor Road - Cycling Allowed","Two Way","no","no","no",0,1,1,1,"share_busway",1
+"202758341","Minor Road - Cycling Allowed","One Way","no","both","no",0,1,0,1,"share_busway",1
+"203121193","Trunk Road - Cycling Allowed","Two Way","no","both","no",0,1,1,0,"no",1
+"203303815","Trunk Road Link - Cycling Allowed","One Way","no","both","lane",0,2,0,0,"lane",1
+"203304419","Trunk Road Link - Cycling Allowed","One Way","no","left","lane",0,2,0,0,"lane",1
+"203794617","Main Road - Cycling Allowed","One Way","no","no","share_busway",1,1,0,0,"share_busway",2
+"229352771","Trunk Road - Cycling Allowed","One Way","no","left","lane",0,2,0,0,"lane",2
+"230108677","Main Road - Cycling Allowed","Two Way","no","both","share_busway",1,1,1,1,"share_busway",1
+"234727417","Minor Road - Cycling Allowed","One Way","no","no","lane",0,1,0,0,"lane",5
+"246058948","Minor Road - Cycling Allowed","Two Way","no","no","no",0,2,2,0,"no",1
+"246058951","Minor Road - Cycling Allowed","Two Way","no","no","no",0,2,1,0,"no",1
+"250047661","Main Road - Cycling Allowed","Two Way","no","no","share_busway",1,1,1,0,"lane",1
+"308478950","Main Road - Cycling Allowed","Two Way","no","left","no",0,1,1,1,"share_busway",1
+"311635143","Residential Road - Cycling Allowed","Two Way","no","both","no",1,1,1,0,"no",1
+"326839640","Minor Road - Cycling Allowed","One Way","no","left","no",0,1,0,1,"no",1
+"326839641","Minor Road - Cycling Allowed","One Way","no","no","no",0,1,0,1,"share_busway",1
+"352696280","Minor Road - Cycling Allowed","Two Way","no","both","no",0,1,0,0,"no",1
+"361213646","Trunk Road - Cycling Allowed","One Way","no","no","share_busway",1,1,0,0,"no",1
+"367067494","Segregated Cycleway","Two Way","no","Not Applicable","no",0,1,1,0,"no",1
+"382893358","Main Road - Cycling Allowed","Two Way","no","no","lane",0,2,1,0,"no",2
+"431568740","Residential Road - Cycling Allowed","One Way","no","left","no",0,1,0,0,"lane",1
+"431578441","Main Road Link - Cycling Allowed","One Way","no","left","no",0,2,0,0,"no",1
+"439241536","Trunk Road - Cycling Allowed","One Way","no","no","no",1,2,0,0,"no",2
+"458389643","Trunk Road - Cycling Allowed","One Way","no","no","no",1,1,0,0,"no",1
+"458390142","Trunk Road - Cycling Allowed","Two Way","no","no","share_busway",1,2,2,0,"share_busway",1
+"458390143","Trunk Road - Cycling Allowed","One Way","no","no","share_busway",1,2,0,0,"share_busway",1
+"479811779","Trunk Road - Cycling Allowed","Two Way","no","both","no",0,2,1,0,"no",1
+"487390190","Minor Road - Cycling Allowed","One Way - Two Way Cycling","no","no","no",0,0,0,0,"lane",1
+"498960917","Trunk Road - Cycling Allowed","One Way","no","both","no",0,2,0,0,"no",2
