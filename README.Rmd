@@ -16,6 +16,27 @@ Funded by the Department for Transport.
 
 Comments/suggestions welcome in the [issue tracker](https://github.com/cyipt/cyipt/issues).
 
+To get this and associated repos on you computer you can clone them as follows:
+
+```bash
+clone git@github.com:cyipt/cyipt
+clone git@github.com:cyipt/cyipt-bigdata
+```
+
+The main processes undertaken by CyIPT are:
+
+- Download OSM data by Local Authority (by default Bristol). See [download-osm.R](https://github.com/cyipt/cyipt/blob/master/scripts/prep_data/download-osm.R):
+
+```{r}
+source("scripts/prep_data/download-osm.R")
+```
+
+- Clean OSM data that has been saved to `cyipt-bigdata`:
+
+```{r}
+source("scripts/prep_data/clean_osm.R")
+```
+
 ## Definitions and variable names
 
 Variable names are in lowercase and use_underscores, and should be kept updated in [input-data/variables.csv](https://github.com/cyipt/cyipt/blob/master/input-data/variables.csv):

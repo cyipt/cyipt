@@ -4,6 +4,39 @@ Project management and overview documents for the Cycling Infrastructure Priorit
 
 Comments/suggestions welcome in the [issue tracker](https://github.com/cyipt/cyipt/issues).
 
+To get this and associated repos on you computer you can clone them as follows:
+
+``` bash
+clone git@github.com:cyipt/cyipt
+clone git@github.com:cyipt/cyipt-bigdata
+```
+
+The main processes undertaken by CyIPT are:
+
+-   Download OSM data by Local Authority (by default Bristol). See [download-osm.R](https://github.com/cyipt/cyipt/blob/master/scripts/prep_data/download-osm.R):
+
+``` r
+source("scripts/prep_data/download-osm.R")
+#> Linking to GEOS 3.6.1, GDAL 2.2.0, proj.4 4.9.3
+#> Data (c) OpenStreetMap contributors, ODbL 1.0. http://www.openstreetmap.org/copyright
+```
+
+![](README-unnamed-chunk-2-1.png)
+
+    #> [1] "Skipping BristolCityof"
+
+-   Clean OSM data that has been saved to `cyipt-bigdata`:
+
+``` r
+source("scripts/prep_data/clean_osm.R")
+#> [1] "Doing NA at 2017-08-04 12:36:46"
+#> [1] "Input File Missing"
+#> [1] "Doing NA at 2017-08-04 12:36:46"
+#> [1] "Input File Missing"
+#> [1] "Doing  at 2017-08-04 12:36:46"
+#> [1] "Input File Missing"
+```
+
 Definitions and variable names
 ------------------------------
 
@@ -35,16 +68,3 @@ knitr::kable(variables)
 | av\_incline\_quiet | Average incline of quietest route                                    |
 | time\_fast         | Time of fast route (s)                                               |
 | time\_quiet        | Time of quiet route (s)                                              |
-
-``` r
-library(sf)
-region = st_read("areas/bristol-poly.geojson")
-#> Reading layer `OGRGeoJSON' from data source `/home/robin/cyipt/cyipt/areas/bristol-poly.geojson' using driver `GeoJSON'
-#> converted into: MULTIPOLYGON
-#> Simple feature collection with 1 feature and 21 fields
-#> geometry type:  MULTIPOLYGON
-#> dimension:      XY
-#> bbox:           xmin: -2.773873 ymin: 51.39755 xmax: -2.510999 ymax: 51.54443
-#> epsg (SRID):    4326
-#> proj4string:    +proj=longlat +datum=WGS84 +no_defs
-```
