@@ -15,7 +15,7 @@ bounds <- readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.R
 #Subset to england
 bounds$lad16cd <- as.character(bounds$lad16cd)
 bounds <- bounds[substr(bounds$lad16cd,1,1) == "E",]
-plot(bounds[1])
+plot(bounds[1], main = "Local Authority Districts")
 
 #Transform to WGS84
 bounds <- st_transform(bounds,4326)
@@ -78,8 +78,10 @@ colcheck <- c("osm_id","name",
               "geometry")
 
 
+a = grep(pattern = "Bristol", x = bounds$lad16nm) # test for Bristol
 
-for(a in 1:nrow(bounds)){
+# uncomment for loop for all regions
+# for(a in 1:nrow(bounds)){
   #Get Region Name
   region_nm <- as.character(bounds$lad16nm[a])
   region_nm <- str_replace_all(region_nm,"[[:punct:]]","")
@@ -115,5 +117,5 @@ for(a in 1:nrow(bounds)){
     Sys.sleep(10)
   }
 
-}
+# }
 
