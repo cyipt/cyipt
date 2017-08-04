@@ -1,23 +1,52 @@
 #Clean Up OSM Description
+library(sf)
 
-skip <- TRUE
+
+skip <- FALSE # Skip files alread done
 
 #testing
-osm <- readRDS("../cyipt-bigdata/osm-raw/BristolCityof/osm-lines.Rds")
+#osm <- readRDS("../cyipt-bigdata/osm-raw/BristolCityof/osm-lines.Rds")
 ####
 
 
 #List folders
 
-regions <- list.dirs(path = "../cyipt-bigdata/osm-prep", full.names = FALSE)
+regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE)
+
+#create directory
+if(!dir.exists(paste0("../cyipt-bigdata/osm-clean"))){
+  dir.create(paste0("../cyipt-bigdata/osm-clean"))
+}
 
 for(a in 2:length(regions)){
   print(paste0("Doing ",regions[a]," at ",Sys.time()))
-  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-variables.csv"))){
-    if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-variables-clean.csv")) & skip){
+  if(file.exists(paste0("../cyipt-bigdata/osm-raw/",regions[a],"/osm-lines.Rds"))){ #Check for input file
+    if(file.exists(paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds")) & skip){ #check for existing copy of output
       print("Skipping as already done")
     }else{
-      osm <- read.csv(paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-variables.csv"))
+      #create directory
+      if(!dir.exists(paste0("../cyipt-bigdata/osm-clean/",regions[a]))){
+        dir.create(paste0("../cyipt-bigdata/osm-clean/",regions[a]))
+      }
+
+      osm <- readRDS(paste0("../cyipt-bigdata/osm-raw/",regions[a],"/osm-lines.Rds"))
+      osm <- st_transform(osm, 27700)
+
+      osm$highway <- as.character(osm$highway)
+
+      ###############################################################################
+      #step 10: remove proposed roads
+      ################################################################################
+      osm <- osm[osm$highway != "proposed",]
+
+
+      ###############################################################################
+      #step 11: clean depreciated highway tags
+      ################################################################################
+      osm$highway[osm$highway == "byway"] <- "track"
+      osm$highway[osm$highway == "layby"] <- "service"
+      osm$highway[osm$highway == "no"] <- "path"
+
 
       ################################################################################
       #Step 8: clean junctions
@@ -466,7 +495,7 @@ for(a in 2:length(regions)){
                 osm$lanes.forward[i] <- 2
                 osm$lanes.backward[i] <- 2
               }
-            }else if(osm$highway[i] %in% c("residential","living_street","tertiary","tertiary_link","living_street","motorway_link","primary","primary_link","road","secondary","secondary_link","trunk_link","unclassified")){
+            }else if(osm$highway[i] %in% c("residential","living_street","tertiary","tertiary_link","living_street","motorway_link","primary","primary_link","road","secondary","secondary_link","trunk_link","unclassified","bus_guideway")){
               if(osm$onewaysummary[i] == "One Way"){
                 osm$lanes.forward[i] <- 1
                 osm$lanes.backward[i] <- 0
@@ -527,7 +556,7 @@ for(a in 2:length(regions)){
                 }else{
                   osm$lanes.backward[i] <- 2
                 }
-              }else if(osm$highway[i] %in% c("residential","living_street","tertiary","tertiary_link","living_street","motorway_link","primary","primary_link","road","secondary","secondary_link","trunk_link","unclassified")){
+              }else if(osm$highway[i] %in% c("residential","living_street","tertiary","tertiary_link","living_street","motorway_link","primary","primary_link","road","secondary","secondary_link","trunk_link","unclassified","bus_guideway")){
                 if(osm$onewaysummary[i] == "One Way"){
                   osm$lanes.backward[i] <- 0
                 }else{
@@ -555,7 +584,7 @@ for(a in 2:length(regions)){
                 }else{
                   osm$lanes.forward[i] <- 2
                 }
-              }else if(osm$highway[i] %in% c("residential","living_street","tertiary","tertiary_link","living_street","motorway_link","primary","primary_link","road","secondary","secondary_link","trunk_link","unclassified")){
+              }else if(osm$highway[i] %in% c("residential","living_street","tertiary","tertiary_link","living_street","motorway_link","primary","primary_link","road","secondary","secondary_link","trunk_link","unclassified","bus_guideway")){
                 if(osm$onewaysummary[i] == "One Way"){
                   osm$lanes.forward[i] <- 1
                 }else{
@@ -608,7 +637,7 @@ for(a in 2:length(regions)){
       #osm$leftside <- NA
 
       for(d in 1:nrow(osm)){
-        if(osm$highway[d] %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")){
+        if(osm$highway[d] %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track","bus_guideway")){
           #Left and right lanes are not a valid concept
           osm$cycleway.left[d] <- "no"
         }else{
@@ -673,8 +702,8 @@ for(a in 2:length(regions)){
 
       #Check for errors
       #If doubt assume no cycle infrastrucutre
-      osm$cycleway.left[osm$cycleway.left == "share_busway" & osm$lanes.psv.forward == 0,] <- "no"
-      osm$cycleway.right[osm$cycleway.right == "share_busway" & osm$lanes.psv.backward == 0,] <- "no"
+      osm$cycleway.left[osm$cycleway.left == "share_busway" & osm$lanes.psv.forward == 0] <- "no"
+      osm$cycleway.right[osm$cycleway.right == "share_busway" & osm$lanes.psv.backward == 0] <- "no"
 
       #Paths Don't have lanes
       osm$lanes.backward[osm$roadtype %in% c("Shared Path","Path - Cycling Forbidden","Segregated Shared Path","Cycleway")] <- 0
@@ -684,40 +713,14 @@ for(a in 2:length(regions)){
       osm$lanes.backward[osm$onewaysummary == "One Way"] <- 0
 
 
+      #remove unneeded columns
+      osm <- osm[,c("osm_id","name","highway","junction","roadtype","onewaysummary","elevation","maxspeed","segregated","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right","geometry")]
 
-      #osm$leftside[is.na(osm$leftside)] <- "None"
-      #osm$leftside[osm$leftside == "no"] <- "None"
-      #osm$leftside[osm$leftside == "lane" | osm$leftside == "opposite" | osm$leftside == "opposite_lane" | osm$leftside == "yes" | osm$leftside == "designated"] <- "Lane"
-      #osm$leftside[osm$leftside == "share_busway" | osm$leftside == "shared"] <- "Shared"
-      #osm$leftside[osm$leftside == "track" | osm$leftside == "opposite_track" ] <- "Track"
-
-
-      #Get the unique combinations of characteristics
-
-      uni <- as.data.frame(osm[,c("roadtype","onewaysummary","junction","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right")])
-      uni <- uni[,c("roadtype","onewaysummary","junction","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right")]
-      uni <- uni[!duplicated(uni),]
-      uni$count <- NA
-      for(m in 1:nrow(uni)){
-        uni$count[m] <- nrow(osm[osm$roadtype == uni$roadtype[m] &
-                                 osm$onewaysummary == uni$onewaysummary[m] &
-                                 osm$junction == uni$junction[m] &
-                                 osm$sidewalk == uni$sidewalk[m] &
-                                 osm$lanes.forward == uni$lanes.forward[m] &
-                                 osm$lanes.backward == uni$lanes.backward[m] &
-                                 osm$cycleway.left == uni$cycleway.left[m] &
-                                 osm$cycleway.right == uni$cycleway.right[m] &
-                                 osm$lanes.psv.forward == uni$lanes.psv.forward[m] &
-                                 osm$lanes.psv.backward == uni$lanes.psv.backward[m],])
-      }
-
-      write.csv(uni,"../cyipt/input-data/roadtypes5.csv")
-
-
-      write.csv(osm,paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-variables-clean.csv"), row.names = FALSE)
+      saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds"))
     }
 
   }else{
     print("Input File Missing")
   }
 }
+

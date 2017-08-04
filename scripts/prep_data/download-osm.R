@@ -7,7 +7,13 @@ library(stringr)
 
 #Settings
 
-skip <- TRUE #SKIP EXISTING FOLDERS
+skip <- FALSE #SKIP EXISTING FOLDERS
+
+#creat directory
+if(!dir.exists(paste0("../cyipt-bigdata/osm-raw"))){
+  dir.create(paste0("../cyipt-bigdata/osm-raw"))
+}
+
 
 #Get Boundy
 bounds <- readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.Rds")
@@ -77,11 +83,11 @@ colcheck <- c("osm_id","name",
               #"turn","turn.lanes","turn.lanes.backward","turn.lanes.forward","type","vehicle","website","wheelchair","width","wikipedia",
               "geometry")
 
-
+#testing for bristol
 a = grep(pattern = "Bristol", x = bounds$lad16nm) # test for Bristol
 
-# uncomment for loop for all regions
-# for(a in 1:nrow(bounds)){
+#uncomment for loop for all regions
+for(a in 1:nrow(bounds)){
   #Get Region Name
   region_nm <- as.character(bounds$lad16nm[a])
   region_nm <- str_replace_all(region_nm,"[[:punct:]]","")
@@ -117,5 +123,5 @@ a = grep(pattern = "Bristol", x = bounds$lad16nm) # test for Bristol
     Sys.sleep(10)
   }
 
-# }
+}
 
