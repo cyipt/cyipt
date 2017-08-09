@@ -39,14 +39,12 @@ for(a in 2:length(regions)){
       ################################################################################
       osm <- osm[osm$highway != "proposed",]
 
-
       ###############################################################################
       #step 11: clean depreciated highway tags
       ################################################################################
       osm$highway[osm$highway == "byway"] <- "track"
       osm$highway[osm$highway == "layby"] <- "service"
       osm$highway[osm$highway == "no"] <- "path"
-
 
       ################################################################################
       #Step 8: clean junctions
@@ -93,9 +91,6 @@ for(a in 2:length(regions)){
       #remove oneway as nolonger needed
       osm$oneway <- NULL
       osm$oneway.bicycle <- NULL
-
-
-
 
       #############################################################################################
       #Step 1: Guess Road Speed if one not provided
@@ -147,6 +142,7 @@ for(a in 2:length(regions)){
       #convert to number
       osm$maxspeed <- as.integer(osm$maxspeed)
 
+      ##################################################################
       #Step 5: footways
       summary(osm$sidewalk)
       osm$sidewalk <- as.character(osm$sidewalk)
@@ -172,8 +168,7 @@ for(a in 2:length(regions)){
       osm$sidewalk[osm$sidewalk == "separate"] <- "both"
       osm$sidewalk <- as.factor(osm$sidewalk)
 
-
-
+      ###########################################################################################
       #Step 6: Bridges and Tunnels
       osm$elevation <- NA
       for(k in 1:nrow(osm)){
@@ -199,9 +194,11 @@ for(a in 2:length(regions)){
       osm$bridge <- NULL
       osm$tunnel <- NULL
 
+      ################################################################################
       #Step 9: Clean Up segregated
       osm$segregated[is.na(osm$segregated)] <- "no"
 
+      ###############################################################################
       #Step 10: Road Type
 
       osm$roadtype <- NA
@@ -256,6 +253,9 @@ for(a in 2:length(regions)){
           }
         }else if(osm$highway[f] %in% c("demolished","corridor","construction","escalator","steps")){
           osm$roadtype[f] <- "Path - Cycling Forbidden"
+        }else{
+          warning(paste0("unknown road type at ",f," ",osm$highway[f]))
+          stop()
         }
 
       }
@@ -281,8 +281,6 @@ for(a in 2:length(regions)){
           osm$lanes.psv.forward[r] <- osm$lanes.bus.forward[r]
         }
       }
-
-
 
       #Step 7b: Bus Lanes
       for(l in 1:nrow(osm)){
@@ -408,7 +406,6 @@ for(a in 2:length(regions)){
       osm$lanes.psv.backward[osm$roadtype %in% c("Path - Cycling Forbidden", "Shared Path")] <- 0
       osm$lanes.psv.forward[osm$roadtype %in% c("Path - Cycling Forbidden", "Shared Path")] <- 0
 
-
       #Step 7c: Check for missing bus lanes, where cycle lane is share_busway
       for(o in 1:nrow(osm)){
         if(!is.na(osm$cycleway.left[o])){
@@ -430,7 +427,7 @@ for(a in 2:length(regions)){
         }
       }
 
-      #Remove unnede columns
+      #Remove unneeded columns
       osm$bus_lane <- NULL
       osm$busway <- NULL
       osm$busway.left <- NULL
@@ -453,12 +450,7 @@ for(a in 2:length(regions)){
       osm$lanes.left <- NULL
       osm$lanes.right <- NULL
 
-
       #Step 7e: Lanes main part
-
-      ############################################################
-      #Super new method
-      ###########################################################
 
       for(i in 1:nrow(osm)){
         lt <- osm$lanes[i]
@@ -624,17 +616,12 @@ for(a in 2:length(regions)){
         rm(lt,lf,lb,lpf,lpb)
       }
 
-
-
       ##########################################################################
-      # Step 2: Summaris Cycling Infrastrure
+      # Step 2:  Cycling Infrastrure
 
       osm$cycleway <- as.character(osm$cycleway)
       osm$cycleway.left <- as.character(osm$cycleway.left)
-      #osm$busway.left <- as.character(osm$busway.left)
       osm$cycleway.right <- as.character(osm$cycleway.right)
-      #osm$busway.right <- as.character(osm$busway.right)
-      #osm$leftside <- NA
 
       for(d in 1:nrow(osm)){
         if(osm$highway[d] %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track","bus_guideway")){
@@ -663,7 +650,6 @@ for(a in 2:length(regions)){
       osm$cycleway.left[osm$cycleway.left == "designated"] <- "no" #unclear how this is used so assuming no actual lanes
       osm$cycleway.left <- as.factor(osm$cycleway.left)
       summary(osm$cycleway.left)
-      #osm$rightside <- NA
 
       for(e in 1:nrow(osm)){
         if(osm$highway[e] %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")){
@@ -712,7 +698,7 @@ for(a in 2:length(regions)){
       #One way roads don't have back lanes
       osm$lanes.backward[osm$onewaysummary == "One Way"] <- 0
 
-
+      ############################################################################################################
       #remove unneeded columns
       osm <- osm[,c("osm_id","name","highway","junction","roadtype","onewaysummary","elevation","maxspeed","segregated","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right","geometry")]
 
