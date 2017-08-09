@@ -1,14 +1,5 @@
 #summary of osm clean
 
-
-
-#osm$leftside[is.na(osm$leftside)] <- "None"
-#osm$leftside[osm$leftside == "no"] <- "None"
-#osm$leftside[osm$leftside == "lane" | osm$leftside == "opposite" | osm$leftside == "opposite_lane" | osm$leftside == "yes" | osm$leftside == "designated"] <- "Lane"
-#osm$leftside[osm$leftside == "share_busway" | osm$leftside == "shared"] <- "Shared"
-#osm$leftside[osm$leftside == "track" | osm$leftside == "opposite_track" ] <- "Track"
-
-
 #Get the unique combinations of characteristics
 
 uni <- as.data.frame(osm[,c("roadtype","onewaysummary","junction","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right")])

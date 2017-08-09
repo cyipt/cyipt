@@ -1,4 +1,4 @@
-# Aim: download all ways, relations and osm objects
+# Aim: download osm lines and junction points
 
 library(sf)
 library(osmdata)
@@ -116,12 +116,44 @@ for(a in 1:nrow(bounds)){
       }
     }
     lines <- lines[ ,colcheck]
+    points <- res$osm_points
+
+    #CHange to British National Grid
+    lines <- st_transform(lines, 27700)
+    points <- st_transform(points, 27700)
+
     saveRDS(lines, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-lines.Rds"))
-    #saveRDS(res$osm_points, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-points.Rds"))
+
+    #remove points that are not nodes on the line
+    #node points have no tags
+    col.names <- names(points)[!names(points) %in% c("osm_id","geometry")] #Get column names other than osm_id
+    points.sub <- points
+    points <- points[,"osm_id"]
+    st_geometry(points.sub) <- NULL
+    points.sub$geometry <- NULL
+    points.sub <- as.data.frame(points.sub)
+    points.sub <- points.sub[,col.names]
+    rowsum <- as.integer(rowSums(!is.na(points.sub)))
+    rm(points.sub)
+    points <- points[rowsum == 0,] #Remove points with any tags
+
+    #Look for points that intersect lines
+    inter <- st_intersects(points,lines)
+    len <- lengths(inter)
+    points <- points[len >= 2,] #Only keep points that intersec at least 2 lines i.e. a junction
+
+    #Remove any duplicated points
+    points <- points[!duplicated(points$geometry),]
+
+    saveRDS(points, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-junction-points.Rds"))
     print(paste0("Finished ",region_nm," at ",Sys.time()))
-    rm(lines,res,region_shp,q,region_nm)
+    rm(lines,res,region_shp,q,region_nm, len, points, inter, rowsum)
     Sys.sleep(10)
   }
 
 }
 
+len.old <- len
+inter.old <- inter
+summary(inter == inter.old)
+summary(len == len.old)
