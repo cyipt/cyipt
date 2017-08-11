@@ -1,200 +1,159 @@
-#Need to fix
-#Roads that touch the same road at both ends still get the incorect PCT value
+#Gets PCT Values for the road segments
 
+############################################
+#NOTE: THIS OVERRIGHTS EXISTING FILES RATHER THAN CREATING NEW FILES
+#############################################
 
-library(sp)
 library(sf)
-library(rgdal)
-library(geojsonio)
 library(dplyr)
-library(tmap)
 library(parallel)
 
+
+#Settings now come from master file
+#skip <- FALSE #Skip Files that already have PCT values
+#ncores <- 4 #number of cores to use in parallel processing
+#overwrite <- FALSE #Overwrite or create new file
+
+#Functions
 source("R/functions.R")
 
-tmap_mode("view")
-#Playing with routes
-bounds <- st_read("../cyipt/areas/bristol-poly.geojson")
-bounds <- as(bounds,"Spatial")
-bounds <- spTransform(bounds, CRS("+proj=longlat +init=epsg:3857 +a=6378137 +b=6378137 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"))
-rf <- readRDS("../pct-lsoa/Data/03_Intermediate/routes/rf_nat_4plus_fix.Rds")
-rf@data <- rf@data[,c("ID","busyness")]
-rf <- rf[bounds,]
-rf <- spTransform(rf,CRS("+init=epsg:27700"))
-gc()
-rf <- st_as_sf(rf)
-
-flow <- readRDS("../pct-lsoa/Data/02_Input/LSOA_flow.Rds")
-flow <- flow[,c("id","bicycle_16p")]
-flow <- flow[flow$id %in% rf$ID,]
-
-rf <- left_join(rf,flow, by = c("ID" = "id"))
-rf <- rf[rf$bicycle_16p > 0,]
-rm(flow)
-
-osm <- readRDS("../example-data/bristol/results/osm-lines.Rds")
-rf <- st_transform(rf, st_crs(osm))
-
-
-#Performacne Tweak, Preallocate object to a gid to reduce processing time
-grid <- st_make_grid(osm, n = c(100,100), "polygons")
-grid_osm <- st_intersects(osm, grid) # Which grid is each osm line in?
-grid_rf <- st_intersects(grid, rf)# for each grif which rf lins cross it
-rm(grid)
-
-
 getpctvalues <- function(a){
+  #Get the road line of intrest
   osm_sub <- osm[a,]
-  #Trim off the ends of the line
-  points <- st_cast(osm_sub$geometry, "POINT")
-  points <- points[c(1,length(points))] #Get first and last point on the lines
-  len <- as.numeric(st_distance(points[1],points[2])) #Change to distance between points to deal with curved roads
+
+  #As pct lines don't always perfectyl align with the osm get 3 points from the osm line to check against
+  points <- st_cast(osm_sub$geometry, "POINT") #convert road to points
+  if(length(points) >= 3){
+    #Get first last and a middle point
+    points <- points[c(1,ceiling(length(points)/2),length(points))]
+  }else if(length(points) == 2){
+    #Need 3 points so double get the last point
+    points <- points[c(1,1,length(points))]
+  }else{
+    #Somethign has gone wrong
+    warning(paste0("Line ",a," is made up of less than two points. Points =  ",length(points)))
+    stop()
+  }
+
+  #Buffer points
+  len <- as.numeric(st_distance(points[1],points[3])) #Change to distance between points to deal with curved roads
   if(len < 4 & len != 0){ # To hanel very small lines
     cutlen <- len/2.5
   }else{
     cutlen <- 2
   }
-  buff <- st_buffer(points, cutlen) #Make small circiels around the ends
-  buff <- st_union(buff)
-  osm_sub <- st_difference(osm_sub, buff) # Cut off the ends
-  #rm(points,buff, len, cutlen)
+  buff <- st_buffer(points, cutlen) #Make small circles around the points
+
   #Get grid IDS
   gridid <- grid_osm[a][[1]]
-  rf_grid <- grid_rf[gridid]
+  rf_grid <- grid_pct[gridid]
   rf_grid <- unlist(rf_grid)
   rf_grid <- rf_grid[!duplicated(rf_grid)]
-  rf_presub <- rf[rf_grid,]
-  sel <- st_intersects(osm_sub, rf_presub)[[1]]
+  rf_presub <- pct.all[rf_grid,] #select all the PCT lines in the same grid cell
 
-  if(sum(lengths(sel)) == 0){
-    #SOmething the lines run paralelle very colse to each other
-    #split the buff and check for intersection at both ends
-    buff <- st_cast(buff,"POLYGON", group_or_split = T)
-    if(length(buff) == 1){
-      #Do nothing, edge case where a looped road exists whith same start and end point
-      count <- 0
-    }else{
-      sel2 <- st_intersects(buff[1], rf_presub)[[1]]
-      sel3 <- st_intersects(buff[2], rf_presub)[[1]]
-      sel4 <- sel2[sel2 %in% sel3]
-      if(sum(lengths(sel4)) == 0){
-        #Do Nothing
-        count <- 0
-      }else{
-        #Check for cul-de-sacs where road touched the same road at both ends
-        grd <- grid_osm[[a]]
-        osm_other <- osm[sapply(grid_osm,function(x)any(x %in% grd)),] #Needed to hand lines in multiple grids
-        osm_other1 <- osm_other[unique(unlist(st_intersects(buff[1],osm_other))),]
-        osm_other2 <- osm_other[unique(unlist(st_intersects(buff[2],osm_other))),]
-        osm_other1 <- osm_other1[!(osm_other1$id %in% a),]
-        osm_other2 <- osm_other2[!(osm_other2$id %in% a),]
-        match <- osm_other1$id[osm_other1$id %in% osm_other2$id]
-        if(length(match) == 0){
-          #No cul-de-sac case
-          lenother <- 0
-        }else{
-          lenother <- as.numeric(st_length(osm_other[osm_other$id == match[1],])) # In some edge cases drops data (i.e. mutiple clu-de-sacs)
-        }
-        #plot(osm_other1[1], add = T, col = "Green", lwd = 3)
-        #plot(osm_other2[1], add = T, col = "Yellow", lwd = 3)
-        if(lenother > len){
-          #Cul-de-sac
-          #Do Nothing
-          count <- 0
-        }else{
-          #Split out the lines that are very close
-          rf_sub <- rf_presub[sel4,]
-          cuts <- st_difference(rf_sub,buff)
-          cutsl <- splitmulti(cuts, "MULTILINESTRING", "LINESTRING")
-          cutsl$len <- as.numeric(st_length(cutsl))
-          cutsl <- cutsl[cutsl$len > (0.95 * len) & cutsl$len < (1.05 * len),] #Get segments that are withing 5% lenf of the line
-          count <- sum(rf_sub$bicycle_16p)
-          #lengths(cuts_geom)
-          #plot(rf_sub, add = T, lwd = 2, col = "Green")
-        }
-      }
-      rm(buff,sel2,sel3,sel4)
-    }
-
+  if(nrow(rf_presub) == 0){ #need to check for when presub is empty
+    #return empty result
+    count <- data.frame(id = osm_sub$id ,pct.census = 0, pct.gov = 0,pct.gen = 0, pct.dutch = 0 , pct.ebike = 0)
   }else{
-    #plot(rf_presub[sel,], add = T, lwd = 2, col = "Green")
-    rf_sub <- rf_presub[sel,]
-    count <- sum(rf_sub$bicycle_16p)
+
+    #Check that lines intersect with all three points
+    sel.first <- st_intersects(buff[1], rf_presub)[[1]]
+    sel.middle <- st_intersects(buff[2], rf_presub)[[1]]
+    sel.last <- st_intersects(buff[3], rf_presub)[[1]]
+    sel.all <- sel.first[sel.first %in% sel.last]
+    sel.all <- sel.all[sel.all %in% sel.middle]
+    rf_sub <- rf_presub[sel.all,]
+
+    #Return resutls
+    count <- data.frame(id = osm_sub$id, pct.census = sum(rf_sub$pct.census), pct.gov = sum(rf_sub$pct.gov),pct.gen = sum(rf_sub$pct.gen), pct.dutch = sum(rf_sub$pct.dutch) , pct.ebike = sum(rf_sub$pct.ebike))
   }
+
   return(count)
 }
 
-rm(bounds)
+#List folders
+#regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
+#regions <- regions[2:length(regions)]
+regions <- regions.todo
+
+for(b in 1:length(regions)){
+  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
+    #Get file
+    osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+    #Check if PCT values exist in the file
+    if(all(c("pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike") %in% names(osm)) & skip){
+      message(paste0("PCT values already calcualted for ",regions[b]," so skipping"))
+    }else{
+      message(paste0("Getting PCT values for ",regions[b]," at ",Sys.time()))
+
+      #If overwriting remove old data
+      col.to.keep <- names(osm)[!names(osm) %in% c("pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike")]
+      osm <- osm[,col.to.keep]
+      rm(col.to.keep)
+
+      #Get bounding box
+      ext <- st_bbox(osm)
+      ext <- st_sfc(st_polygon(list(rbind(c(ext[1],ext[2]),c(ext[3],ext[2]),c(ext[3],ext[4]),c(ext[1],ext[4]),c(c(ext[1],ext[2]))))) )
+      pol <- data.frame(id = 1, geometry = NA)
+      st_geometry(pol) <- ext
+      rm(ext)
+
+      #Get pct data and subset to bounding box
+      pct.all <- readRDS("../cyipt-securedata/pct-routes-all.Rds")
+      st_crs(pol) <- st_crs(pct.all) #For some reason the CRS are fractionally different
+      pct.all <- pct.all[pol,]
+      pct.all <- st_transform(pct.all, st_crs(osm)) #transfor so that crs are idetical
+
+      #Performacne Tweak, Preallocate object to a gid to reduce processing time
+      grid <- st_make_grid(osm, n = c(100,100), "polygons")
+      grid_osm <- st_intersects(osm, grid) # Which grid is each osm line in?
+      grid_pct <- st_intersects(grid, pct.all)# for each grid which pct lines cross it
+      rm(grid, pol)
+
+
+      #Get the PCT Values
+      m = 1 #Start
+      n = nrow(osm) #End
+
+      message(paste0("Preparations complete, starting data collection at ",Sys.time()))
+
+      ##########################################################
+      #Parallel
+      start <- Sys.time()
+      fun <- function(cl){
+        parLapply(cl, m:n,getpctvalues)
+      }
+      cl <- makeCluster(ncores) #make clusert and set number of cores
+      clusterExport(cl=cl, varlist=c("osm", "pct.all","grid_osm","grid_pct"))
+      clusterEvalQ(cl, {library(sf); source("R/functions.R")}) #; {splitmulti()}) #Need to load splitmuliin corectly
+      respar <- fun(cl)
+      stopCluster(cl)
+      respar <- do.call("rbind",respar)
+      end <- Sys.time()
+      message(paste0("Did ",n," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+      #identical(res,respar)
+      ##########################################################
+      rm(n,m,cl,grid_osm,grid_pct,start,end)
+
+      #Join togther data
+      osm <- left_join(osm,respar, by = c("id" = "id"))
+
+      #Save results
+      if(overwrite){
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+      }else{
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-pct.Rds"))
+      }
+      rm(osm,pct.all,respar)
 
 
 
-###########################################################
-# Serial Version of Code
-#start <- Sys.time()
-#profvis({
-#res <- lapply(m:n,getpctvalues)
-#res <- unlist(res)
-#})
-#end <- Sys.time()
-#print(paste0("Did ",n," lines in ",difftime(end,start,units = "secs")," in serial mode"))
-##########################################################
+    }
 
-m = 1
-n = nrow(osm)
-
-##########################################################
-#Parallel
-start <- Sys.time()
-fun <- function(cl){
-  parLapply(cl, m:n,getpctvalues)
+  }else{
+    message(paste0("Input File Missing for ",regions[b]," at ",Sys.time()))
+  }
 }
-cl <- makeCluster(5)
-clusterExport(cl=cl, varlist=c("osm", "rf","grid_osm","grid_rf"))
-clusterEvalQ(cl, {library(sf); source("R/functions.R")}) #; {splitmulti()}) #Need to load splitmuliin corectly
-respar <- fun(cl)
-stopCluster(cl)
-respar <- unlist(respar)
-end <- Sys.time()
-print(paste0("Did ",n," lines in ",difftime(end,start,units = "secs")," in parallel mode"))
-#identical(res,respar)
-##########################################################
-
-#osm_test <- osm[m:n,]
-#osm_test$pct_census <- respar
-#rm(respar)
-
-########
+rm(b,regions)
 
 
-
-osm$pct_census <- respar # CHange to res for serial version
-
-#sub <- osm[osm$pct_census > 0,]
-#sub2 <- osm[osm$pct_census == 0,]
-#qtm(sub, lines.col = "pct_census", lines.lwd = 6, popup.vars = c("id","osm_id","pct_census") )
-
-#tm_shape(sub)+
-  #tm_lines(col = "pct_census",lwd = 6, popup.vars = c("id","osm_id","pct_census")) +
-#tm_shape(sub2)+
-  #tm_lines(col = "black",lwd = 4, popup.vars = c("id","osm_id","pct_census"))
-
-
-result <- as.data.frame(osm)
-result <- result[,c("id","osm_id","pct_census")]
-write.csv(result,"../example-data/bristol/results/pct-census.csv")
-
-#qtm(rf_presub) +
-#  qtm(osm_sub, lines.lwd = 5, lines.col = "black")
-
-
-#rm(respar)
-#osm$pct_census <- NULL
-#a = 19
-#osm_sub <- osm[a,]
-#sel <- st_intersects(osm_sub, rf)[[1]]
-#rf_sub <- rf[sel,]
-#qtm(rf_sub[1], lines.col = "black") +
-#  qtm(osm_sub[1], lines.col = "red", lines.lwd = 3)
-
-#plot(osm_sub[1], col = "Black", lwd = 3)
-#plot(rf_presub[1], col = "Red", add = T)
