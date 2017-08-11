@@ -245,9 +245,11 @@ getroadwidths <- function(a){
 ####################################
 
 #List folders
-regions <- list.dirs(path = "../cyipt-bigdata/osm-prep", full.names = FALSE)
+#regions <- list.dirs(path = "../cyipt-bigdata/osm-prep", full.names = FALSE) #now from master file
 
-for(b in 2:length(regions)){
+regions <- regions.todo
+
+for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
     #Get file
     osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
@@ -256,6 +258,12 @@ for(b in 2:length(regions)){
       message(paste0("Road width values already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Getting road width values for ",regions[b]," at ",Sys.time()))
+
+      #If overwriting remove old data
+      col.to.keep <- names(osm)[!names(osm) %in% c("width","widthpath")]
+      osm <- osm[,col.to.keep]
+      rm(col.to.keep)
+
 
       #Get bounding box
       ext <- st_bbox(osm)
@@ -309,7 +317,7 @@ for(b in 2:length(regions)){
 
       #Join togther data
       osm <- left_join(osm,respar, by = c("id" = "id"))
-
+      rm(start,cl,respar,end)
 
       #Save results
       if(overwrite){
@@ -317,7 +325,7 @@ for(b in 2:length(regions)){
       }else{
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-width.Rds"))
       }
-
+      rm(osm)
 
 
     }
@@ -326,59 +334,6 @@ for(b in 2:length(regions)){
     message(paste0("Input File Missing for ",regions[b]," at ",Sys.time()))
   }
 }
+rm(b,regions)
 
-
-
-
-
-
-#Read in data
-os <- readRDS("../example-data/bristol/os_data/roads.Rds")
-osm <- readRDS("../example-data/bristol/results/osm-lines.Rds")
-pct <- read.csv("../example-data/bristol/results/pct-census.csv")
-pct$osm_id <- NULL #Don't need this as identical to OSM
-pct$X <- NULL
-osm <- left_join(osm,pct, by = c("id" = "id"))
-rm(pct)
-osm <- osm[osm$pct_census > 0,] #To reduce processing time only find widths of roads with cycling demand
-
-
-
-
-
-#profvis({
-#Apply FUnction
-starttime <- Sys.time()
-res <- lapply(1:nrow(osm), getroadwidths)
-res <- do.call("rbind", res)
-
-#Add Results Column
-osm$width <- NA
-osm$widthpath <- NA
-
-for(b in 1:nrow(osm)){
-  width <- res[b,1][[1]]
-  widthpath <- res[b,2][[1]]
-  if(is.null(width)){
-    width <- NA
-  }
-  if(is.null(widthpath)){
-    widthpath <- NA
-  }
-  osm$width[b] <- width
-  osm$widthpath[b] <- widthpath
-}
-
-endtime <- Sys.time()
-print(paste0("Did ",nrow(osm)," rows in ", round(difftime(endtime, starttime, units = "secs"),2), " seconds"))
-#})
-
-warnms <- warnings()
-warnms <- names(warnms)
-warnms <- warnms[warnms != "attribute variables are assumed to be spatially constant throughout all geometries"]
-
-vals <- as.data.frame(osm)
-vals <- vals[,c("id","osm_id","width","widthpath")]
-
-write.csv(vals,"../example-data/bristol/results/widths.csv", row.names = FALSE)
 
