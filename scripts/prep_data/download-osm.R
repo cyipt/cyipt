@@ -6,10 +6,10 @@ library(tmap)
 library(stringr)
 
 #Settings
+#Settings are now taken from the cyipt master file
+# skip <- FALSE
 
-skip <- FALSE #SKIP EXISTING FOLDERS
-
-#creat directory
+#create directory
 if(!dir.exists(paste0("../cyipt-bigdata/osm-raw"))){
   dir.create(paste0("../cyipt-bigdata/osm-raw"))
 }
@@ -21,7 +21,10 @@ bounds <- readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.R
 #Subset to england
 bounds$lad16cd <- as.character(bounds$lad16cd)
 bounds <- bounds[substr(bounds$lad16cd,1,1) == "E",]
-plot(bounds[1], main = "Local Authority Districts")
+
+#subset the regions to do from the master file
+bounds <- bounds[bounds$lad16nm %in% regions.todo,]
+
 
 #Transform to WGS84
 bounds <- st_transform(bounds,4326)
@@ -83,8 +86,6 @@ colcheck <- c("osm_id","name",
               #"turn","turn.lanes","turn.lanes.backward","turn.lanes.forward","type","vehicle","website","wheelchair","width","wikipedia",
               "geometry")
 
-#testing for bristol
-a = grep(pattern = "Bristol", x = bounds$lad16nm) # test for Bristol
 
 #uncomment for loop for all regions
 for(a in 1:nrow(bounds)){
@@ -95,11 +96,14 @@ for(a in 1:nrow(bounds)){
   exists <- dir.exists(paste0("../cyipt-bigdata/osm-raw/",region_nm))
   #Skip if already done
   if(skip & exists){
-    print(paste0("Skipping ",region_nm))
+    print(paste0("Skipping download of ",region_nm))
   }else{
     dir.create(paste0("../cyipt-bigdata/osm-raw/",region_nm))
-    #Download data
+    #Get Region
     region_shp <- bounds[a,]
+    region_shp$name <- region_nm
+
+    #Download data
     q = opq(st_bbox(region_shp)) %>%
       add_feature(key = "highway")
     res = osmdata_sf(q = q)
@@ -116,14 +120,28 @@ for(a in 1:nrow(bounds)){
       }
     }
     lines <- lines[ ,colcheck]
+    rm(b,check)
+
+    #Get points
     points <- res$osm_points
 
     #CHange to British National Grid
     lines <- st_transform(lines, 27700)
     points <- st_transform(points, 27700)
+    region_shp <- st_transform(region_shp, 27700)
 
+    #Save out region boundary for reference
+    saveRDS(region_shp,paste0("../cyipt-bigdata/osm-raw/",region_nm,"/bounds.Rds"))
+
+    #Download osm used a square bounding box, now trim to the exact boundry
+    #note that lines that that cross the boundary are still included
+    lines <- lines[region_shp,]
+    points <- points[region_shp,]
+
+    #Save the lines
     saveRDS(lines, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-lines.Rds"))
 
+    #Find Junctions, OSM Points are both nodes that make up lines/polygons, and objects e.g. shops
     #remove points that are not nodes on the line
     #node points have no tags
     col.names <- names(points)[!names(points) %in% c("osm_id","geometry")] #Get column names other than osm_id
@@ -134,7 +152,7 @@ for(a in 1:nrow(bounds)){
     points.sub <- as.data.frame(points.sub)
     points.sub <- points.sub[,col.names]
     rowsum <- as.integer(rowSums(!is.na(points.sub)))
-    rm(points.sub)
+    rm(points.sub, col.names)
     points <- points[rowsum == 0,] #Remove points with any tags
 
     #Look for points that intersect lines
@@ -146,14 +164,10 @@ for(a in 1:nrow(bounds)){
     points <- points[!duplicated(points$geometry),]
 
     saveRDS(points, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-junction-points.Rds"))
-    print(paste0("Finished ",region_nm," at ",Sys.time()))
-    rm(lines,res,region_shp,q,region_nm, len, points, inter, rowsum)
-    Sys.sleep(10)
+    message(paste0("Finished downloading ",region_nm," at ",Sys.time()))
+    rm(lines,res,region_shp,q,region_nm, len, points, inter, rowsum, exists)
   }
 
 }
 
-len.old <- len
-inter.old <- inter
-summary(inter == inter.old)
-summary(len == len.old)
+rm(a, colcheck, bounds)

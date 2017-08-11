@@ -1,5 +1,9 @@
 #Gets road widths from OS data
 
+##################################
+# SOmethign wrong with a few lines causing the process to crash
+################################
+
 #Libraries
 library(sf)
 library(dplyr)
@@ -221,9 +225,20 @@ getroadwidths <- function(a){
   #put togther
   finalres <- data.frame("id" = osm.id, "width" = widthres, "widthpath" = widthpathres)
 
+  #Check intergrity
+  if(class(finalres) == "data.frame"){
+    #do nothing
+  }else{
+    message(paste0("Fiddlesticks, something wrong with ",osm.id))
+  }
+
+
   #finalres <- c(widthres,widthpathres)
   return(finalres)
   rm(finalres,widthres,widthpathres, road, roadside, line)
+
+
+
 }
 
 #####################################
@@ -272,11 +287,11 @@ for(b in 2:length(regions)){
 
       #Get the PCT Values
       m = 1 #Start
-      n = nrow(osm) #End
+      n = 10000 #End
 
       message(paste0("Preparations complete, starting data collection at ",Sys.time()))
 
-      #test <- lapply(1:10,getroadwidths)
+      test <- lapply(1:10,getroadwidths)
       #test <- do.call("rbind", test)
       #test <- getroadwidths(3)
 
@@ -291,7 +306,7 @@ for(b in 2:length(regions)){
       clusterEvalQ(cl, {library(sf); source("R/functions.R")}) #; {splitmulti()}) #Need to load splitmuliin corectly
       respar <- fun(cl)
       stopCluster(cl)
-      respar <- do.call("rbind",respar)
+      respar2 <- do.call("rbind",respar)
       end <- Sys.time()
       message(paste0("Did ",(n-m)+1," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
       ##########################################################

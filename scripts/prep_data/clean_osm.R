@@ -1,8 +1,8 @@
 #Clean Up OSM Description
 library(sf)
 
-
-skip <- FALSE # Skip files alread done
+#settings now come from master file
+#skip <- FALSE # Skip files alread done
 
 #testing
 #osm <- readRDS("../cyipt-bigdata/osm-raw/BristolCityof/osm-lines.Rds")
@@ -11,15 +11,17 @@ skip <- FALSE # Skip files alread done
 
 #List folders
 
-regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE)
+#regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
+#regions <- regions[2:length(regions)]
+regions <- regions.todo
 
 #create directory
 if(!dir.exists(paste0("../cyipt-bigdata/osm-clean"))){
   dir.create(paste0("../cyipt-bigdata/osm-clean"))
 }
 
-for(a in 2:length(regions)){
-  print(paste0("Doing ",regions[a]," at ",Sys.time()))
+for(a in 1:length(regions)){
+  message(paste0("Cleaning OSM tags for ",regions[a]," at ",Sys.time()))
   if(file.exists(paste0("../cyipt-bigdata/osm-raw/",regions[a],"/osm-lines.Rds"))){ #Check for input file
     if(file.exists(paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds")) & skip){ #check for existing copy of output
       print("Skipping as already done")
@@ -35,9 +37,12 @@ for(a in 2:length(regions)){
       osm$highway <- as.character(osm$highway)
 
       ###############################################################################
-      #step 10: remove proposed roads
+      #step 10: remove not allowed roads
       ################################################################################
       osm <- osm[osm$highway != "proposed",]
+      osm <- osm[osm$highway != "demolished",]
+      osm <- osm[osm$highway != "crossing",] #crossings should be points not lines in OSM
+
 
       ###############################################################################
       #step 11: clean depreciated highway tags
@@ -60,7 +65,7 @@ for(a in 2:length(regions)){
         if(osm$junction[g]  == "roundabout"){
           #Roundabouts are one way
           osm$onewaysummary[g] <- "One Way"
-        }else if(osm$highway[g] %in% c("bridleway","corridor", "construction","demolished","escalator","footway","path","pedestrian","steps","track")){
+        }else if(osm$highway[g] %in% c("bridleway","corridor", "construction","demolished","escalator","footway","path","pedestrian","steps","track","bus_guideway")){
           #The types don't have a direction
           osm$onewaysummary[g] <- "Not Applicable"
         }else{
@@ -87,6 +92,7 @@ for(a in 2:length(regions)){
           }
         }
       }
+      rm(g)
 
       #remove oneway as nolonger needed
       osm$oneway <- NULL
@@ -99,21 +105,22 @@ for(a in 2:length(regions)){
       for(b in 1:nrow(osm)){
         if(is.na(osm$maxspeed[b])){
           type <- osm$highway[b]
-          if(type == "motorway" | type == "motorway_link"){
+          if(type %in% c("motorway","motorway_link")){
             osm$maxspeed[b] <- 70
-          }else if(type == "trunk" | type == "trunk_link"){
+          }else if(type %in% c("trunk","trunk_link","bus_guideway")) {
             osm$maxspeed[b] <- 60
-          }else if(type == "primary" | type == "residential" | type == "road" | type == "primary_link" | type == "secondary" | type == "secondary_link" | type == "tertiary" | type == "tertiary_link"){
+          }else if(type %in% c("primary","residential","road","primary_link","secondary","secondary_link","tertiary","tertiary_link")){
             osm$maxspeed[b] <- 30
           }else if(type == "service" ){
             osm$maxspeed[b] <- 20
-          }else if(type == "path" | type == "bridleway" | type ==  "construction" | type ==  "cycleway" | type ==  "demolished" | type ==  "escalator" | type ==  "footway" | type ==  "living_street" | type ==  "steps" | type ==  "track" | type ==  "unclassified"){
+          }else if(type %in% c("path","bridleway","construction","cycleway","demolished","escalator","footway","living_street","steps","track","unclassified")){
             osm$maxspeed[b] <- 10
           }else{
             osm$maxspeed[b] <- 60
           }
         }
       }
+      rm(b,type)
 
       for(c in 1:nrow(osm)){
         if(osm$maxspeed[c] == "70 mph" | osm$maxspeed[c] == "70" ){
@@ -138,6 +145,7 @@ for(a in 2:length(regions)){
           osm$maxspeed[c] <- 30
         }
       }
+      rm(c)
 
       #convert to number
       osm$maxspeed <- as.integer(osm$maxspeed)
@@ -152,7 +160,7 @@ for(a in 2:length(regions)){
           #Paths ect that don't have pavements to the side
           osm$sidewalk[j] <- "Not Applicable"
         }else if(is.na(osm$sidewalk[j])){
-          if(osm$highway[j] %in% c("motorway","motorway_link","service","trunk","trunk_link")){
+          if(osm$highway[j] %in% c("motorway","motorway_link","service","trunk","trunk_link","bus_guideway")){
             #Road types that don't have pavements
             osm$sidewalk[j] <- "no"
           }else if(osm$junction[j] == "roundabout"){
@@ -164,6 +172,8 @@ for(a in 2:length(regions)){
           }
         }
       }
+      rm(j)
+
       osm$sidewalk[osm$sidewalk == "none"] <- "no"
       osm$sidewalk[osm$sidewalk == "separate"] <- "both"
       osm$sidewalk <- as.factor(osm$sidewalk)
@@ -188,6 +198,7 @@ for(a in 2:length(regions)){
           osm$elevation[k] <- "ground"
         }
       }
+      rm(k)
       osm$elevation <- as.factor(osm$elevation)
 
       #remove bridge and tunnle as no longer needed
@@ -253,12 +264,15 @@ for(a in 2:length(regions)){
           }
         }else if(osm$highway[f] %in% c("demolished","corridor","construction","escalator","steps")){
           osm$roadtype[f] <- "Path - Cycling Forbidden"
+        }else if(osm$highway[f] %in% c("bus_guideway")){
+          osm$roadtype[f] <- "Special Road - Cycling Forbidden"
         }else{
           warning(paste0("unknown road type at ",f," ",osm$highway[f]))
           stop()
         }
 
       }
+      rm(f)
 
       #############################################################################
       #Step 7: Lanes
@@ -281,6 +295,7 @@ for(a in 2:length(regions)){
           osm$lanes.psv.forward[r] <- osm$lanes.bus.forward[r]
         }
       }
+      rm(r)
 
       #Step 7b: Bus Lanes
       for(l in 1:nrow(osm)){
@@ -401,6 +416,7 @@ for(a in 2:length(regions)){
           }
         }
       }
+      rm(l)
 
       #Remove bus lanes from paths etc
       osm$lanes.psv.backward[osm$roadtype %in% c("Path - Cycling Forbidden", "Shared Path")] <- 0
@@ -426,6 +442,8 @@ for(a in 2:length(regions)){
           }
         }
       }
+      rm(o)
+
 
       #Remove unneeded columns
       osm$bus_lane <- NULL
@@ -446,6 +464,7 @@ for(a in 2:length(regions)){
           osm$lanes.backward[q] <- osm$lanes.right[q]
         }
       }
+      rm(q)
 
       osm$lanes.left <- NULL
       osm$lanes.right <- NULL
@@ -615,6 +634,7 @@ for(a in 2:length(regions)){
         #Clean up
         rm(lt,lf,lb,lpf,lpb)
       }
+      rm(i)
 
       ##########################################################################
       # Step 2:  Cycling Infrastrure
@@ -647,6 +667,7 @@ for(a in 2:length(regions)){
           }
         }
       }
+      rm(d)
       osm$cycleway.left[osm$cycleway.left == "designated"] <- "no" #unclear how this is used so assuming no actual lanes
       osm$cycleway.left <- as.factor(osm$cycleway.left)
       summary(osm$cycleway.left)
@@ -676,6 +697,7 @@ for(a in 2:length(regions)){
           }
         }
       }
+      rm(e)
 
       #Cleanup Results
       osm$cycleway.right[osm$cycleway.right == "designated"] <- "no" #unclear how this is used so assuming no actual lanes
@@ -703,10 +725,11 @@ for(a in 2:length(regions)){
       osm <- osm[,c("osm_id","name","highway","junction","roadtype","onewaysummary","elevation","maxspeed","segregated","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right","geometry")]
 
       saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds"))
+      rm(osm)
     }
 
   }else{
     print("Input File Missing")
   }
 }
-
+rm(a,regions)
