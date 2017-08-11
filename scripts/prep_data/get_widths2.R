@@ -36,16 +36,24 @@ getroadwidths <- function(a){
   os_sub <- os_presub[st_intersects(AOI,os_presub)[[1]],] #Faster selection from smaller dataset
   rm(gridno,os_grids,os_presub)
 
+  #Create road and roadside polygons
   roadside <- os_sub[os_sub$DESCGROUP == "Roadside", ]
   roadside <- st_intersection(AOI, roadside)
   names(roadside) <- c(names(roadside)[1:2],"geometry")
   st_geometry(roadside) <- "geometry"
   roadside <- roadside[,c("OBJECTID","geometry") ]
+  roadside <- splitmulti(roadside,"MULTIPOLYGON","POLYGON")
+
   road <- os_sub[os_sub$DESCGROUP == "Road Or Track" | os_sub$DESCGROUP == "Path",]
   road <- road[,c("OBJECTID","geometry") ]
   road <- st_intersection(AOI, road)
   names(road) <- c("OBJECTID","geometry")
   st_geometry(road) <- "geometry"
+  road <- splitmulti(road,"MULTIPOLYGON","POLYGON")
+  if(nrow(road) != 0 ){
+    road$id.temp <- 1:nrow(road)
+  }
+
 
   if(class(road$geometry)[[1]] == "sfc_GEOMETRY"){ #An edge case when the results come out as a geomtry (this ditches some data)
     road <- st_cast(road, "POLYGON")
@@ -55,19 +63,13 @@ getroadwidths <- function(a){
 
   #THe big if statments
   if(nrow(road) == 0 & nrow(roadside) == 0){
-    startint <- Sys.time()
     #No Data so skip everthing
     widthpathres <- NA
     widthres <- NA
-    endint <- Sys.time()
-    #warning(paste0("Did no data in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
+
   }else if(nrow(road) > 0 & nrow(roadside) > 0){
     #################################################################
     #Road and Roadside Approach
-    startint <- Sys.time()
-    roadside <- splitmulti(roadside,"MULTIPOLYGON","POLYGON")
-    road <- splitmulti(road,"MULTIPOLYGON","POLYGON")
-
     road$width <- width_estimate(road)
     ##Find intersections
     #Get Intersection Points
@@ -107,14 +109,15 @@ getroadwidths <- function(a){
     widthres <- unlist(osm_join$width[1])
 
     #Select roaddside touching the road section
-    road_main <- road[road$OBJECTID == osm_join$OBJECTID[1], ] # Changed from id to OBJECTID don't know why it used to be id
-    road_main <- road_main[!is.na(road_main$OBJECTID),]
+    road_main <- road[road$id.temp == osm_join$id.temp[1], ] # check agaist the temp id
+    road_main <- road_main[!is.na(road_main$id.temp),]
     rm(line_main, osm_join)
     if(nrow(road_main) == 0){
       #Can't do anything
       widthpathres <- NA
     }else{
       touch <- st_touches(road_main, roadside, sparse = FALSE)
+      #touch2 <- st_touches(roadside, road_main, sparse = FALSE)
       #Get the paths that touch the road and trim off any traling edges at 5m
       #Not this means that paths wider than 5 meters are capped at 5m
       roadside_touch <- roadside[touch,]
@@ -142,14 +145,10 @@ getroadwidths <- function(a){
     }
     rm(road_main)
 
-    endint <- Sys.time()
-    #warning(paste0("Did road and roadside in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
   }else if(nrow(road) > 0 & nrow(roadside) == 0){
     ########################################################
     #Road Only approach
-    startint <- Sys.time()
     widthpathres <- NA
-    road <- splitmulti(road,"MULTIPOLYGON","POLYGON")
     road$width <- width_estimate(road)
     ##Find intersections
     #Get Intersection Points
@@ -287,13 +286,10 @@ for(b in 2:length(regions)){
 
       #Get the PCT Values
       m = 1 #Start
-      n = 10000 #End
+      n = nrow(osm) #End
 
       message(paste0("Preparations complete, starting data collection at ",Sys.time()))
 
-      test <- lapply(1:10,getroadwidths)
-      #test <- do.call("rbind", test)
-      #test <- getroadwidths(3)
 
       ##########################################################
       #Parallel
@@ -306,7 +302,7 @@ for(b in 2:length(regions)){
       clusterEvalQ(cl, {library(sf); source("R/functions.R")}) #; {splitmulti()}) #Need to load splitmuliin corectly
       respar <- fun(cl)
       stopCluster(cl)
-      respar2 <- do.call("rbind",respar)
+      respar <- do.call("rbind",respar)
       end <- Sys.time()
       message(paste0("Did ",(n-m)+1," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
       ##########################################################

@@ -9,10 +9,10 @@ library(dplyr)
 library(parallel)
 
 
-#Settings
-skip <- FALSE #Skip Files that already have PCT values
-ncores <- 4 #number of cores to use in parallel processing
-overwrite <- FALSE #Overwrite or create new file
+#Settings now come from master file
+#skip <- FALSE #Skip Files that already have PCT values
+#ncores <- 4 #number of cores to use in parallel processing
+#overwrite <- FALSE #Overwrite or create new file
 
 #Functions
 source("R/functions.R")
@@ -71,13 +71,12 @@ getpctvalues <- function(a){
   return(count)
 }
 
-
-
-
 #List folders
-regions <- list.dirs(path = "../cyipt-bigdata/osm-prep", full.names = FALSE)
+#regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
+#regions <- regions[2:length(regions)]
+regions <- regions.todo
 
-for(b in 2:length(regions)){
+for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
     #Get file
     osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
@@ -86,6 +85,11 @@ for(b in 2:length(regions)){
       message(paste0("PCT values already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Getting PCT values for ",regions[b]," at ",Sys.time()))
+
+      #If overwriting remove old data
+      col.to.keep <- names(osm)[!names(osm) %in% c("pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike")]
+      osm <- osm[,col.to.keep]
+
 
       #Get bounding box
       ext <- st_bbox(osm)
@@ -113,7 +117,6 @@ for(b in 2:length(regions)){
 
       message(paste0("Preparations complete, starting data collection at ",Sys.time()))
 
-
       ##########################################################
       #Parallel
       start <- Sys.time()
@@ -140,6 +143,7 @@ for(b in 2:length(regions)){
       }else{
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-pct.Rds"))
       }
+      rm(osm)
 
 
 

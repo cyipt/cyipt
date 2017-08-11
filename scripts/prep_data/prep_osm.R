@@ -31,6 +31,7 @@ splitlines <- function(a){
 #List folders
 
 #regions <- list.dirs(path = "../cyipt-bigdata/osm-clean", full.names = FALSE) #region no from master file
+#regions <- regions[2:length(regions)]
 regions <- regions.todo
 
 #create directory
@@ -38,11 +39,11 @@ if(!dir.exists(paste0("../cyipt-bigdata/osm-prep"))){
   dir.create(paste0("../cyipt-bigdata/osm-prep"))
 }
 
-for(a in 2:length(regions)){
-  print(paste0("Doing ",regions[a]," at ",Sys.time()))
+for(a in 1:length(regions)){
+  message(paste0("Splitting Lines for ",regions[a]," at ",Sys.time()))
   if(file.exists(paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds"))){
     if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-lines.Rds")) & skip){
-      print("Skipping as done before")
+      message("Skipping as done before")
     }else{
       #Create ouptu dir
       dir.create(paste0("../cyipt-bigdata/osm-prep/",regions[a]))
@@ -52,7 +53,6 @@ for(a in 2:length(regions)){
       points <- readRDS(paste0("../cyipt-bigdata/osm-raw/",regions[a],"/osm-junction-points.Rds"))
 
       #Loop To Split Lines
-      print(paste0("Splitting Lines at ",Sys.time()))
       buff <- st_buffer(points,0.01)
       inter <- st_intersects(osm,buff)
       cut_list <- lapply(1:nrow(osm), splitlines)
@@ -71,12 +71,12 @@ for(a in 2:length(regions)){
       #Save Out Data
       saveRDS(result, paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-lines.Rds"))
 
-      print(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(result)))
+      message(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(result)))
       rm(osm, result, bounds,buff,inter, points)
       gc()
     }
   }else{
-    print("Input File Missing")
+    message(paste0("Input File missing for ",regions[a]," at ",Sys.time()))
   }
 }
 rm(a,regions)
