@@ -4,20 +4,12 @@
 # 1) the split lines with the attributes of the original data
 # 2) The points where the lines are split, i.e. junction locations
 
+
+
 library(sf)
 library(dplyr)
 
 source("R/functions.R")
-
-#Functions
-#Function To get Points and MultiPoints
-findpoints <- function(b){
-  lines_sub <- osm[c(touch[[b]]),]
-  inter_sub <- st_intersection(lines_sub, lines_sub)
-  inter_sub <- inter_sub[,c("osm_id","geometry")]
-  inter_sub <- inter_sub[st_geometry_type(inter_sub) == "POINT" | st_geometry_type(inter_sub) == "MULTIPOINT",]
-  return(inter_sub)
-}
 
 #FUnction to Splitlines
 splitlines <- function(a){
@@ -34,11 +26,12 @@ splitlines <- function(a){
 
 #Settings
 
-skip <- FALSE #SKIP EXISTING FOLDERS
+#skip <- FALSE #SKIP EXISTING FOLDERS #setting now from master file
 
 #List folders
 
-regions <- list.dirs(path = "../cyipt-bigdata/osm-clean", full.names = FALSE)
+#regions <- list.dirs(path = "../cyipt-bigdata/osm-clean", full.names = FALSE) #region no from master file
+regions <- regions.todo
 
 #create directory
 if(!dir.exists(paste0("../cyipt-bigdata/osm-prep"))){
@@ -56,26 +49,7 @@ for(a in 2:length(regions)){
 
       #Reading in data
       osm <- readRDS(paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds"))
-
-      #Create working dataset
-      #osm <- osm[,c("osm_id","geometry")]
-      #osm <- as.data.frame(osm)
-      #osm$geometry <- NULL
-
-      #Find Points
-      print(paste0("Find Points at ",Sys.time()))
-      touch <- st_intersects(osm)
-      points_list <- lapply(1:length(touch), findpoints)
-      points <- do.call("rbind",points_list)
-      points <- points[!duplicated(points$geometry),]
-      rm(points_list)
-
-      #Split multipoints into points
-      print(paste0("Split multipoints to points at ",Sys.time()))
-      points <- splitmulti(points,"MULTIPOINT","POINT")
-
-      #Remove duplicates
-      points <- points[!duplicated(points$geometry),]
+      points <- readRDS(paste0("../cyipt-bigdata/osm-raw/",regions[a],"/osm-junction-points.Rds"))
 
       #Loop To Split Lines
       print(paste0("Splitting Lines at ",Sys.time()))
@@ -86,37 +60,26 @@ for(a in 2:length(regions)){
       cut <- cut[!duplicated(cut$geometry),]
       rm(cut_list)
 
-      #Split multipoints into points
+      #Split MULTILINESTRING into LINESTRING
       result <- splitmulti(cut,"MULTILINESTRING","LINESTRING")
       rm(cut)
 
-      #Join Variaibles back togther
-      #result <- left_join(cut_sl,osm, by = c("osm_id" = "osm_id"))
-      #rm(cut_sl)
+      #Add ID
       result$id <- 1:nrow(result)
-      rm(bounds,buff,inter,touch)
-
-      #res_geom <- result[,c("id","osm_id","geometry")]
-      #res_val <- as.data.frame(result)
-      #res_val$geometry <- NULL
-      #res_val <- res_val[,c("id",names(res_val)[!(names(res_val) %in% "id")])]
-      row.names(points) <- 1:nrow(points)
+      row.names(result) <- result$id
 
       #Save Out Data
       saveRDS(result, paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-lines.Rds"))
-      #st_write(res_geom, paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-lines.geojson"))
-      #saveRDS(points,  paste0("../cyipt-bigdata/osm-prep/",regions[a],"/junction-points.Rds"))
-      #st_write(points, paste0("../cyipt-bigdata/osm-prep/",regions[a],"/junction-points.geojson"))
-      #write.csv(res_val, paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-variables.csv"), row.names = FALSE)
 
-      print(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(result)," lines and ",nrow(points)," points"))
-      rm(osm, result)
+      print(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(result)))
+      rm(osm, result, bounds,buff,inter, points)
       gc()
     }
   }else{
     print("Input File Missing")
   }
 }
+rm(a,regions)
 
 
 
