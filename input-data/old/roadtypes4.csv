@@ -1,0 +1,221 @@
+roadtype,onewaysummary,junction,sidewalk,leftside,lanes.psv.forward,lanes.forward,lanes.backward,lanes.psv.backward,rightside,count,names,streetmix,sum of lanes
+Cycleway,One Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,42,C1,https://streetmix.net/falcs89/4/c1,0
+Cycleway,Two Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,705,C2,https://streetmix.net/falcs89/5/c2,0
+Living Street,One Way,no,no,None,0,1,0,0,Lane,1,L1,https://streetmix.net/falcs89/18/l1,1
+Living Street,Two Way,no,no,None,0,1,1,0,None,43,L2,https://streetmix.net/falcs89/6/l2,2
+Main Road - Cycling Allowed,One Way,roundabout,no,None,0,1,0,0,None,135,,,1
+Main Road - Cycling Allowed,One Way,roundabout,left,None,0,1,0,0,None,4,,,1
+Main Road - Cycling Allowed,One Way,roundabout,no,None,0,3,0,0,None,10,,,3
+Main Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,None,623,MA1,https://streetmix.net/falcs89/53/ma1,1
+Main Road - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,90,MA1b,https://streetmix.net/falcs89/57/ma1b,1
+Main Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,None,40,MAd1,https://streetmix.net/falcs89/63/ma1d,1
+Main Road - Cycling Allowed,One Way,no,no,Lane,0,1,0,0,Lane,15,,,1
+Main Road - Cycling Allowed,One Way,no,no,Lane,0,1,0,0,None,13,,,1
+Main Road - Cycling Allowed,One Way,no,right,None,0,1,0,0,None,6,,,1
+Main Road - Cycling Allowed,One Way,no,no,None,1,1,0,0,None,6,,,2
+Main Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,Lane,4,,,1
+Main Road - Cycling Allowed,One Way,no,no,share_busway,1,1,0,0,None,4,,,2
+Main Road - Cycling Allowed,One Way,no,both,None,1,1,0,0,None,2,,,2
+Main Road - Cycling Allowed,One Way,no,no,None,0,1,0,1,None,2,,,2
+Main Road - Cycling Allowed,One Way,no,no,share_busway,1,1,0,0,share_busway,2,,,2
+Main Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,Lane,1,,,1
+Main Road - Cycling Allowed,One Way,no,left,Lane,0,1,0,0,None,1,,,1
+Main Road - Cycling Allowed,One Way,no,no,None,1,1,0,0,Lane,1,,,2
+Main Road - Cycling Allowed,One Way,no,left,None,1,1,0,0,None,1,,,2
+Main Road - Cycling Allowed,One Way,no,no,None,0,2,0,0,None,56,MA1c,https://streetmix.net/falcs89/61/ma1c,2
+Main Road - Cycling Allowed,One Way,no,left,None,0,2,0,0,None,7,,,2
+Main Road - Cycling Allowed,One Way,no,both,None,0,2,0,0,None,3,,,2
+Main Road - Cycling Allowed,One Way,no,no,Lane,0,2,0,0,Lane,1,,,2
+Main Road - Cycling Allowed,One Way,no,right,Lane,0,2,0,0,None,1,,,2
+Main Road - Cycling Allowed,One Way,no,left,None,0,2,1,0,None,1,,,3
+Main Road - Cycling Allowed,One Way,no,no,None,0,2,1,0,None,1,,,3
+Main Road - Cycling Allowed,One Way,no,no,None,0,3,0,0,None,4,,,3
+Main Road - Cycling Allowed,One Way,no,both,None,0,3,0,0,None,3,,,3
+Main Road - Cycling Allowed,One Way - Two Way Cycling,no,both,Lane,0,1,1,0,Lane,1,,,2
+Main Road - Cycling Allowed,One Way - Two Way Cycling,no,both,None,0,1,1,0,Lane,1,,,2
+Main Road - Cycling Allowed,One Way - Two Way Cycling,no,no,None,0,1,1,0,Lane,1,,,2
+Main Road - Cycling Allowed,Two Way,no,no,None,0,1,1,0,None,696,MA2,https://streetmix.net/falcs89/52/ma2,2
+Main Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,None,167,MA2b,https://streetmix.net/falcs89/56/ma2b,2
+Main Road - Cycling Allowed,Two Way,no,left,None,0,1,1,0,None,31,MA2c,https://streetmix.net/falcs89/64/ma2c,2
+Main Road - Cycling Allowed,Two Way,no,no,Lane,0,1,1,0,None,22,,,2
+Main Road - Cycling Allowed,Two Way,no,right,None,0,1,1,0,None,20,,,2
+Main Road - Cycling Allowed,Two Way,no,both,Lane,0,1,1,0,Lane,11,,,2
+Main Road - Cycling Allowed,Two Way,no,no,Lane,0,1,1,0,Lane,10,,,2
+Main Road - Cycling Allowed,Two Way,no,no,None,0,1,1,0,Lane,8,,,2
+Main Road - Cycling Allowed,Two Way,no,no,None,0,1,0,0,None,6,,,1
+Main Road - Cycling Allowed,Two Way,no,no,Track,0,1,1,0,Track,5,,,2
+Main Road - Cycling Allowed,Two Way,no,both,Lane,0,1,1,0,None,4,,,2
+Main Road - Cycling Allowed,Two Way,no,no,None,1,1,1,0,None,4,,,3
+Main Road - Cycling Allowed,Two Way,no,no,None,0,1,2,0,None,4,,,3
+Main Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,Lane,3,,,2
+Main Road - Cycling Allowed,Two Way,no,no,share_busway,1,1,1,1,share_busway,3,,,4
+Main Road - Cycling Allowed,Two Way,no,no,share_busway,1,1,1,0,None,2,,,3
+Main Road - Cycling Allowed,Two Way,no,both,Lane,0,1,2,0,Lane,2,,,3
+Main Road - Cycling Allowed,Two Way,no,left,Lane,0,1,1,0,Lane,1,,,2
+Main Road - Cycling Allowed,Two Way,no,no,Lane,0,1,1,1,Lane,1,,,3
+Main Road - Cycling Allowed,Two Way,no,both,None,0,1,1,1,share_busway,1,,,3
+Main Road - Cycling Allowed,Two Way,no,no,None,0,1,1,1,share_busway,1,,,3
+Main Road - Cycling Allowed,Two Way,no,both,Lane,0,1,1,1,Lane,1,,,3
+Main Road - Cycling Allowed,Two Way,no,no,share_busway,1,1,1,0,Lane,1,,,3
+Main Road - Cycling Allowed,Two Way,no,left,Lane,0,1,1,1,Lane,1,,,3
+Main Road - Cycling Allowed,Two Way,no,both,share_busway,1,1,1,1,share_busway,1,,,4
+Main Road - Cycling Allowed,Two Way,no,no,Lane,0,2,1,0,Lane,3,,,3
+Main Road - Cycling Allowed,Two Way,no,no,Lane,0,2,1,0,None,2,,,3
+Main Road - Cycling Allowed,Two Way,no,no,None,0,2,1,0,None,1,,,3
+Main Road - Cycling Allowed,Two Way,no,no,None,0,2,1,0,Lane,1,,,3
+Main Road Link - Cycling Allowed,One Way,no,no,None,0,1,0,0,None,28,,,1
+Main Road Link - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,2,,,1
+Main Road Link - Cycling Allowed,One Way,no,right,None,0,1,0,0,None,1,,,1
+Main Road Link - Cycling Allowed,One Way,no,no,None,0,2,0,0,None,6,,,2
+Main Road Link - Cycling Allowed,One Way,no,left,None,0,2,0,0,None,1,,,2
+Main Road Link - Cycling Allowed,Two Way,no,no,None,0,1,1,0,None,3,,,2
+Minor Road - Cycling Allowed,One Way,roundabout,no,None,0,0,0,0,None,2,,,0
+Minor Road - Cycling Allowed,One Way,roundabout,no,None,0,1,0,0,None,36,,,1
+Minor Road - Cycling Allowed,One Way,no,no,None,0,0,0,0,None,726,MI0b,https://streetmix.net/falcs89/49/mi0b,0
+Minor Road - Cycling Allowed,One Way,no,no,None,1,0,0,0,None,14,,,1
+Minor Road - Cycling Allowed,One Way,no,both,None,0,0,0,0,None,2,,,0
+Minor Road - Cycling Allowed,One Way,no,no,None,1,0,0,0,Lane,2,,,1
+Minor Road - Cycling Allowed,One Way,no,no,Track,0,0,0,0,Track,1,,,0
+Minor Road - Cycling Allowed,One Way,no,left,None,0,0,0,0,None,1,,,0
+Minor Road - Cycling Allowed,One Way,no,no,Lane,1,0,0,0,Lane,1,,,1
+Minor Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,None,329,MI1,https://streetmix.net/falcs89/55/mi1,1
+Minor Road - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,19,,,1
+Minor Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,None,13,,,1
+Minor Road - Cycling Allowed,One Way,no,no,None,1,1,0,0,None,12,,,2
+Minor Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,Lane,9,,,1
+Minor Road - Cycling Allowed,One Way,no,right,None,0,1,0,0,None,5,,,1
+Minor Road - Cycling Allowed,One Way,no,no,Lane,0,1,0,0,Lane,5,,,1
+Minor Road - Cycling Allowed,One Way,no,no,Lane,0,1,0,0,None,4,,,1
+Minor Road - Cycling Allowed,One Way,no,both,None,1,1,0,0,None,3,,,2
+Minor Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,Lane,2,,,1
+Minor Road - Cycling Allowed,One Way,no,left,None,1,1,0,0,None,2,,,2
+Minor Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,Track,1,,,1
+Minor Road - Cycling Allowed,One Way,no,left,None,0,1,0,0,Track,1,,,1
+Minor Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,Track,1,,,1
+Minor Road - Cycling Allowed,One Way,no,both,opposite_share_busway,0,1,0,1,opposite_share_busway,1,,,2
+Minor Road - Cycling Allowed,One Way,no,left,None,0,1,0,1,None,1,,,2
+Minor Road - Cycling Allowed,One Way,no,no,opposite_share_busway,0,1,0,1,opposite_share_busway,1,,,2
+Minor Road - Cycling Allowed,One Way,no,no,None,0,2,0,0,None,6,,,2
+Minor Road - Cycling Allowed,One Way - Two Way Cycling,no,no,None,0,0,0,0,None,1,,,0
+Minor Road - Cycling Allowed,One Way - Two Way Cycling,no,no,None,0,0,0,0,Lane,1,,,0
+Minor Road - Cycling Allowed,One Way - Two Way Cycling,no,no,None,0,1,1,0,Lane,10,,,2
+Minor Road - Cycling Allowed,One Way - Two Way Cycling,no,both,None,0,1,1,0,Lane,2,,,2
+Minor Road - Cycling Allowed,One Way - Two Way Cycling,no,both,None,1,1,1,0,Lane,1,,,3
+Minor Road - Cycling Allowed,Two Way,no,no,None,0,0,0,0,None,5368,MI0,https://streetmix.net/falcs89/48/mi0,0
+Minor Road - Cycling Allowed,Two Way,no,no,None,1,0,0,0,None,21,,,1
+Minor Road - Cycling Allowed,Two Way,no,left,None,0,0,0,0,None,16,,,0
+Minor Road - Cycling Allowed,Two Way,no,both,None,0,0,0,0,None,11,,,0
+Minor Road - Cycling Allowed,Two Way,no,right,None,0,0,0,0,None,8,,,0
+Minor Road - Cycling Allowed,Two Way,no,no,Track,0,0,0,0,Track,3,,,0
+Minor Road - Cycling Allowed,Two Way,no,no,None,0,1,1,0,None,1123,MI2,https://streetmix.net/falcs89/50/mi2,2
+Minor Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,None,67,MI2b,https://streetmix.net/falcs89/60/mi2b,2
+Minor Road - Cycling Allowed,Two Way,no,left,None,0,1,1,0,None,31,,,2
+Minor Road - Cycling Allowed,Two Way,no,no,Lane,0,1,1,0,None,11,,,2
+Minor Road - Cycling Allowed,Two Way,no,right,None,0,1,1,0,None,8,,,2
+Minor Road - Cycling Allowed,Two Way,no,no,None,1,1,1,0,None,8,,,3
+Minor Road - Cycling Allowed,Two Way,no,no,None,0,1,0,0,None,7,,,1
+Minor Road - Cycling Allowed,Two Way,no,no,Lane,0,1,1,0,Lane,7,,,2
+Minor Road - Cycling Allowed,Two Way,no,no,None,0,1,1,0,Lane,3,,,2
+Minor Road - Cycling Allowed,Two Way,no,both,None,1,1,1,0,None,3,,,3
+Minor Road - Cycling Allowed,Two Way,no,both,None,0,1,0,0,None,1,,,1
+Minor Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,Lane,1,,,2
+Minor Road - Cycling Allowed,Two Way,no,no,opposite_share_busway,0,1,1,1,opposite_share_busway,1,,,3
+Minor Road - Cycling Allowed,Two Way,no,no,None,1,1,1,1,None,1,,,4
+Minor Road - Cycling Allowed,Two Way,no,no,None,0,1,3,0,None,1,,,4
+Minor Road - Cycling Allowed,Two Way,no,no,None,0,2,1,0,None,1,,,3
+Minor Road - Cycling Allowed,Two Way,no,no,None,0,2,2,0,None,1,,,4
+motorway - Cycling Forbidden,One Way,no,no,None,0,2,0,0,None,37,M2,https://streetmix.net/falcs89/9/m2,2
+motorway - Cycling Forbidden,One Way,no,no,None,0,3,0,0,None,63,M3,https://streetmix.net/falcs89/8/m3,3
+motorway - Cycling Forbidden,One Way,no,no,None,0,4,0,0,None,21,M4,https://streetmix.net/falcs89/11/m4,4
+motorway - Cycling Forbidden,One Way,no,no,None,0,5,0,0,None,2,M5,https://streetmix.net/falcs89/12/m5,5
+motorway_link - Cycling Forbidden,One Way,no,no,None,0,1,0,0,None,43,ML1,https://streetmix.net/falcs89/17/ml1,1
+motorway_link - Cycling Forbidden,One Way,no,no,None,0,2,0,0,None,30,ML2,https://streetmix.net/falcs89/15/ml2,2
+motorway_link - Cycling Forbidden,One Way,no,no,None,0,3,0,0,None,7,ML3,https://streetmix.net/falcs89/14/ml3,3
+motorway_link - Cycling Forbidden,One Way,no,no,None,0,4,0,0,None,2,ML4,https://streetmix.net/falcs89/13/ml4,4
+Path - Cycling Forbidden,Not Applicable,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,858,P2,https://streetmix.net/falcs89/51/p2,0
+Path - Cycling Forbidden,Not Applicable,no,Not Applicable,Not Applicable,0,0,0,0,None,9,,,0
+Path - Cycling Forbidden,Not Applicable,no,Not Applicable,Not Applicable,1,0,0,0,Not Applicable,1,,,1
+Residential Road - Cycling Allowed,One Way,roundabout,no,None,0,1,0,0,None,8,,,1
+Residential Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,None,348,R1,https://streetmix.net/falcs89/54/r1,1
+Residential Road - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,23,,,1
+Residential Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,Lane,20,,,1
+Residential Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,None,17,,,1
+Residential Road - Cycling Allowed,One Way,no,both,None,0,1,0,0,Lane,5,,,1
+Residential Road - Cycling Allowed,One Way,no,right,None,0,1,0,0,None,3,,,1
+Residential Road - Cycling Allowed,One Way,no,no,Lane,0,1,0,0,Lane,3,,,1
+Residential Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,Track,2,,,1
+Residential Road - Cycling Allowed,One Way,no,right,None,0,1,0,0,Lane,1,,,1
+Residential Road - Cycling Allowed,One Way,no,left,None,0,1,0,0,Lane,1,,,1
+Residential Road - Cycling Allowed,One Way,no,left,None,1,1,0,0,None,1,,,2
+Residential Road - Cycling Allowed,One Way - Two Way Cycling,no,no,None,0,1,1,0,Lane,6,,,2
+Residential Road - Cycling Allowed,One Way - Two Way Cycling,no,both,None,0,1,1,0,Lane,2,,,2
+Residential Road - Cycling Allowed,One Way - Two Way Cycling,no,left,None,0,1,1,0,Lane,1,,,2
+Residential Road - Cycling Allowed,Two Way,no,no,None,0,1,1,0,None,7081,R2h,https://streetmix.net/falcs89/38/r2h,2
+Residential Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,None,634,R2g,https://streetmix.net/falcs89/37/r2g,2
+Residential Road - Cycling Allowed,Two Way,no,right,None,0,1,1,0,None,58,R2f,,2
+Residential Road - Cycling Allowed,Two Way,no,left,None,0,1,1,0,None,52,R2e,https://streetmix.net/falcs89/36/r2e,2
+Residential Road - Cycling Allowed,Two Way,no,no,None,0,1,0,0,None,9,,,1
+Residential Road - Cycling Allowed,Two Way,no,no,None,0,1,1,0,Lane,2,R2c,https://streetmix.net/falcs89/34/r2c,2
+Residential Road - Cycling Allowed,Two Way,no,no,Lane,0,1,1,0,Lane,2,R2d,https://streetmix.net/falcs89/35/r2d,2
+Residential Road - Cycling Allowed,Two Way,no,no,Lane,0,1,1,0,None,1,R2a,https://streetmix.net/falcs89/32/r2a,2
+Residential Road - Cycling Allowed,Two Way,no,both,None,1,1,1,0,None,1,R2b,https://streetmix.net/falcs89/33/r2b,3
+Segregated Cycleway,One Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,4,,,0
+Segregated Cycleway,Two Way,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,80,C3,https://streetmix.net/falcs89/58/c3,0
+Segregated Cycleway,Two Way,no,Not Applicable,Not Applicable,0,1,1,0,Not Applicable,1,,,2
+Segregated Shared Path,Not Applicable,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,42,P3,https://streetmix.net/falcs89/62/p3,0
+Shared Path,Not Applicable,no,Not Applicable,Not Applicable,0,0,0,0,Not Applicable,7425,SP1,https://streetmix.net/falcs89/undefined/sp1,0
+Shared Path,Not Applicable,no,Not Applicable,Not Applicable,0,1,1,0,Not Applicable,1,,,2
+Trunk Road - Cycling Allowed,One Way,roundabout,no,None,0,2,0,0,None,85,,,2
+Trunk Road - Cycling Allowed,One Way,roundabout,no,None,0,4,0,0,None,3,,,4
+Trunk Road - Cycling Allowed,One Way,roundabout,no,Lane,0,4,0,0,Lane,1,,,4
+Trunk Road - Cycling Allowed,One Way,no,no,share_busway,1,0,0,0,share_busway,1,,,1
+Trunk Road - Cycling Allowed,One Way,no,no,None,0,1,0,0,None,26,T1a,https://streetmix.net/falcs89/39/t1a,1
+Trunk Road - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,2,T1b,,1
+Trunk Road - Cycling Allowed,One Way,no,no,Lane,0,1,0,0,Lane,2,T1c,https://streetmix.net/falcs89/40/t1c,1
+Trunk Road - Cycling Allowed,One Way,no,no,share_busway,1,1,0,0,None,1,T1d,,2
+Trunk Road - Cycling Allowed,One Way,no,no,None,1,1,0,0,None,1,,,2
+Trunk Road - Cycling Allowed,One Way,no,no,None,0,2,0,0,None,283,T2a,https://streetmix.net/falcs89/41/t2a,2
+Trunk Road - Cycling Allowed,One Way,no,left,None,0,2,0,0,None,9,T2b,,2
+Trunk Road - Cycling Allowed,One Way,no,no,share_busway,1,2,0,0,None,6,T2c,https://streetmix.net/falcs89/42/t2c,3
+Trunk Road - Cycling Allowed,One Way,no,no,Lane,0,2,0,0,None,5,T2d,,2
+Trunk Road - Cycling Allowed,One Way,no,no,Track,0,2,0,0,Track,4,T2e,https://streetmix.net/falcs89/43/t2e,2
+Trunk Road - Cycling Allowed,One Way,no,no,Lane,0,2,0,0,Lane,4,T2f,https://streetmix.net/falcs89/44/t2f,2
+Trunk Road - Cycling Allowed,One Way,no,right,None,0,2,0,0,None,2,T2g,https://streetmix.net/falcs89/45/t2g,2
+Trunk Road - Cycling Allowed,One Way,no,left,Lane,0,2,0,0,Lane,2,,,2
+Trunk Road - Cycling Allowed,One Way,no,both,None,0,2,0,0,None,2,,,2
+Trunk Road - Cycling Allowed,One Way,no,no,None,1,2,0,0,None,2,,,3
+Trunk Road - Cycling Allowed,One Way,no,no,share_busway,1,2,0,0,share_busway,1,,,3
+Trunk Road - Cycling Allowed,One Way,no,left,None,0,3,0,0,None,15,,,3
+Trunk Road - Cycling Allowed,One Way,no,no,None,0,3,0,0,None,15,,,3
+Trunk Road - Cycling Allowed,One Way,no,no,Lane,0,3,0,0,Lane,1,,,3
+Trunk Road - Cycling Allowed,One Way,no,no,None,0,4,0,0,None,7,,,4
+Trunk Road - Cycling Allowed,One Way,no,both,None,0,4,0,0,None,1,,,4
+Trunk Road - Cycling Allowed,Two Way,no,left,share_busway,1,0,0,1,None,2,,,2
+Trunk Road - Cycling Allowed,Two Way,no,no,None,0,1,1,0,None,24,,,2
+Trunk Road - Cycling Allowed,Two Way,no,no,None,0,1,2,0,None,6,,,3
+Trunk Road - Cycling Allowed,Two Way,no,left,share_busway,1,1,2,1,None,4,,,5
+Trunk Road - Cycling Allowed,Two Way,no,left,None,0,1,1,0,None,2,,,2
+Trunk Road - Cycling Allowed,Two Way,no,both,None,0,1,1,0,None,1,,,2
+Trunk Road - Cycling Allowed,Two Way,no,left,None,0,1,2,0,None,1,,,3
+Trunk Road - Cycling Allowed,Two Way,no,no,share_busway,1,1,2,1,None,1,,,5
+Trunk Road - Cycling Allowed,Two Way,no,no,None,0,2,2,0,None,74,T2h,https://streetmix.net/falcs89/59/t2h,4
+Trunk Road - Cycling Allowed,Two Way,no,no,None,0,2,1,1,None,4,,,4
+Trunk Road - Cycling Allowed,Two Way,no,both,None,0,2,2,0,None,3,,,4
+Trunk Road - Cycling Allowed,Two Way,no,left,None,0,2,2,0,None,3,,,4
+Trunk Road - Cycling Allowed,Two Way,no,no,share_busway,1,2,2,0,None,3,,,5
+Trunk Road - Cycling Allowed,Two Way,no,no,Lane,0,2,2,0,Lane,2,,,4
+Trunk Road - Cycling Allowed,Two Way,no,both,None,0,2,1,0,None,1,,,3
+Trunk Road - Cycling Allowed,Two Way,no,no,Lane,0,2,2,0,None,1,,,4
+Trunk Road - Cycling Allowed,Two Way,no,no,share_busway,1,2,2,0,share_busway,1,,,5
+Trunk Road Link - Cycling Allowed,One Way,no,no,None,0,1,0,0,None,46,,,1
+Trunk Road Link - Cycling Allowed,One Way,no,left,None,0,1,0,0,None,6,,,1
+Trunk Road Link - Cycling Allowed,One Way,no,no,Lane,0,1,0,0,Lane,2,,,1
+Trunk Road Link - Cycling Allowed,One Way,no,no,Lane,0,1,0,0,None,1,,,1
+Trunk Road Link - Cycling Allowed,One Way,no,no,None,0,1,0,0,Lane,1,,,1
+Trunk Road Link - Cycling Allowed,One Way,no,no,None,1,1,0,0,None,1,,,2
+Trunk Road Link - Cycling Allowed,One Way,no,no,None,0,2,0,0,None,9,,,2
+Trunk Road Link - Cycling Allowed,One Way,no,no,Lane,0,2,0,0,Lane,1,,,2
+Trunk Road Link - Cycling Allowed,One Way,no,both,Lane,0,2,0,0,Lane,1,,,2
+Trunk Road Link - Cycling Allowed,One Way,no,left,Lane,0,2,0,0,Lane,1,,,2
+Trunk Road Link - Cycling Allowed,One Way,no,right,None,0,3,0,0,None,3,,,3
+Trunk Road Link - Cycling Allowed,Two Way,no,no,None,0,1,1,0,None,5,,,2

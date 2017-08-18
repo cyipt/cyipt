@@ -30,6 +30,8 @@ regions.todo <- regions.todo$region[regions.todo$do == "y"]
 message("CyIPT will run for the following regions:")
 print(regions.todo)
 
+tot.start <- Sys.time()
+
 #Step 1: Download the Data
 source("scripts/prep_data/download-osm.R")
 
@@ -55,4 +57,10 @@ source("scripts/prep_data/get_widths2.R")
 
 #Step 7:Evaluate Infrastrucutre Options
 
+
+
+
+#Display Finishing Message
+tot.end <- Sys.time()
+message(paste0("Finished, did ",length(regions.todo)," regions in ", round(as.numeric(difftime(tot.end,tot.start,units = "hours")),2) ," hours, at ",Sys.time()))
 

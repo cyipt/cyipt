@@ -713,6 +713,11 @@ for(a in 1:length(regions)){
       osm$cycleway.left[osm$cycleway.left == "share_busway" & osm$lanes.psv.forward == 0] <- "no"
       osm$cycleway.right[osm$cycleway.right == "share_busway" & osm$lanes.psv.backward == 0] <- "no"
 
+      #Otherwise assume that all psv lanes are ok for cycling
+      osm$cycleway.left[osm$lanes.psv.forward == 1] <- "share_busway"
+      osm$cycleway.right[osm$lanes.psv.backward == 1] <- "share_busway"
+
+
       #Paths Don't have lanes
       osm$lanes.backward[osm$roadtype %in% c("Shared Path","Path - Cycling Forbidden","Segregated Shared Path","Cycleway")] <- 0
       osm$lanes.forward[osm$roadtype %in% c("Shared Path","Path - Cycling Forbidden","Segregated Shared Path","Cycleway")] <- 0

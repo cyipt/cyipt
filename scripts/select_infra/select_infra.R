@@ -15,7 +15,38 @@ library(parallel)
 #overwrite <- FALSE #Overwrite or create new file
 
 #Functions
+recc.infra <- function(c){
+  not_road <- c("bridleway","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")
+  osm.sub <- osm[c,]
 
+  #On road or off road
+  if(osm.sub$highway[1] %in% not_road){
+    #Off Road
+    rules.sub <- rules.offroad[rules.offroad$pctmin <= osm.sub$pct.census[1] &
+                                  rules.offroad$pctmax > osm.sub$pct.census[1]
+                                ,]
+    }else{
+    #On Road
+    rules.sub <- rules.onroad[rules.onroad$speedmin < osm.sub$maxspeed[1] &
+                                  rules.onroad$speedmax >= osm.sub$maxspeed[1] & #Nb equals different for speed as speedlimits are usually at maximum end
+                                  rules.onroad$pctmin <= osm.sub$pct.census[1] &
+                                  rules.onroad$pctmax > osm.sub$pct.census[1] &
+                                  rules.onroad$AADTmin <= osm.sub$aadt.temp[1] &
+                                  rules.onroad$AADTmax > osm.sub$aadt.temp[1]
+                                ,]
+    }
+
+    if(nrow(rules.sub) != 1){
+      message(paste0("Error: Not valid rules for line ",c))
+      stop()
+    }
+
+    #Remove unneded columns, add on id value
+    rules.sub <- rules.sub[,c("CycleRouteProvision","DesWidth","MinWidth","DesSeparation","MinSeparation")]
+    names(rules.sub) <- c("Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation")
+    rules.sub$id <- osm.sub$id
+    return(rules.sub)
+}
 
 
 
@@ -24,7 +55,9 @@ library(parallel)
 #regions <- regions[2:length(regions)]
 regions <- regions.todo
 
-rules <- read.csv("../cyipt/input-data/InfraSelectionRules.csv", stringsAsFactors = FALSE)
+rules.onroad <- read.csv("../cyipt/input-data/InfraSelectionRules_OnRoad.csv", stringsAsFactors = FALSE)
+rules.offroad <- read.csv("../cyipt/input-data/InfraSelectionRules_OffRoad.csv", stringsAsFactors = FALSE)
+costs <- read.csv("../cyipt/input-data/costs3.csv", stringsAsFactors = FALSE)
 
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
@@ -41,9 +74,36 @@ for(b in 1:length(regions)){
       osm <- osm[,col.to.keep]
       rm(col.to.keep)
 
-      #Step 1: Remove Roads with low propencity to cycle
-      osm.working <- osm
-      osm.working <- osm.working[osm.working$pct.census > 9,]
+      ##############################################
+      #Create temp aadt values with no NAs
+      osm$aadt.temp <- osm$aadt
+      osm$aadt.temp[is.na(osm$aadt.temp)] <- 0
+
+      ###########################################################################################################
+      #Step 1: Compare Against Rules Table
+      res <- lapply(1:nrow(osm),recc.infra)
+      res <- do.call("rbind", res)
+
+      #join in resutls
+      osm <- left_join(osm, res, by = c("id" = "id"))
+
+      #remove temp aadt
+      osm$aadt.temp <- NULL
+
+      ######################################################################################
+      #Summary Existing Infra
+
+      osm$Existing <- paste0(osm$roadtype," ",osm$lanes.psv.forward," ",osm$cycleway.left," ",osm$cycleway.right," ",osm$lanes.psv.backward)
+
+      #For testing only
+      #summary <- as.data.frame(osm)
+      #summary <- summary[,c("Existing","Recommended")]
+      #summary <- unique(summary)
+      #write.csv(summary, paste0("../cyipt-bigdata/osm-prep/",regions[b],"/RoadCombis.csv"))
+
+
+      ###########################################################################
+      #Step 3: Costs
 
 
 
@@ -52,7 +112,7 @@ for(b in 1:length(regions)){
       if(overwrite){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
       }else{
-        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-pct.Rds"))
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-reccinfra.Rds"))
       }
       rm(osm,pct.all,respar)
 
@@ -73,141 +133,10 @@ rm(b,regions)
 #Step 3: Remove NA values
 osm$aadt[is.na(osm$aadt)] <- 0
 
-#######################################################################
-#Step 4: Summarise Existing Infrastructure
-osm$cycleway <- as.character(osm$cycleway)
-osm$cycleway.left <- as.character(osm$cycleway.left)
-osm$busway.left <- as.character(osm$busway.left)
-osm$cycleway.right <- as.character(osm$cycleway.right)
-osm$busway.right <- as.character(osm$busway.right)
-
-
-osm$leftside <- NA
-
-
-
-for(a in 1:nrow(osm)){
-  if(!is.na(osm$cycleway.left[a])){
-    osm$leftside[a] <- osm$cycleway.left[a]
-  }else if(!is.na(osm$cycleway[a])){
-    if(osm$cycleway[a] == "No"){
-      #Do Nothing
-    }else if(osm$cycleway[a] == "opposite" | osm$cycleway[a] == "opposite_lane" | osm$cycleway[a] == "opposite_track"){
-      #Do nothing as this is on the right side
-    }else{
-      osm$leftside[a] <- osm$cycleway[a]
-    }
-  }else if(!is.na(osm$busway.left[a])){
-    osm$leftside[a] <- paste0("bus - ",osm$cycleway.left[a])
-  }
-}
-
-osm$rightside <- NA
-
-for(a in 1:nrow(osm)){
-  if(!is.na(osm$cycleway.right[a])){
-    osm$rightside[a] <- osm$cycleway.right[a]
-  }else if(!is.na(osm$cycleway[a])){
-    if(osm$cycleway[a] == "No"){
-      #Do Nothing
-    }else if(osm$cycleway[a] == "opposite" | osm$cycleway[a] == "opposite_lane" | osm$cycleway[a] == "opposite_track"){
-      #Do nothing as this is on the right side
-      osm$rightside[a] <- osm$cycleway[a]
-    }else{
-      osm$rightside[a] <- osm$cycleway[a]
-    }
-  }else if(!is.na(osm$busway.right[a])){
-    osm$rightside[a] <- paste0("bus - ",osm$cycleway.right[a])
-  }
-}
-
-#Cleanup Results
-osm$rightside[is.na(osm$rightside)] <- "None"
-osm$rightside[osm$rightside == "no"] <- "None"
-osm$rightside[osm$rightside == "lane" | osm$rightside == "opposite" | osm$rightside == "opposite_lane" | osm$rightside == "yes" | osm$leftside == "designated"] <- "Lane"
-osm$rightside[osm$rightside == "share_busway" | osm$rightside == "shared"] <- "Shared"
-osm$rightside[osm$rightside == "track" | osm$rightside == "opposite_track" ] <- "Track"
-
-osm$leftside[is.na(osm$leftside)] <- "None"
-osm$leftside[osm$leftside == "no"] <- "None"
-osm$leftside[osm$leftside == "lane" | osm$leftside == "opposite" | osm$leftside == "opposite_lane" | osm$leftside == "yes" | osm$leftside == "designated"] <- "Lane"
-osm$leftside[osm$leftside == "share_busway" | osm$leftside == "shared"] <- "Shared"
-osm$leftside[osm$leftside == "track" | osm$leftside == "opposite_track" ] <- "Track"
-
-osm$roadtype <- NA
-
-for(a in 1:nrow(osm)){
-  #No Cycling on motorways
-  if(osm$highway[a] == "motorway" |
-     osm$highway[a] == "motorway_link"){
-    osm$roadtype[a] <- "Road - Cycling Forbidden"
-    #Normal Roads
-  }else if(osm$highway[a] == "primary" |
-           osm$highway[a] == "primary_link" |
-           osm$highway[a] == "secondary" |
-           osm$highway[a] == "secondary_link" |
-           osm$highway[a] == "tertiary" |
-           osm$highway[a] == "tertiary_link" |
-           osm$highway[a] == "trunk" |
-           osm$highway[a] == "trunk_link" |
-           osm$highway[a] == "service" |
-           osm$highway[a] == "road" |
-           osm$highway[a] == "residential" |
-           osm$highway[a] == "unclassified" ){
-    osm$roadtype[a] <- "Road - Cycling Allowed"
-    #Living Streets
-  }else if(osm$highway[a] == "living_street"){
-    osm$roadtype[a] <- "Living Street"
-    #Cycleways
-  }else if(osm$highway[a] == "cycleway"){
-    osm$roadtype[a] <- "Cycleway"
-    #Off Road - Check if cycling is allowed
-  }else if(osm$highway[a] == "bridleway" |
-           osm$highway[a] == "construction" |
-           osm$highway[a] == "demolished" |
-           osm$highway[a] == "escalator" |
-           osm$highway[a] == "footway" |
-           osm$highway[a] == "path" |
-           osm$highway[a] == "pedestrian" |
-           osm$highway[a] == "steps" |
-           osm$highway[a] == "track")
-    if(is.na(osm$bicycle[a])){
-      osm$roadtype[a] <- "Shared Path"
-    }else if(osm$bicycle[a] == "No" | osm$bicycle[a] == "dismount" ){
-      osm$roadtype[a] <- "Path - Cycling Forbidden"
-    }else{
-      osm$roadtype[a] <- "Shared Path"
-    }
-  else{
-    osm$roadtype[a] <- "Other Road Type"
-  }
-}
 
 osm$roadtype2 <- paste0(osm$roadtype," ",osm$leftside," ",osm$rightside)
 
-###########################################################################################################
-#Step 5; Compare Against Rules Table
-osm$infra_score <- NA
-not_road <- c("bridleway","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")
-for(b in 1:nrow(osm)){
-  if(osm$highway[b] %in% not_road){
-    if(osm$pct_census[b] > 50){
-      osm$infra_score[b] <- "Track/Path"
-    }else{
-      osm$infra_score[b] <- "None"
-    }
 
-  }else{
-    osm$infra_score[b] <- rules$Cycle.Route.Provision[rules$speed_min < osm$speed[b] &
-                                                        rules$speed_max >= osm$speed[b] & #Nb equals different for speed as speedlimits are usually at maximum end
-                                                        rules$pct_min <= osm$pct_census[b] &
-                                                        rules$pct_max > osm$pct_census[b] &
-                                                        rules$AADT_min <= osm$aadt[b] &
-                                                        rules$AADT_max > osm$aadt[b]
-                                                      ]
-  }
-
-}
 
 
 

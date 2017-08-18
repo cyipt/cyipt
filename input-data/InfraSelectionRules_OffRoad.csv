@@ -1,0 +1,5 @@
+id,pctmin,pctmax,CycleRouteProvision,DesWidth,MinWidth,DesSeparation,MinSeparation,Comments
+1,0,50,None,0,0,0,0,Insufficient Cycling demand to justify infrastructure
+2,50,150,Cycle Lane on Path,2.5,1.5,0,0,Low Demand Path
+3,150,750,Cycle Lane on Path,3,2.5,0.5,0,High Demand Path
+4,750,999999,Segregated Cycle Track on Path,4,3.5,0.5,0.5,Very High Deamnd Path

@@ -1,0 +1,26 @@
+id,pctmin,pctmax,speedmin,speedmax,AADTmin,AADTmax,CycleRouteProvision,DesWidth,MinWidth,DesSeparation,MinSeparation,Comments
+1,0,50,0,70,0,999999,None,0,0,0,0,Insufficient Cycling demand to justify infrastructure
+2,50,150,61,70,0,999999,Segregated Cycle Track,2.5,1.5,3.5,3,Motoway
+3,150,750,61,70,0,999999,Segregated Cycle Track,3,2.5,3.5,3,Motoway
+4,750,999999,61,70,0,999999,Segregated Cycle Track,4,3.5,3.5,3,Motoway
+5,50,150,51,60,0,999999,Segregated Cycle Track,2.5,1.5,2.5,2,60 mph  Roads
+6,150,750,51,60,0,999999,Segregated Cycle Track,3,2.5,2.5,2,60 mph  Roads
+7,750,999999,51,60,0,999999,Segregated Cycle Track,4,3.5,2.5,2,60 mph  Roads
+8,50,150,41,50,0,999999,Segregated Cycle Track,2.5,1.5,2,1.5,50 mph  Roads
+9,150,750,41,50,0,999999,Segregated Cycle Track,3,2.5,2,1.5,50 mph  Roads
+10,750,999999,41,50,0,999999,Segregated Cycle Track,4,3.5,2,1.5,50 mph  Roads
+11,50,150,31,40,0,999999,Segregated Cycle Track,2.5,1.5,1,0.5,40 mph  Roads
+12,150,750,31,40,0,999999,Segregated Cycle Track,3,2.5,1,0.5,40 mph  Roads
+13,750,999999,31,40,0,999999,Segregated Cycle Track,4,3.5,1,0.5,40 mph  Roads
+14,50,150,21,30,0,5000,Cycle Lanes,2,1.5,0.5,0,"30 mph roads, low traffic"
+15,150,750,21,30,0,5000,Cycle Lanes,2,1.5,0.5,0,"30 mph roads, low traffic"
+16,750,999999,21,30,0,5000,Cycle Lanes with light segregation,2.5,1.5,0.5,0,"30 mph roads, low traffic "
+17,50,150,21,30,5000,999999,Stepped Cycle Tracks,2.5,1.5,0.5,0,"30 mph roads, high traffic"
+18,150,750,21,30,5000,999999,Stepped Cycle Tracks,3,2.5,0.5,0,"30 mph roads, high traffic"
+19,750,999999,21,30,5000,999999,Stepped Cycle Tracks,4,3.5,0.5,0,"30 mph roads, high traffic"
+20,50,999999,0,20,0,2500,Cycle Street,0,0,0,0,"20 mph road, low traffic"
+21,50,150,0,20,2500,5000,Cycle Lanes,2,1.5,0,0,"20 mph road, medium traffic"
+22,150,999999,0,20,2500,5000,Cycle Lanes,2.5,1.5,0,0,"20 mph road, medium traffic"
+23,50,150,0,20,5000,999999,Stepped Cycle Tracks,2.5,1.5,0,0,"20 mph road, high traffic"
+24,150,750,0,20,5000,999999,Stepped Cycle Tracks,3,2.5,0,0,"20 mph road, high traffic"
+25,750,999999,0,20,5000,999999,Stepped Cycle Tracks,4,3.5,0,0,"20 mph road, high traffic"

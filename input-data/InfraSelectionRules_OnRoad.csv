@@ -1,4 +1,4 @@
-id,pct_min,pct_max,speed_min,speed_max,AADT_min,AADT_max,Cycle Route Provision,Desirable Width,Minimum Width,Desirable Separation,Minimum Separation,Comments
+id,pctmin,pctmax,speedmin,speedmax,AADTmin,AADTmax,CycleRouteProvision,DesWidth,MinWidth,DesSeparation,MinSeparation,Comments
 1,0,50,0,70,0,999999,None,0,0,0,0,Insufficient Cycling demand to justify infrastructure
 2,50,150,61,70,0,999999,Segregated Cycle Track,2.5,1.5,3.5,3,Motoway
 3,150,750,61,70,0,999999,Segregated Cycle Track,3,2.5,3.5,3,Motoway
