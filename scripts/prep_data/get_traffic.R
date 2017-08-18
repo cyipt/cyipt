@@ -1,90 +1,168 @@
-#Get Traffic counts
+#Gets PCT Values for the road segments
+
+############################################
+#NOTE: THIS OVERRIGHTS EXISTING FILES RATHER THAN CREATING NEW FILES
+#############################################
+
 library(sf)
 library(dplyr)
 
+#Settings now come from master file
+#skip <- FALSE #Skip Files that already have PCT values
+#ncores <- 4 #number of cores to use in parallel processing
+#overwrite <- FALSE #Overwrite or create new file
 
-# Read in Data
-osm <- readRDS("../cyipt-bigdata/osm-clean/BristolCityof/osm-lines.Rds")
-traffic.lines <- readRDS("../cyipt-bigdata/traffic/trafficlines.Rds")
-traffic.points <-  readRDS("../cyipt-bigdata/traffic/trafficpoints.Rds")
+#Functions
+#Function for classified roads
+get.aadt.class <- function(e){
+  traffic.sub <- traffic.class[traffic.class$road == roadnames[e],]
+  osm.sub <- osm.nona[osm.nona$ref == roadnames[e],]
 
-#dump unneded columns
-traffic.lines <- traffic.lines[,c("road","aadt","cycles")]
-traffic.points <- traffic.points[,c("road","aadt","cycles")]
-
-#Get bounding box
-ext <- st_bbox(osm)
-ext <- st_sfc(st_polygon(list(rbind(c(ext[1],ext[2]),c(ext[3],ext[2]),c(ext[3],ext[4]),c(ext[1],ext[4]),c(c(ext[1],ext[2]))))) )
-pol <- data.frame(id = 1, geometry = NA)
-st_geometry(pol) <- ext
-st_crs(pol) <- 27700
-rm(ext)
-
-#Subset Traffic data to bounding box
-traffic.lines <- traffic.lines[st_intersects(pol,traffic.lines)[[1]],]
-traffic.points <- traffic.points[st_intersects(pol,traffic.points)[[1]],]
-
-#start with the lines
-lines.buff <- st_buffer(traffic.lines, 100) #buffer out 100m
-osm_sub <- osm[osm$ref %in% traffic.lines$road, ] #get the bits of the OSM that have the same name as the traffic data e.g. M25, A6
-
-inter <- st_intersects(lines.buff,osm_sub)
-
-get.aadt.lines <- function(b){
-  #Get the osm lines that overlap the buffer and have the same name
-  osm.inter <- osm_sub[inter[[b]],]
-  osm.inter <- osm.inter[osm.inter$ref == lines.buff$road[b],]
-  if(nrow(osm.inter) == 0){
-    res <- NULL #for when no data is returned
+  #need at least 2 points to make voronoi polygons
+  if(nrow(traffic.sub) > 1){
+    #Make voronoi polygons and convert to SF
+    voronoi <- dismo::voronoi(xy = st_coordinates(traffic.sub))
+    voronoi <- as(voronoi, "sf")
+    st_crs(voronoi) <- st_crs(traffic.sub)
   }else{
-    res <- data.frame(osm_id = osm.inter$osm_id , aadt = traffic.lines$aadt[b], cycles = traffic.lines$cycles[b])
+    #Make a big buffer around the point
+    voronoi <- st_buffer(traffic.sub, 1000)
   }
-  return(res)
+
+  #qtm(traffic.sub) +
+  #  qtm(osm.sub) +
+  #  qtm(voronoi)
+
+  #Find Intersections of roads with vernoi polygons
+  inter <- st_intersects(osm.sub,voronoi)
+  #Get aadt and ncycle values
+  osm.sub$aadt <- lapply(1:nrow(osm.sub),function(x){as.numeric(round(mean(traffic.sub$aadt[inter[[x]]])),0)})
+  osm.sub$ncycles <- lapply(1:nrow(osm.sub),function(x){as.numeric(round(mean(traffic.sub$ncycles[inter[[x]]])),0)})
+
+  #Remove Unneded Data
+  osm.sub <- as.data.frame(osm.sub)
+  osm.sub <- osm.sub[,c("osm_id","aadt","ncycles")]
+
+  return(osm.sub)
 }
 
-lines.aadt <- lapply(1:nrow(traffic.lines),get.aadt.lines)
-lines.aadt <- do.call(rbind,lines.aadt)
-
-#Join onto the original osm data
-osm <- left_join(osm,lines.aadt, by = c("osm_id" = "osm_id"))
-
-
-
-
-#No do the points
-points.buff <- st_buffer(traffic.points, 20)
-inter.points <- st_intersects(points.buff,osm)
-
-get.aadt.points <- function(b){
-  #Get the osm lines that overlap the buffer and have the same name
-  osm.inter <- osm[inter.points[[b]],]
-  qtm(inter.points[[b]])
-  #osm.inter <- osm.inter[osm.inter$ref == points.buff$road[b],]
-  if(nrow(osm.inter) == 0){
-    res <- NULL #for when no data is returned
+#FUnction for unclassified roads
+get.aadt.unclass <- function(j){
+  traffic.sub <- unclass.buff[j,]
+  osm.sub <- osm.unclass[st_intersects(traffic.sub,osm.unclass)[[1]],]
+  if(nrow(osm.sub) == 0){
+    osm.sub <- NA
   }else{
-    res <- data.frame(osm_id = osm.inter$osm_id , aadt.p = traffic.lines$aadt[b], cycles.p = traffic.lines$cycles[b])
+    osm.sub$aadt <- as.numeric(traffic.sub$aadt[1])
+    osm.sub$ncycles <- as.numeric(traffic.sub$ncycles[1])
+    #Remove Unneded Data
+    osm.sub <- as.data.frame(osm.sub)
+    osm.sub <- osm.sub[,c("osm_id","aadt","ncycles")]
+
   }
-  return(res)
+  return(osm.sub)
 }
 
-points.aadt <- lapply(1:nrow(traffic.points),get.aadt.points)
-points.aadt <- do.call(rbind,points.aadt)
+
+#List folders
+#regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
+#regions <- regions[2:length(regions)]
+regions <- regions.todo
 
 
-#Join onto the original osm data
-osm <- left_join(osm,points.aadt, by = c("osm_id" = "osm_id"))
-#clean up two columns
-osm$aadt[is.na(osm$aadt)] <- osm$aadt.p[is.na(osm$aadt)]
-osm$cycles[is.na(osm$cycles)] <- osm$cycles.p[is.na(osm$cycles)]
-osm$aadt.p <- NULL
-osm$cycles.p <- NULL
+
+for(b in 1:length(regions)){
+  if(file.exists(paste0("../cyipt-bigdata/osm-clean/",regions[b],"/osm-lines.Rds"))){
+    #Get file
+    osm <- readRDS(paste0("../cyipt-bigdata/osm-clean/",regions[b],"/osm-lines.Rds"))
+    #Check if PCT values exist in the file
+    if(all(c("aadt","ncycles") %in% names(osm)) & skip){
+      message(paste0("Traffic values already calcualted for ",regions[b]," so skipping"))
+    }else{
+      message(paste0("Getting traffic values for ",regions[b]," at ",Sys.time()))
+
+      #If overwriting remove old data
+      col.to.keep <- names(osm)[!names(osm) %in% c("aadt","ncycles")]
+      osm <- osm[,col.to.keep]
+      rm(col.to.keep)
+
+      # Read in Data
+      traffic.points <-  readRDS("../cyipt-bigdata/traffic/traffic.Rds")
+
+      #dump unneded columns
+      traffic.points <- traffic.points[,c("road","aadt","ncycles")]
+
+      #Get bounding box
+      ext <- st_bbox(osm)
+      ext <- st_sfc(st_polygon(list(rbind(c(ext[1],ext[2]),c(ext[3],ext[2]),c(ext[3],ext[4]),c(ext[1],ext[4]),c(c(ext[1],ext[2]))))) )
+      pol <- data.frame(id = 1, geometry = NA)
+      st_geometry(pol) <- ext
+      st_crs(pol) <- 27700
+      rm(ext)
 
 
-#Plot
-library(tmap)
-tmap_mode("view")
-test <- osm[!is.na(osm$aadt),]
-qtm(test, lines.lwd = 10, lines.col = "aadt")
+      #Subset Traffic data to bounding box
+      traffic.points <- traffic.points[st_intersects(pol,traffic.points)[[1]],]
+      rm(pol)
+
+      #Separate Calssified and Unlassified Roads
+      traffic.class <- traffic.points[!substr(traffic.points$road,1,1) %in% c("U","C"),]
+      traffic.unclass <- traffic.points[substr(traffic.points$road,1,1) %in% c("U","C"),]
+      #traffic.class <- traffic.points[regexpr('U', traffic.points$road) != 1,]
+      #traffic.unclass <- traffic.points[regexpr('U', traffic.points$road) == 1,]
+      nrow(traffic.class) + nrow(traffic.unclass) == nrow(traffic.points)
+      rm(traffic.points)
+
+      #start with the classified
+      roadnames <- unique(traffic.class$road)
+      roadnames <- roadnames[roadnames %in% osm$ref]
+      osm.nona <- osm[!is.na(osm$ref),] #Create a working dataset without nas
+      osm.nona <- osm.nona[,c("osm_id","ref")] #Dump unneeded data
+      res.class <- lapply(1:length(roadnames),get.aadt.class)
+      res.class <- do.call("rbind",res.class)
+      res.class <- res.class[!is.na(res.class$osm_id),]
+      rm(osm.nona,roadnames)
+
+      #Now do the unclassified
+      unclass.buff <- st_buffer(traffic.unclass, 8) #buffer the points in case of poor alignment
+      osm.unclass <- osm[unique(unlist(st_intersects(unclass.buff,osm))),]
+      osm.unclass <- osm.unclass[,c("osm_id")] #Dump unneeded data
+      res.unclass <- lapply(1:nrow(unclass.buff),get.aadt.unclass)
+      res.unclass <- do.call("rbind",res.unclass)
+      res.unclass <- res.unclass[!is.na(res.unclass$osm_id),]
+      rm(osm.unclass, unclass.buff)
+
+      #Put togther
+      res <- rbind(res.class,res.unclass)
+      rm(res.class,res.unclass, traffic.class, traffic.unclass)
+
+      #remove any duplicates
+      res <- res[!duplicated(res$osm_id),]
+      res$aadt <- as.numeric(res$aadt)
+      res$ncycles <- as.numeric(res$ncycles)
+
+      #Join onto the original osm data
+      osm <- left_join(osm,res, by = c("osm_id" = "osm_id"))
+      rm(res)
+
+      #Save results
+      if(overwrite){
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[b],"/osm-lines.Rds"))
+      }else{
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[b],"/osm-lines-traffic.Rds"))
+      }
+      rm(osm)
 
 
+
+    }
+
+  }else{
+    message(paste0("Input File Missing for ",regions[b]," at ",Sys.time()))
+  }
+}
+rm(b,regions)
+
+
+qtm(osm[!is.na(osm$aadt),], lines.col = "aadt", lines.lwd = 10) +
+  qtm(traffic.points)

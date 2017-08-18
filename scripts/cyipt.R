@@ -41,12 +41,18 @@ regions.todo <- str_replace_all(regions.todo," ","")
 #Step 2: Clean the OSM Tags
 source("scripts/prep_data/clean_osm.R")
 
-#Step 3:Split the lines at each junction
+#Step 3: Get traffic counts
+source("scripts/prep_data/get_traffic.R")
+
+#Step 4:Split the lines at each junction
 source("scripts/prep_data/prep_osm.R")
 
-#Step 4: Get the PCT estimate of number of cyclists
+#Step 5: Get the PCT estimate of number of cyclists
 source("scripts/prep_data/get_pct.R")
 
-#Step 5: Get raod width esitmates
+#Step 6: Get raod width esitmates
 source("scripts/prep_data/get_widths2.R")
+
+#Step 7:Evaluate Infrastrucutre Options
+
 
