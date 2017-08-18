@@ -162,7 +162,3 @@ for(b in 1:length(regions)){
   }
 }
 rm(b,regions)
-
-
-qtm(osm[!is.na(osm$aadt),], lines.col = "aadt", lines.lwd = 10) +
-  qtm(traffic.points)

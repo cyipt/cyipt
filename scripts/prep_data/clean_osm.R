@@ -34,7 +34,10 @@ for(a in 1:length(regions)){
       osm <- readRDS(paste0("../cyipt-bigdata/osm-raw/",regions[a],"/osm-lines.Rds"))
       osm <- st_transform(osm, 27700)
 
+      #remove factors
       osm$highway <- as.character(osm$highway)
+      osm$cycleway.left <- as.character(osm$cycleway.left)
+      osm$cycleway.right <- as.character(osm$cycleway.right)
 
       ###############################################################################
       #step 10: remove not allowed roads
