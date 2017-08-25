@@ -56,7 +56,7 @@ source("scripts/prep_data/get_pct.R")
 source("scripts/prep_data/get_widths2.R")
 
 #Step 7:Evaluate Infrastrucutre Options
-
+source("scripts/select_infra/select_infra.R")
 
 
 
