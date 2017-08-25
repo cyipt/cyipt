@@ -325,7 +325,7 @@ for(b in 1:length(regions)){
       }else{
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-width.Rds"))
       }
-      rm(osm)
+      rm(osm, os, grid_os, grid_osm,n,m,os.region.name, poi, pol)
 
 
     }

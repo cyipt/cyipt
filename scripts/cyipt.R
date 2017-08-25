@@ -63,4 +63,4 @@ source("scripts/prep_data/get_widths2.R")
 #Display Finishing Message
 tot.end <- Sys.time()
 message(paste0("Finished, did ",length(regions.todo)," regions in ", round(as.numeric(difftime(tot.end,tot.start,units = "hours")),2) ," hours, at ",Sys.time()))
-
+rm(tot.end,tot.start)
