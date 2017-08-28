@@ -1,34 +1,19 @@
-#Estimate road widths
+#Gets road widths from OS data
+
+#Libraries
 library(sf)
 library(dplyr)
-options(nwarnings = 10000) #Keep all the warnings
+library(parallel)
 
 
-#Load In functions
+#Functions
 source("R/functions.R")
-
-#Read in data
-os <- readRDS("../example-data/bristol/os_data/roads.Rds")
-osm <- readRDS("../example-data/bristol/results/osm-lines.Rds")
-pct <- read.csv("../example-data/bristol/results/pct-census.csv")
-pct$osm_id <- NULL #Don't need this as identical to OSM
-pct$X <- NULL
-osm <- left_join(osm,pct, by = c("id" = "id"))
-rm(pct)
-osm <- osm[osm$pct_census > 0,] #To reduce processing time only find widths of roads with cycling demand
-
-#Performacne Tweak, Preallocate object to a gid to reduce processing time
-os_cent <- st_centroid(os)
-osm_cent <- st_centroid(osm)
-grid <- st_make_grid(osm, n = c(10,10), "polygons")
-grid_osm <- st_intersects(osm_cent, grid)
-grid_os <- st_intersects(grid, os_cent)
-rm(grid, os_cent, osm_cent)
 
 #Big Function
 getroadwidths <- function(a){
-  #warning(paste0("Doing Line ",a))
+  #Get data
   line <- osm[a,] #OSM Line
+  osm.id <- line$id[1]
 
   #Pre subset for speed
   gridno <- grid_osm[[a]]
@@ -42,16 +27,24 @@ getroadwidths <- function(a){
   os_sub <- os_presub[st_intersects(AOI,os_presub)[[1]],] #Faster selection from smaller dataset
   rm(gridno,os_grids,os_presub)
 
+  #Create road and roadside polygons
   roadside <- os_sub[os_sub$DESCGROUP == "Roadside", ]
   roadside <- st_intersection(AOI, roadside)
   names(roadside) <- c(names(roadside)[1:2],"geometry")
   st_geometry(roadside) <- "geometry"
   roadside <- roadside[,c("OBJECTID","geometry") ]
+  roadside <- splitmulti(roadside,"MULTIPOLYGON","POLYGON")
+
   road <- os_sub[os_sub$DESCGROUP == "Road Or Track" | os_sub$DESCGROUP == "Path",]
   road <- road[,c("OBJECTID","geometry") ]
   road <- st_intersection(AOI, road)
   names(road) <- c("OBJECTID","geometry")
   st_geometry(road) <- "geometry"
+  road <- splitmulti(road,"MULTIPOLYGON","POLYGON")
+  if(nrow(road) != 0 ){
+    road$id.temp <- 1:nrow(road)
+  }
+
 
   if(class(road$geometry)[[1]] == "sfc_GEOMETRY"){ #An edge case when the results come out as a geomtry (this ditches some data)
     road <- st_cast(road, "POLYGON")
@@ -61,19 +54,13 @@ getroadwidths <- function(a){
 
   #THe big if statments
   if(nrow(road) == 0 & nrow(roadside) == 0){
-    startint <- Sys.time()
     #No Data so skip everthing
     widthpathres <- NA
     widthres <- NA
-    endint <- Sys.time()
-    #warning(paste0("Did no data in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
+
   }else if(nrow(road) > 0 & nrow(roadside) > 0){
     #################################################################
     #Road and Roadside Approach
-    startint <- Sys.time()
-    roadside <- multi2single(roadside,"MULTIPOLYGON","POLYGON")
-    road <- multi2single(road,"MULTIPOLYGON","POLYGON")
-
     road$width <- width_estimate(road)
     ##Find intersections
     #Get Intersection Points
@@ -110,17 +97,18 @@ getroadwidths <- function(a){
     osm_join <- st_join(line_main,road, join = st_intersects, left = TRUE)
 
     #Update Table
-    widthres <- osm_join$width[1]
+    widthres <- unlist(osm_join$width[1])
 
     #Select roaddside touching the road section
-    road_main <- road[road$OBJECTID == osm_join$OBJECTID[1], ] # Changed from id to OBJECTID don't know why it used to be id
-    road_main <- road_main[!is.na(road_main$OBJECTID),]
+    road_main <- road[road$id.temp == osm_join$id.temp[1], ] # check agaist the temp id
+    road_main <- road_main[!is.na(road_main$id.temp),]
     rm(line_main, osm_join)
     if(nrow(road_main) == 0){
       #Can't do anything
       widthpathres <- NA
     }else{
       touch <- st_touches(road_main, roadside, sparse = FALSE)
+      #touch2 <- st_touches(roadside, road_main, sparse = FALSE)
       #Get the paths that touch the road and trim off any traling edges at 5m
       #Not this means that paths wider than 5 meters are capped at 5m
       roadside_touch <- roadside[touch,]
@@ -141,21 +129,17 @@ getroadwidths <- function(a){
         #comb <- st_buffer(comb, dist = 0.001) #To deal with mulipolgons
 
         #Get final width
-        widthpathres <- width_estimate(comb)
+        widthpathres <- unlist(width_estimate(comb))
         rm(roadside_touch, road_buff, comb, touch)
       }
 
     }
     rm(road_main)
 
-    endint <- Sys.time()
-    #warning(paste0("Did road and roadside in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
   }else if(nrow(road) > 0 & nrow(roadside) == 0){
     ########################################################
     #Road Only approach
-    startint <- Sys.time()
     widthpathres <- NA
-    road <- multi2single(road,"MULTIPOLYGON","POLYGON")
     road$width <- width_estimate(road)
     ##Find intersections
     #Get Intersection Points
@@ -192,7 +176,7 @@ getroadwidths <- function(a){
     osm_join <- st_join(line_main,road, join = st_intersects, left = TRUE)
 
     #Update Table
-    widthres <- osm_join$width[1]
+    widthres <- unlist(osm_join$width[1])
     rm(line_main, osm_join)
     endint <- Sys.time()
     #warning(paste0("Did road only ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
@@ -201,13 +185,13 @@ getroadwidths <- function(a){
     #Roadside only approauch
     startint <- Sys.time()
     widthres <- NA
-    roadside <- multi2single(roadside,"MULTIPOLYGON","POLYGON")
+    roadside <- splitmulti(roadside,"MULTIPOLYGON","POLYGON")
     roadside <- roadside[st_intersects(line,roadside)[[1]],] #Find Roadside that intersects the line
     if(nrow(roadside) == 0){
       widthpathres <- NA #None found
     }else{
       roadside$width <- width_estimate(roadside)
-      widthpathres <- roadside$width[1]
+      widthpathres <- unlist(roadside$width[1])
     }
     endint <- Sys.time()
     #warning(paste0("Did roadside only in ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
@@ -220,44 +204,127 @@ getroadwidths <- function(a){
   }
 
   #Produce the Final Result
-  finalres <- c(widthres,widthpathres)
+  #clean out nulls
+  if(is.null(widthres)){
+    widthres <- NA
+  }
+  if(is.null(widthpathres)){
+    widthpathres <- NA
+  }
+
+  #put togther
+  finalres <- data.frame("id" = osm.id, "width" = widthres, "widthpath" = widthpathres)
+
+  #Check intergrity
+  if(class(finalres) == "data.frame"){
+    #do nothing
+  }else{
+    message(paste0("Fiddlesticks, something wrong with ",osm.id))
+  }
+
+
+  #finalres <- c(widthres,widthpathres)
   return(finalres)
   rm(finalres,widthres,widthpathres, road, roadside, line)
+
+
+
 }
 
-#profvis({
-#Apply FUnction
-starttime <- Sys.time()
-res <- lapply(1:nrow(osm), getroadwidths)
-res <- do.call("rbind", res)
+#####################################
+#Start of Code
+####################################
 
-#Add Results Column
-osm$width <- NA
-osm$widthpath <- NA
+#List folders
+#regions <- list.dirs(path = "../cyipt-bigdata/osm-prep", full.names = FALSE) #now from master file
 
-for(b in 1:nrow(osm)){
-  width <- res[b,1][[1]]
-  widthpath <- res[b,2][[1]]
-  if(is.null(width)){
-    width <- NA
+regions <- regions.todo
+
+for(b in 1:length(regions)){
+  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
+    #Get file
+    osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+    #Check if width values exist in the file
+    if(all(c("width","widthpath") %in% names(osm)) & skip){
+      message(paste0("Road width values already calcualted for ",regions[b]," so skipping"))
+    }else{
+      message(paste0("Getting road width values for ",regions[b]," at ",Sys.time()))
+
+      #If overwriting remove old data
+      col.to.keep <- names(osm)[!names(osm) %in% c("width","widthpath")]
+      osm <- osm[,col.to.keep]
+      rm(col.to.keep)
+
+
+      #Get bounding box
+      ext <- st_bbox(osm)
+      ext <- st_sfc(st_polygon(list(rbind(c(ext[1],ext[2]),c(ext[3],ext[2]),c(ext[3],ext[4]),c(ext[1],ext[4]),c(c(ext[1],ext[2]))))) )
+      pol <- data.frame(id = 1, geometry = NA)
+      st_geometry(pol) <- ext
+      st_crs(pol) <- 27700
+      poi <- st_centroid(pol)
+      rm(ext)
+
+      #get region
+      os.region <- readRDS("../cyipt-bigdata/boundaries/regions.Rds")
+      os.region <- os.region[st_intersects(poi,os.region)[[1]],]
+      os.region.name <- as.character(os.region$name)
+      rm(os.region)
+
+      #Get correct OS data
+      os <- readRDS(paste0("../cyipt-securedata/os/",os.region.name,".Rds"))
+      os <- os[st_intersects(pol,os)[[1]],] #subset to data within the area of intrest
+
+      #Performacne Tweak, Preallocate object to a gid to reduce processing time
+      os_cent <- st_centroid(os)
+      osm_cent <- st_centroid(osm)
+      grid <- st_make_grid(osm, n = c(100,100), "polygons")
+      grid_osm <- st_intersects(osm_cent, grid)
+      grid_os <- st_intersects(grid, os_cent)
+      rm(grid, os_cent, osm_cent)
+
+      #Get the PCT Values
+      m = 1 #Start
+      n = nrow(osm) #End
+
+      message(paste0("Preparations complete, starting data collection at ",Sys.time()))
+
+
+      ##########################################################
+      #Parallel
+      start <- Sys.time()
+      fun <- function(cl){
+        parLapply(cl, m:n,getroadwidths)
+      }
+      cl <- makeCluster(ncores) #make clusert and set number of cores
+      clusterExport(cl=cl, varlist=c("osm", "os","grid_osm","grid_os"))
+      clusterEvalQ(cl, {library(sf); source("R/functions.R")}) #; {splitmulti()}) #Need to load splitmuliin corectly
+      respar <- fun(cl)
+      stopCluster(cl)
+      respar <- do.call("rbind",respar)
+      end <- Sys.time()
+      message(paste0("Did ",(n-m)+1," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+      ##########################################################
+
+      #Join togther data
+      osm <- left_join(osm,respar, by = c("id" = "id"))
+      rm(start,cl,respar,end)
+
+      #Save results
+      if(overwrite){
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+      }else{
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-width.Rds"))
+      }
+      rm(osm, os, grid_os, grid_osm,n,m,os.region.name, poi, pol)
+
+
+    }
+
+  }else{
+    message(paste0("Input File Missing for ",regions[b]," at ",Sys.time()))
   }
-  if(is.null(widthpath)){
-    widthpath <- NA
-  }
-  osm$width[b] <- width
-  osm$widthpath[b] <- widthpath
 }
+rm(b,regions)
 
-endtime <- Sys.time()
-print(paste0("Did ",nrow(osm)," rows in ", round(difftime(endtime, starttime, units = "secs"),2), " seconds"))
-#})
-
-warnms <- warnings()
-warnms <- names(warnms)
-warnms <- warnms[warnms != "attribute variables are assumed to be spatially constant throughout all geometries"]
-
-vals <- as.data.frame(osm)
-vals <- vals[,c("id","osm_id","width","widthpath")]
-
-write.csv(vals,"../example-data/bristol/results/widths.csv", row.names = FALSE)
 
