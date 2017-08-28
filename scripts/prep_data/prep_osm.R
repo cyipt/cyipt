@@ -74,6 +74,15 @@ for(a in 1:length(regions)){
       message(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(result)))
       rm(osm, result, bounds,buff,inter, points)
       gc()
+
+      #################################
+      #Remove Cleaned Data
+
+      if(overwrite){
+        unlink(paste0("../cyipt-bigdata/osm-clean/",regions[a]), recursive = T)
+      }
+
+
     }
   }else{
     message(paste0("Input File missing for ",regions[a]," at ",Sys.time()))
