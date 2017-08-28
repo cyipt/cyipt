@@ -45,13 +45,15 @@ for(a in 1:length(regions)){
       osm <- osm[osm$highway != "proposed",]
       osm <- osm[osm$highway != "demolished",]
       osm <- osm[osm$highway != "crossing",] #crossings should be points not lines in OSM
-
+      osm <- osm[osm$highway != "raceway",] #recreational road not part of transport network
 
       ###############################################################################
       #step 11: clean depreciated highway tags
       ################################################################################
       osm$highway[osm$highway == "byway"] <- "track"
+      osm$highway[osm$highway == "unsurfaced"] <- "track"
       osm$highway[osm$highway == "layby"] <- "service"
+      osm$highway[osm$highway == "access"] <- "service"
       osm$highway[osm$highway == "no"] <- "path"
 
       ################################################################################
@@ -282,15 +284,15 @@ for(a in 1:length(regions)){
       #New method convert bus lanes to PSV lanes
 
       #Convert to intergers
-      osm$lanes <- as.integer(osm$lanes)
-      osm$lanes.backward <- as.integer(osm$lanes.backward)
-      osm$lanes.forward <- as.integer(osm$lanes.forward)
-      osm$lanes.bus.forward <- as.integer(osm$lanes.bus.forward)
-      osm$lanes.left <- as.integer(osm$lanes.left)
-      osm$lanes.right <- as.integer(osm$lanes.right)
-      osm$lanes.psv <- as.integer(osm$lanes.psv)
-      osm$lanes.psv.backward <- as.integer(osm$lanes.psv.backward)
-      osm$lanes.psv.forward <- as.integer(osm$lanes.psv.forward)
+      osm$lanes <- as.integer(as.character(osm$lanes))
+      osm$lanes.backward <- as.integer(as.character(osm$lanes.backward))
+      osm$lanes.forward <- as.integer(as.character(osm$lanes.forward))
+      osm$lanes.bus.forward <- as.integer(as.character(osm$lanes.bus.forward))
+      osm$lanes.left <- as.integer(as.character(osm$lanes.left))
+      osm$lanes.right <- as.integer(as.character(osm$lanes.right))
+      osm$lanes.psv <- as.integer(as.character(osm$lanes.psv))
+      osm$lanes.psv.backward <- as.integer(as.character(osm$lanes.psv.backward))
+      osm$lanes.psv.forward <- as.integer(as.character(osm$lanes.psv.forward))
 
       #Sometimes used odd tag lanes:bus:forward
       for(r in 1:nrow(osm)){
@@ -518,7 +520,8 @@ for(a in 1:length(regions)){
                 osm$lanes.backward[i] <- 1
               }
             }else{
-              print(paste0("Error: Ran out of road types. For line ",i," values: ",lt," ",lf," ",lb," ",lpf," ",lpb))
+              print(paste0("Error: 5: Ran out of road types. For line ",i," values: ",lt," ",lf," ",lb," ",lpf," ",lpb))
+              stop()
             }
 
           }else{
@@ -577,7 +580,7 @@ for(a in 1:length(regions)){
                   osm$lanes.backward[i] <- 1
                 }
               }else{
-                print(paste0("Error: Ran out of road types. For line ",i," values: ",lt," ",lf," ",lb," ",lpf," ",lpb))
+                print(paste0("Error: 3: Ran out of road types. For line ",i," values: ",lt," ",lf," ",lb," ",lpf," ",lpb))
               }
             }else{
               #forward missing
@@ -605,7 +608,7 @@ for(a in 1:length(regions)){
                   osm$lanes.forward[i] <- 1
                 }
               }else{
-                print(paste0("Error: Ran out of road types. For line ",i," values: ",lt," ",lf," ",lb," ",lpf," ",lpb))
+                print(paste0("Error: 2: Ran out of road types. For line ",i," values: ",lt," ",lf," ",lb," ",lpf," ",lpb))
               }
             }
           }
@@ -624,13 +627,14 @@ for(a in 1:length(regions)){
             }else{
               ###############################
               #OTHER CHECKS GO HERE
-              print(paste0("Error: Ran out of ideas. For line ",i," values: ",lt," ",lf," ",lb," ",lpf," ",lpb))
+              print(paste0("Error: 1: Ran out of ideas. For line ",i," values: ",lt," ",lf," ",lb," ",lpf," ",lpb))
+              stop()
               ##################################
             }
           }
         }else{
           #Something has gone wrong
-          print(paste0("Catastrophic Error: Number of lanes in both known and unknow. For line ",i))
+          print(paste0("Catastrophic Error: 4: Number of lanes in both known and unknow. For line ",i))
           stop()
         }
 
@@ -734,6 +738,9 @@ for(a in 1:length(regions)){
 
       saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds"))
       rm(osm)
+
+
+
     }
 
   }else{
