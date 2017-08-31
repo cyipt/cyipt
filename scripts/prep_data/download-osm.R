@@ -101,7 +101,8 @@ for(a in 1:nrow(bounds)){
     dir.create(paste0("../cyipt-bigdata/osm-raw/",region_nm))
     #Get Region
     region_shp <- bounds[a,]
-    region_shp$name <- region_nm
+    region_shp$region <- region_nm
+    region_shp <- region_shp[,"region"]
 
     #Download data
     q = opq(st_bbox(region_shp)) %>%
@@ -137,6 +138,10 @@ for(a in 1:nrow(bounds)){
     #note that lines that that cross the boundary are still included
     lines <- lines[region_shp,]
     points <- points[region_shp,]
+
+    #now cut the lines to the boundary
+    lines <- st_intersection(region_shp,lines)
+
 
     #Save the lines
     saveRDS(lines, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-lines.Rds"))

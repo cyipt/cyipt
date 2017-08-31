@@ -1,0 +1,23 @@
+Bash Instructions
+
+# 1 Create a Table
+
+sudo -i
+#Enter you password
+su postgres
+psql cyipt
+CREATE EXTENSION postgis;
+\q
+psql cyipt -f /home/malcolm/create_roads_table.sql
+psql cyipt
+\dt
+
+
+# 2 Add data to a table (coniunin from having created a table)
+
+COPY roads FROM '/home/malcolm/roads.csv'  csv HEADER;
+
+#Change owner of table
+
+ALTER TABLE roads OWNER to cyipt;
+

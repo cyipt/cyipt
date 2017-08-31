@@ -81,31 +81,41 @@ schemepoly <- function(a){
 groupinfra <- function(type, grp_start, buff_dists){
   sub <- osm[osm$Recommended == type & (osm$Change == "upgrade" | osm$Change == "upgrade (one side)"),]
   sub <- sub[,c("id")]
-  buff <- st_buffer(sub, buff_dists)
-  #Find Instersections
-  inter <- st_intersects(buff,buff)
-  edges <- do.call(rbind, lapply(inter, function(x) {
-    if (length(x) > 1) cbind(head(x, -1), tail(x, -1)) else NULL
-  }))
-  #Find Groups
-  g <- graph.data.frame(edges, directed=FALSE)
-  g <- split(V(g)$name, clusters(g)$membership)
-  grps <- list()
-  for(a in 1:length(g)){
-    grps[[a]] <- as.numeric(unlist(g[a]))
-  }
-  #Assing Groups
-  for(b in 1:nrow(sub)){
-    res <- which(sapply(grps,`%in%`, x = b))
-    if(length(res) == 0){
-      sub$group_id[b] <- NA
-    }else{
-      sub$group_id[b] <- res + grp_start
-    }
+  if(nrow(sub) > 1){
+    buff <- st_buffer(sub, buff_dists)
+    #Find Instersections
+    inter <- st_intersects(buff,buff)
+    edges <- do.call(rbind, lapply(inter, function(x) {
+      if (length(x) > 1) cbind(head(x, -1), tail(x, -1)) else NULL
+    }))
 
+    #Find Groups
+    g <- graph.data.frame(edges, directed=FALSE)
+    g <- split(V(g)$name, clusters(g)$membership)
+    grps <- list()
+    for(a in 1:length(g)){
+      grps[[a]] <- as.numeric(unlist(g[a]))
+    }
+    #Assing Groups
+    for(b in 1:nrow(sub)){
+      res <- which(sapply(grps,`%in%`, x = b))
+      if(length(res) == 0){
+        sub$group_id[b] <- NA
+      }else{
+        sub$group_id[b] <- res + grp_start
+      }
+
+    }
+    sub <- as.data.frame(sub)
+    sub <- sub[,c("id","group_id")]
+  }else if(nrow(sub) == 1){
+    #Only one type so no grouping to be done
+    sub <- as.data.frame(sub)
+    sub$group_id <- grp_start + 1
+  }else{
+    #No road of that type
+    sub <- NA
   }
-  sub <- as.data.frame(sub)
-  sub <- sub[,c("id","group_id")]
   return(sub)
 }
 
@@ -124,13 +134,13 @@ for(b in 1:length(regions)){
     #Get file
     osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
     #Check if PCT values exist in the file
-    if(all(c("FILL ME IN") %in% names(osm)) & skip){
+    if(all(c("group_id","Existing","Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation","Change","costperm","length","costTotal") %in% names(osm)) & skip){
       message(paste0("infrastructure types values already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Getting infrastructure types values for ",regions[b]," at ",Sys.time()))
 
       #If overwriting remove old data
-      col.to.keep <- names(osm)[!names(osm) %in% c("FILL ME IN")]
+      col.to.keep <- names(osm)[!names(osm) %in% c("group_id","Existing","Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation","Change","costperm","length","costTotal")]
       osm <- osm[,col.to.keep]
       rm(col.to.keep)
 
@@ -157,10 +167,22 @@ for(b in 1:length(regions)){
       osm$Existing <- paste0(osm$roadtype," ",osm$lanes.psv.forward," ",osm$cycleway.left," ",osm$cycleway.right," ",osm$lanes.psv.backward)
 
       #For testing only
-      #summary <- as.data.frame(osm)
-      #summary <- summary[,c("Existing","Recommended")]
-      #summary <- unique(summary)
+
+      summary <- as.data.frame(osm)
+      summary <- summary[,c("Existing","Recommended")]
+      summary <- unique(summary)
+      costs.summary <- costs[,c("Existing","Recommended")]
       #write.csv(summary, paste0("../cyipt-bigdata/osm-prep/",regions[b],"/RoadCombis.csv"), row.names = F)
+      compar  <- function(a1,a2)
+      {
+        a1.vec <- apply(a1, 1, paste, collapse = "")
+        a2.vec <- apply(a2, 1, paste, collapse = "")
+        a1.without.a2.rows <- a1[!a1.vec %in% a2.vec,]
+        return(a1.without.a2.rows)
+      }
+      comp <- compar(summary,costs.summary)
+
+
 
 
       ###########################################################################
@@ -184,38 +206,58 @@ for(b in 1:length(regions)){
 
       #Do each type
       result <- groupinfra("Segregated Cycle Track", 0, 10)
-      for(c in 1:nrow(result)){
-        osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+      if(class(result) == "data.frame"){
+        for(c in 1:nrow(result)){
+          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        }
       }
       rm(result)
-      result <- groupinfra("Stepped Cycle Tracks", max(osm$group_id, na.rm = T), 10)
-      for(c in 1:nrow(result)){
-        osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+      result <- groupinfra("Stepped Cycle Tracks", maxgrp, 10)
+      if(class(result) == "data.frame"){
+        for(c in 1:nrow(result)){
+          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        }
       }
       rm(result)
-      result <- groupinfra("Cycle Lanes with light segregation", max(osm$group_id, na.rm = T), 10)
-      for(c in 1:nrow(result)){
-        osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+      result <- groupinfra("Cycle Lanes with light segregation", maxgrp, 10)
+      if(class(result) == "data.frame"){
+        for(c in 1:nrow(result)){
+          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        }
       }
       rm(result)
-      result <- groupinfra("Cycle Lanes", max(osm$group_id, na.rm = T), 100)
-      for(c in 1:nrow(result)){
-        osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+      result <- groupinfra("Cycle Lanes", maxgrp, 100)
+      if(class(result) == "data.frame"){
+        for(c in 1:nrow(result)){
+          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        }
       }
       rm(result)
-      result <- groupinfra("Cycle Street", max(osm$group_id, na.rm = T), 500)
-      for(c in 1:nrow(result)){
-        osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+      result <- groupinfra("Cycle Street", maxgrp, 500)
+      if(class(result) == "data.frame"){
+        for(c in 1:nrow(result)){
+          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        }
       }
       rm(result)
-      result <- groupinfra("Cycle Lane on Path", max(osm$group_id, na.rm = T), 50)
-      for(c in 1:nrow(result)){
-        osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+      result <- groupinfra("Cycle Lane on Path", maxgrp, 50)
+      if(class(result) == "data.frame"){
+        for(c in 1:nrow(result)){
+          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        }
       }
       rm(result)
-      result <- groupinfra("Segregated Cycle Track on Path", max(osm$group_id, na.rm = T), 50)
-      for(c in 1:nrow(result)){
-        osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+      result <- groupinfra("Segregated Cycle Track on Path", maxgrp, 50)
+      if(class(result) == "data.frame"){
+        for(c in 1:nrow(result)){
+          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        }
       }
       rm(result)
 
@@ -242,7 +284,7 @@ for(b in 1:length(regions)){
         id <- schemes$group[f]
         schemes$type[f] <- osm_sub$Recommended[osm_sub$group_id == id][1]
         schemes$length[f] <- sum(osm_sub$length[osm_sub$group_id == id])
-        schemes$cost[f] <- sum(osm_sub$cost.total[osm_sub$group_id == id])
+        schemes$cost[f] <- sum(osm_sub$costTotal[osm_sub$group_id == id])
       }
       qtm(schemes, fill = "group")
 
@@ -254,7 +296,7 @@ for(b in 1:length(regions)){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-reccinfra.Rds"))
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
       }
-      rm(osm,rules.offroad,rules.onroad,osm_sub,costs,f,c,schemes)
+      rm(osm,osm_sub,f,c,schemes)
 
     }
 
@@ -262,48 +304,4 @@ for(b in 1:length(regions)){
     message(paste0("Input File Missing for ",regions[b]," at ",Sys.time()))
   }
 }
-rm(b,regions)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-osm_sub <- osm[!(is.na(osm$group_id)),]
-
-
-l <- sapply(1:max(osm_sub$group_id, na.rm = T),schemepoly)
-schemes <- data.frame(group = 1:max(osm_sub$group_id, na.rm = T),
-                      type = NA,
-                      length = NA,
-                      cost = NA,
-                      geometry = NA)
-schemes$geometry <- st_sfc(l)
-schemes <- st_as_sf(schemes)
-st_crs(schemes) <- 27700
-schemes <- st_transform(schemes, 27700)
-
-
-for(d in 1:nrow(schemes)){
-  id <- schemes$group[d]
-  schemes$type[d] <- osm_sub$infra_score[osm_sub$group_id == id][1]
-  schemes$length[d] <- sum(osm_sub$length[osm_sub$group_id == id])
-  schemes$cost[d] <- sum(osm_sub$cost.total[osm_sub$group_id == id])
-}
-
-schemes$type <- as.factor(schemes$type)
-schemes <- st_transform(schemes, 4326)
-saveRDS(schemes,"../example-data/bristol/results/schemes.Rds")
-saveRDS(osm, "../example-data/bristol/results/osm-schemes.Rds")
+rm(b,regions,rules.offroad,rules.onroad,costs)
