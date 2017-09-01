@@ -142,6 +142,9 @@ for(a in 1:nrow(bounds)){
     #now cut the lines to the boundary
     lines <- st_intersection(region_shp,lines)
 
+    #Remove Factors
+    lines$osm_id <- as.integer(as.character(lines$osm_id))
+
 
     #Save the lines
     saveRDS(lines, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-lines.Rds"))
@@ -149,16 +152,19 @@ for(a in 1:nrow(bounds)){
     #Find Junctions, OSM Points are both nodes that make up lines/polygons, and objects e.g. shops
     #remove points that are not nodes on the line
     #node points have no tags
-    col.names <- names(points)[!names(points) %in% c("osm_id","geometry")] #Get column names other than osm_id
+    col.names <- names(points)[!names(points) %in% c("osm_id","highway","geometry")] #Get column names other than osm_id, and highway which is just for junction types
     points.sub <- points
-    points <- points[,"osm_id"]
-    st_geometry(points.sub) <- NULL
-    points.sub$geometry <- NULL
+    points <- points[,c("osm_id","highway")]
     points.sub <- as.data.frame(points.sub)
+    points.sub$geometry <- NULL
     points.sub <- points.sub[,col.names]
     rowsum <- as.integer(rowSums(!is.na(points.sub)))
     rm(points.sub, col.names)
     points <- points[rowsum == 0,] #Remove points with any tags
+
+    #now check highway tag to remove things like traffic lights
+    points <- points[is.na(points$highway) | points$highway %in% c("mini_roundabout","motorway_junction"), ]
+    points <- points[,c("osm_id","geometry")]
 
     #Look for points that intersect lines
     inter <- st_intersects(points,lines)
