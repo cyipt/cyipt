@@ -145,6 +145,10 @@ for(b in 1:length(regions)){
       osm <- left_join(osm,res, by = c("osm_id" = "osm_id"))
       rm(res)
 
+      #Clean up NaN
+      osm$aadt[is.nan(osm$aadt)] <- NA
+      osm$ncycles[is.nan(osm$ncycles)] <- NA
+
       #Save results
       if(overwrite){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[b],"/osm-lines.Rds"))
