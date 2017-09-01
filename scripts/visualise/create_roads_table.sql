@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS roads (
 		pctebike INT NULL,
 		width REAL NULL,
 		widthpath REAL NULL,
+		aadt REAL NULL,
+		ncycle REAL NULL,
 		Recommended VARCHAR(255) NULL,
 		DesWidth REAL NULL,
 		MinWidth REAL NULL,

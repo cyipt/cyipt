@@ -1,6 +1,8 @@
 library(stringr)
 library(sf)
 
+#regions <- list.dirs(path = "../cyipt-bigdata/osm-prep", full.names = FALSE) # Now get regions from the master file
+#regions <- regions[2:length(regions)]
 
 regions <- regions.todo
 regions.list <- list()
@@ -73,7 +75,7 @@ osm.all <- osm.all[,names(osm.all)[!names(osm.all) %in% c("roadtype","onewaysumm
 
 #Rearange Columns
 osm.all <- osm.all[,c("idGlobal","id","osmid","name","ref","highway","junction","elevation","maxspeed","segregated","pctcensus",
-  "pctgov", "pctgen", "pctdutch", "pctebike", "width","widthpath","Recommended","DesWidth", "MinWidth", "DesSeparation",
+  "pctgov", "pctgen", "pctdutch", "pctebike", "width","widthpath","aadt","ncycles","Recommended","DesWidth", "MinWidth", "DesSeparation",
   "MinSeparation",  "Existing",  "Change",  "costperm",  "length",  "costTotal",  "groupid",  "rtid",  "geotext")]
 
 
