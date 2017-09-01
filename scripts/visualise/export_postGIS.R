@@ -13,9 +13,13 @@ for(b in 1:length(regions)){
     osm <- st_transform(osm, 4326) #convert to lat lngs for leaflet mapping
     names(osm) <- str_replace_all(names(osm),"[[:punct:]]","") #Remove punctuation from names for POSTGIS
 
+    #Reduce precison of data to reduce file size
+    osm$geometry <- st_as_binary(osm$geometry, precision = 1000000)
+    osm$geometry <- st_as_sfc(osm$geometry)
+
     #convert to well known text
-    osm <- as.data.frame(osm)
     osm$geotext <- st_as_text(osm$geometry)
+    osm <- as.data.frame(osm)
     osm$geometry <- NULL
 
     #put id column first
