@@ -7,6 +7,7 @@
 
 library(sp)
 library(sf)
+library(dplyr)
 
 #Get PCT data
 
@@ -27,7 +28,9 @@ rm(pct3,pct4)
 
 #Get flow data
 flow <- readRDS("D:/Users/earmmor/OneDrive - University of Leeds/Cycling Big Data/LSOA/LSOA_flow.Rds")
-flow <- flow[,c("id","bicycle_16p","is_two_way")]
+flow$motorvehicle <- flow$carorvan + flow$motorcycle + flow$taxi + flow$passenger
+flow$publictransport <- flow$bus + flow$train + flow$underground
+flow <- flow[,c("id","all_16p","bicycle_16p","onfoot","motorvehicle","publictransport","other","is_two_way")]
 flow <- flow[flow$id %in% pct.all$ID,]
 flow_data <-  read.csv("D:/Users/earmmor/OneDrive - University of Leeds/Cycling Big Data/LSOA/flow_results_nat_round_170121.csv")
 names(flow_data) <- c("id","pct.gov","pct.gen","pct.dutch","pct.ebike")
@@ -42,7 +45,7 @@ rm(flow,flow_data)
 names(pct.all)[names(pct.all) == 'bicycle_16p'] <- 'pct.census'
 
 #Dump unneeded columns
-pct.all <- pct.all[,c("ID","busyness","pct.census","is_two_way","pct.gov","pct.gen","pct.dutch","pct.ebike","geometry")]
+pct.all <- pct.all[,c("ID","length","busyness","av_incline","pct.census","is_two_way","pct.gov","pct.gen","pct.dutch","pct.ebike","onfoot","motorvehicle","publictransport","other","geometry")]
 class(pct.all$pct.census)
 
 #find where bike is always 0
