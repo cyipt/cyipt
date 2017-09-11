@@ -299,10 +299,10 @@ for(b in 1:length(regions)){
       #Save results
       if(overwrite){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
-        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
+        saveRDS(schemes,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
       }else{
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-reccinfra.Rds"))
-        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
+        saveRDS(schemes,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
       }
       rm(osm,osm_sub,f,c,schemes)
 
