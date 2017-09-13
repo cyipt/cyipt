@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS roads (
 		idGlobal INT PRIMARY KEY,
 		id INT NOT NULL,
-		osmid INT NOT NULL,
+		osmid INT NULL,
+		region VARCHAR(255) NULL,
 		name VARCHAR(255) NULL,
 		ref VARCHAR(20) NULL,
 		highway VARCHAR(20) NULL,
@@ -32,3 +33,7 @@ CREATE TABLE IF NOT EXISTS roads (
 		rtid INT NULL,
 		geotext GEOMETRY NOT NULL
     );
+
+COPY roads FROM '/home/malcolm/roads.csv'  csv HEADER;
+
+ALTER TABLE roads OWNER to cyipt;

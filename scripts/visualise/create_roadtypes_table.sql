@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS roadtypes(
-	
+
 		rtid INT PRIMARY KEY,
 		roadtype VARCHAR(100) NULL,
 		onewaysummary VARCHAR(40) NULL,
@@ -11,3 +11,8 @@ CREATE TABLE IF NOT EXISTS roadtypes(
 		lanespsvbackward SMALLINT NULL,
 		cyclewayright VARCHAR(20) NULL
     );
+
+
+COPY roadtypes FROM '/home/malcolm/roadtypes.csv'  csv HEADER;
+
+ALTER TABLE roadtypes OWNER to cyipt;
