@@ -25,6 +25,12 @@ getroadwidths <- function(a){
   AOI <- st_buffer(line, dist = 15, nQuadSegs = 1) # Area intrest around the line, set to 15 m
   AOI <- AOI["geometry"]
   os_sub <- os_presub[st_intersects(AOI,os_presub)[[1]],] #Faster selection from smaller dataset
+
+  #test plots
+  plot(AOI)
+  plot(line, add = T)
+  plot(os_presub, add = T, border = "Red")
+  plot(os_sub, add = T, border = "Green")
   rm(gridno,os_grids,os_presub)
 
   #Create road and roadside polygons
@@ -75,20 +81,24 @@ getroadwidths <- function(a){
     }else{
       #Split Points and Mulitpoints
       osm_inter <- splitmulti(osm_inter,"MULTIPOINT","POINT")
+      #If only one polygon use that
+      if(nrow(road) == 1){
+        line_main <- line
+      }else{
+        #Buffer Pointsand make into a singe mulipolygon
+        osm_buff <- st_buffer(osm_inter, dist = 0.01)
+        buff_geom <- osm_buff$geom
+        buff_geom <- st_union(buff_geom)
+        rm(osm_buff, osm_inter)
 
-      #Buffer Pointsand make into a singe mulipolygon
-      osm_buff <- st_buffer(osm_inter, dist = 0.01)
-      buff_geom <- osm_buff$geom
-      buff_geom <- st_union(buff_geom)
-      rm(osm_buff, osm_inter)
+        #Cut the line with buffered points
+        osm_diff <- st_cast(st_difference(line,buff_geom), "LINESTRING")
+        osm_diff$length <- as.numeric(st_length(osm_diff, dist_fun = geosphere::distGeo))
 
-      #Cut the line with buffered points
-      osm_diff <- st_cast(st_difference(line,buff_geom), "LINESTRING")
-      osm_diff$length <- as.numeric(st_length(osm_diff, dist_fun = geosphere::distGeo))
-
-      #Select the right segment of the line
-      line_main <- osm_diff[osm_diff$length == max(osm_diff$length),]
-      rm(osm_diff, buff_geom)
+        #Select the rigth segment of the line
+        line_main <- osm_diff[osm_diff$length == max(osm_diff$length),]
+        rm(osm_diff, buff_geom)
+      }
     }
 
     #Join line and poyglon to get the road width
@@ -154,20 +164,24 @@ getroadwidths <- function(a){
     }else{
       #Split Points and Mulitpoints
       osm_inter <- splitmulti(osm_inter,"MULTIPOINT","POINT")
+      #If only one polygon  use that
+      if(nrow(road) == 1 ){
+        line_main <- line
+      }else{
+        #Buffer Pointsand make into a singe mulipolygon
+        osm_buff <- st_buffer(osm_inter, dist = 0.01)
+        buff_geom <- osm_buff$geom
+        buff_geom <- st_union(buff_geom)
+        rm(osm_buff, osm_inter)
 
-      #Buffer Pointsand make into a singe mulipolygon
-      osm_buff <- st_buffer(osm_inter, dist = 0.01)
-      buff_geom <- osm_buff$geom
-      buff_geom <- st_union(buff_geom)
-      rm(osm_buff, osm_inter)
+        #Cut the line with buffered points
+        osm_diff <- st_cast(st_difference(line,buff_geom), "LINESTRING")
+        osm_diff$length <- as.numeric(st_length(osm_diff, dist_fun = geosphere::distGeo))
 
-      #Cut the line with buffered points
-      osm_diff <- st_cast(st_difference(line,buff_geom), "LINESTRING")
-      osm_diff$length <- as.numeric(st_length(osm_diff, dist_fun = geosphere::distGeo))
-
-      #Select the right segment of the line
-      line_main <- osm_diff[osm_diff$length == max(osm_diff$length),]
-      rm(osm_diff, buff_geom)
+        #Select the rigth segment of the line
+        line_main <- osm_diff[osm_diff$length == max(osm_diff$length),]
+        rm(osm_diff, buff_geom)
+      }
     }
 
     #Join line and polygon to get the road width
@@ -178,7 +192,7 @@ getroadwidths <- function(a){
     #Update Table
     widthres <- unlist(osm_join$width[1])
     rm(line_main, osm_join)
-    endint <- Sys.time()
+    #endint <- Sys.time()
     #warning(paste0("Did road only ", round(difftime(endint, startint, units = "secs"),2), " seconds"))
   }else if(nrow(road) == 0 & nrow(roadside) > 0){
     ######################################################
@@ -269,6 +283,14 @@ for(b in 1:length(regions)){
       os.region <- readRDS("../cyipt-bigdata/boundaries/regions.Rds")
       os.region <- os.region[st_intersects(poi,os.region)[[1]],]
       os.region.name <- as.character(os.region$name)
+
+      #If can make direct match try closest region, works for costal towns
+      if(length(os.region.name) == 0){
+        os.region <- readRDS("../cyipt-bigdata/boundaries/regions.Rds")
+        dists <- as.vector(st_distance(os.region,poi))
+        os.region.name <- as.character(os.region$name[dists == min(dists)])
+      }
+
       rm(os.region)
 
       #Get correct OS data
@@ -278,12 +300,12 @@ for(b in 1:length(regions)){
       #Performacne Tweak, Preallocate object to a gid to reduce processing time
       os_cent <- st_centroid(os)
       osm_cent <- st_centroid(osm)
-      grid <- st_make_grid(osm, n = c(100,100), "polygons")
+      grid <- st_make_grid(osm, n = c(10,10), "polygons")
       grid_osm <- st_intersects(osm_cent, grid)
       grid_os <- st_intersects(grid, os_cent)
       rm(grid, os_cent, osm_cent)
 
-      #Get the PCT Values
+
       m = 1 #Start
       n = nrow(osm) #End
 
