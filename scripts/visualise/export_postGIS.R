@@ -54,6 +54,10 @@ roadtypes <- unique(osm.all[,c("roadtype","onewaysummary","sidewalk","cyclewayle
 roadtypes <- roadtypes[order(roadtypes$roadtype, roadtypes$onewaysummary, roadtypes$lanesforward),]
 roadtypes$rtid <- 1:nrow(roadtypes)
 
+#Reorder columns
+roadtypes <- roadtypes[,c("rtid","roadtype","onewaysummary","sidewalk","cyclewayleft","lanespsvforward","lanesforward","lanesbackward","lanespsvbackward","cyclewayright")]
+
+
 #Add rtid and remove data
 osm.all$rtid <- NA
 

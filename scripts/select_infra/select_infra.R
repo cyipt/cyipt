@@ -296,7 +296,7 @@ for(b in 1:length(regions)){
           schemes$cost[f] <- sum(osm_sub$costTotal[osm_sub$group_id == id])
         }
         #qtm(schemes, fill = "type")
-        rm(f,c)
+        rm(f,c,osm_sub)
       }else{
         message("No infrastructure upgrades were found")
         schemes <- 0
@@ -311,7 +311,7 @@ for(b in 1:length(regions)){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-reccinfra.Rds"))
         saveRDS(schemes,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
       }
-      rm(osm,osm_sub,schemes)
+      rm(osm,schemes)
 
     }
 

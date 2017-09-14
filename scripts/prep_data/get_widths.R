@@ -27,10 +27,10 @@ getroadwidths <- function(a){
   os_sub <- os_presub[st_intersects(AOI,os_presub)[[1]],] #Faster selection from smaller dataset
 
   #test plots
-  plot(AOI)
-  plot(line, add = T)
-  plot(os_presub, add = T, border = "Red")
-  plot(os_sub, add = T, border = "Green")
+  #plot(AOI)
+  #plot(line, add = T)
+  #plot(os_presub, add = T, border = "Red")
+  #plot(os_sub, add = T, border = "Green")
   rm(gridno,os_grids,os_presub)
 
   #Create road and roadside polygons
