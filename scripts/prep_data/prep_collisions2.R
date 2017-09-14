@@ -15,6 +15,7 @@ veh.list <- list()
 source("../stats19/R/import_functions.R")
 
 for(a in 1:length(files)){
+#for(a in 1:3){
   record <- unzip(paste0(folder,files[a]), exdir = tmp.folder, overwrite = T)
   message("Doing ",record[1]," at ",Sys.time())
 
