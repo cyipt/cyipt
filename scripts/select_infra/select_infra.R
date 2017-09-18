@@ -212,89 +212,96 @@ for(b in 1:length(regions)){
       #Add Groups Column
       osm$group_id <- NA
 
-      #Do each type
-      result <- groupinfra("Segregated Cycle Track", 0, 10)
-      if(class(result) == "data.frame"){
-        for(c in 1:nrow(result)){
-          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+      if(sum(osm$costTotal) != 0){
+        #At least one piece of infrastructure to group existis
+        #Do each type
+        result <- groupinfra("Segregated Cycle Track", 0, 10)
+        if(class(result) == "data.frame"){
+          for(c in 1:nrow(result)){
+            osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+          }
         }
-      }
-      rm(result)
-      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
-      result <- groupinfra("Stepped Cycle Tracks", maxgrp, 10)
-      if(class(result) == "data.frame"){
-        for(c in 1:nrow(result)){
-          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        rm(result)
+        maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+        result <- groupinfra("Stepped Cycle Tracks", maxgrp, 10)
+        if(class(result) == "data.frame"){
+          for(c in 1:nrow(result)){
+            osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+          }
         }
-      }
-      rm(result)
-      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
-      result <- groupinfra("Cycle Lanes with light segregation", maxgrp, 10)
-      if(class(result) == "data.frame"){
-        for(c in 1:nrow(result)){
-          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        rm(result)
+        maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+        result <- groupinfra("Cycle Lanes with light segregation", maxgrp, 10)
+        if(class(result) == "data.frame"){
+          for(c in 1:nrow(result)){
+            osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+          }
         }
-      }
-      rm(result)
-      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
-      result <- groupinfra("Cycle Lanes", maxgrp, 100)
-      if(class(result) == "data.frame"){
-        for(c in 1:nrow(result)){
-          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        rm(result)
+        maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+        result <- groupinfra("Cycle Lanes", maxgrp, 100)
+        if(class(result) == "data.frame"){
+          for(c in 1:nrow(result)){
+            osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+          }
         }
-      }
-      rm(result)
-      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
-      result <- groupinfra("Cycle Street", maxgrp, 500)
-      if(class(result) == "data.frame"){
-        for(c in 1:nrow(result)){
-          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        rm(result)
+        maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+        result <- groupinfra("Cycle Street", maxgrp, 500)
+        if(class(result) == "data.frame"){
+          for(c in 1:nrow(result)){
+            osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+          }
         }
-      }
-      rm(result)
-      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
-      result <- groupinfra("Cycle Lane on Path", maxgrp, 50)
-      if(class(result) == "data.frame"){
-        for(c in 1:nrow(result)){
-          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        rm(result)
+        maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+        result <- groupinfra("Cycle Lane on Path", maxgrp, 50)
+        if(class(result) == "data.frame"){
+          for(c in 1:nrow(result)){
+            osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+          }
         }
-      }
-      rm(result)
-      maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
-      result <- groupinfra("Segregated Cycle Track on Path", maxgrp, 50)
-      if(class(result) == "data.frame"){
-        for(c in 1:nrow(result)){
-          osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+        rm(result)
+        maxgrp <- if(max(osm$group_id, na.rm = T) == -Inf){0}else{max(osm$group_id, na.rm = T)}
+        result <- groupinfra("Segregated Cycle Track on Path", maxgrp, 50)
+        if(class(result) == "data.frame"){
+          for(c in 1:nrow(result)){
+            osm$group_id[osm$id == result$id[c]] <- result$group_id[c]
+          }
         }
-      }
-      rm(result)
+        rm(result)
+        print(paste0("There are ",length(unique(osm$group_id))," groups"))
+        print(paste0(nrow(osm[is.na(osm$group_id) & (osm$Change == "upgrade" | osm$Change == "upgrade (one side)"),])," of ",nrow(osm[osm$Change == "upgrade" | osm$Change == "upgrade (one side)",])," lines were not classified"))
 
-      print(paste0("There are ",length(unique(osm$group_id))," groups"))
-      print(paste0(nrow(osm[is.na(osm$group_id) & (osm$Change == "upgrade" | osm$Change == "upgrade (one side)"),])," of ",nrow(osm[osm$Change == "upgrade" | osm$Change == "upgrade (one side)",])," lines were not classified"))
+        #Classify up the remaining lines in a rag bag category
+        osm$group_id[is.na(osm$group_id) & (osm$Change == "upgrade" | osm$Change == "upgrade (one side)")] <- (max(osm$group_id, na.rm = T) + 1)
 
-      #Classify up the remaining lines in a rag bag category
-      osm$group_id[is.na(osm$group_id) & (osm$Change == "upgrade" | osm$Change == "upgrade (one side)")] <- (max(osm$group_id, na.rm = T) + 1)
+        #Make Polygons around schemes
+        osm_sub <- osm[!(is.na(osm$group_id)),]
+        l <- sapply(1:max(osm_sub$group_id, na.rm = T),schemepoly)
+        schemes <- data.frame(group = 1:max(osm_sub$group_id, na.rm = T),
+                              type = NA,
+                              length = NA,
+                              cost = NA,
+                              geometry = NA)
+        schemes$geometry <- st_sfc(l)
+        schemes <- st_as_sf(schemes)
+        st_crs(schemes) <- 27700
+        schemes <- st_transform(schemes, 27700)
 
-      #Make Polygons around schemes
-      osm_sub <- osm[!(is.na(osm$group_id)),]
-      l <- sapply(1:max(osm_sub$group_id, na.rm = T),schemepoly)
-      schemes <- data.frame(group = 1:max(osm_sub$group_id, na.rm = T),
-                            type = NA,
-                            length = NA,
-                            cost = NA,
-                            geometry = NA)
-      schemes$geometry <- st_sfc(l)
-      schemes <- st_as_sf(schemes)
-      st_crs(schemes) <- 27700
-      schemes <- st_transform(schemes, 27700)
-
-      for(f in 1:nrow(schemes)){
-        id <- schemes$group[f]
-        schemes$type[f] <- osm_sub$Recommended[osm_sub$group_id == id][1]
-        schemes$length[f] <- sum(osm_sub$length[osm_sub$group_id == id])
-        schemes$cost[f] <- sum(osm_sub$costTotal[osm_sub$group_id == id])
+        for(f in 1:nrow(schemes)){
+          id <- schemes$group[f]
+          schemes$type[f] <- osm_sub$Recommended[osm_sub$group_id == id][1]
+          schemes$length[f] <- sum(osm_sub$length[osm_sub$group_id == id])
+          schemes$cost[f] <- sum(osm_sub$costTotal[osm_sub$group_id == id])
+        }
+        #qtm(schemes, fill = "type")
+        rm(f,c,osm_sub)
+      }else{
+        message("No infrastructure upgrades were found")
+        schemes <- 0
       }
-      qtm(schemes, fill = "group")
+
 
       #Save results
       if(overwrite){
@@ -304,7 +311,7 @@ for(b in 1:length(regions)){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-reccinfra.Rds"))
         saveRDS(schemes,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
       }
-      rm(osm,osm_sub,f,c,schemes)
+      rm(osm,schemes)
 
     }
 

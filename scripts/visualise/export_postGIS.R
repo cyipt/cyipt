@@ -12,6 +12,11 @@ for(b in 1:length(regions)){
     #Get file
     osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
     print(nrow(osm))
+    if(!"region" %in% names(osm)){
+      osm$region <- regions[b]
+      print(paste0("Region Missing from ", regions[b]))
+    }
+
     osm <- st_transform(osm, 4326) #convert to lat lngs for leaflet mapping
     names(osm) <- str_replace_all(names(osm),"[[:punct:]]","") #Remove punctuation from names for POSTGIS
 
@@ -49,6 +54,10 @@ roadtypes <- unique(osm.all[,c("roadtype","onewaysummary","sidewalk","cyclewayle
 roadtypes <- roadtypes[order(roadtypes$roadtype, roadtypes$onewaysummary, roadtypes$lanesforward),]
 roadtypes$rtid <- 1:nrow(roadtypes)
 
+#Reorder columns
+roadtypes <- roadtypes[,c("rtid","roadtype","onewaysummary","sidewalk","cyclewayleft","lanespsvforward","lanesforward","lanesbackward","lanespsvbackward","cyclewayright")]
+
+
 #Add rtid and remove data
 osm.all$rtid <- NA
 
@@ -74,7 +83,7 @@ osm.all <- osm.all[,names(osm.all)[!names(osm.all) %in% c("roadtype","onewaysumm
 
 
 #Rearange Columns
-osm.all <- osm.all[,c("idGlobal","id","osmid","name","ref","highway","junction","elevation","maxspeed","segregated","pctcensus",
+osm.all <- osm.all[,c("idGlobal","id","osmid","region","name","ref","highway","junction","elevation","maxspeed","segregated","pctcensus",
   "pctgov", "pctgen", "pctdutch", "pctebike", "width","widthpath","aadt","ncycles","Recommended","DesWidth", "MinWidth", "DesSeparation",
   "MinSeparation",  "Existing",  "Change",  "costperm",  "length",  "costTotal",  "groupid",  "rtid",  "geotext")]
 

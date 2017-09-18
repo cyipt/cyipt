@@ -21,16 +21,18 @@ if(!dir.exists(paste0("../cyipt-bigdata/osm-clean"))){
 }
 
 for(a in 1:length(regions)){
-  message(paste0("Cleaning OSM tags for ",regions[a]," at ",Sys.time()))
+
   if(file.exists(paste0("../cyipt-bigdata/osm-raw/",regions[a],"/osm-lines.Rds"))){ #Check for input file
     if(file.exists(paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds")) & skip){ #check for existing copy of output
-      print("Skipping as already done")
+      message(paste0("Skipping cleaning OSM tags for ",regions[a]," as already done"))
+
     }else{
       #create directory
       if(!dir.exists(paste0("../cyipt-bigdata/osm-clean/",regions[a]))){
         dir.create(paste0("../cyipt-bigdata/osm-clean/",regions[a]))
       }
 
+      message(paste0("Cleaning OSM tags for ",regions[a]," at ",Sys.time()))
       osm <- readRDS(paste0("../cyipt-bigdata/osm-raw/",regions[a],"/osm-lines.Rds"))
       osm <- st_transform(osm, 27700)
 
@@ -55,13 +57,17 @@ for(a in 1:length(regions)){
       ###############################################################################
       #step 10: remove not allowed roads
       ################################################################################
+      osm <- osm[!is.na(osm$highway),] #Must have a highway value for so many reasons
       osm <- osm[osm$highway != "proposed",] #Unbuilt roads are not of intrest
       osm <- osm[osm$highway != "planned",]
+      osm <- osm[osm$highway != "escape",]
       osm <- osm[osm$highway != "demolished",]
+      osm <- osm[osm$highway != "abandoned",]
       osm <- osm[osm$highway != "dismantled",]
       osm <- osm[osm$highway != "crossing",] #crossings should be points not lines in OSM
       osm <- osm[osm$highway != "raceway",] #recreational road not part of transport network
       osm <- osm[osm$highway != "traffic_island",] #incorrect tagging
+      osm <- osm[osm$highway != "ohm:military:Trench",] # Unknown tag
 
 
       ###############################################################################
@@ -439,6 +445,10 @@ for(a in 1:length(regions)){
       osm$lanes.psv.backward[osm$roadtype %in% c("Path - Cycling Forbidden", "Shared Path")] <- 0
       osm$lanes.psv.forward[osm$roadtype %in% c("Path - Cycling Forbidden", "Shared Path")] <- 0
 
+      osm$lanes.psv.backward[osm$roadtype == "Cycleway"] <- 0
+      osm$lanes.psv.forward[osm$roadtype == "Cycleway"] <- 0
+
+
       #Step 7c: Check for missing bus lanes, where cycle lane is share_busway
       for(o in 1:nrow(osm)){
         if(!is.na(osm$cycleway.left[o])){
@@ -486,7 +496,10 @@ for(a in 1:length(regions)){
       osm$lanes.left <- NULL
       osm$lanes.right <- NULL
 
-      #Step 7e: Lanes main part
+      #step 7e: One way road don't have back lanes
+      osm$lanes.backward[osm$onewaysummary %in% c("One Way", "One Way - Two Way Cycling")] <- 0
+
+      #Step 7f: Lanes main part
 
       for(i in 1:nrow(osm)){
         lt <- osm$lanes[i]
@@ -631,11 +644,14 @@ for(a in 1:length(regions)){
             if(lt == lf + lb + lpf + lpb){
               #Lane numbering is consitant
               #Do Nothing
-            }else if((lt == lf + lb) | (lpf + lpb > 0)){
+            }else if((lt == lf + lb) & (lpf + lpb > 0)){
               #Double couting of bus lanes
               #reduce the number of lanes accordingly
               osm$lanes.forward[i] <- osm$lanes.forward[i] - lpf
               osm$lanes.backward[i] <- osm$lanes.backward[i] - lpb
+            }else if(lt < (lf + lb + lpb + lpf)){
+              #Total lanes is wrong, assume indervidual values are correct
+              osm$lanes[i] <- lf + lb + lpb + lpf
             }else{
               ###############################
               #OTHER CHECKS GO HERE
@@ -778,7 +794,7 @@ for(a in 1:length(regions)){
       ############################################################################################################
       #remove unneeded columns
       osm <- osm[,c("osm_id","name","ref","highway","junction","roadtype","onewaysummary","elevation","maxspeed","segregated","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right","region","geometry")]
-
+      #osm <- osm[,c("osm_id","name","ref","highway","junction","roadtype","onewaysummary","elevation","maxspeed","segregated","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right","geometry")]
       saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds"))
       rm(osm)
 

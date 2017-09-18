@@ -1,3 +1,6 @@
+DROP TABLE roads;
+DROP TABLE roadtypes;
+
 CREATE TABLE IF NOT EXISTS roads (
 		idGlobal INT PRIMARY KEY,
 		id INT NOT NULL,
@@ -37,3 +40,22 @@ CREATE TABLE IF NOT EXISTS roads (
 COPY roads FROM '/home/malcolm/roads.csv'  csv HEADER;
 
 ALTER TABLE roads OWNER to cyipt;
+
+CREATE TABLE IF NOT EXISTS roadtypes(
+
+		rtid INT PRIMARY KEY,
+		roadtype VARCHAR(100) NULL,
+		onewaysummary VARCHAR(40) NULL,
+		sidewalk VARCHAR(20) NULL,
+		cyclewayleft VARCHAR(20) NULL,
+		lanespsvforward SMALLINT NULL,
+		lanesforward SMALLINT NULL,
+		lanesbackward SMALLINT NULL,
+		lanespsvbackward SMALLINT NULL,
+		cyclewayright VARCHAR(20) NULL
+    );
+
+
+COPY roadtypes FROM '/home/malcolm/roadtypes.csv'  csv HEADER;
+
+ALTER TABLE roadtypes OWNER to cyipt;

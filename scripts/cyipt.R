@@ -14,7 +14,8 @@ skip <- TRUE #Should the code skip regions that have already been done?
 overwrite <- TRUE #Some stages overwrite existing files, for example by adding an extra column of data
                    #Note that not overwriting maay cause later stagest to fail if they expect earlier stages
                    #resutls to be in the starting file
-ncores <- 4 #Some functions use parallel processing how many clusters should be run?
+ncores <- 5 #Some functions use parallel processing how many clusters should be run?
+verbose <- TRUE #Get extra messages and information
 
 
 ##########################################
@@ -58,6 +59,8 @@ source("scripts/prep_data/get_widths.R")
 #Step 7:Evaluate Infrastrucutre Options
 source("scripts/select_infra/select_infra.R")
 
+#Step LAST: Export for DB
+source("scripts/visualise/export_postGIS.R")
 
 
 #Display Finishing Message
