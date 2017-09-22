@@ -2,6 +2,9 @@ library(foreign)
 library(sf)
 library(memisc)
 library(stplanr)
+library(dplyr)
+library(tmap)
+tmap_mode("view")
 
 folder <- "../cyipt-securedata/stats19/"
 tmp.folder <- "F:/ziptmp"
@@ -13,136 +16,21 @@ veh.list <- list()
 
 source("../stats19/R/import_functions.R")
 
-
-
-for(a in 21:length(files)){
+for(a in 1:length(files)){
+#for(a in 1:3){
   record <- unzip(paste0(folder,files[a]), exdir = tmp.folder, overwrite = T)
   message("Doing ",record[1]," at ",Sys.time())
 
-  #Read In data
-  file.type <- substring(record[1],nchar(record[1]) - 3, nchar(record[1]))
-  if(file.type  == ".sav"){
-    acc <- read.spss(record[1], to.data.frame=FALSE, use.value.labels = FALSE)
-    acc <- lapply(acc, Int2Factor)
-    acc <- as.data.frame(acc, stringsAsFactors = FALSE)
-    #acc <- try(read.spss(record[1], to.data.frame=TRUE))
-    #if(class(acc) == "try-error"){
-    #  #acc <- read.spss(record[1], to.data.frame=TRUE, use.value.labels = FALSE)
-    #  message("Fail for",record[1])
-
-    #  #foo <- format_stats19_ac(acc)
-  }else if(file.type  == ".por"){
-    acc <- as.data.frame(as.data.set(spss.portable.file(record[1])))
+  if(length(record) > 3){
+    acc <- stats19.import(record[1], "acc")
+    cas <- stats19.import(record[2], "cas")
+    veh <- stats19.import(record[3], "veh")
   }else{
-    message("Unknow File type",record[1])
+    acc <- stats19.import(record[2], "acc")
+    cas <- stats19.import(record[3], "cas")
+    veh <- stats19.import(record[1], "veh")
   }
 
-  if(identical(names(acc), acc.names.low) | identical(names(acc), acc.names.upper)){
-    names(acc) <- acc.names.new
-  }else if(identical(names(acc), acc.names.low.99)){
-    acc$a1_26 <- NULL #get variaible post 1999
-    names(acc) <- acc.names.new
-  }else if(identical(names(acc), acc.names.11)){
-    names(acc) <- acc.names.new.11
-    acc$Did_Police_Officer_Attend_Scene_of_Accident <- NULL
-    acc <- acc[,acc.names.new]
-  }else{
-    message("Acc name error ",record[1])
-    stop()
-  }
-
-  file.type <- substring(record[2],nchar(record[2]) - 3, nchar(record[2]))
-  if(file.type  == ".sav"){
-    #cas <- read.spss(record[2],to.data.frame=TRUE)
-    cas <- read.spss(record[2], to.data.frame=FALSE, use.value.labels = FALSE)
-    cas <- lapply(cas, Int2Factor)
-    cas <- as.data.frame(cas, stringsAsFactors = FALSE)
-  }else if(file.type  == ".por"){
-    cas <- as.data.frame(as.data.set(spss.portable.file(record[2])))
-  }else{
-    message("Unknow File type",record[2])
-  }
-
-
-  if(identical(names(cas), cas.names.low) | identical(names(cas), cas.names.upper)){
-    names(cas) <- cas.names.new
-  }else if(identical(names(cas), cas.names.11)){
-    names(cas) <- cas.names.new.11
-    cas$Pedestrian_Road_Maintenance_Worker <- NULL
-    cas$SchoolPupil <- NA
-    cas$SeatBelt <- NA
-    cas$CasualtyType <- NA
-    cas$Year <- NA
-    cas <- cas[,cas.names.new]
-  }else{
-    message("Cas name error ",record[2])
-    stop()
-  }
-
-  file.type <- substring(record[3],nchar(record[3]) - 3, nchar(record[3]))
-  if(file.type  == ".sav"){
-    #veh <- read.spss(record[3],to.data.frame=TRUE)
-    veh <- read.spss(record[3], to.data.frame=FALSE, use.value.labels = FALSE)
-    veh <- lapply(veh, Int2Factor)
-    veh <- as.data.frame(veh, stringsAsFactors = FALSE)
-  }else if(file.type  == ".por"){
-    veh <- as.data.frame(as.data.set(spss.portable.file(record[3])))
-  }else{
-    message("Unknow File type",record[3])
-  }
-
-
-  if(identical(names(veh),veh.names.low)){
-
-  }else if(identical(names(veh),veh.names.low.91)){
-
-  }else if(identical(names(veh),veh.names.low.05)){
-    veh$v2_23 <- NULL #Not avialable in all years
-    veh$v2_28 <- NULL
-    veh$v2_29 <- NULL
-    names(veh) <- veh.name.new
-  }else if(identical(names(veh),veh.names.upper)){
-    names(veh) <- veh.name.new
-  }else if(identical(names(veh),veh.names.11)){
-    names(veh) <- veh.name.new
-  }else{
-    message("Veh name error ",record[3])
-    stop()
-  }
-
-
-  #Clean up data
-  #Create single date time field
-  acc$Month <- match(acc$Month, month.name)
-  acc$date <- ISOdatetime(year = acc$Year, month = acc$Month, day = acc$Day, hour = acc$Hour, min = acc$Minute, sec = 0)
-  acc <- acc[,names(acc)[!names(acc) %in% c("Month","Day","Hour","Minute","Week")]]
-
-  #Change factors
-  classes <- lapply(acc, class)
-  for(b in 1:length(classes)){
-    if(classes[b] == "factor"){
-      acc[,b] <- as.character(acc[,b])
-    }
-  }
-
-  classes <- lapply(cas, class)
-  for(b in 1:length(classes)){
-    if(classes[b] == "factor"){
-      cas[,b] <- as.character(cas[,b])
-    }
-  }
-
-  classes <- lapply(veh, class)
-  for(b in 1:length(classes)){
-    if(classes[b] == "factor"){
-      veh[,b] <- as.character(veh[,b])
-    }
-  }
-
-  #Convert to SF
-  acc$Easting <- acc$Easting * 10
-  acc$Northing <- acc$Northing * 10
-  acc <- st_as_sf(acc, coords = c("Easting","Northing"), crs = 27700, remove = T)
 
   acc.list[[a]] <- acc
   cas.list[[a]] <- cas
@@ -153,6 +41,69 @@ for(a in 21:length(files)){
 
 
 }
+
+acc.list[[31]] <- stats19.code2string(dat = acc.list[[31]],"acc")
+cas.list[[31]] <- stats19.code2string(dat = cas.list[[31]],"cas")
+veh.list[[31]] <- stats19.code2string(dat = veh.list[[31]],"veh")
+
+cas.all <- do.call("rbind",cas.list)
+acc.all <- do.call("rbind",acc.list)
+veh.all <- do.call("rbind",veh.list)
+
+acc.all$AccRefYear <- paste0(acc.all$AccRef,acc.all$Year)
+acc.all$AccRefGlobal <- 1:nrow(acc.all)
+
+cas.all$AccRefYear <- paste0(cas.all$AccRef,cas.all$Year)
+veh.all$AccRefYear <- paste0(veh.all$AccRef,veh.all$Year)
+
+acc.all.sub <- as.data.frame(acc.all[,c("AccRefGlobal","AccRefYear")])
+acc.all.sub$geometry <- NULL
+
+
+veh.all <- left_join(veh.all,acc.all.sub, by = c("AccRefYear" = "AccRefYear"))
+cas.all <- left_join(cas.all,acc.all.sub, by = c("AccRefYear" = "AccRefYear"))
+
+acc.all$AccRefYear <- NULL
+cas.all$AccRefYear <- NULL
+veh.all$AccRefYear <- NULL
+
+
+
+#Recreate Factors
+#Change charactors to factors
+classes <- lapply(acc.all, class)
+for(b in 1:length(classes)){
+  if(classes[b] == "character" & (names(acc.all)[b] %in% c("Severity","Week","LA","RoadClass1","RoadType","SpeedLimit","JunctionDetail","JunctionControl","RoadClass2","CrossingControl","CrossingFacilities","Light","Weather","Surface","SpecialConditions","Hazards","PlaceReported","PoliceOfficerAttend","UrbanRural","LSOA","LAHighway"))){
+    acc.all[[b]] <- as.factor(acc.all[[b]])
+  }
+}
+
+
+classes <- lapply(cas.all, class)
+for(b in 1:length(classes)){
+  if(classes[b] == "character" & (names(acc.all)[b] %in% c("CasualtyClass","CasSex","AgeBand","Severity","PedestrianLocation","PedestrianMovement","PedestrianDirection","SchoolPupil","SeatBelt","CarPassenger","BusPassenger","CasualtyType","MaintenanceWorker","HomeArea","CasualtyIMD"))){
+    cas.all[[b]] <- as.factor(cas.all[[b]])
+  }
+}
+
+
+classes <- lapply(veh.all, class)
+for(b in 1:length(classes)){
+  if(classes[b] == "character" & (names(acc.all)[b] %in% c("VehicleType","TowingArticulation","Manoeuvre","From","To","LocationRoad","LocationRestrictedAway","Junction","SkiddingOverturning","ObjectInCarriageway","LeavingCarriageway","ObjectOffCarriageway","VehicleLetter","PointofImpact","OtherVehicle","CombinedDamage","RoofUndersideDamage","SexDriver","VehAgeBand","BreathTest","HitRun","ForeignVehicle","LeftHandDrive","JourneyPurpose ","EngineSize","Propulsion","AgeVehicle","DriverIMD","DriverArea","VehicleIMD","AccRefGlobal"))){
+    veh.all[[b]] <- as.factor(veh.all[[b]])
+  }
+}
+
+st_crs(acc.all) <- 27700
+
+#Save RDS file for mathcing with OSM
+saveRDS(acc.all,"../cyipt-bigdata/collisions/acc.Rds")
+saveRDS(cas.all,"../cyipt-bigdata/collisions/cas.Rds")
+saveRDS(veh.all,"../cyipt-bigdata/collisions/veh.Rds")
+
+
+
+
 
 
 
