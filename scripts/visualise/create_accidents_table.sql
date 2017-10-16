@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS accidents;
+DROP INDEX IF EXISTS accidents_gindx;
+
 CREATE TABLE IF NOT EXISTS accidents (
 		AccRefGlobal INT PRIMARY KEY,
     DateTime TIMESTAMP,
@@ -26,3 +29,4 @@ COPY accidents FROM '/home/malcolm/accidents.csv'  csv HEADER;
 
 ALTER TABLE accidents OWNER to cyipt;
 
+CREATE INDEX accidents_gindx ON accidents USING GIST (geotext);

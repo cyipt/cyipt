@@ -20,6 +20,7 @@ verbose <- TRUE #Get extra messages and information
 
 ##########################################
 
+library(stringr)
 
 #Start of code
 #Select regions to do using the regions to do file
@@ -37,7 +38,6 @@ tot.start <- Sys.time()
 source("scripts/prep_data/download-osm.R")
 
 #Clean Up regions.todo for the rest of the code
-library(stringr)
 regions.todo <- str_replace_all(regions.todo,"[[:punct:]]","")
 regions.todo <- str_replace_all(regions.todo," ","")
 
@@ -61,6 +61,7 @@ source("scripts/select_infra/select_infra.R")
 
 #Step LAST: Export for DB
 source("scripts/visualise/export_postGIS.R")
+source("scripts/visualise/export_schemes.R")
 
 
 #Display Finishing Message
