@@ -9,8 +9,6 @@ library(sf)
 # download.file(u_msoa11, "out.zip")
 # unzip(zipfile = "out.zip", exdir = "../cyipt-inputs-official/")
 
-region = "Bristol"
-
 oa_lookup = readRDS("../cyipt-inputs-official/OA01_OA11_LAD11_EW_LU.Rds")
 aggzones = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/cambridgeshire/z.Rds")
 aggzones = st_as_sf(aggzones)
