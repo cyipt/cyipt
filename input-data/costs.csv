@@ -199,3 +199,11 @@ Living Street 0 no no 0,Cycle Lanes,upgrade,460
 Living Street 1 share_busway no 0,None,downgrade,0
 Main Road Link - Cycling Allowed 0 lane lane 0,Stepped Cycle Tracks,upgrade,960
 Minor Road - Cycling Allowed 1 share_busway no 0,Cycle Lanes with light segregation,upgrade,740
+Residential Road - Cycling Allowed 0 track no 0,Cycle Street,downgrade,0
+Main Road Link - Cycling Allowed 0 lane lane 0,None,downgrade,0
+Main Road - Cycling Allowed 0 track track 0,Segregated Cycle Track,no change,0
+Main Road - Cycling Allowed 0 track share_busway 1,Segregated Cycle Track,upgrade (one side),725
+Main Road - Cycling Allowed 0 track track 0,Cycle Lanes with light segregation,downgrade,0
+Main Road - Cycling Allowed 0 track lane 0,None,downgrade,0
+Main Road - Cycling Allowed 0 lane no 0,Segregated Cycle Track,upgrade,1450
+Minor Road - Cycling Allowed 0 no track 0,Cycle Lanes,upgrade (one side),180

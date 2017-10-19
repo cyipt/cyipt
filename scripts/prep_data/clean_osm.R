@@ -700,6 +700,10 @@ for(a in 1:length(regions)){
             }else if(osm$cycleway[d] %in% c("opposite","opposite_lane","opposite_track","opposite_share_busway")){
               #Do nothing as this is on the right side
               osm$cycleway.left[d] <- "no"
+            }else if(osm$cycleway[d] == "right"){
+              osm$cycleway.left[d] <- "no"
+            }else if(osm$cycleway[d] == "left"){
+              osm$cycleway.left[d] <- "lane"
             }else{
               osm$cycleway.left[d] <- osm$cycleway[d]
             }
@@ -730,6 +734,10 @@ for(a in 1:length(regions)){
               osm$cycleway.right[e] <- "lane"
             }else if(osm$cycleway[e] == "opposite_track"){
               osm$cycleway.right[e] <- "track"
+            }else if(osm$cycleway[e] == "right"){
+              osm$cycleway.right[e] <- "lane"
+            }else if(osm$cycleway[e] == "left"){
+              osm$cycleway.right[e] <- "no"
             }else{
               osm$cycleway.right[e] <- osm$cycleway[e]
             }
