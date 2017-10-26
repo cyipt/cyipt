@@ -106,7 +106,7 @@ for(a in 1:nrow(bounds)){
 
     #Download data
     q = opq(st_bbox(region_shp)) %>%
-      add_feature(key = "highway")
+      add_osm_feature(key = "highway")
     res = osmdata_sf(q = q)
     #extract lines data
     lines <- res$osm_lines
