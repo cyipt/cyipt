@@ -1,5 +1,5 @@
 # get cas2003 OD data
-devtools::install_github("robinlovelace/ukborders")
+devtools::install_github("robinlovelace/ukboundaries")
 library(tmap)
 tmap_mode("view")
 library(ukborders)
@@ -7,18 +7,20 @@ library(tidyverse)
 library(stplanr)
 library(sf)
 
-aggzones = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/west-yorkshire/z.Rds") %>%
-  st_as_sf(aggzones)
+aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
+aggzone = filter(aggzones, ttwa11nm == "Bristol")
 c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp") %>%
   st_transform(4326)
-flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/west-yorkshire/l.Rds") %>%
+flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
   as(Class = "sf")
 z_msoa = st_read("../cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp")
 
-c_oa01 = c_oa01[aggzones, ]
+c_oa01 = c_oa01[aggzone, ]
 cas = cas2003_vsimple[c_oa01, ]
 qtm(cas, borders = "blue") +
   qtm(aggzones, borders = "red")
+
+
 
 
 m = readr::read_csv("~/cyipt/example-data/chapeltown-road/1239714089.csv", skip = 9) %>%
