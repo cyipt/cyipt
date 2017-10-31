@@ -16,18 +16,18 @@ if(!dir.exists(paste0("../cyipt-bigdata/osm-raw"))){
 
 
 #Get Boundy
-bounds <- readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.Rds")
+bounds <- readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
 
 #Subset to england
-bounds$lad16cd <- as.character(bounds$lad16cd)
-bounds <- bounds[substr(bounds$lad16cd,1,1) == "E",]
+#bounds$lad16cd <- as.character(bounds$lad16cd)
+#bounds <- bounds[substr(bounds$lad16cd,1,1) == "E",]
 
 #subset the regions to do from the master file
-bounds <- bounds[bounds$lad16nm %in% regions.todo,]
+bounds <- bounds[bounds$ttwa11nm %in% regions.todo,]
 
 
 #Transform to WGS84
-bounds <- st_transform(bounds,4326)
+#bounds <- st_transform(bounds,4326)
 
 #Columns to keep
 
@@ -88,11 +88,11 @@ colcheck <- c("osm_id","name",
 
 
 #uncomment for loop for all regions
-for(a in 1:nrow(bounds)){
+for(a in seq(from = 1, to = nrow(bounds))){
   #Get Region Name
-  region_nm <- as.character(bounds$lad16nm[a])
-  region_nm <- str_replace_all(region_nm,"[[:punct:]]","")
-  region_nm <- str_replace_all(region_nm," ","")
+  region_nm <- as.character(bounds$ttwa11nm[a])
+  #region_nm <- str_replace_all(region_nm,"[[:punct:]]","")
+  #region_nm <- str_replace_all(region_nm," ","")
   exists <- dir.exists(paste0("../cyipt-bigdata/osm-raw/",region_nm))
   #Skip if already done
   if(skip & exists){
@@ -108,9 +108,23 @@ for(a in 1:nrow(bounds)){
     q = opq(st_bbox(region_shp)) %>%
       add_osm_feature(key = "highway")
     res = osmdata_sf(q = q)
-    #extract lines data
+
+    #extract lines and points data
     lines <- res$osm_lines
+    lines.loops <- res$osm_polygons
+    points <- res$osm_points
+    rm(res,q)
+
+
+    #remove the invalid polygons
+    lines.loops <- lines.loops[!is.na(lines.loops$highway),]
+    lines.loops <- lines.loops[is.na(lines.loops$area),]
+    #qtm(lines.loops)
+
+
     check <- colcheck %in% names(lines)
+    check.loops <- colcheck %in% names(lines.loops)
+
     #Add in any missing columns
     for(b in 1:length(colcheck)){
       if(check[b]){
@@ -120,22 +134,49 @@ for(a in 1:nrow(bounds)){
         lines[,colcheck[b]] <- NA
       }
     }
-    lines <- lines[ ,colcheck]
-    rm(b,check)
+    #Add in any missing columns
+    for(c in 1:length(colcheck)){
+      if(check.loops[c]){
+        #Do nothing
+      }else{
+        #Add the column filled with NAs
+        lines.loops[,colcheck[c]] <- NA
+      }
+    }
 
-    #Get points
-    points <- res$osm_points
+    lines <- lines[ ,colcheck]
+    lines.loops <- lines.loops[ ,colcheck]
+    rm(b,c,check, check.loops)
+
+    #Channge Polygons to Lines
+    lines.loops <- st_cast(lines.loops, "LINESTRING")
+
+    # remove invalid geometry
+    lines2 <- lines[st_is_valid(lines) %in% TRUE,] # %in% TRUE handles NA that occure with empty geometries
+    lines.loops2 <- lines.loops[st_is_valid(lines.loops) %in% TRUE,]
+    points2 <- points[st_is_valid(points) %in% TRUE,]
+
+
+    #Bind togther
+    lines <- rbind(lines,lines.loops)
+    rm(lines.loops)
+
 
     #CHange to British National Grid
     lines <- st_transform(lines, 27700)
     points <- st_transform(points, 27700)
     region_shp <- st_transform(region_shp, 27700)
 
+
     #Save out region boundary for reference
     saveRDS(region_shp,paste0("../cyipt-bigdata/osm-raw/",region_nm,"/bounds.Rds"))
 
     #Download osm used a square bounding box, now trim to the exact boundry
     #note that lines that that cross the boundary are still included
+
+    #simple subset does not work well with large data sets
+    #inter.points <- st_intersects(points[1:10,],region_shp)
+
     lines <- lines[region_shp,]
     points <- points[region_shp,]
 
@@ -176,7 +217,8 @@ for(a in 1:nrow(bounds)){
 
     saveRDS(points, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-junction-points.Rds"))
     message(paste0("Finished downloading ",region_nm," at ",Sys.time()))
-    rm(lines,res,region_shp,q,region_nm, len, points, inter, rowsum, exists)
+    rm(lines,region_shp,region_nm, len, points, inter, rowsum, exists)
+    gc() # Clean memory as using large amounts per loop
   }
 
 }
