@@ -78,9 +78,9 @@ for(a in 1:length(regions)){
       #################################
       #Remove Cleaned Data
 
-      if(overwrite){
-        unlink(paste0("../cyipt-bigdata/osm-clean/",regions[a]), recursive = T)
-      }
+      #if(overwrite){
+      #  unlink(paste0("../cyipt-bigdata/osm-clean/",regions[a]), recursive = T)
+      #}
 
 
     }
