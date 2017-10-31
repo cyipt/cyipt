@@ -1,5 +1,6 @@
 #Clean Up OSM Description
 library(sf)
+library(dplyr)
 
 #settings now come from master file
 #skip <- FALSE # Skip files alread done
@@ -34,7 +35,7 @@ for(a in 1:length(regions)){
 
       message(paste0("Cleaning OSM tags for ",regions[a]," at ",Sys.time()))
       osm <- readRDS(paste0("../cyipt-bigdata/osm-raw/",regions[a],"/osm-lines.Rds"))
-      osm <- st_transform(osm, 27700)
+      #osm <- st_transform(osm, 27700) now done in download-osm
 
       #remove factors
       osm$highway <- as.character(osm$highway)
@@ -58,16 +59,11 @@ for(a in 1:length(regions)){
       #step 10: remove not allowed roads
       ################################################################################
       osm <- osm[!is.na(osm$highway),] #Must have a highway value for so many reasons
-      osm <- osm[osm$highway != "proposed",] #Unbuilt roads are not of intrest
-      osm <- osm[osm$highway != "planned",]
-      osm <- osm[osm$highway != "escape",]
-      osm <- osm[osm$highway != "demolished",]
-      osm <- osm[osm$highway != "abandoned",]
-      osm <- osm[osm$highway != "dismantled",]
-      osm <- osm[osm$highway != "crossing",] #crossings should be points not lines in OSM
-      osm <- osm[osm$highway != "raceway",] #recreational road not part of transport network
-      osm <- osm[osm$highway != "traffic_island",] #incorrect tagging
-      osm <- osm[osm$highway != "ohm:military:Trench",] # Unknown tag
+      not.allowed <- c("proposed","planned","escape","demolished","abandoned","dismantled",
+                       "crossing","raceway","traffic_island","ohm:military:Trench",
+                       "escalator","corridor","construction","services","bus_stop")
+      osm <- osm[!(osm$highway %in% not.allowed),]
+      rm(not.allowed)
 
 
       ###############################################################################
@@ -803,6 +799,15 @@ for(a in 1:length(regions)){
       #remove unneeded columns
       osm <- osm[,c("osm_id","name","ref","highway","junction","roadtype","onewaysummary","elevation","maxspeed","segregated","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right","region","geometry")]
       #osm <- osm[,c("osm_id","name","ref","highway","junction","roadtype","onewaysummary","elevation","maxspeed","segregated","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right","geometry")]
+
+
+      #########################################################
+      # add in quietness scores
+      unique(osm$highway)
+      quiet.scores <- read.csv("../cyipt/input-data/quietness.csv", stringsAsFactors = F)
+      osm <- left_join(osm,quiet.scores, by = c("highway" = "highway"))
+
+
       saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds"))
       rm(osm)
 
