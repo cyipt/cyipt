@@ -25,17 +25,11 @@ clone git@github.com:cyipt/cyipt-bigdata
 
 The main processes undertaken by CyIPT are:
 
-- Download OSM data by Local Authority (by default Bristol). See [download-osm.R](https://github.com/cyipt/cyipt/blob/master/scripts/prep_data/download-osm.R):
+- Download OSM data by Local Authority (by default Bristol). See [download-osm.R](https://github.com/cyipt/cyipt/blob/master/scripts/prep_data/download-osm.R)
 
-```{r}
-source("scripts/prep_data/download-osm.R")
-```
+- Clean OSM data that has been saved to `cyipt-bigdata` See `clean_osm.R`
 
-- Clean OSM data that has been saved to `cyipt-bigdata`:
-
-```{r}
-source("scripts/prep_data/clean_osm.R")
-```
+These are called from `cyipt.R`.
 
 ## Definitions and variable names
 
