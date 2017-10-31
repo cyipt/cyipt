@@ -49,38 +49,41 @@ osm.sub <- st_intersection(line.buff, osm.sub)
 osm.sub$ID <- 1:nrow(osm.sub)
 
 qtm(line, lines.lwd = 5, lines.col = "black") +
-  qtm(osm.sub, lines.lwd = 3, lines.col = "red")
+  qtm(osm.sub, lines.lwd = 3, lines.col = "green") #+
+#  qtm(osm, lines.lwd = 1, lines.col = "red")
 
 
 #Check for 3 point intersection
-match <- list()
+#match <- list()
+match = vector(mode = "logical", length = nrow(osm.sub))
 
 for(a in 1:nrow(osm.sub)){
   points <- st_cast(osm.sub$geometry[a], "POINT") #convert road to points
-  if(length(points) >= 3){
+  points.len <- length(points)
+  if(points.len >= 3){
     #Get first last and a middle point
-    points <- points[c(1,ceiling(length(points)/2),length(points))]
+    points <- points[c(1,ceiling(points.len/2),points.len)]
     p3 <- TRUE
-  }else if(length(points) == 2){
+  }else if(points.len == 2){
     #Need 3 points so double get the last point
-    points <- points[c(1,1,length(points))]
+    points <- points[c(1,1,points.len)]
     p3 <- FALSE
   }else{
     #Somethign has gone wrong
-    warning(paste0("Line ",a," is made up of less than two points. Points =  ",length(points)))
+    warning(paste0("Line ",a," is made up of less than two points. Points =  ",points.len))
     stop()
   }
 
   #Buffer points
   len <- as.numeric(st_distance(points[1],points[3])) #Change to distance between points to deal with curved roads
-  if(len < 10 & len != 0){ # To hanel very small lines
+  if(len < 4 & len != 0){ # To hanel very small lines
     cutlen <- len/2.5
   }else{
-    cutlen <- 5
+    cutlen <- 2
   }
   buff <- st_buffer(points, cutlen) #Make small circles around the points
   if(p3){
-    buff[2] <- st_buffer(points[2], 1.5) # replace middle buffer with smaller value but only if it is a unique point
+    buff[2] <- st_buffer(points[2], 1) # replace middle buffer with smaller value but only if it is a unique point
   }
 
 
@@ -92,17 +95,17 @@ for(a in 1:nrow(osm.sub)){
   sel.all <- sel.all[sel.all %in% sel.middle]
 
   if(length(sel.all) == 0){
-    match[[a]] <- FALSE
+    match[a] <- FALSE
   }else{
-    match[[a]] <- TRUE
+    match[a] <- TRUE
   }
 
 }
 
-match <- unlist(match)
+#match <- unlist(match)
 osm.sub2 <- osm.sub[match,]
 
-#qtm(line, lines.lwd = 7, lines.col = "black") +
+qtm(line, lines.lwd = 7, lines.col = "black") +
   qtm(osm.sub, lines.lwd = 5, lines.col = "red") +
     qtm(osm.sub2, lines.lwd = 3, lines.col = "blue")
 
