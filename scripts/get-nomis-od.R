@@ -2,10 +2,9 @@
 devtools::install_github("robinlovelace/ukboundaries")
 library(tmap)
 tmap_mode("view")
-library(ukborders)
+library(ukboundaries)
 library(tidyverse)
 library(stplanr)
-library(sf)
 
 aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
 aggzone = filter(aggzones, ttwa11nm == "Bristol")
@@ -16,12 +15,32 @@ flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
 z_msoa = st_read("../cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp")
 
 c_oa01 = c_oa01[aggzone, ]
-cas = cas2003_vsimple[c_oa01, ]
+# check input data for region
+cas = cas2003_simple[c_oa01, ]
 qtm(cas, borders = "blue") +
   qtm(aggzones, borders = "red")
 
-
-
+# generate OD matrix between all zones in region
+od = points2odf(cas)
+l = od2line(flow = od, cas)
+plot(l$geometry)
+l$dist = st_length(l) %>% as.numeric()
+summary(l$dist)
+# remove all those > 20 km
+l = l %>% filter(dist < 20000 & dist > 0)
+# try to get data on 00HBNW to 00HBNX (from nomis)
+l_test = readr::read_csv("http://www.nomisweb.co.uk/api/v01/dataset/NM_124_1.data.csv?area_of_residence=1308626144&area_of_workplace=1308626145&cell=415959553&date=latest&measures=20100&select=area_of_residence_code,area_of_workplace_code,cell_name,date_name,measures_name,obs_value,obs_status_name") # works
+# l_test = readr::read_csv("http://www.nomisweb.co.uk/api/v01/dataset/NM_124_1.data.csv?area_of_residence_code=00HBNW&area_of_workplace_code=00HBNX&cell=415959553&date=latest&measures=20100&select=area_of_residence_code,area_of_workplace_code,cell_name,date_name,measures_name,obs_value,obs_status_name") # fails
+l_all = readr::read_csv("http://www.nomisweb.co.uk/api/v01/dataset/NM_124_1.data.csv?area_of_residence=1308626136...1308626161,1308626164,1308626165,1308626162,1308626163,1308626166...1308626170&area_of_workplace=1308626136...1308626161,1308626164,1308626165,1308626162,1308626163,1308626166...1308626170&cell=415957249&date=latest&measures=20100&select=area_of_residence_code,area_of_workplace_code,obs_value") # works
+l_bicycle = readr::read_csv("http://www.nomisweb.co.uk/api/v01/dataset/NM_124_1.data.csv?area_of_residence=1308626136...1308626161,1308626164,1308626165,1308626162,1308626163,1308626166...1308626170&area_of_workplace=1308626136...1308626161,1308626164,1308626165,1308626162,1308626163,1308626166...1308626170&cell=415959553&date=latest&measures=20100&select=obs_value") # works
+l_all = cbind(l_all[1:2], all = l_all$OBS_VALUE, bicycle = l_bicycle$OBS_VALUE)
+l_test = od2line(flow = l_all, zones = cas)
+l_test$dist = as.numeric(st_length(l_test))
+l_test = l_test %>% filter(dist > 0) %>%
+  mutate(pcycle = bicycle / all)
+plot(l_test, lwd = l_test$all / mean(l_test$all), col = "grey")
+tm_shape(l_test) +
+  tm_lines(lwd = "all", scale = 5, alpha = 0.5, col = "pcycle", palette = "RdYlBu", breaks = c(0, 0.05, 0.1, 0.3), auto.palette.mapping = F)
 
 m = readr::read_csv("~/cyipt/example-data/chapeltown-road/1239714089.csv", skip = 9) %>%
   slice(- n()) %>%
