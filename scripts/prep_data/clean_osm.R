@@ -60,8 +60,8 @@ for(a in 1:length(regions)){
       ################################################################################
       osm <- osm[!is.na(osm$highway),] #Must have a highway value for so many reasons
       not.allowed <- c("proposed","planned","escape","demolished","abandoned","dismantled",
-                       "crossing","raceway","traffic_island","ohm:military:Trench",
-                       "escalator","corridor","construction","services","bus_stop")
+                       "crossing","raceway","traffic_island","ohm:military:Trench","junction",
+                       "escalator","corridor","construction","services","bus_stop","elevator")
       osm <- osm[!(osm$highway %in% not.allowed),]
       rm(not.allowed)
 
@@ -75,7 +75,7 @@ for(a in 1:length(regions)){
       osm$highway[osm$highway == "access"] <- "service"
       osm$highway[osm$highway == "manoeuvring_forecourt"] <- "service"
       osm$highway[osm$highway == "no"] <- "path"
-
+      osm$highway[osm$highway == "mini_roundabout"] <- "residential"
 
 
       ################################################################################
@@ -645,13 +645,14 @@ for(a in 1:length(regions)){
               #reduce the number of lanes accordingly
               osm$lanes.forward[i] <- osm$lanes.forward[i] - lpf
               osm$lanes.backward[i] <- osm$lanes.backward[i] - lpb
-            }else if(lt < (lf + lb + lpb + lpf)){
+            }else if(lt != (lf + lb + lpb + lpf)){
               #Total lanes is wrong, assume indervidual values are correct
               osm$lanes[i] <- lf + lb + lpb + lpf
             }else{
               ###############################
               #OTHER CHECKS GO HERE
               print(paste0("Error: 1: Ran out of ideas. For line ",i," values: ",lt," ",lf," ",lb," ",lpf," ",lpb))
+
               stop()
               ##################################
             }
