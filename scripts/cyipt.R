@@ -20,7 +20,7 @@ verbose <- TRUE #Get extra messages and information
 
 ##########################################
 
-library(stringr)
+#library(stringr)
 
 #Start of code
 #Select regions to do using the regions to do file
@@ -36,10 +36,6 @@ tot.start <- Sys.time()
 
 #Step 1: Download the Data
 source("scripts/prep_data/download-osm.R")
-
-#Clean Up regions.todo for the rest of the code
-regions.todo <- str_replace_all(regions.todo,"[[:punct:]]","")
-regions.todo <- str_replace_all(regions.todo," ","")
 
 #Step 2: Clean the OSM Tags
 source("scripts/prep_data/clean_osm.R")
