@@ -12,11 +12,14 @@ c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population
   st_transform(4326)
 flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
   as(Class = "sf")
-z_msoa = st_read("../cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp")
+z_msoa = st_read("../cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp") %>%
+  st_transform(st_crs(cas))
 
 c_oa01 = c_oa01[aggzone, ]
 # check input data for region
+
 cas = cas2003_simple[c_oa01, ]
+z = z_msoa[c_oa01, ]
 qtm(cas, borders = "blue") +
   qtm(aggzones, borders = "red")
 
@@ -40,7 +43,7 @@ l_test = l_test %>% filter(dist > 0) %>%
   mutate(pcycle = bicycle / all)
 plot(l_test, lwd = l_test$all / mean(l_test$all), col = "grey")
 tm_shape(l_test) +
-  tm_lines(lwd = "all", scale = 5, alpha = 0.5, col = "pcycle", palette = "RdYlBu", breaks = c(0, 0.05, 0.1, 0.3), auto.palette.mapping = F)
+  tm_lines(lwd = "all", scale = 5, alpha = 0.9, col = "pcycle", palette = "RdYlBu", breaks = c(0, 0.05, 0.1, 0.3), auto.palette.mapping = F)
 
 m = readr::read_csv("~/cyipt/example-data/chapeltown-road/1239714089.csv", skip = 9) %>%
   slice(- n()) %>%
