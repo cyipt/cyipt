@@ -104,7 +104,7 @@ for(b in 1:length(regions)){
       pct.all <- pct.all[pol,]
       pct.all <- st_transform(pct.all, st_crs(osm)) #transfor so that crs are idetical
 
-      #Performacne Tweak, Preallocate object to a gid to reduce processing time
+      #Performacne Tweak, Preallocate object to a grid to reduce processing time
       grid <- st_make_grid(osm, n = c(100,100), "polygons")
       grid_osm <- st_intersects(osm, grid) # Which grid is each osm line in?
       grid_pct <- st_intersects(grid, pct.all)# for each grid which pct lines cross it
