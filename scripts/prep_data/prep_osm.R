@@ -9,7 +9,7 @@
 library(sf)
 library(dplyr)
 
-source("R/functions.R")
+#source("R/functions.R")
 
 #FUnction to Splitlines
 splitlines <- function(a){
@@ -21,6 +21,7 @@ splitlines <- function(a){
     buff_sub <- st_union(buff_sub)
     line_cut <- st_difference(line_sub, buff_sub)
   }
+  line_cut<- st_cast(line_cut, "LINESTRING") #needed for new bind_rows() call
   return(line_cut)
 }
 
@@ -53,26 +54,38 @@ for(a in 1:length(regions)){
       points <- readRDS(paste0("../cyipt-bigdata/osm-raw/",regions[a],"/osm-junction-points.Rds"))
 
       #Loop To Split Lines
-      buff <- st_buffer(points,0.01)
+      buff <- st_buffer(points,0.01, nQuadSegs = 2)
       inter <- st_intersects(osm,buff)
       cut_list <- lapply(1:nrow(osm), splitlines)
-      cut <- do.call("rbind",cut_list)
-      cut <- cut[!duplicated(cut$geometry),]
+
+      cut <- bind_rows(cut_list) #much faster than rbind but mangle the sf format, all geometies must be same type
+      #cut <- do.call("rbind",cut_list)
       rm(cut_list)
 
+      #rebuild the sf object
+      cut <- as.data.frame(cut)
+      cut$geometry <- st_sfc(cut$geometry)
+      cut <- st_sf(cut)
+      st_crs(cut) <- 27700
+
+      # check for dupliates
+      cut <- cut[!duplicated(cut$geometry),]
+
+
+
       #Split MULTILINESTRING into LINESTRING
-      result <- splitmulti(cut,"MULTILINESTRING","LINESTRING")
-      rm(cut)
+      #result <- splitmulti(cut,"MULTILINESTRING","LINESTRING")
+      #rm(cut)
 
       #Add ID
-      result$id <- 1:nrow(result)
-      row.names(result) <- result$id
+      cut$id <- 1:nrow(cut)
+      row.names(cut) <- cut$id
 
       #Save Out Data
-      saveRDS(result, paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-lines.Rds"))
+      saveRDS(cut, paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-lines.Rds"))
 
-      message(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(result)))
-      rm(osm, result, bounds,buff,inter, points)
+      message(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(cut)))
+      rm(osm, cut, bounds,buff,inter, points)
       gc()
 
       #################################
