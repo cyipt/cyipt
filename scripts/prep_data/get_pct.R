@@ -103,6 +103,7 @@ for(b in 1:length(regions)){
       st_crs(pol) <- st_crs(pct.all) #For some reason the CRS are fractionally different
       pct.all <- pct.all[pol,]
       pct.all <- st_transform(pct.all, st_crs(osm)) #transfor so that crs are idetical
+      saveRDS(pct.all,paste0("../cyipt-securedata/pct-regions/",regions[b],".Rds")) #save selection for later use
 
       #Performacne Tweak, Preallocate object to a grid to reduce processing time
       grid <- st_make_grid(osm, n = c(100,100), "polygons")
