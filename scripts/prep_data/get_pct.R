@@ -103,6 +103,14 @@ for(b in 1:length(regions)){
       st_crs(pol) <- st_crs(pct.all) #For some reason the CRS are fractionally different
       pct.all <- pct.all[pol,]
       pct.all <- st_transform(pct.all, st_crs(osm)) #transfor so that crs are idetical
+
+      #Futher subset using the region boundary
+      bounds <- readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
+      bounds <- bounds[bounds$ttwa11nm == regions[b],]
+      bounds <- st_transform(bounds, st_crs(osm))
+      nrow(pct.all)
+      pct.all <- pct.all[bounds,]
+      nrow(pct.all)
       saveRDS(pct.all,paste0("../cyipt-securedata/pct-regions/",regions[b],".Rds")) #save selection for later use
 
       #Performacne Tweak, Preallocate object to a grid to reduce processing time
@@ -129,7 +137,9 @@ for(b in 1:length(regions)){
       clusterEvalQ(cl, {library(sf); source("R/functions.R")}) #; {splitmulti()}) #Need to load splitmuliin corectly
       respar <- fun(cl)
       stopCluster(cl)
-      respar <- do.call("rbind",respar)
+      #respar <- do.call("rbind",respar)
+      respar <- bind_rows(respar) #much faster than rbind
+
       end <- Sys.time()
       message(paste0("Did ",n," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
       #identical(res,respar)
