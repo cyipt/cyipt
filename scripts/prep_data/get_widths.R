@@ -279,28 +279,60 @@ for(b in 1:length(regions)){
       poi <- st_centroid(pol)
       rm(ext)
 
+      #get bounds
+      bounds <- readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
+      bounds <- bounds[bounds$ttwa11nm == regions[b],]
+      bounds <- st_transform(bounds, st_crs(osm))
+
       #get region
       os.region <- readRDS("../cyipt-bigdata/boundaries/regions.Rds")
-      os.region <- os.region[st_intersects(poi,os.region)[[1]],]
+      #os.region <- os.region[st_intersects(poi,os.region)[[1]],]
+      os.region <- os.region[bounds,]
+
       os.region.name <- as.character(os.region$name)
 
       #If can make direct match try closest region, works for costal towns
-      if(length(os.region.name) == 0){
-        os.region <- readRDS("../cyipt-bigdata/boundaries/regions.Rds")
-        dists <- as.vector(st_distance(os.region,poi))
-        os.region.name <- as.character(os.region$name[dists == min(dists)])
+      #if(length(os.region.name) == 0){
+      #  os.region <- readRDS("../cyipt-bigdata/boundaries/regions.Rds")
+      #  dists <- as.vector(st_distance(os.region,poi))
+      #  os.region.name <- as.character(os.region$name[dists == min(dists)])
+      #}
+
+      # Read in the OS region(S)
+      os.list <- list()
+      for(c in seq(1,length(os.region.name))){
+        os.sub <- readRDS(paste0("../cyipt-securedata/os/",os.region.name[c],".Rds"))
+        os.sub$DESCGROUP <- as.character(os.sub$DESCGROUP)
+        os.sub <- st_cast(os.sub, "POLYGON")
+        os.list[[c]] <- os.sub
+        rm(os.sub)
       }
 
-      rm(os.region)
+      #Bind the list togther
+      os <- bind_rows(os.list) #much faster than rbind but mangle the sf format, all geometies must be same type
+      #cut <- do.call("rbind",cut_list)
+      rm(os.list)
+
+      #rebuild the sf object
+      os <- as.data.frame(os)
+      os$geometry <- st_sfc(os$geometry)
+      os <- st_sf(os)
+      st_crs(os) <- 27700
+
+      #subset back to the region
+      os <- os[bounds,]
+
+
+      #rm(os.region)
 
       #Get correct OS data
-      os <- readRDS(paste0("../cyipt-securedata/os/",os.region.name,".Rds"))
-      os <- os[st_intersects(pol,os)[[1]],] #subset to data within the area of intrest
+      #os <- readRDS(paste0("../cyipt-securedata/os/",os.region.name,".Rds"))
+      #os <- os[st_intersects(pol,os)[[1]],] #subset to data within the area of intrest
 
       #Performacne Tweak, Preallocate object to a gid to reduce processing time
       os_cent <- st_centroid(os)
       osm_cent <- st_centroid(osm)
-      grid <- st_make_grid(osm, n = c(10,10), "polygons")
+      grid <- st_make_grid(osm, n = c(100,100), "polygons")
       grid_osm <- st_intersects(osm_cent, grid)
       grid_os <- st_intersects(grid, os_cent)
       rm(grid, os_cent, osm_cent)
