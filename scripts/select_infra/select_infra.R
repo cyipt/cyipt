@@ -142,13 +142,13 @@ for(b in 1:length(regions)){
     #Get file
     osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
     #Check if PCT values exist in the file
-    if(all(c("group_id","Existing","Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation","Change","costperm","length","costTotal") %in% names(osm)) & skip){
+    if(all(c("Existing","Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation","Change","costperm","length","costTotal") %in% names(osm)) & skip){
       message(paste0("infrastructure types values already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Getting infrastructure types values for ",regions[b]," at ",Sys.time()))
 
       #If overwriting remove old data
-      col.to.keep <- names(osm)[!names(osm) %in% c("group_id","Existing","Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation","Change","costperm","length","costTotal")]
+      col.to.keep <- names(osm)[!names(osm) %in% c("Existing","Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation","Change","costperm","length","costTotal")]
       osm <- osm[,col.to.keep]
       rm(col.to.keep)
 
