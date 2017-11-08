@@ -55,6 +55,11 @@ source("scripts/prep_data/get_widths.R")
 #Step 7:Evaluate Infrastrucutre Options
 source("scripts/select_infra/select_infra.R")
 
+# Step 8: Group into schemes
+source("scripts/select_infra/make_schemes.R")
+
+
+
 #Step LAST: Export for DB
 source("scripts/visualise/export_postGIS.R")
 source("scripts/visualise/export_schemes.R")
