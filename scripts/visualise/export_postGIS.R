@@ -11,7 +11,8 @@ for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
     #Get file
     osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
-    print(nrow(osm))
+    message(paste0(Sys.time()," Processing ",regions[b]," with ",nrow(osm)," lines"))
+    #print(nrow(osm))
     if(!"region" %in% names(osm)){
       osm$region <- regions[b]
       print(paste0("Region Missing from ", regions[b]))
@@ -43,8 +44,11 @@ for(b in 1:length(regions)){
 }
 rm(b,regions)
 
+message(paste0(Sys.time()," Combining Regions into master file "))
+
 #Bind all the regions toghter
-osm.all <- do.call("rbind",regions.list)
+#osm.all <- do.call("rbind",regions.list)
+osm.all <- bind_rows(regions.list)
 
 #Add masrster ID column
 osm.all$idGlobal <- 1:nrow(osm.all)
@@ -92,6 +96,7 @@ osm.all <- osm.all[,c("idGlobal","id","osmid","region","name","ref","highway","j
 osm.all$ref <- substr(osm.all$ref, 1, 20)
 osm.all$name <- substr(osm.all$name, 1, 255)
 
+message(paste0(Sys.time()," Saving CSV Files "))
 
 #Save Out
 write.csv(roadtypes,"../cyipt-bigdata/forDB/roadtypes.csv", row.names = F, na = "")
