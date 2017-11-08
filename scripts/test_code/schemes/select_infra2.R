@@ -17,55 +17,7 @@ tmap_mode("view")
 #overwrite <- FALSE #Overwrite or create new file
 
 #Functions
-recc.infra <- function(c){
-  not_road <- c("bridleway","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")
-  osm.sub <- osm[c,]
 
-  #On road or off road
-  if(osm.sub$highway[1] %in% not_road){
-    #Off Road
-    rules.sub <- rules.offroad[rules.offroad$pctmin <= osm.sub$pct.census[1] &
-                                  rules.offroad$pctmax > osm.sub$pct.census[1]
-                                ,]
-    }else{
-    #On Road
-    rules.sub <- rules.onroad[rules.onroad$speedmin < osm.sub$maxspeed[1] &
-                                  rules.onroad$speedmax >= osm.sub$maxspeed[1] & #Nb equals different for speed as speedlimits are usually at maximum end
-                                  rules.onroad$pctmin <= osm.sub$pct.census[1] &
-                                  rules.onroad$pctmax > osm.sub$pct.census[1] &
-                                  rules.onroad$AADTmin <= osm.sub$aadt.temp[1] &
-                                  rules.onroad$AADTmax > osm.sub$aadt.temp[1]
-                                ,]
-    }
-
-    if(nrow(rules.sub) != 1){
-      message(paste0("Error: Not valid rules for line ",c))
-      stop()
-    }
-
-    #Remove unneded columns, add on id value
-    rules.sub <- rules.sub[,c("CycleRouteProvision","DesWidth","MinWidth","DesSeparation","MinSeparation")]
-    names(rules.sub) <- c("Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation")
-    rules.sub$id <- osm.sub$id
-    return(rules.sub)
-}
-
-get.costs <- function(d){
-  osm.sub <- osm[d,]
-
-  #Get Costs
-  costs.sub <- costs[costs$Existing == osm.sub$Existing[1] & costs$Recommended == osm.sub$Recommended[1],]
-
-  #Check for errors
-  if(nrow(costs.sub) != 1){
-    message(paste0("Error: Not valid costs for line ",d))
-    stop()
-  }
-
-  costs.sub$id <- osm.sub$id
-  costs.sub <- costs.sub[,c("id","Change","costperm")]
-  return(costs.sub)
-}
 
 #Creat Polygons Around each scheme
 schemepoly <- function(a){
@@ -148,64 +100,6 @@ for(b in 1:length(regions)){
     }else{
       message(paste0("Getting infrastructure types values for ",regions[b]," at ",Sys.time()))
 
-      #If overwriting remove old data
-      col.to.keep <- names(osm)[!names(osm) %in% c("group_id","Existing","Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation","Change","costperm","length","costTotal")]
-      osm <- osm[,col.to.keep]
-      rm(col.to.keep)
-
-      ##############################################
-      #Create temp aadt values with no NAs
-      osm$aadt.temp <- osm$aadt
-      osm$aadt.temp[is.na(osm$aadt.temp)] <- 0
-
-      ###########################################################################################################
-      #Step 1: Compare Against Rules Table
-      res <- lapply(1:nrow(osm),recc.infra)
-      res <- do.call("rbind", res)
-
-      #join in resutls
-      osm <- left_join(osm, res, by = c("id" = "id"))
-
-      #remove temp aadt
-      osm$aadt.temp <- NULL
-      rm(res)
-
-      ######################################################################################
-      #Summary Existing Infra
-
-      osm$Existing <- paste0(osm$roadtype," ",osm$lanes.psv.forward," ",osm$cycleway.left," ",osm$cycleway.right," ",osm$lanes.psv.backward)
-
-      #For testing only
-
-      summary <- as.data.frame(osm)
-      summary <- summary[,c("Existing","Recommended")]
-      summary <- unique(summary)
-      costs.summary <- costs[,c("Existing","Recommended")]
-      #write.csv(summary, paste0("../cyipt-bigdata/osm-prep/",regions[b],"/RoadCombis.csv"), row.names = F)
-      compar  <- function(a1,a2)
-      {
-        a1.vec <- apply(a1, 1, paste, collapse = "")
-        a2.vec <- apply(a2, 1, paste, collapse = "")
-        a1.without.a2.rows <- a1[!a1.vec %in% a2.vec,]
-        return(a1.without.a2.rows)
-      }
-      comp <- compar(summary,costs.summary)
-
-
-
-
-      ###########################################################################
-      #Step 3: Costs
-      res2 <- lapply(1:nrow(osm),get.costs)
-      res2 <- do.call("rbind", res2)
-
-      #join in resutls
-      osm <- left_join(osm, res2, by = c("id" = "id"))
-      rm(res2)
-
-      #Step 7: Find lenghts and total costs
-      osm$length <- as.numeric(st_length(osm))
-      osm$costTotal <- as.integer(osm$costperm * osm$length)
 
       #############################################################################
       # Step 4: Group into schemes
@@ -246,11 +140,11 @@ for(b in 1:length(regions)){
       road_names$roadNameID <- 1:nrow(road_names)
       osm.schemes <- left_join(osm.schemes,road_names, by = c("name" = "name"))
 
-      #If the scheme is over 500m include it in the master list
+      #If the scheme is over 1 km include it in the master list
       osm.schemes.rname <- osm.schemes[,c("roadNameID","length")]
       st_geometry(osm.schemes.rname) <- NULL
       osm.schemes.rname <- aggregate(osm.schemes.rname$length, by=list(roadNameID=osm.schemes.rname$roadNameID), FUN=sum)
-      osm.schemes.rname <- osm.schemes.rname[osm.schemes.rname$x > 500,]
+      osm.schemes.rname <- osm.schemes.rname[osm.schemes.rname$x > 1000,]
 
       for(i in 1:nrow(osm.schemes)){
         if(osm.schemes$roadNameID[i] %in% osm.schemes.rname$roadNameID){
@@ -280,8 +174,16 @@ for(b in 1:length(regions)){
       st_geometry(verts.import) <- NULL
       verts.import <- verts.import[,c("id","name","ref","Recommended","length","group_id")]
       names(verts.import) <- c("id","roadname","ref","Recommended","length","group_id")
-      verts.import$roadname <- NULL
+      #verts.import$roadname <- NULL
       row.names(verts.import) <- 1:nrow(verts.import)
+
+
+
+
+
+
+
+
 
       g.path <- graph_from_data_frame(path.inter.df, directed = FALSE, vertices = verts.import)
       g.path <- simplify(g.path, remove.loops = T, remove.multiple = T)
@@ -289,6 +191,42 @@ for(b in 1:length(regions)){
       rm(ls,rep,path.inter.df)
       gorder(g.path)
       ecount(g.path)
+
+      V(g.path)$degree <- degree(g.path)
+      #clus = cluster_walktrap(g.path, steps = 4, merges = TRUE, modularity = TRUE, membership = TRUE)
+      clus = cluster_fast_greedy(g.path, merges = TRUE, modularity = TRUE, membership = TRUE)
+      #clus = communities(g.path)
+      V(g.path)$member <- membership(clus)
+
+      colours = sample ( rainbow ( max ( V(g.path)$member )  + 1) )
+      V(g.path)$color = colours[V(g.path)$member +1]
+
+      svg(filename="clusters-bristol.svg",
+          width=25,
+          height=20,
+          pointsize=2)
+      par(mar = c(1,1,1,1))
+      plot(g.path,
+           edge.width = 1,
+           vertex.size = 1 ,
+           edge.arrow.size = 0.2,
+           edge.curved= 0,
+           vertex.color = V(g.path)$color,
+           vertex.label.family= "Helvetica",
+           vertex.label.color = "black",
+           vertex.frame.color = V(g.path)$color,
+           layout = layout_nicely,
+           rescale = T,
+           axes = F)
+      dev.off()
+
+
+      verts <- igraph::as_data_frame(g.path, what="vertices")
+      verts <- verts[,c("name","member")]
+      names(verts) <- c("id","group_id")
+      verts$id <- as.integer(verts$id)
+      osm.schemes.path$group_id <- NULL
+      osm.schemes.path <- left_join(osm.schemes.path,verts, by = c("id" = "id"))
 
 
       g.chain <- delete.vertices(g.path, which(degree(g.path) > 2)) #All the vertexs that are 1 in 1 out
