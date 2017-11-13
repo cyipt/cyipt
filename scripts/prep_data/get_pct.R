@@ -149,6 +149,8 @@ for(b in 1:length(regions)){
       #Join togther data
       osm <- left_join(osm,respar, by = c("id" = "id"))
 
+      saveRDS(pct.all,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct-lines.Rds"))
+
       #Save results
       if(overwrite){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
