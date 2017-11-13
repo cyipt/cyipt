@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS roads (
 		name VARCHAR(255) NULL,
 		ref VARCHAR(20) NULL,
 		highway VARCHAR(20) NULL,
-		junction VARCHAR(12) NULL,
+		junction VARCHAR(20) NULL,
 		elevation VARCHAR(8) NULL,
 		maxspeed SMALLINT NULL,
 		segregated VARCHAR(3) NULL,
