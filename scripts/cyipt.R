@@ -14,7 +14,7 @@ skip <- TRUE #Should the code skip regions that have already been done?
 overwrite <- TRUE #Some stages overwrite existing files, for example by adding an extra column of data
                    #Note that not overwriting maay cause later stagest to fail if they expect earlier stages
                    #resutls to be in the starting file
-ncores <- 4 #Some functions use parallel processing how many clusters should be run?
+ncores <- 2 #Some functions use parallel processing how many clusters should be run?
 verbose <- TRUE #Get extra messages and information
 
 
@@ -58,11 +58,15 @@ source("scripts/select_infra/select_infra.R")
 # Step 8: Group into schemes
 source("scripts/select_infra/make_schemes.R")
 
-
+#Stye 9 : get uptake
+source("scripts/uptake/calc_uptake.R")
 
 #Step LAST: Export for DB
 source("scripts/visualise/export_postGIS.R")
-source("scripts/visualise/export_schemes.R")
+#source("scripts/visualise/export_schemes.R") neads rewrite for new schemes as lines
+
+
+
 
 
 #Display Finishing Message
