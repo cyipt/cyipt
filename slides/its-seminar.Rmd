@@ -1,0 +1,16 @@
+# Modelling the uptake of active travel: from infrastructure to behaviour change
+
+This talk will provide an overview of the work that Robin Lovelace and Malcolm Morgan (ITS) have been doing as part of their Department for Transport funded projects on the Propensity to Cycle Tool (PCT, which has become part of UK government policy in the [Cycling and Walking Infrastructure Strategy](https://www.gov.uk/government/publications/cycling-and-walking-investment-strategy)) and follow-on work on the Cycling Infrastructure Prioritisation Toolkit (CyIPT).
+Although strong evidence shows that infrastructure usually precedes (and to some extent causes) behaviour change the starting point of the talk will be behaviour: how to people currently get around and how could it be different, based on the fundamentals of route distance and hilliness.
+Robin will demonstrate the PCT in action, talk about the R package **stplanr** that he developed to develop it, and outline plans for a globally scalable transport planning toolkit that builds on the PCT work.
+
+Following this high-level overview Malcolm will zoom into the detail: the complexity of roads, pathways, links and nodes that make up the route network of any settlement.
+He will talk about the advanced programming techniques needed to process such complex geospatial network data at city to national levels before describing the algorithms used to automate the process of scenario generation.
+There is a clear linkage between the behaviour and infrastructure focci of Robin and Malcolm's talks that will become aparent as the seminar progresses.
+
+Links to check before the talk:
+
+- The PCT in action: http://www.pct.bike/
+- A prototype of the CyIPT: http://cyipt.bike/
+- A paper on the PCT (Lovelace et al 2017): https://www.jtlu.org/index.php/jtlu/article/view/862
+- An article explaining **stplanr** (for people interested in the tech): https://cran.r-project.org/web/packages/stplanr/vignettes/introducing-stplanr.html
