@@ -152,9 +152,9 @@ for(a in seq(from = 1, to = nrow(bounds))){
     lines.loops <- st_cast(lines.loops, "LINESTRING")
 
     # remove invalid geometry
-    lines2 <- lines[st_is_valid(lines) %in% TRUE,] # %in% TRUE handles NA that occure with empty geometries
-    lines.loops2 <- lines.loops[st_is_valid(lines.loops) %in% TRUE,]
-    points2 <- points[st_is_valid(points) %in% TRUE,]
+    lines <- lines[st_is_valid(lines) %in% TRUE,] # %in% TRUE handles NA that occure with empty geometries
+    lines.loops <- lines.loops[st_is_valid(lines.loops) %in% TRUE,]
+    points <- points[st_is_valid(points) %in% TRUE,]
 
 
     #Bind togther
@@ -193,7 +193,7 @@ for(a in seq(from = 1, to = nrow(bounds))){
     #Find Junctions, OSM Points are both nodes that make up lines/polygons, and objects e.g. shops
     #remove points that are not nodes on the line
     #node points have no tags
-    col.names <- names(points)[!names(points) %in% c("osm_id","highway","geometry")] #Get column names other than osm_id, and highway which is just for junction types
+    col.names <- names(points)[!names(points) %in% c("osm_id","highway", "crossing", "crossing_ref","geometry")] #Get column names other than osm_id, and highway which is just for junction types, and crossing info which can be junction between cycle way and road
     points.sub <- points
     points <- points[,c("osm_id","highway")]
     points.sub <- as.data.frame(points.sub)
