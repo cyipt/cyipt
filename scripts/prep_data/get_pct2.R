@@ -17,59 +17,37 @@ library(parallel)
 #Functions
 source("R/functions.R")
 
-getpctvalues <- function(a){
-  #Get the road line of intrest
-  osm_sub <- osm[a,]
-
-  #As pct lines don't always perfectyl align with the osm get 3 points from the osm line to check against
-  points <- st_cast(osm_sub$geometry, "POINT") #convert road to points
-  if(length(points) >= 3){
-    #Get first last and a middle point
-    points <- points[c(1,ceiling(length(points)/2),length(points))]
-  }else if(length(points) == 2){
-    #Need 3 points so double get the last point
-    points <- points[c(1,1,length(points))]
-  }else{
-    #Somethign has gone wrong
-    warning(paste0("Line ",a," is made up of less than two points. Points =  ",length(points)))
-    stop()
-  }
-
-  #Buffer points
-  len <- as.numeric(st_distance(points[1],points[3])) #Change to distance between points to deal with curved roads
-  if(len < 4 & len != 0){ # To hanel very small lines
-    cutlen <- len/2.5
-  }else{
-    cutlen <- 2
-  }
-  buff <- st_buffer(points, cutlen) #Make small circles around the points
-
-  #Get grid IDS
-  gridid <- grid_osm[a][[1]]
-  rf_grid <- grid_pct[gridid]
-  rf_grid <- unlist(rf_grid)
-  rf_grid <- rf_grid[!duplicated(rf_grid)]
-  rf_presub <- pct.all[rf_grid,] #select all the PCT lines in the same grid cell
-
-  if(nrow(rf_presub) == 0){ #need to check for when presub is empty
-    #return empty result
-    count <- data.frame(id = osm_sub$id ,pct.census = 0, pct.gov = 0,pct.gen = 0, pct.dutch = 0 , pct.ebike = 0)
-  }else{
-
-    #Check that lines intersect with all three points
-    sel.first <- st_intersects(buff[1], rf_presub)[[1]]
-    sel.middle <- st_intersects(buff[2], rf_presub)[[1]]
-    sel.last <- st_intersects(buff[3], rf_presub)[[1]]
-    sel.all <- sel.first[sel.first %in% sel.last]
-    sel.all <- sel.all[sel.all %in% sel.middle]
-    rf_sub <- rf_presub[sel.all,]
-
-    #Return resutls
-    count <- data.frame(id = osm_sub$id, pct.census = sum(rf_sub$pct.census), pct.gov = sum(rf_sub$pct.gov),pct.gen = sum(rf_sub$pct.gen), pct.dutch = sum(rf_sub$pct.dutch) , pct.ebike = sum(rf_sub$pct.ebike))
-  }
-
-  return(count)
+find.pct.lines <- function(i){
+  pct_sub <- pct.all[i,]
+  pct_id <- pct_sub$ID[1]
+  grid_ids <- grid_pct2grid[[i]]
+  osm_ids <- unique(unlist(grid_grid2osm[grid_ids]))
+  osm_sub <- osm[osm_ids,]
+  res <- roadsOnLine(roads = osm_sub, line2check =  pct_sub$geometry, tolerance = 4)
+  #res.list <- vector("list", 1)
+  #names(res.list) <- pct_id
+  #res.list[[pct_id]] <- res
+  #qtm(grid[grid_ids]) + qtm(pct.all[i,], lines.lwd = 5, lines.col = "black") + qtm(osm_sub) + qtm(osm_sub[res,], lines.col = "green", lines.lwd = 3)
+  #return(res.list)
+  return(res)
 }
+
+#get pct row numbers for a given osm row number
+getpctids <- function(y){
+  return(seq_along(respar)[sapply(seq_along(respar),function(x){y %in% respar[[x]]})])
+}
+
+#get pct values for a given osm row number
+getpctvalues <- function(i){
+  pct.sub <- pct.all[osm2pct[[i]],]
+  count <- data.frame(id = i,
+                      pct.census = sum(pct.sub$pct.census),
+                      pct.gov = sum(pct.sub$pct.gov),
+                      pct.gen = sum(pct.sub$pct.gen),
+                      pct.dutch = sum(pct.sub$pct.dutch) ,
+                      pct.ebike = sum(pct.sub$pct.ebike))
+}
+
 
 #List folders
 #regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
@@ -114,42 +92,54 @@ for(b in 1:length(regions)){
       saveRDS(pct.all,paste0("../cyipt-securedata/pct-regions/",regions[b],".Rds")) #save selection for later use
 
       #Performacne Tweak, Preallocate object to a grid to reduce processing time
-      grid <- st_make_grid(osm, n = c(100,100), "polygons")
-      grid_osm <- st_intersects(osm, grid) # Which grid is each osm line in?
-      grid_pct <- st_intersects(grid, pct.all)# for each grid which pct lines cross it
-      rm(grid, pol)
+      grid <- st_make_grid(osm, n = c(500,500), "polygons")
+      grid_pct2grid <- st_intersects(pct.all, grid) # Which grids is each pct line in?
+      grid_grid2osm <- st_intersects(grid, osm)# for each grid which osm lines cross it
 
-
-      #Get the PCT Values
-      m = 1 #Start
-      n = nrow(osm) #End
-
-      message(paste0("Preparations complete, starting data collection at ",Sys.time()))
 
       ##########################################################
       #Parallel
+      m = 1
+      n = nrow(pct.all)
       start <- Sys.time()
       fun <- function(cl){
-        parLapply(cl, m:n,getpctvalues)
+        parLapply(cl, m:n,find.pct.lines)
       }
       cl <- makeCluster(ncores) #make clusert and set number of cores
-      clusterExport(cl=cl, varlist=c("osm", "pct.all","grid_osm","grid_pct"))
-      clusterEvalQ(cl, {library(sf); source("R/functions.R")}) #; {splitmulti()}) #Need to load splitmuliin corectly
+      clusterExport(cl=cl, varlist=c("grid_pct2grid", "pct.all","grid_grid2osm","osm"))
+      clusterExport(cl=cl, c('find.pct.lines') )
+      clusterEvalQ(cl, {library(sf); source("R/functions.R")})
       respar <- fun(cl)
       stopCluster(cl)
-      #respar <- do.call("rbind",respar)
-      respar <- bind_rows(respar) #much faster than rbind
 
       end <- Sys.time()
       message(paste0("Did ",n," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
-      #identical(res,respar)
+      #identical(foo,respar)
       ##########################################################
-      rm(n,m,cl,grid_osm,grid_pct,start,end)
 
-      #Join togther data
-      osm <- left_join(osm,respar, by = c("id" = "id"))
+      saveRDS(respar,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct2osm.Rds"))
 
-      saveRDS(pct.all,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct-lines.Rds"))
+      # Convert A PCT to OSM lookup to an OSM 2 PCT lookup
+      # We do this in a backwards way becuase we need the PCT to OSM one later
+
+      osm2pct <- lapply(1:nrow(osm), getpctids)
+
+      #Now for each osm like get the pct values
+
+
+      foo <- lapply(1:nrow(osm), getpctvalues)
+      foo <- bind_rows(foo)
+
+      osm2 <- left_join(osm, foo, by = c("id" = "id"))
+
+
+
+
+      #qtm(osm[3,], lines.lwd = 6, lines.col = "red" ) + qtm(pct.all[osm2pct[[3]], ], lines.lwd = 2, lines.col = "green")
+
+
+
+
 
       #Save results
       if(overwrite){
