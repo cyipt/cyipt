@@ -10,17 +10,26 @@
 #Regions are selected using the file  ../cyipt/input-data/RegionsToDo.csv
 #To do a region just put y in the do column of this csv file
 
-skip <- TRUE #Should the code skip regions that have already been done?
+skip <- FALSE #Should the code skip regions that have already been done?
 overwrite <- TRUE #Some stages overwrite existing files, for example by adding an extra column of data
-                   #Note that not overwriting maay cause later stagest to fail if they expect earlier stages
+                   #Note that not overwriting may cause later stagest to fail if they expect earlier stages
                    #resutls to be in the starting file
-ncores <- 2 #Some functions use parallel processing how many clusters should be run?
+ncores <- 4 #Some functions use parallel processing how many clusters should be run?
 verbose <- TRUE #Get extra messages and information
 
 
 ##########################################
 
-#library(stringr)
+library(sf)
+library(osmdata)
+library(tmap)
+library(stringr)
+library(dplyr)
+library(parallel)
+library(igraph)
+
+
+#########################################
 
 #Start of code
 #Select regions to do using the regions to do file
@@ -47,7 +56,7 @@ source("scripts/prep_data/get_traffic.R")
 source("scripts/prep_data/prep_osm.R")
 
 #Step 5: Get the PCT estimate of number of cyclists
-source("scripts/prep_data/get_pct.R")
+source("scripts/prep_data/get_pct2.R")
 
 #Step 6: Get raod width esitmates
 source("scripts/prep_data/get_widths.R")
