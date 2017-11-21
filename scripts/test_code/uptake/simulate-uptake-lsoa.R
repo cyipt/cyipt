@@ -2,15 +2,21 @@ library(sf)
 library(dplyr)
 
 pct.all <- readRDS("../cyipt-securedata/pct-routes-all.Rds")
+pct.all <- as.data.frame(pct.all)
+pct.all$geometry <- NULL
+gc()
 
-pct.all$total <- pct.all$pct.census + pct.all$onfoot + pct.all$motorvehicle + pct.all$publictransport + pct.all$other
+pct.all$total <- pct.all$pct.census + pct.all$onfoot + pct.all$workathome + pct.all$underground + pct.all$train + pct.all$bus + pct.all$taxi + pct.all$motorcycle + pct.all$carorvan + pct.all$passenger + pct.all$other
 pct.all$pcycle <- pct.all$pct.census / pct.all$total
 
 
 train = pct.all %>%
-  sample_n(round(nrow(pct.all)/20,0)) %>%
-  select(ID, pct.census, total, length, busyness, av_incline, pcycle) %>%
-  st_set_geometry(value = NULL)
+  sample_n(round(nrow(pct.all)/2,0)) %>%
+  select(ID, pct.census, total, length, busyness, pcycle,
+         cum_hill,change_elev,dif_max_min,up_tot,down_tot,av_incline,calories,
+         male_16_24, male_25_35, male_35_49, male_50_64, male_65_74, male_75p,
+         female_16_24, female_25_34, female_35_49, female_50_64, female_65_74, female_75p
+         )
 
 m1 = glm(pcycle ~ length + I(length^0.5), data = train, weights = total, family = "quasipoisson")
 plot(train$length, m1$fitted.values)
@@ -155,6 +161,29 @@ abline(a = 0, b = 1, col = "Red", lwd = 2)
 
 importance_m6.9 <- xgb.importance(model = m6.9, feature_names = c("length", "busyness", "av_incline"))
 xgb.plot.importance(importance_m6.9)
+
+
+xmat7 = as.matrix(select(train,length,busyness,cum_hill,change_elev,dif_max_min,up_tot,down_tot,av_incline,calories,
+                         male_16_24,male_25_35,male_35_49,male_50_64,male_65_74,male_75p,
+                         female_16_24,female_25_34, female_35_49, female_50_64, female_65_74, female_75p))
+m7.9 = xgboost(data = xmat7, label = train$pct.census, nrounds = 20)
+cor(predict(object = m7.9, xmat7), train$pct.census)^2
+plot(train$pct.census, predict(object = m7.9, xmat7), xlab = "Actual", ylab = "Predicted")
+abline(a = 0, b = 1, col = "Red", lwd = 2)
+
+importance_m7.9 <- xgb.importance(model = m7.9, feature_names = c("length", "busyness", "cum_hill", "change_elev", "dif_max_min", "up_tot",
+                                                                  "down_tot","av_incline", "calories", "male_16_24", "male_25_35", "male_35_49",
+                                                                  "male_50_64", "male_65_74", "male_75p", "female_16_24", "female_25_34",
+                                                                  "female_35_49", "female_50_64", "female_65_74", "female_75p"))
+xgb.plot.importance(importance_m7.9)
+
+
+
+
+
+
+
+
 
 # find change
 

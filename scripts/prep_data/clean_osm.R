@@ -829,10 +829,22 @@ for(a in 1:length(regions)){
 
       #########################################################
       # add in quietness scores
-      unique(osm$highway)
+      #unique(osm$highway)
       quiet.scores <- read.csv("../cyipt/input-data/quietness.csv", stringsAsFactors = F)
-      osm <- left_join(osm,quiet.scores, by = c("highway" = "highway"))
+      quiet.scores <- quiet.scores[quiet.scores$highway != "",]
 
+      #check that all possabilities are covered
+      osm.check <- as.data.frame(osm[,c("highway","cycleway.left","cycleway.right")])
+      osm.check$geometry <- NULL
+      osm.check <- unique(osm.check)
+      check <- do.call(paste0, osm.check) %in% do.call(paste0, quiet.scores[,c("highway","cycleway.left","cycleway.right")])
+      if(!all(check)){
+        osm.check <- osm.check[!check,]
+        message(paste0("Warning: ",nrow(osm.check)," types are missing from the quietness input please fix, see osm.check for details"))
+        stop()
+      }
+
+      osm <- left_join(osm,quiet.scores, by = c("highway" = "highway","cycleway.left" = "cycleway.left","cycleway.right" = "cycleway.right"))
 
       saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds"))
       rm(osm)

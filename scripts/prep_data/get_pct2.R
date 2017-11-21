@@ -4,16 +4,6 @@
 #NOTE: THIS OVERRIGHTS EXISTING FILES RATHER THAN CREATING NEW FILES
 #############################################
 
-library(sf)
-library(dplyr)
-library(parallel)
-
-
-#Settings now come from master file
-#skip <- FALSE #Skip Files that already have PCT values
-#ncores <- 4 #number of cores to use in parallel processing
-#overwrite <- FALSE #Overwrite or create new file
-
 #Functions
 source("R/functions.R")
 
@@ -24,17 +14,12 @@ find.pct.lines <- function(i){
   osm_ids <- unique(unlist(grid_grid2osm[grid_ids]))
   osm_sub <- osm[osm_ids,]
   res <- roadsOnLine(roads = osm_sub, line2check =  pct_sub$geometry, tolerance = 4)
-  #res.list <- vector("list", 1)
-  #names(res.list) <- pct_id
-  #res.list[[pct_id]] <- res
-  #qtm(grid[grid_ids]) + qtm(pct.all[i,], lines.lwd = 5, lines.col = "black") + qtm(osm_sub) + qtm(osm_sub[res,], lines.col = "green", lines.lwd = 3)
-  #return(res.list)
   return(res)
 }
 
 #get pct row numbers for a given osm row number
 getpctids <- function(y){
-  return(seq_along(respar)[sapply(seq_along(respar),function(x){y %in% respar[[x]]})])
+  return(seq_along(pct2osm)[sapply(seq_along(pct2osm),function(x){y %in% pct2osm[[x]]})])
 }
 
 #get pct values for a given osm row number
@@ -45,13 +30,12 @@ getpctvalues <- function(i){
                       pct.gov = sum(pct.sub$pct.gov),
                       pct.gen = sum(pct.sub$pct.gen),
                       pct.dutch = sum(pct.sub$pct.dutch) ,
-                      pct.ebike = sum(pct.sub$pct.ebike))
+                      pct.ebike = sum(pct.sub$pct.ebike),
+                      pct.total = sum(pct.sub$total))
 }
 
 
 #List folders
-#regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
-#regions <- regions[2:length(regions)]
 regions <- regions.todo
 
 for(b in 1:length(regions)){
@@ -89,7 +73,24 @@ for(b in 1:length(regions)){
       nrow(pct.all)
       pct.all <- pct.all[bounds,]
       nrow(pct.all)
+
+      #add total column
+      pct.all$total <- pct.all$pct.census + pct.all$onfoot + pct.all$workathome + pct.all$underground + pct.all$train + pct.all$bus + pct.all$taxi + pct.all$motorcycle + pct.all$carorvan + pct.all$passenger + pct.all$other
+
+
+      # Check if pct lines are completly inside the region
+      inside <- st_contains_properly(bounds,pct.all, sparse = FALSE)
+      inside <- t(inside)
+      pct.all$insideRegion <- inside[,1]
+      rm(inside)
+      message(paste0("Warning: ",sum(pct.all$insideRegion == FALSE)," of ",length(pct.all$ID)," (",round(sum(pct.all$insideRegion == FALSE)/length(pct.all$ID)*100,1)," %)"," of PCT lines cross the region boundary"))
+      #qtm(pct.all[!pct.all$insideRegion,])
+
       saveRDS(pct.all,paste0("../cyipt-securedata/pct-regions/",regions[b],".Rds")) #save selection for later use
+
+      #remove the values we no longer need
+      pct.all <- pct.all[,c("ID","pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike","all_16p")]
+      names(pct.all) <- c("ID","pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike","pct.total","geometry")
 
       #Performacne Tweak, Preallocate object to a grid to reduce processing time
       grid <- st_make_grid(osm, n = c(500,500), "polygons")
@@ -109,7 +110,7 @@ for(b in 1:length(regions)){
       clusterExport(cl=cl, varlist=c("grid_pct2grid", "pct.all","grid_grid2osm","osm"))
       clusterExport(cl=cl, c('find.pct.lines') )
       clusterEvalQ(cl, {library(sf); source("R/functions.R")})
-      respar <- fun(cl)
+      pct2osm <- fun(cl)
       stopCluster(cl)
 
       end <- Sys.time()
@@ -117,21 +118,55 @@ for(b in 1:length(regions)){
       #identical(foo,respar)
       ##########################################################
 
-      saveRDS(respar,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct2osm.Rds"))
+      saveRDS(pct2osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct2osm.Rds"))
 
       # Convert A PCT to OSM lookup to an OSM 2 PCT lookup
       # We do this in a backwards way becuase we need the PCT to OSM one later
 
-      osm2pct <- lapply(1:nrow(osm), getpctids)
+      #osm2pct <- lapply(1:nrow(osm), getpctids)
+      ##########################################################
+      #Parallel
+      m = 1
+      n = nrow(osm)
+      start <- Sys.time()
+      fun <- function(cl){
+        parLapply(cl, m:n,getpctids)
+      }
+      cl <- makeCluster(ncores) #make clusert and set number of cores
+      clusterExport(cl=cl, varlist=c("pct2osm"))
+      clusterExport(cl=cl, c('getpctids') )
+      osm2pct <- fun(cl)
+      stopCluster(cl)
+
+      end <- Sys.time()
+      message(paste0("Got ",n," lines of PCT ids in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+      ##########################################################
+
+      saveRDS(osm2pct,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm2pct.Rds"))
 
       #Now for each osm like get the pct values
 
+      ##########################################################
+      #Parallel
+      m = 1
+      n = nrow(osm)
+      start <- Sys.time()
+      fun <- function(cl){
+        parLapply(cl, m:n,getpctvalues)
+      }
+      cl <- makeCluster(ncores) #make clusert and set number of cores
+      clusterExport(cl=cl, varlist=c("osm2pct","pct.all"))
+      clusterExport(cl=cl, c('getpctvalues') )
 
-      foo <- lapply(1:nrow(osm), getpctvalues)
-      foo <- bind_rows(foo)
+      pct_vals <- fun(cl)
+      stopCluster(cl)
+      end <- Sys.time()
+      message(paste0("Got ",n," lines of PCT values in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+      ##########################################################
+      pct_vals <- bind_rows(pct_vals)
 
-      osm2 <- left_join(osm, foo, by = c("id" = "id"))
-
+      osm <- left_join(osm, pct_vals, by = c("id" = "id"))
+      Sys.time()
 
 
 
@@ -147,7 +182,7 @@ for(b in 1:length(regions)){
       }else{
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-pct.Rds"))
       }
-      rm(osm,pct.all,respar)
+      rm(osm,pct.all,pct_vals,osm2pct,pct2osm,grid,grid_grid2osm,grid_pct2grid)
 
 
 
