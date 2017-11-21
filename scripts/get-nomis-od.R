@@ -1,33 +1,8 @@
-# get cas2003 OD data
-devtools::install_github("robinlovelace/ukboundaries")
-library(tmap)
-tmap_mode("view")
-library(ukboundaries)
-library(tidyverse)
-library(stplanr)
-region_name = "Bristol"
-
-aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
-aggzone = filter(aggzones, ttwa11nm == region_name)
-c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp") %>%
-  st_transform(4326)
-flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
-  as(Class = "sf")
-cas = cas2003_simple[c_oa01, ]
-z_msoa = st_read("../cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp") %>%
-  st_transform(4326) %>%
-  select(geo_code = msoa11cd)
+# run-after historic-uptake.R
 # z_msoa = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/z.Rds") %>%
 #   st_as_sf() %>%
 #   select(geo_code, all, bicycle) %>%
 #   mutate(pcycle = bicycle / all)
-
-c_oa01 = c_oa01[aggzone, ] # get points
-# check input data for region
-
-# subset areal data to region
-z = z_msoa[c_oa01, ]
-cas = cas[c_oa01, ]
 # qtm(cas, borders = "blue") +
 #   qtm(aggzones, borders = "red")
 
@@ -79,6 +54,11 @@ summary(l)
 # # remove all those > 20 km
 # l = l %>% filter(dist < 20000 & dist > 0)
 # # try to get data on 00HBNW to 00HBNX (from nomis)
+# find nomis code / cas code link:
+l_codes = readr::read_csv("http://www.nomisweb.co.uk/api/v01/dataset/NM_124_1.data.csv?area_of_residence=1308626136...1308626161,1308626164,1308626165,1308626162,1308626163,1308626166...1308626170,2092957699,2092957703&area_of_workplace=1308626136...1308626161,1308626164,1308626165,1308626162,1308626163,1308626166...1308626170&cell=415957249&date=latest&measures=20100&select=area_of_workplace,area_of_workplace_name,area_of_workplace_code")
+lmini = l_codes %>% select(AREA_OF_WORKPLACE, AREA_OF_WORKPLACE_CODE) %>%
+  slice(1:10)
+
 # l_test = readr::read_csv("http://www.nomisweb.co.uk/api/v01/dataset/NM_124_1.data.csv?area_of_residence=1308626144&area_of_workplace=1308626145&cell=415959553&date=latest&measures=20100&select=area_of_residence_code,area_of_workplace_code,cell_name,date_name,measures_name,obs_value,obs_status_name") # works
 # # l_test = readr::read_csv("http://www.nomisweb.co.uk/api/v01/dataset/NM_124_1.data.csv?area_of_residence_code=00HBNW&area_of_workplace_code=00HBNX&cell=415959553&date=latest&measures=20100&select=area_of_residence_code,area_of_workplace_code,cell_name,date_name,measures_name,obs_value,obs_status_name") # fails
 
