@@ -28,7 +28,9 @@ f11 = select(flow_11, geo_code1, geo_code2, all, bicycle) %>%
   st_set_geometry(NULL) %>%
   filter(geo_code1 %in% z$geo_code, geo_code2 %in% z$geo_code)
 l11 = od_aggregate(flow = f11, zones = z, aggzones = cas) %>%
-  na.omit()
+  na.omit() %>%
+  mutate(pcycle11 = bicycle / all) %>%
+  select(o = flow_new_orig, d = flow_new_dest, all11 = all, pcycle11)
 
 # process OD data ----
 od_01 = read_csv("../cyoddata/wicid_output.csv", skip = 4, col_names = F)
@@ -48,14 +50,16 @@ sum(od_01$all, na.rm = T) # 44 million
 
 od_01$o = od_01$ons_label_o
 od_01$d = od_01$ons_label_d
-od_01 = select(od_01, -contains("ons"))
+od_01 = od_01 %>% mutate(pcycle01 = bicycle / all) %>%
+  select(o, d, pcycle01, all01 = all)
 
 od_01_region = od_01 %>%
   filter(o %in% cas$ons_label, d %in% cas$ons_label) # 6k results
 
-summary(od_01_region$o %in% l11$flow_new_orig) # test readiness to merge with 2011
+summary(od_01_region$o %in% l11$o) # test readiness to merge with 2011
 od_01_region = inner_join(od_01_region, l11)
-
+od_01_region = od_01_region %>% select(o, d, all01 = all)
+sum(od_01_region$all) # 100k
 
 remove_cycle_infra = function(ways) {
   ways$cycleway.left = "no"
