@@ -1,0 +1,49 @@
+Crowd-sourcing data to prioritise walking and cycling
+
+The digital revolution has unleashed a deluge of data that can be used to build a strong business case for walking and cycling. However new tools are needed to make use of newly available and ever-expanding datasets, and ensure that the results are robust enough to ensure the resulting interventions are effective and implemented where they are most needed. Furthermore fast internet connections and the ubiquity of smartphones now mean that the planning tools of the future could generate as well as consume data. The potential for crowd-sourcing data to prioritise walking and cycling represents a new frontier in democratic local planning, allowing citizens to be engaged in potential changes in the urban environment. I will make the case that new digital tools can make the transition to healthy streets more citizen-led, evidence-based and engaging.
+
+# Context
+
+'Big data' is revolutionising all areas of the economy, especially in knowledge-based sectors.
+Although transport planning is auguably more conservative some other fields such as 'data science' (in fact some would argue that transport planning should be seen as a part of data science), it has already undergone changes as a result of the 'data revolution' and these changes are only set to accelerate.
+The development and uptake of the Propensity to Cycle Tool (PCT), an online interactive tool for designing cycling networks (Lovelace et al. 2017), demonstrates how new tools and datasets can be game-changers in serveral ways, ranging from the user interface to the potential to modify the tool:
+
+- Instead of using expensive specialist software, users can access and use the PCT via and online interface in any web browser.
+- Anyone can access the PCT (from www.pct.bike) opening-up detailed data on cycling to public debate, rather than just 'experts'
+- The source code of the PCT is open source, allowing anyone to see exactly what is going-on 'under the hood'
+- Another consequence of the open source nature of the tool is that it is conducive to modification and extension by advanced users, as illustrated by the 'PCT Hackathon', which generated several innovations building on the initial tool.
+
+# The lack of crowd-sourced data in transport planning
+
+Despite being innovative in many ways, the PCT is aligned with incumbent tools in one aspect: it is based on official and 'objective' data rather than crowd-sourced and intentional data (except for its use of OpenStreetMap data, something we'll come back to).
+This has negative consequences. Official and objective datasets change slowly.
+They have little ability to react to changes in the transport network that may be detrimental to specific users.
+Furthermore it does not pick-up on subtleties in transport systems that are not present in official datasets such as uneven surfaces, of the type that have an disproportional impact on walking and cycling.
+
+# OpenStreetMap
+
+In one sense the PCT and other transport tools already make-use of crowd-sourced data, in the form of OpenStreetMap (OSM).
+OSM is a free and open citizen mapping project available to anyone all across the world.
+It has many advantages over the hodge-podge of 'official' data sources available at national, regional and local levels on which walking and cycling decisions are usually made:
+
+- Compatibility: it provides a single file format and data schema anywhere it is used, allowing tools built for one place to be used in another. 
+- Dynamism: transport systems are not static, nor do they judder from one state to another. They evolve in a way that most statistical agencies simply cannot track, even when they commit to regular updates, for example on an annual or decadal basis.
+OSM, by contrast, is updated continuously, with literally hundreds of small changes made every day.
+- Ownership: OSM data is owned by everyone, unlike official datasets which are licensed and disseminated at the discretion of the government.
+- Education: because anyone can contribute, OSM data are conducive to education and 'citizen science'. Imagine how exciting geography classes would be if your mapping of local trees were to result in changes on a global dataset used by people around the world!
+
+However a major limitation of OSM is that it can only describe a subset of geographic features: those that already exist (as opposed to those that could exist in the future - OSM is supposed to be true of today) and those that can easily fit into a pre-existing 'tag' or geographic entity.
+This limitation is well-illustrated by considering a crack in the pavement that is gradually becoming (but is not yet) a trip hazard: there's no way to represent it in OSM and even if there were, adding a 'crack' feature would likely result in its quick-fire deletion (if the local community is doing its community peer review work well) anyway. Clearly something else is needed for this to happen.
+
+# A wish-list for tools for crowd-sourcing data on cycling and walking
+
+- Accessible as possible, with a 'basic' (default) and advanced mode.
+- Non mode-discriminatory, avoids categorising people into 'cyclist', 'walker' or 'driver' or anything else! (although it may be interesting to ask after the event 'What are the main ways you get around the city' to prioritise issues affecting people who walk and cycle)
+- The data is made open access. Clearly anonymity is important but that's easy - I suggest it could be anonymous by default and allow people to show they name in comments. The data is delivered in an open format building on an existing system. I would suggest a modified version of OSM, with the ability to add new links and tags etc.
+- Based on predefined intuitive feature types such as paths, crossing points, public transport stops, parking, missing link and point-based defects (e.g. potholes)
+- Upvote/downvote to help prioritise
+- Ease of visualisation (for public and authorities)
+- Confidence in its longevity
+- Moderation
+
+
