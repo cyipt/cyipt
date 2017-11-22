@@ -50,9 +50,9 @@ names(pct.all)[names(pct.all) == 'bicycle_16p'] <- 'pct.census'
 #class(pct.all$pct.census)
 
 #find where bike is always 0
-#rsum <- pct.all$pct.census + pct.all$pct.dutch + pct.all$pct.ebike +pct.all$pct.gov + pct.all$pct.gen
-#pct.all <- pct.all[rsum > 0,]
-#rm(rsum)
+rsum <- pct.all$pct.census + pct.all$pct.dutch + pct.all$pct.ebike +pct.all$pct.gov + pct.all$pct.gen
+pct.all <- pct.all[rsum > 0,]
+rm(rsum)
 
 #save resutls
 saveRDS(pct.all,"../cyipt-securedata/pct-routes-all.Rds")
