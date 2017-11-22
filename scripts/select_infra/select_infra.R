@@ -66,68 +66,6 @@ get.costs <- function(d){
   return(costs.sub)
 }
 
-#Creat Polygons Around each scheme
-schemepoly <- function(a){
-  sub <- osm_sub[osm_sub$group_id == a,]
-  sub <- sub$geometry
-  buf <- st_buffer(sub,10)
-  buf <- st_union(buf)
-  buf <- st_simplify(buf, preserveTopology = FALSE, dTolerance = 0.5)
-  return(buf)
-}
-
-
-#Group lines into schemes
-groupinfra <- function(type, grp_start, buff_dists){
-  sub <- osm[osm$Recommended == type & (osm$Change == "upgrade" | osm$Change == "upgrade (one side)"),]
-  sub <- sub[,c("id")]
-  if(nrow(sub) > 1){
-    buff <- st_buffer(sub, buff_dists)
-    #Find Instersections
-    inter <- st_intersects(buff,buff)
-    edges <- do.call(rbind, lapply(inter, function(x) {
-      if (length(x) > 1) cbind(head(x, -1), tail(x, -1)) else NULL
-    }))
-
-    if(!is.null(edges)){
-      #Find Groups
-      g <- graph.data.frame(edges, directed=FALSE)
-      g <- split(V(g)$name, clusters(g)$membership)
-      grps <- list()
-      for(a in 1:length(g)){
-        grps[[a]] <- as.numeric(unlist(g[a]))
-      }
-      #Assing Groups
-      for(b in 1:nrow(sub)){
-        res <- which(sapply(grps,`%in%`, x = b))
-        if(length(res) == 0){
-          sub$group_id[b] <- NA
-        }else{
-          sub$group_id[b] <- res + grp_start
-        }
-
-      }
-      sub <- as.data.frame(sub)
-      sub <- sub[,c("id","group_id")]
-    }else{
-      #None of the infra interacts so add each to its own group
-      sub <- as.data.frame(sub)
-      sub$group_id <- (grp_start + 1):(grp_start + nrow(sub))
-      sub <- sub[,c("id","group_id")]
-    }
-
-  }else if(nrow(sub) == 1){
-    #Only one type so no grouping to be done
-    sub <- as.data.frame(sub)
-    sub$group_id <- grp_start + 1
-  }else{
-    #No road of that type
-    sub <- NA
-  }
-  return(sub)
-}
-
-
 #List folders
 #regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
 #regions <- regions[2:length(regions)]
