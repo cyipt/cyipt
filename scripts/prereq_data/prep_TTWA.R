@@ -8,11 +8,13 @@ bounds$ttwa11cd <- as.character(bounds$ttwa11cd)
 bounds <- st_transform(bounds, 27700)
 bounds <- st_simplify(bounds, dTolerance = 10)
 
-bounds <- bounds[substr(bounds$ttwa11cd,1,1) == "E" |bounds$ttwa11nm %in% c("Carlisle","Chester","Oswestry","Motherwell and Airdrie"),]
+bounds <- bounds[substr(bounds$ttwa11cd,1,1) == "E" |bounds$ttwa11nm %in% c("Carlisle","Chester","Oswestry","Berwick"),]
 
 bounds$ttwa11nm <- as.character(bounds$ttwa11nm)
 bounds$ttwa11nm <- str_replace_all(bounds$ttwa11nm,"[[:punct:]]","")
 bounds$ttwa11nm <- str_replace_all(bounds$ttwa11nm," ","")
+
+bounds <- st_transform(bounds, 4326)
 
 saveRDS(bounds,"../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
 
