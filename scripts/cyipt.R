@@ -10,7 +10,7 @@
 #Regions are selected using the file  ../cyipt/input-data/RegionsToDo.csv
 #To do a region just put y in the do column of this csv file
 
-skip <- FALSE #Should the code skip regions that have already been done?
+skip <- TRUE #Should the code skip regions that have already been done?
 overwrite <- TRUE #Some stages overwrite existing files, for example by adding an extra column of data
                    #Note that not overwriting may cause later stagest to fail if they expect earlier stages
                    #resutls to be in the starting file
@@ -38,6 +38,8 @@ regions.todo <- read.csv("../cyipt/input-data/RegionsToDo.csv", stringsAsFactors
 regions.todo <- regions.todo[!is.na(regions.todo$do),]
 regions.todo <- regions.todo$region[regions.todo$do == "y"]
 
+regions.todo <- "Bristol"
+
 message("CyIPT will run for the following regions:")
 print(regions.todo)
 
@@ -64,11 +66,16 @@ source("scripts/prep_data/get_widths.R")
 #Step 7:Evaluate Infrastrucutre Options
 source("scripts/select_infra/select_infra.R")
 
-# Step 8: Group into schemes
+#Step 8: Compare Widths Needed to Widths Available
+source("scripts/select_infra/compare_widths.R")
+
+#Step 8: Group into schemes
 source("scripts/select_infra/make_schemes.R")
 
-#Stye 9 : get uptake
+#Step 9 : get uptake
 source("scripts/uptake/calc_uptake.R")
+
+
 
 #Step LAST: Export for DB
 source("scripts/visualise/export_postGIS.R")
