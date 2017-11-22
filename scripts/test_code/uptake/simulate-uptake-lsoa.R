@@ -11,7 +11,7 @@ pct.all$pcycle <- pct.all$pct.census / pct.all$total
 
 
 train = pct.all %>%
-  sample_n(round(nrow(pct.all)/2,0)) %>%
+  sample_n(round(nrow(pct.all)/20,0)) %>%
   select(ID, pct.census, total, length, busyness, pcycle,
          cum_hill,change_elev,dif_max_min,up_tot,down_tot,av_incline,calories,
          male_16_24, male_25_35, male_35_49, male_50_64, male_65_74, male_75p,
@@ -178,6 +178,7 @@ importance_m7.9 <- xgb.importance(model = m7.9, feature_names = c("length", "bus
 xgb.plot.importance(importance_m7.9)
 
 
+saveRDS(m7.9, "../cyipt/input-data/LSOAmodel.Rds")
 
 
 
