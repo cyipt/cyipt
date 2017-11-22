@@ -45,6 +45,7 @@ cas_codes = select(cas2003_simple, ons_label, name) %>%
   filter(!duplicated(name), name %in% od_01$o | name %in% od_01$d)
 # join-on the ons labels
 od_01 = inner_join(od_01, select(cas_codes, ons_label_o = ons_label, o = name))
+sum(od_01$all, na.rm = T) # 44 million
 od_01 = inner_join(od_01, select(cas_codes, ons_label_d = ons_label, d = name)) # removes ~20m ppl
 sum(od_01$all, na.rm = T) # 44 million
 
@@ -57,6 +58,7 @@ od_01_region = od_01 %>%
   filter(o %in% cas$ons_label, d %in% cas$ons_label) # 6k results
 
 summary(od_01_region$o %in% l11$o) # test readiness to merge with 2011
+
 od_01_region = inner_join(od_01_region, l11)
 od_01_region = od_01_region %>% select(o, d, all01 = all)
 sum(od_01_region$all) # 100k
@@ -78,7 +80,7 @@ summary # 200 cycle paths removed
 # sustrans data - read-in from cyinfdat
 sc2sd = readRDS("../cyinfdat/sc2sd")
 i = readRDS("../cyinfdat/ri_04_11_dft")
-qtm(l) +
+qtm(flow_11) +
   qtm(aggzone) +
   qtm(sc2sd, "green") +
   qtm(i) + # very little infrastructure there
