@@ -845,6 +845,7 @@ for(a in 1:length(regions)){
       }
 
       osm <- left_join(osm,quiet.scores, by = c("highway" = "highway","cycleway.left" = "cycleway.left","cycleway.right" = "cycleway.right"))
+      osm$quietness <- as.integer(osm$quietness)
 
       saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds"))
       rm(osm)
