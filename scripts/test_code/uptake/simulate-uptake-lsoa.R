@@ -1,215 +1,137 @@
 library(sf)
 library(dplyr)
+library(xgboost)
 
 pct.all <- readRDS("../cyipt-securedata/pct-routes-all.Rds")
 pct.all <- as.data.frame(pct.all)
 pct.all$geometry <- NULL
 gc()
 
-pct.all$total <- pct.all$pct.census + pct.all$onfoot + pct.all$workathome + pct.all$underground + pct.all$train + pct.all$bus + pct.all$taxi + pct.all$motorcycle + pct.all$carorvan + pct.all$passenger + pct.all$other
-pct.all$pcycle <- pct.all$pct.census / pct.all$total
+#Remove Unneded Data
+pct.all <- pct.all[,names(pct.all)[!names(pct.all) %in% c("bicycle_16_24","bicycle_25_34","bicycle_35_49","bicycle_50_64","bicycle_65_74","bicycle_75p",
+                                                         "bicycle_male_16p","bicycle_male_16_24","bicycle_male_25_34","bicycle_male_35_49","bicycle_male_50_64",
+                                                         "bicycle_male_65_74","bicycle_male_75p","bicycle_female_16p","bicycle_female_16_24","bicycle_female_25_34",
+                                                         "bicycle_female_35_49","bicycle_female_50_64","bicycle_female_65_74","bicycle_female_75p",
+                                                         "pct.gov","pct.gen","pct.dutch","pct.ebike","ID","lsoa1","lsoa2","workathome","waypoint","is_two_way","co2_saving")]]
 
+#Get an Idea if public transport is an option
+pct.all$publictrans <- (pct.all$train + pct.all$underground + pct.all$bus) / pct.all$all_16p
 
-train = pct.all %>%
-  sample_n(round(nrow(pct.all)/20,0)) %>%
-  select(ID, pct.census, total, length, busyness, pcycle,
-         cum_hill,change_elev,dif_max_min,up_tot,down_tot,av_incline,calories,
-         male_16_24, male_25_35, male_35_49, male_50_64, male_65_74, male_75p,
-         female_16_24, female_25_34, female_35_49, female_50_64, female_65_74, female_75p
-         )
-
-m1 = glm(pcycle ~ length + I(length^0.5), data = train, weights = total, family = "quasipoisson")
-plot(train$length, m1$fitted.values)
-#summary(m1) # not much use
-cor(m1$fitted.values * train$total, train$pcycle * train$total)^2
-plot(m1$fitted.values  * train$total, train$pct.census)
-
-m2 = glm(pcycle ~ busyness + I(busyness), data = train, weights = total, family = "quasipoisson")
-plot(train$busyness, m2$fitted.values)
-cor(m2$fitted.values * train$total, train$pcycle * train$total)^2
-
-m3 <- glm(pcycle ~ length + I(length^0.5) + av_incline + av_incline * length, data = train, weights = total, family = "quasipoisson")
-plot(train$length, m3$fitted.values)
-cor(m3$fitted.values * train$total, train$pcycle * train$total)^2
-plot(m3$fitted.values, train$pct.census)
-
-
-m4 <- glm(pcycle ~ busyness + I(busyness^0.5) + av_incline + av_incline * busyness, data = train, weights = total, family = "quasipoisson")
-plot(train$busyness, m4$fitted.values)
-cor(m4$fitted.values * train$total, train$pcycle * train$total)^2
-
-m5 <- glm(pcycle ~ length + busyness + I(busyness^0.5) + av_incline + av_incline * busyness, data = train, weights = total, family = "quasipoisson")
-plot(train$busyness, m5$fitted.values)
-cor(m5$fitted.values * train$total, train$pcycle * train$total)^2
-
-m6 <- glm(pcycle ~ length + busyness + I(length^0.5) + av_incline + av_incline * busyness, data = train, weights = total, family = "quasipoisson")
-plot(train$busyness, m6$fitted.values)
-cor(m6$fitted.values * train$total, train$pcycle * train$total)^2
-
-
-m7 <- glm(pcycle ~ length + I(length^0.5) + I(busyness^0.5) + av_incline + I(av_incline^0.5) , data = train, weights = total, family = "quasipoisson")
-cor(m7$fitted.values * train$total, train$pcycle * train$total)^2
-plot(m7$fitted.values, train$pcycle)
-abline(a = 0, b = 1, col = "Red", lwd = 2)
-m7$coefficients
-
-
-foo =  exp(-2.2679333871 -0.0001207765 * train$length + 0.0242742120 * sqrt(train$length) -0.0075675068 * sqrt(train$busyness) -1.9347971306 * train$av_incline + -6.8377711996 * sqrt(train$av_incline))
-
-plot(foo, train$pcycle)
-
-as.formula(
-  paste0("y ~ ", round(coefficients(m7)[1],2), " + ",
-         paste(sprintf("%.2f * %s",
-                       coefficients(m7)[-1],
-                       names(coefficients(m7)[-1])),
-               collapse=" + ")
-  )
-)
-
-test <- data.frame(foo = round(foo * train$total,0), m7 = round(m7$fitted.values * train$total,0), census = train$pct.census)
-test$diff <- test$foo - test$m7
-predict(m7) == m7$fitted.values
-
-library(xgboost)
-xmat = as.matrix(select(train, length, busyness, av_incline))
-m9 = xgboost(data = xmat, label = train$pcycle, nrounds = 5, weight = train$total)
-cor(predict(object = m9, xmat)* train$total, train$pcycle * train$total)^2
-
-train2 = mutate(train, busyness = busyness / 2)
-xmat2 = as.matrix(select(train2, length, busyness, av_incline))
-
-summary(predict(object = m9, xmat)* train2$total)
-
-# try filtering out data that has very communting and or low cycling rates
-
-train3 = pct.all %>%
-  filter(total > 5) %>%
-  filter(pct.census > 1) %>%
-  #sample_n(round(nrow(pct.all)/20,0)) %>%
-  select(ID, pct.census, total, length, busyness, av_incline, pcycle) %>%
-  st_set_geometry(value = NULL)
-
-
-m6.3 <- glm(pcycle ~ length + busyness + I(length^0.5) + av_incline + av_incline * busyness, data = train3, weights = total, family = "quasipoisson")
-plot(train3$busyness, m6.3$fitted.values)
-cor(m6.3$fitted.values * train3$total, train3$pcycle * train3$total)^2
-plot(m6.3$fitted.values  * train3$total, train3$pct.census)
+pct.all <- pct.all[,names(pct.all)[!names(pct.all) %in% c("underground","train","bus","taxi","motorcycle","carorvan","passenger","other","onfoot")]]
 
 
 
-train4 = pct.all %>%
-  #filter(total > 5) %>%
-  filter(pct.census > 1) %>%
-  #sample_n(round(nrow(pct.all)/20,0)) %>%
-  select(ID, pct.census, total, length, busyness, av_incline, pcycle) %>%
-  st_set_geometry(value = NULL)
+#change to numeric
+for(i in 1:ncol(pct.all)){
+  pct.all[,i] <- as.numeric(pct.all[,i])
+}
+
+### Function
+# Generic fucntion for testing model
+
+test.model <- function(traindata, rounds){
+  mat <- as.matrix(traindata[,names(traindata)[!names(traindata) %in% "pct.census"] ])
+  model <- xgboost(data = mat, label = traindata$pct.census, nrounds = rounds)
+  mat.all <- mat.all <- as.matrix(pct.all[,colnames(mat)])
+  predict <- predict(object = model, mat.all)
+  message(paste0("Correlation = ", round(cor(predict, pct.all$pct.census)^2,4) ))
+  importance <- xgb.importance(model = model, feature_names = colnames(mat))
+  xgb.plot.importance(importance)
+  result <- data.frame(actual = pct.all$pct.census, predicted = predict)
+  plot(sample_frac(result, 0.01))
+  abline(a = 0, b = 1, col = "Red", lwd = 2)
+  return(result)
+}
 
 
-m4.1 <- glm(pcycle ~ length + busyness + I(length^0.5) + av_incline + av_incline * busyness, data = train4, weights = total, family = "quasipoisson")
-plot(train4$busyness, m4.1$fitted.values)
-cor(m4.1$fitted.values * train4$total, train4$pcycle * train4$total)^2
-plot(m4.1$fitted.values  * train4$total, train4$pct.census)
+###########
+
+# Get a random sample of the data to train on
+train <- sample_frac(pct.all, 0.1)
 
 
+#####################################################################################
 
-xmat4 = as.matrix(select(train4, length, busyness, av_incline))
-m4.9 = xgboost(data = xmat4, label = train4$pcycle, nrounds = 20, weight = train4$total)
-cor(predict(object = m4.9, xmat4)* train4$total, train4$pcycle * train4$total)^2
-plot(predict(object = m4.9, xmat4)* train4$total, train4$pcycle * train4$total)
+# Test Some models
 
-importance_m4.9 <- xgb.importance(model = m4.9, feature_names = c("length", "busyness", "av_incline"))
-xgb.plot.importance(importance_m4.9)
+# Idea 1: Basic Distance and Hilliness Just like the PCT
 
-train5 = pct.all %>%
-  #filter(total > 5) %>%
-  #filter(pct.census > 1) %>%
-  sample_n(round(nrow(pct.all)/20,0)) %>%
-  select(ID, pct.census, total, length, busyness, av_incline, publictransport, onfoot, motorvehicle, other) %>%
-  st_set_geometry(value = NULL)
+m1 <- test.model(traindata = train[,c("pct.census","all_16p","length","av_incline")], rounds = 10)
 
-xmat5 = as.matrix(select(train5, length, busyness, av_incline, total, publictransport, onfoot, motorvehicle, other))
-m5.9 = xgboost(data = xmat5, label = train5$pct.census, nrounds = 10)
-cor(predict(object = m5.9, xmat5), train5$pct.census)^2
-plot(train5$pct.census, predict(object = m5.9, xmat5), xlab = "Actual", ylab = "Predicted")
-abline(a = 0, b = 1, col = "Red", lwd = 2)
+# Correlation = 0.4051
 
-importance_m5.9 <- xgb.importance(model = m5.9, feature_names = c("length", "busyness", "av_incline","total", "publictransport", "onfoot", "motorvehicle", "other"))
-xgb.plot.importance(importance_m5.9)
+# Idea 2: Add In Busyness Score
 
+m2 <- test.model(traindata = train[,c("pct.census","all_16p","length","av_incline","busyness")], rounds = 10)
 
-#Regional
-regions <- readRDS("../cyipt-bigdata/boundaries/england_regions/england_regions.Rds")
-regions <- regions[,c("rgn16nm")]
+# Correlation = 0.4051
 
+# Idea 3: Try All Physical Characteritics
 
-train6 = pct.all %>%
-  #filter(total > 5) %>%
-  #filter(pct.census > 5) %>%
-  #sample_n(round(nrow(pct.all)/20,0)) %>%
-  select(ID, pct.census, total, length, busyness, av_incline, publictransport, onfoot, motorvehicle, other, pcycle)
+m3 <- test.model(traindata = train[,c("pct.census","all_16p","length","time","cum_hill",
+                                "change_elev","dif_max_min","up_tot","down_tot",
+                                "av_incline","calories","busyness")], rounds = 10)
 
-st_crs(regions) <- st_crs(train6) #hack don't do
-train6 <- st_intersects(train6,regions[1,])
+# Correlation = 0.4111
+# Average Incline (0.1) and Busyness (0.5) are the key factors
 
+# Idea 4: Try Demographic Data Just Ages
 
-xmat6 = as.matrix(select(train6, length, busyness, av_incline))
-m6.9 = xgboost(data = xmat6, label = train6$pcycle, nrounds = 10)
-cor(predict(object = m6.9, xmat6) * train6$total, train6$pct.census)^2
-plot(train6$pct.census, predict(object = m6.9, xmat6) * train6$total, xlab = "Actual", ylab = "Predicted")
-abline(a = 0, b = 1, col = "Red", lwd = 2)
+m4 <- test.model(traindata = train[,c("pct.census","all_16p","all_16_24","all_25_34","all_35_49","all_50_64","all_65_74","all_75p")], rounds = 10)
 
-importance_m6.9 <- xgb.importance(model = m6.9, feature_names = c("length", "busyness", "av_incline"))
-xgb.plot.importance(importance_m6.9)
+# Correlation = 0.3155
+# Oddly 50 - 60s and 35 - 49s are the best predictors
 
+# Idea 5: Demographics Age and Gender
 
-xmat7 = as.matrix(select(train,length,busyness,cum_hill,change_elev,dif_max_min,up_tot,down_tot,av_incline,calories,
-                         male_16_24,male_25_35,male_35_49,male_50_64,male_65_74,male_75p,
-                         female_16_24,female_25_34, female_35_49, female_50_64, female_65_74, female_75p))
-m7.9 = xgboost(data = xmat7, label = train$pct.census, nrounds = 20)
-cor(predict(object = m7.9, xmat7), train$pct.census)^2
-plot(train$pct.census, predict(object = m7.9, xmat7), xlab = "Actual", ylab = "Predicted")
-abline(a = 0, b = 1, col = "Red", lwd = 2)
+m5 <- test.model(traindata = train[,c("pct.census","all_16p","male_16p","male_16_24","male_25_35","male_35_49","male_50_64","male_65_74","male_75p",
+                                "female_16p","female_16_24","female_25_34","female_35_49","female_50_64","female_65_74","female_75p")], rounds = 10)
 
-importance_m7.9 <- xgb.importance(model = m7.9, feature_names = c("length", "busyness", "cum_hill", "change_elev", "dif_max_min", "up_tot",
-                                                                  "down_tot","av_incline", "calories", "male_16_24", "male_25_35", "male_35_49",
-                                                                  "male_50_64", "male_65_74", "male_75p", "female_16_24", "female_25_34",
-                                                                  "female_35_49", "female_50_64", "female_65_74", "female_75p"))
-xgb.plot.importance(importance_m7.9)
+# Correlation = 0.3399
+# Males of all kinds best predictor, better than total population, followed by other younger males groups
+
+# Idea 6: Demographics and Physical
+
+m6 <- test.model(traindata = train[,c("pct.census","all_16p","male_16p","male_16_24","male_25_35","male_35_49","male_50_64","male_65_74","male_75p",
+                                "female_16p","female_16_24","female_25_34","female_35_49","female_50_64","female_65_74","female_75p",
+                                "length","time","cum_hill","change_elev","dif_max_min","up_tot","down_tot","av_incline","calories","busyness")], rounds = 10)
+
+# Correlation = 0.4471
+# Dominated by young males and then average incline and length
 
 
-saveRDS(m7.9, "../cyipt/input-data/LSOAmodel.Rds")
+# Idea 7: Just Age non Generte and Physical Characteristics
+
+m7 <- test.model(traindata = train[,c("pct.census","all_16p","all_16_24","all_25_34","all_35_49","all_50_64","all_65_74","all_75p",
+                                "length","time","cum_hill",
+                                "change_elev","dif_max_min","up_tot","down_tot",
+                                "av_incline","calories","busyness")], rounds = 10)
+
+# Correlation = 0.4306
+
+# Now average incline and numbe of younger people more important
+
+# Idea 8: Remove the cases with low cycling and train on a more relevant dataset
+
+train2 <- pct.all[pct.all$pct.census > 1, ]
+train2 <- sample_frac(train2, 0.1)
+
+m8 <- test.model(traindata = train2[,c("pct.census","all_16p","all_16_24","all_25_34","all_35_49","all_50_64","all_65_74","all_75p",
+                                "length","time","cum_hill",
+                                "change_elev","dif_max_min","up_tot","down_tot",
+                                "av_incline","calories","busyness")], rounds = 10)
+
+# Correlation = 0.4048
+
+# Similar Patteern to Idea 7 but better fit
+
+# Idea 9: Try more Rounds on Idea 8
+
+m9 <- test.model(traindata = train2[,c("pct.census","all_16p","all_16_24","all_25_34","all_35_49","all_50_64","all_65_74","all_75p",
+                                 "length","time","cum_hill",
+                                 "change_elev","dif_max_min","up_tot","down_tot",
+                                 "av_incline","calories","busyness")], rounds = 20)
+
+# Correlation = 0.4125
 
 
-
-
-
-
-
-# find change
-
-
-logit_pcycle = -3.894 + (-0.5872 * distance) + (1.832 * sqrt(distance) ) + (0.007956 * distance^2)
-
-
-# road scenarios
-
-knitr::knit(input = "model-uptake.Rmd")
-typology = readr::read_csv("input-data/roadtypes4.csv")
-rc = readRDS("../example-data/bristol/results/osm-schemes.Rds")
-summary(ways$length)
-select(ways, contains("cycle")) %>% summary()
-ways_long = dplyr::filter(ways, length > 500)
-ways_long$length_cycleway = ways_long$length
-summary(ways_long$cycleway)
-l_joined = stjoin_old(lfq$rf, ways_long["length_cycleway"], FUN = sum) # old way
-summary(l_full$length_cycleway)
-summary(l_joined$length_cycleway) # 5 fold increase in cycling
-l_full$length_cycleway = l_joined$length_cycleway
-uptake = predict(m8, as.matrix(l_full[-c(1, 2)]))
-cor(uptake * l$total, l_full$bicycle)^2
-mean(uptake)
-mean(l_full$bicycle / l_full$total)
-
-# communicate result:
-# knitr::spin(hair = "scripts/select_infra/simulate-uptake.R")
