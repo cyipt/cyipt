@@ -65,20 +65,15 @@ regions <- regions.todo
 
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
-    #Get file
-    osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
-    #osm <- readRDS("../cyipt-bigdata/osm-prep/Bristol/")
-    model <- readRDS("../cyipt/input-data/LSOAmodel-newbusy.Rds")
-    #Check if PCT values exist in the file
-    if(all(c("FILL ME IN") %in% names(osm)) & skip){
+    #Check if Uptake values exist
+    if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct-up.Rds")) & skip){
       message(paste0("Uptake numbers already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Getting uptake values for ",regions[b]," at ",Sys.time()))
 
-      #If overwriting remove old data
-      #col.to.keep <- names(osm)[!names(osm) %in% c("FILL ME IN")]
-      #osm <- osm[,col.to.keep]
-      #rm(col.to.keep)
+      #Get file
+      osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+      model <- readRDS("../cyipt/input-data/LSOAmodel-newbusy.Rds")
 
       # Get PCT Data
       pct <- readRDS(paste0("../cyipt-securedata/pct-regions/",regions[b],".Rds"))
@@ -89,14 +84,37 @@ for(b in 1:length(regions)){
       osm$quietness <- as.integer(osm$quietness)
       osm$busyBefore <- osm$length / (osm$quietness/100)
 
-      #Update Busyness scaore based on Reccomended infra
+      #Update Busyness score based on Reccomended infra
       # simple test make quietness always equal to 100
-      osm$busyAfter <- osm$busy
-      for(i in 1:nrow(osm)){
-        if(osm$Recommended[i] != "None"){
-          osm$busyAfter[i] <- osm$length[i]
+
+
+
+      quiet.scores <- read.csv("../cyipt/input-data/quietness.csv", stringsAsFactors = F)
+      quiet.scores <- quiet.scores[quiet.scores$highway != "",]
+      quiet.scores <- quiet.scores[quiet.scores$cycleway.left == quiet.scores$cycleway.right,]
+      quiet.scores <- quiet.scores[quiet.scores$cycleway.left != "share_busway",]
+      quiet.scores$cycleway.right <- NULL
+      names(quiet.scores) <- c("highway","recTemp","quietnessAfter" )
+
+      osm$recTemp <- NA
+
+      for(k in 1:nrow(osm)){
+        rec <- osm$Recommended[k]
+        if(rec %in% c("Stepped Cycle Tracks","Segregated Cycle Track","Segregated Cycle Track on Path")){
+          osm$recTemp[k] <- "track"
+        }else if(rec %in% c("Cycle Lanes","Cycle Lanes with light segregation","Cycle Lane on Path")){
+          osm$recTemp[k] <- "lane"
+        }else{
+          osm$recTemp[k] <- "no"
         }
       }
+
+      osm <- left_join(osm,quiet.scores, by = c("highway" = "highway","recTemp" = "recTemp"))
+      osm$quietnessAfter <- as.integer(osm$quietnessAfter)
+      osm$busyAfter <- osm$length / (osm$quietnessAfter/100)
+
+
+
 
       #get the list of scheme_nos
       scheme_nos <- unique(osm$group_id)
