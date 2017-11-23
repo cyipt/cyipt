@@ -1,4 +1,6 @@
-#Gets PCT Values for the road segments
+##########################
+# rewrite for performance
+
 
 ############################################
 #NOTE: THIS OVERRIGHTS EXISTING FILES RATHER THAN CREATING NEW FILES
@@ -21,68 +23,38 @@ tmap_mode("view")
 #overwrite <- FALSE #Overwrite or create new file
 
 #Functions
-roadsOnLine2 <- function(roads,line2check){
-  #points <- st_cast(osm.sub$geometry[a], "POINT") #convert road to points
-  #message(paste0("Class of roads is = ", class(roads)))
-  #message(paste0("Class of line2check is = ", class(line2check)))
-  roads <- st_sfc(roads)
-  line2check <- st_sfc(line2check)
-  st_crs(roads) <- st_crs(line2check) # Assuming that they are the same as crs for roads get lost in lapply
-  points <- st_cast(roads, "POINT") #convert road to points
-  points.len <- length(points)
-  #message(paste0("Points.len = ", points.len))
-  if(points.len >= 3){
-    #Get first last and a middle point
-    points <- points[c(1,ceiling(points.len/2),points.len)]
-    p3 <- TRUE
-  }else if(points.len == 2){
-    #Need 3 points so double get the last point
-    points <- points[c(1,1,points.len)]
-    p3 <- FALSE
-  }else{
-    #Somethign has gone wrong
-    warning(paste0("Line ",a," is made up of less than two points. Points =  ",points.len))
-    stop()
-  }
-  #message(paste0("Class of points is = ", class(points)))
-  #message(paste0("p3 = ", p3))
-  #message(paste0("Points lenght is now = ", length(points)))
-  #message(points)
-  #Buffer points
-  #len <- as.numeric(st_distance(points[1],points[3])) #Change to distance between points to deal with curved roads
-  len <- sqrt((points[[1]][1] - points[[3]][1])**2 + (points[[1]][2] - points[[3]][2])**2) # for sort distances on projected coordinates faster than st_distance with same answer
 
-  #message(paste0("len = ", len))
-  if(len < 8 & len != 0){ # To hanel very small lines
-    cutlen <- len/2.5
-  }else{
-    cutlen <- 4
-  }
-  buff <- st_buffer(points, cutlen, nQuadSegs = 2) #Make small circles around the points # Reduce number of segments for speed
-  if(p3){
-    buff[2] <- st_buffer(points[2], cutlen/1.2, nQuadSegs = 2) # replace middle buffer with smaller value but only if it is a unique point
-  }
+getbusyscores <- function(c){
+  osm.ids <- pct2osm[[c]]
+  osm.sub <- osm[osm.ids,]
+  #print(paste0("Show ", c))
+  #plot(pct$geometry[c], lwd = 5, col = "black" )
+  #plot(osm.sub$geometry, lwd = 3, col = "green" , add = T)
+  #Sys.sleep(5)
 
+  busyBefore <- sum(osm.sub$busyBefore, na.rm = T)
+  busyAfter <- sum(osm.sub$busyAfter, na.rm = T)
+  lengthOSM <- sum(osm.sub$length, na.rm = T)
 
-  #Check that lines intersect with all three points
-  #sel <- st_intersects(buff, line)
-  sel <- st_intersects(buff, line2check)
-  sel.first <- sel[[1]]
-  sel.middle <- sel[[2]]
-  sel.last <- sel[[3]]
-
-
-  sel.all <- sel.first[sel.first %in% sel.last]
-  sel.all <- sel.all[sel.all %in% sel.middle]
-
-  if(length(sel.all) == 0){
-    return(FALSE)
-  }else{
-    return(TRUE)
-  }
-
+  result <- data.frame(busyBefore = busyBefore,busyAfter = busyAfter, lengthOSM = lengthOSM)
+  return(result)
 }
 
+
+getbusyscores.scheme <- function(c,osm_change){
+  osm.ids <- pct2osm[[c]] #All the osms on the route
+  osm.sub <- osm[osm.ids,]
+  busyBefore <- sum(osm.sub$busyBefore, na.rm = T)
+  lengthOSM <- sum(osm.sub$length, na.rm = T)
+
+  osm.sub.unchange <- osm.sub[!(osm.sub$id %in% osm_change),]
+  osm.sub.change <- osm.sub[(osm.sub$id %in% osm_change),]
+
+  busyAfter <- sum(osm.sub.change$busyAfter, na.rm = T) + sum(osm.sub.unchange$busyBefore, na.rm = T)
+
+  result <- data.frame(busyBefore = busyBefore,busyAfter = busyAfter, lengthOSM = lengthOSM)
+  return(result)
+}
 
 ##########################################################################################
 calcChangeBusy <- function(k){
@@ -156,6 +128,8 @@ for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
     #Get file
     osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+    #osm <- readRDS("../cyipt-bigdata/osm-prep/Bristol/")
+    model <- readRDS("../cyipt/input-data/LSOAmodel-newbusy.Rds")
     #Check if PCT values exist in the file
     if(all(c("FILL ME IN") %in% names(osm)) & skip){
       message(paste0("Uptake numbers already calcualted for ",regions[b]," so skipping"))
@@ -163,33 +137,17 @@ for(b in 1:length(regions)){
       message(paste0("Getting uptake values for ",regions[b]," at ",Sys.time()))
 
       #If overwriting remove old data
-      col.to.keep <- names(osm)[!names(osm) %in% c("FILL ME IN")]
-      osm <- osm[,col.to.keep]
-      rm(col.to.keep)
+      #col.to.keep <- names(osm)[!names(osm) %in% c("FILL ME IN")]
+      #osm <- osm[,col.to.keep]
+      #rm(col.to.keep)
 
-      ###################################################################
-      # Move this to the get_pct and save out each regions resutls
-
-      #Get bounding box
-      ext <- st_bbox(osm)
-      ext <- st_sfc(st_polygon(list(rbind(c(ext[1],ext[2]),c(ext[3],ext[2]),c(ext[3],ext[4]),c(ext[1],ext[4]),c(c(ext[1],ext[2]))))) )
-      pol <- data.frame(id = 1, geometry = NA)
-      st_geometry(pol) <- ext
-      rm(ext)
-
-      #Get pct data and subset to bounding box
-      pct.all <- readRDS("../cyipt-securedata/pct-routes-all.Rds")
-
-      #dump unneeded data
-      pct.all <- pct.all[,c("ID","length","busyness","av_incline","pct.census","onfoot","motorvehicle","publictransport","other")]
-      st_crs(pol) <- st_crs(pct.all) #For some reason the CRS are fractionally different
-      pct.all <- pct.all[pol,]
-      pct.all <- st_transform(pct.all, st_crs(osm)) #transfor so that crs are idetical
-      rm(pol)
-
-      #######################################################################
+      # Get PCT Data
+      pct <- readRDS(paste0("../cyipt-securedata/pct-regions/",regions[b],".Rds"))
+      pct2osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct2osm.Rds"))
+      osm2pct <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm2pct.Rds"))
 
       #calc busyness score
+      osm$quietness <- as.integer(osm$quietness)
       osm$busyBefore <- osm$length / (osm$quietness/100)
 
       #Update Busyness scaore based on Reccomended infra
@@ -211,111 +169,84 @@ for(b in 1:length(regions)){
         stop()
       }
 
+      #osm.schemes <- osm[!is.na(osm$group_id),]
 
-      osm.schemes <- osm[!is.na(osm$group_id),]
+      osm$group_id[is.na(osm$group_id)] <- 0 # repalce NAs with 0 scheme number
 
-      # Work out the interesctions between schemes and roads
-      osm.schemes <- osm.schemes %>%
-        group_by(group_id) %>%
-        summarise()
-
-      inter <- st_intersects(osm.schemes, pct.all)
+      #For each PCT Line get the busyness before and after off the OSM network
 
 
-      #t1 = Sys.time()
-      #inter2 <- st_intersects(osm, pct.all)
-      #t2 = Sys.time()
+
+      #t1 <- Sys.time()
+      #foo <- lapply(1:nrow(pct),getbusyscores)
+      #foo <- bind_rows(foo)
+      #t2 <- Sys.time()
       #difftime(t2,t1)
 
-      #t1 = Sys.time()
-      #Performacne Tweak, Preallocate object to a grid to reduce processing time
-      grid <- st_make_grid(osm, n = c(100,100), "polygons")
-      grid_osm <- st_intersects(grid, osm) #  for each grid which osm lines cross it?
-      grid_pct <- st_intersects(pct.all, grid)# which grids are each pct line in?
-      #rm(grid)
-      #t2 = Sys.time()
-      #difftime(t2,t1)
+      #pct2 <- bind_cols(pct,foo)
+      #pct2$difflength = round(((pct2$lengthOSM - pct2$length) / pct2$length) * 100,2)
+      #hist(pct2$difflength)
+
+
 
       # Loop over schemes
       uptake.list <- list()
       #for(j in 1:2){
       for(j in scheme_nos){
-        message(paste0("Doing Scheme ",j))
+        #message(paste0("Doing Scheme ",j))
         #Get the roads in the schemes
-        osm.scheme <- osm.schemes[osm.schemes$group_id == j,]
+        #osm.scheme <- osm.schemes[osm.schemes$group_id == j,]
 
-        # Make a simple buffer around the scheme
-        osm.scheme.buf <- st_buffer(osm.scheme,1)
-        osm.scheme.buf <- osm.scheme.buf %>%
-          group_by(group_id) %>%
-          summarise()
-
-        # Get the PCT lines that intersect the scheme
-        pct.scheme <- pct.all[inter[[j]],]
-
-        #check the interesctions
-        inter.scheme <- st_intersection(osm.scheme.buf, pct.scheme)
-        #inter.scheme <- st_cast(inter.scheme, "LINESTRING")
-        inter.scheme <- splitmulti(inter.scheme, "MULTILINESTRING", "LINESTRING")
-
-        #remove interecsion less than 10 m
-        # this removes routes that just cross the scheme or onyl travel of it for trival part of the journey
-        #It also massivel reduced the number of lines to worry about
-        inter.scheme$inter_length <- as.numeric(st_length(inter.scheme))
-        inter.scheme <- inter.scheme[inter.scheme$inter_length > 10,]
-        pct.scheme$todo <- pct.scheme$ID %in% unique(inter.scheme$ID)
-        rm(inter.scheme)
-
-        #qtm(osm.scheme.buf) +
-        #  qtm(pct.scheme)
-
-        #Now loop over each pct route and find the change in busyness
-        #res <- lapply(pct.scheme,calcChangeBusy)
-        #res <- lapply(1:2,calcChangeBusy)
-        #res <- pblapply(1:nrow(pct.scheme),calcChangeBusy)
-        #res <- do.call("rbind",res)
-        #message(paste0("DOne Scheme ",j," at ",Sys.time()))
-
-        message("Preparation complete starting data gathering")
-
-        ##########################################################
-        #Parallel
-        start <- Sys.time()
-        fun <- function(cl){
-          parLapply(cl, 1:nrow(pct.scheme),calcChangeBusy)
-        }
-        cl <- makeCluster(4, outfile = paste0("parlog-",Sys.Date(),".txt")) #make clusert and set number of cores
-        clusterExport(cl=cl, varlist=c("osm", "pct.scheme","j","inter","grid_osm","grid_pct"))
-        clusterExport(cl=cl, c('roadsOnLine2', 'calcChangeBusy') )
-        clusterEvalQ(cl, {library(sf)})
-        respar <- fun(cl)
-        stopCluster(cl)
-        respar <- do.call("rbind",respar)
-        end <- Sys.time()
-        message(paste0("Did in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
-        #identical(res,respar)
-        ##########################################################
+        scheme.osm_ids <- osm$id[osm$group_id == j] # get the osm ids for this scheme
+        scheme.pct_ids <- unique(unlist(osm2pct[scheme.osm_ids])) # get the pct ids for this scheme
+        pct.scheme <- pct[scheme.pct_ids,]
 
 
+        scheme.changes <- lapply(scheme.pct_ids, getbusyscores.scheme, osm_change = scheme.osm_ids)
+        scheme.changes <- bind_rows(scheme.changes)
 
-        pct.up <- left_join(pct.scheme, respar, by = c("ID" = "id"))
-        pct.up$total <- pct.up$pct.census + pct.up$onfoot + pct.up$motorvehicle + pct.up$publictransport + pct.up$other
-        pct.up$model.before <-  round(exp(-2.2679333871 -0.0001207765 * pct.up$length + 0.0242742120 * sqrt(pct.up$length) -0.0075675068 * sqrt(pct.up$before) -1.9347971306 * pct.up$av_incline + -6.8377711996 * sqrt(pct.up$av_incline)),1) * pct.up$total
-        pct.up$model.after <-  round(exp(-2.2679333871 -0.0001207765 * pct.up$length + 0.0242742120 * sqrt(pct.up$length) -0.0075675068 * sqrt(pct.up$after) -1.9347971306 * pct.up$av_incline + -6.8377711996 * sqrt(pct.up$av_incline)),1) * pct.up$total
+        pct.scheme <- bind_cols(pct.scheme,scheme.changes)
+
+        #pct.scheme <- left_join(pct.scheme, respar, by = c("ID" = "id"))
+        #pct.scheme$total <- pct.scheme$pct.census + pct.scheme$onfoot + pct.scheme$motorvehicle + pct.scheme$publictransport + pct.scheme$other
+        #foo <- pct.scheme$pct.census + pct.scheme$onfoot + pct.scheme$motorvehicle + pct.scheme$publictransport + pct.scheme$other
+
+        pct.scheme.mat <- as.data.frame(pct.scheme[,c("length","busyBefore","cum_hill","change_elev","dif_max_min","up_tot","down_tot","av_incline","calories",
+                                       "male_16_24","male_25_35","male_35_49","male_50_64","male_65_74","male_75p",
+                                       "female_16_24","female_25_34", "female_35_49", "female_50_64", "female_65_74", "female_75p")])
+        pct.scheme.mat$geometry <- NULL
+        pct.scheme.mat <- as.matrix(pct.scheme.mat)
+        cor <- round(cor(predict(object = model, pct.scheme.mat), pct.scheme$pct.census)^2,4)
+
+        message(paste0(Sys.time()," Scheme ",j," has a correlation of ",cor))
+
+
+        pct.scheme$model.before <- predict(object = model, pct.scheme.mat)
+
+        pct.scheme.mat <- as.data.frame(pct.scheme[,c("length","busyAfter","cum_hill","change_elev","dif_max_min","up_tot","down_tot","av_incline","calories",
+                                                      "male_16_24","male_25_35","male_35_49","male_50_64","male_65_74","male_75p",
+                                                      "female_16_24","female_25_34", "female_35_49", "female_50_64", "female_65_74", "female_75p")])
+        pct.scheme.mat$geometry <- NULL
+        names(pct.scheme.mat)  <-  c("length","busyBefore","cum_hill","change_elev","dif_max_min","up_tot","down_tot","av_incline","calories",
+                                     "male_16_24","male_25_35","male_35_49","male_50_64","male_65_74","male_75p",
+                                     "female_16_24","female_25_34", "female_35_49", "female_50_64", "female_65_74", "female_75p")
+        pct.scheme.mat <- as.matrix(pct.scheme.mat)
+        pct.scheme$model.after <- predict(object = model, pct.scheme.mat)
 
         #Uptake for scheme is
-        uptake <- data.frame(scheme = j, census = sum(pct.up$pct.census), model.now = sum(pct.up$model.before), model.future = sum(pct.up$model.after))
+        uptake <- data.frame(scheme = j, census = sum(pct.scheme$pct.census), model.now = sum(pct.scheme$model.before), model.future = sum(pct.scheme$model.after), correlation = cor)
         uptake.list[[j]] <- uptake
 
-        message(paste0("Done scheme ",j," at ",Sys.time()))
+        #message(paste0("Done scheme ",j," at ",Sys.time()))
 
       }
 
       uptake.fin <- do.call("rbind",uptake.list)
       uptake.fin$pup <- uptake.fin$model.future / uptake.fin$model.now
       uptake.fin$expect <- round(uptake.fin$pup * uptake.fin$census,0)
+      uptake.fin$change <- uptake.fin$expect - uptake.fin$census
 
-      #saveRDS(pct.up,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct-up.Rds"))
+      #saveRDS(pct.scheme,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct-up.Rds"))
       saveRDS(uptake.fin,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct-up.Rds"))
 
       #Save results
