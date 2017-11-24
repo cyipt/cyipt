@@ -11,11 +11,12 @@ region_name = "Bristol"
 lads = readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.Rds") %>%
   st_transform(4326)
 z_msoa = msoa2011_vsimple
-u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
-download.file(u_flow_11, "~/npct/l_all.Rds")
-flow_11 = readRDS("~/npct/l_all.Rds")
-# flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
-#   as(Class = "sf")
+# u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
+# download.file(u_flow_11, "~/npct/l_all.Rds")
+# flow_11 = readRDS("~/npct/l_all.Rds") %>%
+#   st_as_sf()
+flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
+  as(Class = "sf")
 c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp") %>%
   st_transform(4326)
 
@@ -23,6 +24,7 @@ aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
 aggzone = filter(aggzones, ttwa11nm == region_name)
 # aggzone = st_buffer(aggzones, dist = 0) # for all of UK
 aggzone = flow_11 %>%
+  sample_frac(size = 0.1) %>%
   st_transform(27700) %>%
   st_buffer(1000) %>%
   st_union() %>%
