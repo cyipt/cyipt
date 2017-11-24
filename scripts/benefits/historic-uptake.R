@@ -166,7 +166,11 @@ plot(b_scheme$length, b_scheme$uptake)
 sum(b_scheme$uptake) / sum(l$all11)
 b_scheme$bcr = b_scheme$uptake / (b_scheme$costTotal / 1000)
 summary(b_scheme$bcr)
-qtm(filter(b_scheme, bcr > 100))
+qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend...
+
+# communicate:
+# file.copy("scripts/benefits/historic-uptake.R", "./", overwrite = T)
+# knitr::spin("historic-uptake.R")
 # m = lm(pcycle11 ~ pcycle01, data = od, weights = all11)
 # plot(od$all11 * predict(m, od), od$all11 * od$pcycle11)
 # cor(od$all11 * predict(m, od), od$all11 * od$pcycle11, use = "complete.obs")^2 # 2001 level explains 81% of cycling in 2011!
