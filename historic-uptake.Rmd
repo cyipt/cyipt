@@ -1,3 +1,8 @@
+```{r, echo=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+```{r}
 # Aim: create predictive model of uptake of cycling following exposure to infrastructure
 devtools::install_github("robinlovelace/ukboundaries")
 library(tmap)
@@ -203,3 +208,4 @@ qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend.
 # # incongruence example
 # st_crs(lads)
 # st_intersects(z, lads[lads$lad16nm == "Bristol, ",])
+```
