@@ -10,7 +10,8 @@ region_name = "Bristol"
 # read-in data ----
 lads = readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.Rds") %>%
   st_transform(4326)
-z_msoa = msoa2011_vsimple
+z_msoa = msoa2011_vsimple %>%
+  select(geo_code = msoa11cd)
 # u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
 # download.file(u_flow_11, "~/npct/l_all.Rds")
 # flow_11 = readRDS("~/npct/l_all.Rds") %>%
@@ -24,11 +25,11 @@ aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
 aggzone = filter(aggzones, ttwa11nm == region_name)
 # aggzone = st_buffer(aggzones, dist = 0) # for all of UK
 aggzone = flow_11 %>%
-  sample_frac(size = 0.1) %>%
   st_transform(27700) %>%
-  st_buffer(1000) %>%
+  st_buffer(1000, 4) %>%
   st_union() %>%
   st_transform(4326)
+plot(aggzone)
 
 # subset areal data to region and aggregate msoa-cas flows ----
 c_oa01 = c_oa01[aggzone, ] # get points
@@ -159,15 +160,13 @@ j = 1
 for(j in seq_along(b_scheme$group_id)) {
   intersection = st_intersection(l, b_scheme[j, ])
   intersection$exposure = as.numeric(st_length(intersection)) / intersection$dist
-  if(intersection$exposure > 1) print(intersection)
   b_scheme$uptake[j] = sum(predict(m, intersection) * intersection$all11)
 }
 plot(b_scheme$length, b_scheme$uptake)
-sum(b_scheme$uptake)
-b_scheme$cbr = b_scheme$uptake / (b_scheme$costTotal / 1000)
-summary(b_scheme$cbr)
-qtm(filter(b_scheme, cbr > 100))
-plot()
+sum(b_scheme$uptake) / sum(l$all11)
+b_scheme$bcr = b_scheme$uptake / (b_scheme$costTotal / 1000)
+summary(b_scheme$bcr)
+qtm(filter(b_scheme, bcr > 100))
 # m = lm(pcycle11 ~ pcycle01, data = od, weights = all11)
 # plot(od$all11 * predict(m, od), od$all11 * od$pcycle11)
 # cor(od$all11 * predict(m, od), od$all11 * od$pcycle11, use = "complete.obs")^2 # 2001 level explains 81% of cycling in 2011!
