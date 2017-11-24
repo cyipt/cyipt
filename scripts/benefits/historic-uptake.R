@@ -132,23 +132,30 @@ p = (predict(m, l) + l$pcycle01) * l$all11
 sum(p)
 psimple = l$pcycle01 * l$all11
 sum(psimple) # 4000+ more cyclists estimated
+cor(l$all11, p)^2
+cor(l$all11, psimple)^2
 cor(l$all01 * l$pcycle01, p)
 cor(l$all01 * l$pcycle01, psimple)
 
 # Estimate uptake
 schemes = readRDS("../cyipt-bigdata/osm-prep/Bristol/schemes.Rds")
 plot(schemes$geometry[schemes$group_id == 1])
-b_scheme_1 = schemes$geometry[schemes$group_id == 1] %>%
+sum(st_length(schemes$geometry[schemes$group_id == 1]))
+b_scheme = schemes %>%
+  select(group_id, length, costTotal) %>%
+  group_by(group_id) %>%
+  summarise_if(is.numeric, sum) %>%
   st_buffer(nQuadSegs = 8, dist = 1000) %>%
   st_transform(4326) %>%
-  c(b) %>%
-  st_union()
+  st_union(by_feature = TRUE)
+summary(b_scheme)
 # run model on modified interventions
 exposure_old = l$exposure # save for future comparison
+i = 614
 for(i in 1:nrow(l)) {
-  intersection = st_intersection(l$geometry[i], b_scheme_1)
+  intersection = st_intersection(l$geometry[i], b_scheme)
   if(length(intersection) > 0) {
-    l$exposure[i] = st_length(intersection) /
+    l$exposure[i] = sum(st_length(intersection)) /
       st_length(l$geometry[i])
   }
 }
