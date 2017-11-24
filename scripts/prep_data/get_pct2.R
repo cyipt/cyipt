@@ -8,6 +8,7 @@
 source("R/functions.R")
 
 find.pct.lines <- function(i){
+  #message(i)
   pct_sub <- pct.all[i,]
   pct_id <- pct_sub$ID[1]
   grid_ids <- grid_pct2grid[[i]]
@@ -97,7 +98,7 @@ for(b in 1:length(regions)){
       grid_pct2grid <- st_intersects(pct.all, grid) # Which grids is each pct line in?
       grid_grid2osm <- st_intersects(grid, osm)# for each grid which osm lines cross it
 
-
+      #pct2osm <- lapply(1:nrow(pct.all), find.pct.lines)
       ##########################################################
       #Parallel
       m = 1
@@ -115,7 +116,6 @@ for(b in 1:length(regions)){
 
       end <- Sys.time()
       message(paste0("Did ",n," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
-      #identical(foo,respar)
       ##########################################################
 
       saveRDS(pct2osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct2osm.Rds"))
