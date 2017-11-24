@@ -1,4 +1,4 @@
-# get cas2003 OD data
+# Aim: create predictive model of uptake of cycling following exposure to infrastructure
 devtools::install_github("robinlovelace/ukboundaries")
 library(tmap)
 tmap_mode("view")
@@ -8,8 +8,8 @@ library(stplanr)
 region_name = "Bristol"
 
 # read-in data ----
-aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
-aggzone = filter(aggzones, ttwa11nm == region_name)
+lads = readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.Rds") %>%
+  st_transform(4326)
 z_msoa = st_read("../cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp") %>%
   st_transform(4326) %>%
   select(geo_code = msoa11cd)
@@ -18,16 +18,51 @@ flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
 c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp") %>%
   st_transform(4326)
 
+aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
+aggzone = filter(aggzones, ttwa11nm == region_name)
+# aggzone = st_buffer(aggzones, dist = 0) # for all of UK
+aggzone = flow_11 %>%
+  st_transform(27700) %>%
+  st_buffer(1000) %>%
+  st_union() %>%
+  st_transform(4326)
+
 # subset areal data to region and aggregate msoa-cas flows ----
 c_oa01 = c_oa01[aggzone, ] # get points
 z = z_msoa[c_oa01, ]
 cas = cas[c_oa01, ]
 cas = cas2003_simple[c_oa01, ]
 
+# read-in and process infra data ----
+sc2sd = readRDS("../cyinfdat/sc2sd") %>%
+  filter(OpenDate < "2010-12-01") %>%
+  mutate(OpenDate = as.character(OpenDate)) %>%
+  select(date = OpenDate, on_road = OnRoad)
+# all before 2011
+sl2sc = readRDS("../cyinfdat/ri_04_11_dft") %>%
+  select(date = BuildYear, on_road = OnRoad)
+old_infra = rbind(sc2sd, sl2sc)
+summary(as.factor(old_infra$on_road))
+qtm(old_infra, lines.col = "green")
+b = old_infra %>%
+  st_transform(27700) %>%
+  st_buffer(dist = 1000, nQuadSegs = 4) %>%
+  st_union() %>%
+  st_transform(4326)
+qtm(b)
+
+# subset lines of interest and aggregate them to cas level
+# flow_11 = flow_11[b, ]
+# cas = cas[b, ]
+# z = z[b, ]
+
+summary(flow_11$geo_code1 %in% z$geo_code)
 f11 = select(flow_11, geo_code1, geo_code2, all, bicycle) %>%
   st_set_geometry(NULL) %>%
-  filter(geo_code1 %in% z$geo_code, geo_code2 %in% z$geo_code)
-l11 = od_aggregate(flow = f11, zones = z, aggzones = cas) %>%
+  filter(geo_code1 %in% z$geo_code, geo_code2 %in% z$geo_code) %>%
+  filter(all > 20)
+# time-consuming...
+od_11 = od_aggregate(flow = f11, zones = z, aggzones = cas) %>%
   na.omit() %>%
   mutate(pcycle11 = bicycle / all) %>%
   select(o = flow_new_orig, d = flow_new_dest, all11 = all, pcycle11)
@@ -57,34 +92,57 @@ od_01 = od_01 %>% mutate(pcycle01 = bicycle / all) %>%
 od_01_region = od_01 %>%
   filter(o %in% cas$ons_label, d %in% cas$ons_label) # 6k results
 
-summary(od_01_region$o %in% l11$o) # test readiness to merge with 2011
+summary(od_01_region$o %in% od_11$o) # test readiness to merge with 2011
+od_01_region = od_01_region %>%
+  filter(all01 > 10, o %in% od_11$o, d %in% od_11$d) %>%
+  na.omit()
 
-od_01_region = inner_join(od_01_region, l11)
-od_01_region = od_01_region %>% select(o, d, all01 = all)
-sum(od_01_region$all) # 100k
+od = inner_join(od_01_region, od_11)
+od = mutate(od, p_uptake = pcycle11 - pcycle01)
 
-remove_cycle_infra = function(ways) {
-  ways$cycleway.left = "no"
-  ways$cycleway.right = "no"
-  return(ways)
+l = od2line(flow = od, cas)
+plot(l$geometry) # works
+l$dist = as.numeric(st_length(l))
+l = filter(l, dist > 0, dist < 10000) %>%
+  na.omit()
+qtm(l) + qtm(b)
+
+# testing
+sum(l$all01) # 100k
+sum(l$all11) # many more in 2011
+sum(l$all01 * l$pcycle01) / sum(l$all01)
+sum(l$all11 * l$pcycle11) / sum(l$all11) # doubling in cycling in Avon in affected routes
+
+# crude measure of exposure: % of route near cycle path
+i = 1
+l$exposure = NA
+for(i in 1:nrow(l)) {
+  intersection = st_intersection(l$geometry[i], b)
+  if(length(intersection) > 0) {
+    l$exposure[i] = st_length(intersection) /
+      st_length(l$geometry[i])
+  }
 }
+summary(l$exposure)
+sel_na = is.na(l$exposure)
+l$exposure[sel_na] = 0
+m = lm(p_uptake ~ dist + exposure, l, weights = all11)
+p = (predict(m, l) + l$pcycle01) * l$all11
+sum(p)
+psimple = l$pcycle01 * l$all11
+sum(psimple) # 4000+ more cyclists estimated
+cor(l$all01 * l$pcycle01, p)
+cor(l$all01 * l$pcycle01, psimple)
+
+# Estimate uptake
+m = lm(pcycle11 ~ pcycle01, data = od, weights = all11)
+plot(od$all11 * predict(m, od), od$all11 * od$pcycle11)
+cor(od$all11 * predict(m, od), od$all11 * od$pcycle11, use = "complete.obs")^2 # 2001 level explains 81% of cycling in 2011!
 
 # test data
-ways = readRDS("~/cyipt/cyipt-bigdata/osm-clean/BristolCityof/osm-lines.Rds")
-cpaths = ways %>% filter(cycleway.left != "no") # 21km cycle paths...
 summary(as.factor(ways$cycleway.left))
 ways = remove_cycle_infra(ways)
 summary # 200 cycle paths removed
-
-# get uptake data from get-nomis data
-# sustrans data - read-in from cyinfdat
-sc2sd = readRDS("../cyinfdat/sc2sd")
-i = readRDS("../cyinfdat/ri_04_11_dft")
-qtm(flow_11) +
-  qtm(aggzone) +
-  qtm(sc2sd, "green") +
-  qtm(i) + # very little infrastructure there
-  qtm(cpaths)
 
 # imagine all infrastructure is new...
 # lines most exposed to new infrastructure (within a 1km buffer around them)
@@ -105,3 +163,7 @@ cor(predict(m1, l) * l$all, l$cpath_length_buff)^2
 l_sub = l %>% filter(all11 > median(all11)) %>%
   filter(cpath_length_buff > median(.$cpath_length_buff))
 r = line2route(l_sub)
+
+# incongruence example
+st_crs(lads)
+st_intersects(z, lads[lads$lad16nm == "Bristol, ",])
