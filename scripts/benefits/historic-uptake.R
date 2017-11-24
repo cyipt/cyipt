@@ -10,9 +10,7 @@ region_name = "Bristol"
 # read-in data ----
 lads = readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.Rds") %>%
   st_transform(4326)
-z_msoa = st_read("../cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp") %>%
-  st_transform(4326) %>%
-  select(geo_code = msoa11cd)
+z_msoa = msoa2011_vsimple
 flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
   as(Class = "sf")
 c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp") %>%
