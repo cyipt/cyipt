@@ -28,22 +28,12 @@ region_name = "Bristol"
 # read-in data ----
 lads = readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.Rds") %>%
   st_transform(4326)
-z_msoa = st_read("../cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp") %>%
-  st_transform(4326) %>%
+z_msoa = msoa2011_vsimple %>%
   select(geo_code = msoa11cd)
-```
-
-```
-## Reading layer `Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales' from data source `/home/robin/cyipt/cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp' using driver `ESRI Shapefile'
-## Simple feature collection with 7201 features and 6 fields
-## geometry type:  MULTIPOLYGON
-## dimension:      XY
-## bbox:           xmin: 82673.22 ymin: 5342.676 xmax: 655606.3 ymax: 657533.7
-## epsg (SRID):    NA
-## proj4string:    +proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +datum=OSGB36 +units=m +no_defs
-```
-
-```r
+# u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
+# download.file(u_flow_11, "~/npct/l_all.Rds")
+# flow_11 = readRDS("~/npct/l_all.Rds") %>%
+#   st_as_sf()
 flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
   as(Class = "sf")
 c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp") %>%
@@ -66,10 +56,15 @@ aggzone = filter(aggzones, ttwa11nm == region_name)
 # aggzone = st_buffer(aggzones, dist = 0) # for all of UK
 aggzone = flow_11 %>%
   st_transform(27700) %>%
-  st_buffer(1000) %>%
+  st_buffer(1000, 4) %>%
   st_union() %>%
   st_transform(4326)
+plot(aggzone)
+```
 
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png)
+
+```r
 # subset areal data to region and aggregate msoa-cas flows ----
 c_oa01 = c_oa01[aggzone, ] # get points
 ```
@@ -124,18 +119,18 @@ summary(as.factor(old_infra$on_road))
 qtm(old_infra, lines.col = "green")
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png)
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-2.png)
 
 ```r
 b = old_infra %>%
   st_transform(27700) %>%
-  st_buffer(dist = 1000, nQuadSegs = 4) %>%
+  st_buffer(dist = 500, nQuadSegs = 4) %>%
   st_union() %>%
   st_transform(4326)
 qtm(b)
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-2.png)
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-3.png)
 
 ```r
 # subset lines of interest and aggregate them to cas level
@@ -321,7 +316,7 @@ od = inner_join(od_01_region, od_11)
 ```
 
 ```r
-od = mutate(od, p_uptake = (pcycle11 - pcycle01) * 100)
+od = mutate(od, p_uptake = (pcycle11 - pcycle01))
 
 l = od2line(flow = od, cas)
 ```
@@ -336,7 +331,7 @@ l = od2line(flow = od, cas)
 plot(l$geometry) # works
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-3.png)
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-4.png)
 
 ```r
 l$dist = as.numeric(st_length(l))
@@ -345,7 +340,7 @@ l = filter(l, dist > 0, dist < 10000) %>%
 qtm(l) + qtm(b)
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-4.png)
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-5.png)
 
 ```r
 # testing
@@ -381,7 +376,7 @@ sum(l$all11 * l$pcycle11) / sum(l$all11) # doubling in cycling in Avon in affect
 ```
 
 ```r
-# crude measure of exposure: % of route near cycle path
+# crude measure of exposure: % of route near 1 cycle path
 i = 1
 l$exposure = NA
 for(i in 1:nrow(l)) {
@@ -394,11 +389,918 @@ for(i in 1:nrow(l)) {
 ```
 
 ```
-
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
 ```
 
 ```
-
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
 ```
 
 ```r
@@ -407,11 +1309,17 @@ summary(l$exposure)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##  0.0114  0.1802  0.3156  0.3839  0.5189  1.0000     584
+##  0.0008  0.0997  0.1652  0.2328  0.3010  1.0000     689
 ```
 
 ```r
 sel_na = is.na(l$exposure)
+plot(l$dist, l$exposure)
+```
+
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-6.png)
+
+```r
 l$exposure[sel_na] = 0
 m = lm(p_uptake ~ dist + exposure, l, weights = all11)
 summary(m)
@@ -424,19 +1332,19 @@ summary(m)
 ## 
 ## Weighted Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -541.47  -34.67   -0.66   29.88  460.95 
+## -5.1158 -0.3579 -0.0184  0.2821  4.5564 
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value Pr(>|t|)    
-## (Intercept) 2.055e+00  4.351e-01   4.724 2.68e-06 ***
-## dist        4.937e-06  8.428e-05   0.059 0.953301    
-## exposure    3.172e+00  8.265e-01   3.837 0.000133 ***
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  2.372e-02  4.207e-03   5.639 2.28e-08 ***
+## dist        -1.671e-07  8.424e-07  -0.198  0.84283    
+## exposure     4.147e-02  1.523e-02   2.724  0.00658 ** 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 79.4 on 906 degrees of freedom
-## Multiple R-squared:  0.01619,	Adjusted R-squared:  0.01402 
-## F-statistic: 7.454 on 2 and 906 DF,  p-value: 0.0006151
+## Residual standard error: 0.7972 on 906 degrees of freedom
+## Multiple R-squared:  0.008318,	Adjusted R-squared:  0.006128 
+## F-statistic: 3.799 on 2 and 906 DF,  p-value: 0.02274
 ```
 
 ```r
@@ -445,7 +1353,7 @@ sum(p)
 ```
 
 ```
-## [1] 435708.9
+## [1] 13218
 ```
 
 ```r
@@ -458,11 +1366,27 @@ sum(psimple) # 4000+ more cyclists estimated
 ```
 
 ```r
+cor(l$all11, p)^2
+```
+
+```
+## [1] 0.7145888
+```
+
+```r
+cor(l$all11, psimple)^2
+```
+
+```
+## [1] 0.5759274
+```
+
+```r
 cor(l$all01 * l$pcycle01, p)
 ```
 
 ```
-## [1] 0.4708005
+## [1] 0.5832665
 ```
 
 ```r
@@ -479,48 +1403,1630 @@ schemes = readRDS("../cyipt-bigdata/osm-prep/Bristol/schemes.Rds")
 plot(schemes$geometry[schemes$group_id == 1])
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-5.png)
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-7.png)
 
 ```r
-b_scheme_1 = schemes$geometry[schemes$group_id == 1] %>%
-  st_buffer(nQuadSegs = 8, dist = 1000) %>%
-  st_transform(4326) %>%
-  c(b) %>%
-  st_union()
+sum(st_length(schemes$geometry[schemes$group_id == 1]))
+```
+
+```
+## 8943.85 m
+```
+
+```r
+b_scheme = schemes %>%
+  st_buffer(nQuadSegs = 8, dist = 500) %>%
+  group_by(group_id) %>%
+  summarise(length = sum(length), costTotal = sum(costTotal)) %>%
+  st_union(by_feature = T) %>%
+  st_transform(4326)
+summary(b_scheme)
+```
+
+```
+##     group_id          length          costTotal                 geometry  
+##  Min.   :  1.00   Min.   :  207.2   Min.   :    3350   POLYGON      :172  
+##  1st Qu.: 43.75   1st Qu.:  479.8   1st Qu.:  189086   epsg:4326    :  0  
+##  Median : 86.50   Median : 1647.0   Median :  754584   +proj=long...:  0  
+##  Mean   : 88.31   Mean   : 2778.6   Mean   : 1644270                      
+##  3rd Qu.:130.50   3rd Qu.: 4318.8   3rd Qu.: 2085344                      
+##  Max.   :221.00   Max.   :11444.6   Max.   :12978118
+```
+
+```r
 # run model on modified interventions
-exposure_old = l$exposure # save for future comparison
-for(i in 1:nrow(l)) {
-  intersection = st_intersection(l$geometry[i], b_scheme_1)
-  if(length(intersection) > 0) {
-    l$exposure[i] = st_length(intersection) /
-      st_length(l$geometry[i])
-  }
+l$scheme_number = NA
+b_scheme$uptake = NA
+j = 1
+for(j in seq_along(b_scheme$group_id)) {
+  intersection = st_intersection(l, b_scheme[j, ])
+  intersection$exposure = as.numeric(st_length(intersection)) / intersection$dist
+  b_scheme$uptake[j] = sum(predict(m, intersection) * intersection$all11)
 }
 ```
 
 ```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
 
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
 
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
+```
+
+```
+## although coordinates are longitude/latitude, st_intersection assumes that they are planar
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant
+## throughout all geometries
 ```
 
 ```r
-l$exposure[sel_na] = 0
-plot(exposure_old, l$exposure) # some routes affected
+plot(b_scheme$length, b_scheme$uptake)
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-6.png)
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-8.png)
 
 ```r
-m1 = lm(p_uptake ~ dist + exposure, l, weights = all11)
-p1 = (predict(m, l) + l$pcycle01) * l$all11
-sum(p1) - sum(p) # uptake of 500 people from scheme 1
+sum(b_scheme$uptake) / sum(l$all11)
 ```
 
 ```
-## [1] 517.3924
+## [1] 0.2829218
 ```
 
 ```r
+b_scheme$bcr = b_scheme$uptake / (b_scheme$costTotal / 1000)
+summary(b_scheme$bcr)
+```
+
+```
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+##  0.00000  0.08476  0.25673  3.44074  0.54986 92.14290
+```
+
+```r
+qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend...
+```
+
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-9.png)
+
+```r
+# communicate:
+# file.copy("scripts/benefits/historic-uptake.R", "./", overwrite = T)
+# knitr::spin("historic-uptake.R")
 # m = lm(pcycle11 ~ pcycle01, data = od, weights = all11)
 # plot(od$all11 * predict(m, od), od$all11 * od$pcycle11)
 # cor(od$all11 * predict(m, od), od$all11 * od$pcycle11, use = "complete.obs")^2 # 2001 level explains 81% of cycling in 2011!
