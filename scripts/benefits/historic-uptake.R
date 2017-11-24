@@ -98,7 +98,7 @@ od_01_region = od_01_region %>%
   na.omit()
 
 od = inner_join(od_01_region, od_11)
-od = mutate(od, p_uptake = pcycle11 - pcycle01)
+od = mutate(od, p_uptake = (pcycle11 - pcycle01) * 100)
 
 l = od2line(flow = od, cas)
 plot(l$geometry) # works
@@ -127,6 +127,7 @@ summary(l$exposure)
 sel_na = is.na(l$exposure)
 l$exposure[sel_na] = 0
 m = lm(p_uptake ~ dist + exposure, l, weights = all11)
+summary(m)
 p = (predict(m, l) + l$pcycle01) * l$all11
 sum(p)
 psimple = l$pcycle01 * l$all11
@@ -135,35 +136,57 @@ cor(l$all01 * l$pcycle01, p)
 cor(l$all01 * l$pcycle01, psimple)
 
 # Estimate uptake
-m = lm(pcycle11 ~ pcycle01, data = od, weights = all11)
-plot(od$all11 * predict(m, od), od$all11 * od$pcycle11)
-cor(od$all11 * predict(m, od), od$all11 * od$pcycle11, use = "complete.obs")^2 # 2001 level explains 81% of cycling in 2011!
+schemes = readRDS("../cyipt-bigdata/osm-prep/Bristol/schemes.Rds")
+plot(schemes$geometry[schemes$group_id == 1])
+b_scheme_1 = schemes$geometry[schemes$group_id == 1] %>%
+  st_buffer(nQuadSegs = 8, dist = 1000) %>%
+  st_transform(4326) %>%
+  c(b) %>%
+  st_union()
+# run model on modified interventions
+exposure_old = l$exposure # save for future comparison
+for(i in 1:nrow(l)) {
+  intersection = st_intersection(l$geometry[i], b_scheme_1)
+  if(length(intersection) > 0) {
+    l$exposure[i] = st_length(intersection) /
+      st_length(l$geometry[i])
+  }
+}
+l$exposure[sel_na] = 0
+plot(exposure_old, l$exposure) # some routes affected
+m1 = lm(p_uptake ~ dist + exposure, l, weights = all11)
+p1 = (predict(m, l) + l$pcycle01) * l$all11
+sum(p1) - sum(p) # uptake of 500 people from scheme 1
 
-# test data
-summary(as.factor(ways$cycleway.left))
-ways = remove_cycle_infra(ways)
-summary # 200 cycle paths removed
+# m = lm(pcycle11 ~ pcycle01, data = od, weights = all11)
+# plot(od$all11 * predict(m, od), od$all11 * od$pcycle11)
+# cor(od$all11 * predict(m, od), od$all11 * od$pcycle11, use = "complete.obs")^2 # 2001 level explains 81% of cycling in 2011!
+#
+# # test data
+# summary(as.factor(ways$cycleway.left))
+# ways = remove_cycle_infra(ways)
+# summary # 200 cycle paths removed
+#
+# # imagine all infrastructure is new...
+# # lines most exposed to new infrastructure (within a 1km buffer around them)
+# l_buf = geo_buffer(l, dist = 1000) # looks good
+# st_crs(l_buf)
+# cpaths = st_transform(cpaths, 4326)
+# cpaths$length = as.numeric(st_length(cpaths))
+# l$cpath_length_buff = aggregate(cpaths["length"], l_buf, sum)$length
+# l$cpath_length_buff[is.na(l$cpath_length_buff)] = 0
+# summary(l)
+# plot(l$cpath_length_buff, l$uptake)
+# cor(l$cpath_length_buff, l$uptake, use = "complete.obs")
+# m1 = lm(formula = uptake ~ cpath_length_buff, data = l, weights = all11)
+#
+# cor(predict(m1, l) * l$all, l$cpath_length_buff)^2
 
-# imagine all infrastructure is new...
-# lines most exposed to new infrastructure (within a 1km buffer around them)
-l_buf = geo_buffer(l, dist = 1000) # looks good
-st_crs(l_buf)
-cpaths = st_transform(cpaths, 4326)
-cpaths$length = as.numeric(st_length(cpaths))
-l$cpath_length_buff = aggregate(cpaths["length"], l_buf, sum)$length
-l$cpath_length_buff[is.na(l$cpath_length_buff)] = 0
-summary(l)
-plot(l$cpath_length_buff, l$uptake)
-cor(l$cpath_length_buff, l$uptake, use = "complete.obs")
-m1 = lm(formula = uptake ~ cpath_length_buff, data = l, weights = all11)
-
-cor(predict(m1, l) * l$all, l$cpath_length_buff)^2
-
-# subset those with high flows and high exposure
-l_sub = l %>% filter(all11 > median(all11)) %>%
-  filter(cpath_length_buff > median(.$cpath_length_buff))
-r = line2route(l_sub)
-
-# incongruence example
-st_crs(lads)
-st_intersects(z, lads[lads$lad16nm == "Bristol, ",])
+# # subset those with high flows and high exposure
+# l_sub = l %>% filter(all11 > median(all11)) %>%
+#   filter(cpath_length_buff > median(.$cpath_length_buff))
+# r = line2route(l_sub)
+#
+# # incongruence example
+# st_crs(lads)
+# st_intersects(z, lads[lads$lad16nm == "Bristol, ",])
