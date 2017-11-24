@@ -47,7 +47,7 @@ summary(as.factor(old_infra$on_road))
 qtm(old_infra, lines.col = "green")
 b = old_infra %>%
   st_transform(27700) %>%
-  st_buffer(dist = 1000, nQuadSegs = 4) %>%
+  st_buffer(dist = 500, nQuadSegs = 4) %>%
   st_union() %>%
   st_transform(4326)
 qtm(b)
@@ -99,7 +99,7 @@ od_01_region = od_01_region %>%
   na.omit()
 
 od = inner_join(od_01_region, od_11)
-od = mutate(od, p_uptake = (pcycle11 - pcycle01) * 100)
+od = mutate(od, p_uptake = (pcycle11 - pcycle01))
 
 l = od2line(flow = od, cas)
 plot(l$geometry) # works
@@ -114,7 +114,7 @@ sum(l$all11) # many more in 2011
 sum(l$all01 * l$pcycle01) / sum(l$all01)
 sum(l$all11 * l$pcycle11) / sum(l$all11) # doubling in cycling in Avon in affected routes
 
-# crude measure of exposure: % of route near cycle path
+# crude measure of exposure: % of route near 1 cycle path
 i = 1
 l$exposure = NA
 for(i in 1:nrow(l)) {
@@ -126,6 +126,7 @@ for(i in 1:nrow(l)) {
 }
 summary(l$exposure)
 sel_na = is.na(l$exposure)
+plot(l$dist, l$exposure)
 l$exposure[sel_na] = 0
 m = lm(p_uptake ~ dist + exposure, l, weights = all11)
 summary(m)
@@ -143,29 +144,28 @@ schemes = readRDS("../cyipt-bigdata/osm-prep/Bristol/schemes.Rds")
 plot(schemes$geometry[schemes$group_id == 1])
 sum(st_length(schemes$geometry[schemes$group_id == 1]))
 b_scheme = schemes %>%
-  select(group_id, length, costTotal) %>%
+  st_buffer(nQuadSegs = 8, dist = 500) %>%
   group_by(group_id) %>%
-  summarise_if(is.numeric, sum) %>%
-  st_buffer(nQuadSegs = 8, dist = 1000) %>%
-  st_transform(4326) %>%
-  st_union(by_feature = TRUE)
+  summarise(length = sum(length), costTotal = sum(costTotal)) %>%
+  st_union(by_feature = T) %>%
+  st_transform(4326)
 summary(b_scheme)
 # run model on modified interventions
-exposure_old = l$exposure # save for future comparison
-i = 614
-for(i in 1:nrow(l)) {
-  intersection = st_intersection(l$geometry[i], b_scheme)
-  if(length(intersection) > 0) {
-    l$exposure[i] = sum(st_length(intersection)) /
-      st_length(l$geometry[i])
-  }
+l$scheme_number = NA
+b_scheme$uptake = NA
+j = 1
+for(j in seq_along(b_scheme$group_id)) {
+  intersection = st_intersection(l, b_scheme[j, ])
+  intersection$exposure = as.numeric(st_length(intersection)) / intersection$dist
+  if(intersection$exposure > 1) print(intersection)
+  b_scheme$uptake[j] = sum(predict(m, intersection) * intersection$all11)
 }
-l$exposure[sel_na] = 0
-plot(exposure_old, l$exposure) # some routes affected
-m1 = lm(p_uptake ~ dist + exposure, l, weights = all11)
-p1 = (predict(m, l) + l$pcycle01) * l$all11
-sum(p1) - sum(p) # uptake of 500 people from scheme 1
-
+plot(b_scheme$length, b_scheme$uptake)
+sum(b_scheme$uptake)
+b_scheme$cbr = b_scheme$uptake / (b_scheme$costTotal / 1000)
+summary(b_scheme$cbr)
+qtm(filter(b_scheme, cbr > 100))
+plot()
 # m = lm(pcycle11 ~ pcycle01, data = od, weights = all11)
 # plot(od$all11 * predict(m, od), od$all11 * od$pcycle11)
 # cor(od$all11 * predict(m, od), od$all11 * od$pcycle11, use = "complete.obs")^2 # 2001 level explains 81% of cycling in 2011!
