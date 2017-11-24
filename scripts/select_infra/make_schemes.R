@@ -78,6 +78,27 @@ for(b in 1:length(regions)){
         osm <- left_join(osm,verts, by = c("id" = "id"))
         schemes <- osm[!is.na(osm$group_id),]
 
+
+        #Remove Tiny Schemes
+        # Get scheme numbers
+        scheme_nos <- unique(schemes$group_id)
+        scheme_nos <- scheme_nos[order(scheme_nos)]
+
+        # Sum lengths of each scheme
+        length.schemes <- function(x){
+          result <- sum(schemes$length[schemes$group_id == x])
+          return(result)
+        }
+
+        scheme.lengths <- data.frame(scheme = scheme_nos, length = NA)
+        scheme.lengths$length <- sapply(scheme_nos, length.schemes)
+
+        #Find Long Schemes
+        scheme.lengths <- scheme.lengths[scheme.lengths$length > 200,]
+
+        schemes <- schemes[schemes$group_id %in% scheme.lengths$scheme,]
+        rm(scheme.lengths, scheme_nos)
+
         rm(verts,g,clus)
 
       }else{
