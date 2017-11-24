@@ -8,7 +8,10 @@ Living Street 0 no lane 0,None,downgrade,0
 Living Street 0 no no 0,None,downgrade,0
 Living Street 0 no no 0,Cycle Street,no change,0
 Living Street 0 no no 0,Cycle Lanes,upgrade,460
+Living Street 0 no no 0,Stepped Cycle Tracks,upgrade,960
+Living Street 1 share_busway lane 0,None,downgrade,0
 Living Street 1 share_busway no 0,None,downgrade,0
+Living Street 1 share_busway no 0,Cycle Street,no change,0
 Main Road - Cycling Allowed 0 lane lane 0,Cycle Street,downgrade,0
 Main Road - Cycling Allowed 0 lane lane 0,None,downgrade,0
 Main Road - Cycling Allowed 0 lane lane 0,Cycle Lanes,no change,0
@@ -146,6 +149,7 @@ Minor Road - Cycling Allowed 0 track track 0,Cycle Street,downgrade,0
 Minor Road - Cycling Allowed 0 track track 0,None,downgrade,0
 Minor Road - Cycling Allowed 1 share_busway lane 0,Cycle Street,downgrade,0
 Minor Road - Cycling Allowed 1 share_busway lane 0,None,downgrade,0
+Minor Road - Cycling Allowed 1 share_busway lane 0,Segregated Cycle Track,upgrade,1450
 Minor Road - Cycling Allowed 1 share_busway no 0,None,downgrade,0
 Minor Road - Cycling Allowed 1 share_busway no 0,Cycle Street,upgrade,15
 Minor Road - Cycling Allowed 1 share_busway no 0,Cycle Lanes,upgrade,460
@@ -154,6 +158,7 @@ Minor Road - Cycling Allowed 1 share_busway no 0,Stepped Cycle Tracks,upgrade,96
 Minor Road - Cycling Allowed 1 share_busway share_busway 1,Cycle Street,upgrade,15
 motorway - Cycling Forbidden 0 no no 0,None,no change,0
 motorway_link - Cycling Forbidden 0 no no 0,None,no change,0
+motorway_link - Cycling Forbidden 0 no no 0,Segregated Cycle Track,no change,0
 Path - Cycling Forbidden 0 no no 0,None,no change,0
 Path - Cycling Forbidden 0 no no 0,Cycle Lane on Path,upgrade,140
 Path - Cycling Forbidden 0 no no 0,Segregated Cycle Track on Path,upgrade,190
@@ -209,6 +214,7 @@ Trunk Road - Cycling Allowed 0 lane lane 0,Segregated Cycle Track,upgrade,1450
 Trunk Road - Cycling Allowed 0 lane no 0,Cycle Street,downgrade,0
 Trunk Road - Cycling Allowed 0 lane no 0,None,downgrade,0
 Trunk Road - Cycling Allowed 0 lane no 0,Stepped Cycle Tracks,upgrade,960
+Trunk Road - Cycling Allowed 0 lane no 0,Segregated Cycle Track,upgrade,1450
 Trunk Road - Cycling Allowed 0 lane share_busway 1,None,downgrade,0
 Trunk Road - Cycling Allowed 0 lane share_busway 1,Stepped Cycle Tracks,upgrade,960
 Trunk Road - Cycling Allowed 0 no lane 0,None,downgrade,0
@@ -225,6 +231,8 @@ Trunk Road - Cycling Allowed 0 no share_busway 1,Cycle Lanes,upgrade (one side),
 Trunk Road - Cycling Allowed 0 no track 0,None,downgrade,0
 Trunk Road - Cycling Allowed 0 no track 0,Stepped Cycle Tracks,upgrade (one side),480
 Trunk Road - Cycling Allowed 0 shared_lane shared_lane 0,Stepped Cycle Tracks,upgrade,960
+Trunk Road - Cycling Allowed 0 track lane 0,None,downgrade,0
+Trunk Road - Cycling Allowed 0 track lane 0,Stepped Cycle Tracks,upgrade (one side),480
 Trunk Road - Cycling Allowed 0 track no 0,None,downgrade,0
 Trunk Road - Cycling Allowed 0 track no 0,Cycle Lanes,upgrade (one side),180
 Trunk Road - Cycling Allowed 0 track no 0,Stepped Cycle Tracks,upgrade (one side),480
@@ -244,7 +252,9 @@ Trunk Road - Cycling Allowed 1 share_busway share_busway 1,None,no change,0
 Trunk Road - Cycling Allowed 1 share_busway share_busway 1,Stepped Cycle Tracks,upgrade,960
 Trunk Road - Cycling Allowed 1 share_busway track 0,None,downgrade,0
 Trunk Road Link - Cycling Allowed 0 lane lane 0,None,downgrade,0
+Trunk Road Link - Cycling Allowed 0 lane lane 0,Stepped Cycle Tracks,upgrade,960
 Trunk Road Link - Cycling Allowed 0 lane no 0,None,downgrade,0
+Trunk Road Link - Cycling Allowed 0 lane no 0,Stepped Cycle Tracks,upgrade,960
 Trunk Road Link - Cycling Allowed 0 no lane 0,None,downgrade,0
 Trunk Road Link - Cycling Allowed 0 no no 0,None,no change,0
 Trunk Road Link - Cycling Allowed 0 no no 0,Cycle Street,upgrade,15

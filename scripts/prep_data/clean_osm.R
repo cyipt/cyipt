@@ -686,13 +686,14 @@ for(a in 1:length(regions)){
 
         }
       }
+      rm(m)
 
       #clean up incorect tagging
-      osm$cycleway.left[osm$cycleway.left %in% c("opposite_late", "opposite_lane", "lane_right", "lane_left")] <- "lane"
+      osm$cycleway.left[osm$cycleway.left %in% c("opposite_late", "opposite_lane", "lane_right", "lane_left","shared_lane;lane")] <- "lane"
       osm$cycleway.left[osm$cycleway.left %in% c("opposite_track")] <- "track"
       osm$cycleway.left[osm$cycleway.left %in% c("opposite_share_busway","shared_busway")] <- "share_busway"
 
-      osm$cycleway.right[osm$cycleway.right %in% c("opposite_late", "opposite_lane", "lane_right", "lane_left")] <- "lane"
+      osm$cycleway.right[osm$cycleway.right %in% c("opposite_late", "opposite_lane", "lane_right", "lane_left","shared_lane;lane")] <- "lane"
       osm$cycleway.right[osm$cycleway.right %in% c("opposite_track")] <- "track"
       osm$cycleway.right[osm$cycleway.right %in% c("opposite_share_busway","shared_busway")] <- "share_busway"
 
@@ -843,12 +844,13 @@ for(a in 1:length(regions)){
         message(paste0("Warning: ",nrow(osm.check)," types are missing from the quietness input please fix, see osm.check for details"))
         stop()
       }
+      rm(check)
 
       osm <- left_join(osm,quiet.scores, by = c("highway" = "highway","cycleway.left" = "cycleway.left","cycleway.right" = "cycleway.right"))
       osm$quietness <- as.integer(osm$quietness)
 
       saveRDS(osm,paste0("../cyipt-bigdata/osm-clean/",regions[a],"/osm-lines.Rds"))
-      rm(osm)
+      rm(osm, quiet.scores, osm.check)
 
 
 

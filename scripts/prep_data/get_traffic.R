@@ -15,7 +15,9 @@ library(dplyr)
 #Functions
 #Function for classified roads
 get.aadt.class <- function(e){
+  #message(paste0("doing ",e))
   traffic.sub <- traffic.class[traffic.class$road == roadnames[e],]
+  traffic.sub <- traffic.sub[!duplicated(traffic.sub$geometry),]
   osm.sub <- osm.nona[osm.nona$ref == roadnames[e],]
 
   #need at least 2 points to make voronoi polygons

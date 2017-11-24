@@ -128,8 +128,8 @@ unclassified,share_busway,share_busway,80
 unclassified,track,no,90
 unclassified,track,track,100
 road,share_busway,no,75
-,,,#N/A
-,,,#N/A
+living_street,share_busway,lane,95
+trunk,track,lane,50
 ,,,#N/A
 ,,,#N/A
 ,,,#N/A
