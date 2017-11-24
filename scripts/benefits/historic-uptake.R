@@ -11,8 +11,11 @@ region_name = "Bristol"
 lads = readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.Rds") %>%
   st_transform(4326)
 z_msoa = msoa2011_vsimple
-flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
-  as(Class = "sf")
+u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
+download.file(u_flow_11, "~/npct/l_all.Rds")
+flow_11 = readRDS("~/npct/l_all.Rds")
+# flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
+#   as(Class = "sf")
 c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp") %>%
   st_transform(4326)
 
