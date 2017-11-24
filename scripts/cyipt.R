@@ -38,7 +38,7 @@ regions.todo <- read.csv("../cyipt/input-data/RegionsToDo.csv", stringsAsFactors
 regions.todo <- regions.todo[!is.na(regions.todo$do),]
 regions.todo <- regions.todo$region[regions.todo$do == "y"]
 
-regions.todo <- "Bristol"
+#regions.todo <- "Manchester"
 
 message("CyIPT will run for the following regions:")
 print(regions.todo)
@@ -69,17 +69,23 @@ source("scripts/select_infra/select_infra.R")
 #Step 8: Compare Widths Needed to Widths Available
 source("scripts/select_infra/compare_widths.R")
 
-#Step 8: Group into schemes
+#Step 9: Group into schemes
 source("scripts/select_infra/make_schemes.R")
 
-#Step 9 : get uptake
-source("scripts/uptake/calc_uptake.R")
+#Step 10: get uptake
+source("scripts/uptake/calc_uptake_exposure.R")
+
+#Step 11: Summarise Schemes
+source("scripts/select_infra/summarise_schemes.R")
+
+#Step 12: Calculate Benefits
+source("scripts/benefits/eval_benefits2.R")
 
 
 
 #Step LAST: Export for DB
 source("scripts/visualise/export_postGIS.R")
-#source("scripts/visualise/export_schemes.R") neads rewrite for new schemes as lines
+source("scripts/visualise/export_schemes.R") neads rewrite for new schemes as lines
 
 
 
