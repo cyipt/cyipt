@@ -8,9 +8,9 @@ regions <- regions.todo
 regions.list <- list()
 
 for(b in 1:length(regions)){
-  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))){
+  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes-simplified.Rds"))){
     #Get file
-    schemes <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
+    schemes <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes-simplified.Rds"))
 
     if("data.frame" %in% class(schemes)){
       print(nrow(schemes))
