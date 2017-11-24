@@ -95,31 +95,36 @@ roadsOnLine <- function(roads,line2check, tolerance = 4){
     stop()
   }
 
-  #roads <- st_sfc(roads)
-  roads <- roads[,c("id")]
-  roads$length <- as.numeric(st_length(roads)) #Road Length
-  roads$npoints <- lengths(roads$geometry) / 2 #Number of points that make up road
-  roads$pointsget <- ifelse(roads$npoints > 2,3,2)
-  roads$buff <- ifelse(roads$length > tolerance * 2,tolerance,roads$length/2.5) #Buffer to tolerance unless road is short
+  if(nrow(roads) == 0 | length(line2check) == 0){
+    message("Invalid Input Data")
+    return(NULL)
+  }else{
+    #roads <- st_sfc(roads)
+    roads <- roads[,c("id")]
+    roads$length <- as.numeric(st_length(roads)) #Road Length
+    roads$npoints <- lengths(roads$geometry) / 2 #Number of points that make up road
+    roads$pointsget <- ifelse(roads$npoints > 2,3,2)
+    roads$buff <- ifelse(roads$length > tolerance * 2,tolerance,roads$length/2.5) #Buffer to tolerance unless road is short
 
-  points <- st_cast(roads, "POINT") #convert road to points
-  points$occurance <- ave(points$id, points$id, FUN = seq_along) #find out which point i
+    points <- st_cast(roads, "POINT") #convert road to points
+    points$occurance <- ave(points$id, points$id, FUN = seq_along) #find out which point i
 
-  points <- points[(points$occurance == 1 |
-                      points$occurance == points$npoints |
-                      points$occurance == ceiling(points$npoints/2)),] #Get first last and middle points
+    points <- points[(points$occurance == 1 |
+                        points$occurance == points$npoints |
+                        points$occurance == ceiling(points$npoints/2)),] #Get first last and middle points
 
-  points.buff <- st_buffer(points, dist = points$buff, nQuadSegs = 4)
-  #qtm(line2check) + qtm(points.buff)
-  #qtm(roads)
-  points.buff <- points.buff[st_intersects(line2check,points.buff)[[1]],]
+    points.buff <- st_buffer(points, dist = points$buff, nQuadSegs = 4)
+    #qtm(line2check) + qtm(points.buff)
+    #qtm(roads)
+    points.buff <- points.buff[st_intersects(line2check,points.buff)[[1]],]
 
-  roads$nmatch <- sapply(roads$id, function(x) {sum(points.buff$id == x)})
+    roads$nmatch <- sapply(roads$id, function(x) {sum(points.buff$id == x)})
 
-  res <- roads$id[roads$nmatch == roads$pointsget]
-  #res <- roads[roads$nmatch == roads$pointsget,]
-  #qtm(line2check, lines.lwd = 5, lines.col = "black") + qtm(roads, lines.lwd = 3) + qtm(res, lines.col = "green", lines.lwd = 3)
-  return(res)
+    res <- roads$id[roads$nmatch == roads$pointsget]
+    #res <- roads[roads$nmatch == roads$pointsget,]
+    #qtm(line2check, lines.lwd = 5, lines.col = "black") + qtm(roads, lines.lwd = 3) + qtm(res, lines.col = "green", lines.lwd = 3)
+    return(res)
+  }
 }
 
 
