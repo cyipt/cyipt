@@ -134,4 +134,25 @@ m9 <- test.model(traindata = train2[,c("pct.census","all_16p","all_16_24","all_2
 
 # Correlation = 0.4125
 
+# Idea 10: Only Train on data with high percentage cycling
 
+train3 <- pct.all
+train3$pcycle <- train3$pct.census / train3$all_16p
+train3 <- train3[train3$pcycle > 0.1,]
+train3 <- sample_frac(train3, 0.5)
+
+m10 <- test.model(traindata = train3[,c("pct.census","all_16p","all_16_24","all_25_34","all_35_49","all_50_64","all_65_74","all_75p",
+                                        "length","time","cum_hill",
+                                        "change_elev","dif_max_min","up_tot","down_tot",
+                                        "av_incline","calories","busyness")], rounds = 10)
+# Correlation = 0.3744
+
+
+#Idea 11: weight sample based on % cycling
+
+train4 <- sample_frac(pct.all, size = 0.1, weight = pct.all$pct.census / pct.all$all_16p)
+
+m11 <- test.model(traindata = train4[,c("pct.census","all_16p","all_16_24","all_25_34","all_35_49","all_50_64","all_65_74","all_75p",
+                                        "length","time","cum_hill",
+                                        "change_elev","dif_max_min","up_tot","down_tot",
+                                        "av_incline","calories","busyness")], rounds = 10)
