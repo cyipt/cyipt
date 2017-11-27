@@ -56,18 +56,16 @@ schemes.all <- do.call("rbind",regions.list)
 schemes.all$idGlobal <- 1:nrow(schemes.all)
 
 #Reorder columns
-schemes.all <- schemes.all[,c("idGlobal","groupid","costTotal","type","change","per",
-                              "costperperson","ncyclebefore","ncycleafter","carkm","length","jouneyqualben","healthdeathavoided",
-                              "healthbenefit","congestionbenefit","totalBen","costBenRatio","region","geotext")]
+schemes.all <- schemes.all[,c("idGlobal","groupid","region","costTotal","costperperson","ncyclebefore","ncycleafter","type","change","per",
+                              "carkm","length","jouneyqualben","healthdeathavoided",
+                              "healthbenefit","congestionbenefit","totalBen","costBenRatio","geotext")]
 
+#Rename for Database
+names(schemes.all) <- c("idGlobal","groupid","region","cost","costperperson","ncyclebefore","ncycleafter","infratype","change","per",
+                        "carkm","length","jouneyqualben","healthdeathavoided",
+                        "healthbenefit","congestionbenefit","totalBen","costBenRatio","geotext")
 
-
-
-
-#names(schemes.all) <- c("idGlobal","region","schgroup","schtype","length","cost","geotext")
-
-#schemes.all <- schemes.all[!(schemes.all$geotext %in% ),]
-
+print(summary(as.factor(schemes.all$region)))
 
 #Save Out
 write.csv(schemes.all,"../cyipt-bigdata/forDB/schemes.csv", row.names = F, na = "")
