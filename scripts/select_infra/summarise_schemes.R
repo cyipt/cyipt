@@ -27,7 +27,7 @@ for(b in 1:length(regions)){
     #Get file
     scheme <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
     #Check if PCT values exist in the file
-    if(all(c("FILL ME IN") %in% names(osm)) & skip){
+    if(FALSE & skip){
       message(paste0("Scheme Simplification already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Summarising Schemes for ",regions[b]," at ",Sys.time()))
