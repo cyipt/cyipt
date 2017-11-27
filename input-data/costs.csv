@@ -265,3 +265,4 @@ Trunk Road Link - Cycling Allowed 0 no no 0,Segregated Cycle Track,upgrade,1450
 Trunk Road Link - Cycling Allowed 0 track no 0,None,downgrade,0
 Trunk Road Link - Cycling Allowed 0 track track 0,None,downgrade,0
 Trunk Road Link - Cycling Allowed 1 share_busway no 0,None,downgrade,0
+Residential Road - Cycling Allowed 0 lane track 0,None,downgrade,0
