@@ -71,12 +71,14 @@ od_11 = od_aggregate(flow = f11, zones = z, aggzones = cas) %>%
   select(o = flow_new_orig, d = flow_new_dest, all11 = all, pcycle11)
 
 # process OD data ----
-od_01 = read_csv("../cyoddata/wicid_output.csv", skip = 4, col_names = F)
-names(od_01) = c("o", "d", "all", "mfh", "car", "bicycle", "foot")
-sum(od_01$all, na.rm = T) # 48.5 million
-od_01$all = od_01$all - od_01$mfh
-sum(od_01$all, na.rm = T) # 44 million
-od_01$mfh = NULL
+# od_01 = read_csv("../cyoddata/od_01.csv", skip = 4, col_names = F)
+# names(od_01) = c("o", "d", "all", "mfh", "car", "bicycle", "foot")
+# sum(od_01$all, na.rm = T) # 48.5 million
+# od_01$all = od_01$all - od_01$mfh
+# sum(od_01$all, na.rm = T) # 44 million
+# od_01$mfh = NULL
+# saveRDS(od_01, "../cyoddata/od_01.Rds")
+od_01 = readRDS("../cyoddata/od_01.Rds")
 
 cas_codes = select(cas2003_simple, ons_label, name) %>%
   st_set_geometry(NULL) %>%
