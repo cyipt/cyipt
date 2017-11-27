@@ -27,7 +27,7 @@ for(b in 1:length(regions)){
     #Get file
     schemes <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes-simplified.Rds"))
     #Check if PCT values exist in the file
-    if(all(c("FILL ME IN") %in% names(osm)) & skip){
+    if(FALSE & skip){
       message(paste0("Benefits already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Cal Benefits Schemes for ",regions[b]," at ",Sys.time() ))
@@ -96,15 +96,15 @@ for(b in 1:length(regions)){
       rm(years,dis)
       #For now assume that cycle along the lenght of the scheme
 
-      for(b in 1:nrow(schemes)){
+      for(c in 1:nrow(schemes)){
         #Loop THough schemes and calcualte the deaths avoided
 
         #Estimate the age a gnerde mix of new cyclists
         #Note: does not use weight as PCT values better represent number of cyclists than number of trips
         #Otherwise the weight roughyl halves the number of cyclists
-        gender_new <- gender_split / 100 * (schemes$ncycle_after[b] - schemes$ncycle_before[b])
+        gender_new <- gender_split / 100 * (schemes$ncycle_after[c] - schemes$ncycle_before[c])
 
-        dist <- schemes$length[b] * 1.9 / 1609.34  # convert to miles * 1.9 (two way weighting factor)
+        dist <- schemes$length[c] * 1.9 / 1609.34  # convert to miles * 1.9 (two way weighting factor)
         #convert to hours per week for each gender and age bracket
         gender_deathsavoided <- (dist * 4.22) / gender_speed # distance per week = distance * 4.22 (days per week)
 
@@ -135,8 +135,8 @@ for(b in 1:length(regions)){
         health_benefits <- discount
         health_benefits$benefits <- health_benefits$discount * sum(gender_yearslost) * 60000 # Value of a startical life in 2012
 
-        schemes$health_deathavoided[b] <- round(sum(gender_deathsavoided),2)
-        schemes$health_benefit[b] <- round(sum(health_benefits$benefits),2)
+        schemes$health_deathavoided[c] <- round(sum(gender_deathsavoided),2)
+        schemes$health_benefit[c] <- round(sum(health_benefits$benefits),2)
         rm(gender_deathsavoided,health_benefits, gender_yearslost, dist, gender_new)
 
       }
