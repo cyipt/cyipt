@@ -56,8 +56,15 @@ schemes.all <- do.call("rbind",regions.list)
 schemes.all$idGlobal <- 1:nrow(schemes.all)
 
 #Reorder columns
-schemes.all <- schemes.all[,c("idGlobal","region","group","type","length","cost","geotext")]
-names(schemes.all) <- c("idGlobal","region","schgroup","schtype","length","cost","geotext")
+schemes.all <- schemes.all[,c("idGlobal","groupid","costTotal","type","change","per",
+                              "costperperson","ncyclebefore","ncycleafter","carkm","length","jouneyqualben","healthdeathavoided",
+                              "healthbenefit","congestionbenefit","totalBen","costBenRatio","region","geotext")]
+
+
+
+
+
+#names(schemes.all) <- c("idGlobal","region","schgroup","schtype","length","cost","geotext")
 
 #schemes.all <- schemes.all[!(schemes.all$geotext %in% ),]
 
