@@ -1,5 +1,18 @@
 Bash Instructions
 
+
+########################
+# New Instructions
+
+sudo -i
+#Enter you password
+su postgres
+psql cyipt -f /home/malcolm/import_roads.sql
+
+########################################################
+# Old Instructions
+######
+
 # 1 Create a Table
 
 sudo -i
