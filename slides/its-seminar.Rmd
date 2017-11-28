@@ -21,13 +21,20 @@ bibliography: /home/robin/allrefs.bib
 - Scenarios of infrastructure change 
 - Discussion
 
-
 # Introduction
+
+## How to transition to active cities?
+
+- Brief outline of scientific arguments
+
+## How to get from here to there?
+
+- Images of UK vs Dutch cities
 
 ## The Propensity to Cycle Tool - see [w](http://npct0.vs.mythic-beasts.com/shiny_interface/?r=west-yorkshire)[ww.pct.bike](www.pct.bike)
 
 ```{r, echo=FALSE, fig.cap="The front page of the open source, open access Propensity to Cycle Tool (PCT).", out.width="100%"}
-knitr::include_graphics("../figures/pct-frontpage.png")
+knitr::include_graphics("~/npct/pct/figures/pct-frontpage.png")
 ```
 
 ## Context: from concept to implementation
@@ -47,7 +54,12 @@ Concept (PhD) -> Job at UoL (2009 - 2013)
 
  > - 2018: (Global PCT?) 
  
- - Now publised in the Journal of Transport and Land Use (JTLU) [@lovelace_propensity_2017]
+## The academic landscape [see @lovelace_propensity_2017]
+
+
+```{r, echo=FALSE, out.width="70%"}
+knitr::include_graphics("../figures/jtlu-paper-front-page.png")
+```
 
  
 ## Prior work (source: Lovelace et al. 2017)
@@ -55,7 +67,7 @@ Concept (PhD) -> Job at UoL (2009 - 2013)
 ```{r, echo=FALSE, message=FALSE}
 dft = readr::read_csv("~/npct/pct/data-sources/cycle-tools-wide.csv")
 dft$Tool = gsub("Permeability Assessment Tool", "PAT", dft$Tool)
-knitr::kable(dft)
+knitr::kable(dft[-5, ])
 ```
 
 ## The PCT team | "If you want to go far, go as a team"
@@ -109,6 +121,21 @@ knitr::include_graphics("~/npct/pct/flow-model/od-data-leeds.png")
 - Origin-destination data shows 'desire lines'
 - How will these shift with cycling uptake
 
+
+## A model of cycling uptake
+
+```{r, echo=FALSE}
+knitr::include_graphics("~/npct/pct/flow-model/dd-anna.jpg")
+```
+
+- Hilliness and distance are (relatively) unchanging over time
+- Model based on polynomial logit model of both:
+
+$$
+logit(pcycle) = \alpha + \beta_1 d + \beta_2 d^{0.5} + \beta_3 d^2 + \gamma h + \delta_1 d h + \delta_2 d^{0.5} h
+$$
+
+
 ## Scenario shift in network load
 
 ```{r, echo=FALSE}
@@ -125,6 +152,12 @@ knitr::include_graphics("~/npct/pct/flow-model/man-trinity-way-satellite.png")
 
 # How many cyclists result from a new cycle path?
 
+
+
+## How to model future scenarios of infrastructure change?
+
+- Over to Malcolm
+
 ## stplanr
 
 **stplanr** lives here: https://github.com/ropensci/stplanr
@@ -139,7 +172,7 @@ install.packages("stplanr") # stable CRAN version
 ```
 
 
-## Abstract II
+## Abstract I
 
 This talk will provide an overview of the work that Robin Lovelace and Malcolm Morgan (ITS) have been doing as part of their Department for Transport funded projects on the Propensity to Cycle Tool (PCT, which has become part of UK government policy in the [Cycling and Walking Infrastructure Strategy](https://www.gov.uk/government/publications/cycling-and-walking-investment-strategy)) and follow-on work on the Cycling Infrastructure Prioritisation Toolkit (CyIPT).
 Although strong evidence shows that infrastructure usually precedes (and to some extent causes) behaviour change the starting point of the talk will be behaviour: how do people currently get around and how could it be different, based on the fundamentals of route distance and hilliness.
