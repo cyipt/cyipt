@@ -285,7 +285,7 @@ rm(b,regions)
 
 
 
-qtm(osm[osm$group_id == 92,])
+#qtm(osm[osm$group_id == 92,])
 
 
 

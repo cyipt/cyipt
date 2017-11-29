@@ -85,7 +85,7 @@ source("scripts/benefits/eval_benefits2.R")
 
 #Step LAST: Export for DB
 source("scripts/visualise/export_postGIS.R")
-source("scripts/visualise/export_schemes.R") neads rewrite for new schemes as lines
+source("scripts/visualise/export_schemes.R")
 
 
 
