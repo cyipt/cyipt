@@ -23,17 +23,32 @@ bibliography: /home/robin/allrefs.bib
 
 # Introduction
 
-## How to transition to active cities?
 
-- Brief outline of scientific arguments
 
-## How to get from here to there?
+## How to transition to active cities? From this...
 
-- Images of UK vs Dutch cities
+```{r, echo=FALSE, out.width="100%"}
+knitr::include_graphics("https://pbs.twimg.com/media/DOH94nXUIAAgcll.jpg")
+```
+
+## To this
+
+```{r, echo=FALSE, out.width="100%"}
+knitr::include_graphics("http://citiscope.org/sites/default/files/styles/story_large/public/shutterstock_355737158_2.jpg?")
+```
+
+## Evidence overload
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("https://larrycuban.files.wordpress.com/2015/02/data-overload-2.jpg")
+```
+
+> - Problem is operationalising this data
+> - Needs to be provided in a format that can be acted on at the local level
 
 ## The Propensity to Cycle Tool - see [w](http://npct0.vs.mythic-beasts.com/shiny_interface/?r=west-yorkshire)[ww.pct.bike](www.pct.bike)
 
-```{r, echo=FALSE, fig.cap="The front page of the open source, open access Propensity to Cycle Tool (PCT).", out.width="100%"}
+```{r, echo=FALSE, fig.cap="The front page of the open source, open access Propensity to Cycle Tool (PCT).", out.width="80%"}
 knitr::include_graphics("~/npct/pct/figures/pct-frontpage.png")
 ```
 
@@ -54,14 +69,18 @@ Concept (PhD) -> Job at UoL (2009 - 2013)
 
  > - 2018: (Global PCT?) 
  
+- A multi-university project
+ 
+```{r, echo=FALSE, out.width="100%"}
+knitr::include_graphics("https://github.com/npct/pct-team/blob/master/figures/pct-metalogo.png?raw=true")
+```
+ 
 ## The academic landscape [see @lovelace_propensity_2017]
-
 
 ```{r, echo=FALSE, out.width="70%"}
 knitr::include_graphics("../figures/jtlu-paper-front-page.png")
 ```
 
- 
 ## Prior work (source: Lovelace et al. 2017)
 
 ```{r, echo=FALSE, message=FALSE}
@@ -69,18 +88,6 @@ dft = readr::read_csv("~/npct/pct/data-sources/cycle-tools-wide.csv")
 dft$Tool = gsub("Permeability Assessment Tool", "PAT", dft$Tool)
 knitr::kable(dft[-5, ])
 ```
-
-## The PCT team | "If you want to go far, go as a team"
-
-Robin Lovelace (Lead Developer, University of Leeds)
-
-- James Woodcock (Principal Investigator, Cambridge University)
-- Anna Goodman (Lead Data Analyst, LSHTM)
-- Rachel Aldred (Lead Policy and Practice, Westminster University)
-- Ali Abbas (User Interface, University of Cambridge)
-- Alvaro Ullrich (Data Management, University of Cambridge)
-- Nikolai Berkoff (System Architecture, Independent Developer)
-- Malcolm Morgan (GIS and infrastructure expert, UoL)
  
 ## Policy feedback
 
@@ -92,11 +99,11 @@ Robin Lovelace (Lead Developer, University of Leeds)
 
 - Andrew Jones, Parliamentary Under Secretary of State for Transport
 
-## The PCT in CWIS and LCWIP
+## The PCT in CWIS
 
-Included in Cycling and Walking Infrastructure Strategy (CWIS) and the Local Cycling and Walking Infrastructure Plan (LCWIP)
+Included in Cycling and Walking Infrastructure Strategy (CWIS)
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, out.width="80%"}
 knitr::include_graphics("~/npct/pct/figures/front-page-leeds-pct-demo.png")
 ```
 
@@ -112,16 +119,6 @@ for 4 scenarios of change
 - Go Dutch
 - Ebikes
 
-## Scenario shift in desire lines | Source: @lovelace_propensity_2017
-
-```{r, echo=FALSE}
-knitr::include_graphics("~/npct/pct/flow-model/od-data-leeds.png")
-```
-
-- Origin-destination data shows 'desire lines'
-- How will these shift with cycling uptake
-
-
 ## A model of cycling uptake
 
 ```{r, echo=FALSE}
@@ -134,7 +131,9 @@ knitr::include_graphics("~/npct/pct/flow-model/dd-anna.jpg")
 $$
 logit(pcycle) = \alpha + \beta_1 d + \beta_2 d^{0.5} + \beta_3 d^2 + \gamma h + \delta_1 d h + \delta_2 d^{0.5} h
 $$
-
+```{r, eval=FALSE}
+logit_pcycle = -3.9 + (-0.59 * distance) + (1.8 * sqrt(distance) ) + (0.008 * distance^2)
+```
 
 ## Scenario shift in network load
 
@@ -142,7 +141,7 @@ $$
 knitr::include_graphics("~/npct/pct/flow-model/leeds-rnet-gov-go.png")
 ```
 
-## A live demo for Newcastle | "Actions speak louder than words"
+## A live demo for Leeds | "Actions speak louder than words"
 
 - Test version of [p](http://npct0.vs.mythic-beasts.com/m/?r=west-yorkshire)[ct.bike](http://pct.bike/)
 
@@ -152,7 +151,43 @@ knitr::include_graphics("~/npct/pct/flow-model/man-trinity-way-satellite.png")
 
 # How many cyclists result from a new cycle path?
 
+## Why investigate it?
 
+- We can use 'backcasting' to estimate long-term potential under ideal questions
+- But transport authorities need forecasts of future uptake
+- *From specific interventions* in order to do this
+- There is much existing work on this
+- But not able to automatically estimate uptake resulting from new infrastructure
+
+> - A $64,000 question
+
+## Breakthrough datasets
+
+![](https://github.com/cyipt/cyipt/raw/master/historic-uptake_files/figure-markdown_strict/unnamed-chunk-2-5.png)
+
+## Detecting a signal from the noise
+
+> - Preliminary results
+
+```
+## lm(formula = p_uptake ~ dist + exposure, data = l, weights = all11)
+## 
+## Weighted Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5.1158 -0.3579 -0.0184  0.2821  4.5564 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  2.372e-02  4.207e-03   5.639 2.28e-08 ***
+## dist        -1.671e-07  8.424e-07  -0.198  0.84283    
+## exposure     4.147e-02  1.523e-02   2.724  0.00658 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7972 on 906 degrees of freedom
+## Multiple R-squared:  0.008318,   Adjusted R-squared:  0.006128 
+## F-statistic: 3.799 on 2 and 906 DF,  p-value: 0.02274
+```
 
 ## How to model future scenarios of infrastructure change?
 
