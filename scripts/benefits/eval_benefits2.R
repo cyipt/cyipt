@@ -15,6 +15,50 @@ library(parallel)
 #ncores <- 4 #number of cores to use in parallel processing
 #overwrite <- FALSE #Overwrite or create new file
 
+##############################################
+# Benefit Inputs: These are values taken from WebTAG and other sources
+#############################################
+
+
+qual.data <- data.frame(scheme = c("Off-road segregated cycle track", "On-road segregated cycle lane",
+                                   "On-road non-segregated cycle lane", "Wider lane", "Shared bus lane"),
+                        value = c(8.07,3.43,3.41,2.08,0.88))
+
+
+#Gender and age split of the observed main-mode cycle trips in England (reference: NTS 2012-14).
+gender_split <- data.frame(Male = c(16,39,13,5,1), Female = c(4,16,5,1,0))
+row.names(gender_split) <- c("0-19","20-49","50-64","65-80","80+")
+
+# Observed speed of main mode cycling trips (miles/hour) in England (reference: NTS 2012-2014).
+gender_speed <- data.frame(Male = c(6.12,9.12,8.91,7.48,7.99), Female = c(4.45,7.22,7.07,5.99,4.2))
+row.names(gender_speed) <- c("0-19","20-49","50-64","65-80","80+")
+
+#Background mortality rates by age and gender (reference: Global Burden of Disease Study 2015 results for England)
+gender_mortality <- data.frame(Male = c(4.1949E-04,1.1833E-03,6.2669E-03,2.4591E-02,1.1471E-01), Female = c(3.1919E-04,7.1164E-04,4.1887E-03,1.6686E-02,9.9484E-02))
+row.names(gender_mortality) <- c("0-19","20-49","50-64","65-80","80+")
+
+#Discounted, average Years of Life Lost (YLL) loss per death
+gender_YLL <- data.frame(Male = c(47.71,34.06,23.73,15.13,5.78), Female = c(48.00,33.55,23.73,14.34,5.78))
+row.names(gender_YLL) <- c("0-19","20-49","50-64","65-80","80+")
+
+#Discount rate
+years <- 0:20
+dis <- (1/1.015) ** years
+discount <- data.frame(year = years, discount = dis )
+rm(years,dis)
+
+
+
+
+
+
+
+
+
+
+##########################################
+
+
 
 
 #List folders
@@ -24,8 +68,21 @@ regions <- regions.todo
 
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))){
-    #Get file
+    #Get in all the data
+
+    osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+    osm$group_id[is.na(osm$group_id)] <- 0
+
+
     schemes <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes-simplified.Rds"))
+    osm2pct <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm2pct.Rds"))
+    pct <- readRDS(paste0("../cyipt-securedata/pct-regions/",regions[b],".Rds"))
+    pct <- as.data.frame(pct)
+    pct <- pct[,c("ID","length","all_16p","pct.census","underground","train","bus","taxi","motorcycle","carorvan","passenger","onfoot","other")]
+    route.uptake <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/route-uptake.Rds"))
+    route.uptake <- route.uptake[,c("ID","schemeID","perincrease","uptake")]
+
+
     #Check if PCT values exist in the file
     if(FALSE & skip){
       message(paste0("Benefits already calcualted for ",regions[b]," so skipping"))
@@ -34,7 +91,69 @@ for(b in 1:length(regions)){
 
       schemes$ncycle_before <- schemes$census
       schemes$ncycle_after <-  schemes$model.future
-      schemes$carkm <- - (schemes$ncycle_after - schemes$ncycle_before) * round(runif(nrow(schemes), 0.0, 5), 2) * 2 * 220
+
+      # Work out where the new cyclists come from
+      schemes$ndrive_before <- NA
+      schemes$ndrive_after <- NA
+
+
+      for(e in 1:nrow(schemes)){
+        scheme_id <- schemes$group_id[e]
+        #osm_ids <- osm$id[osm$group_id == scheme_id]
+        #pct_ids <- unique(unlist(osm2pct[unique(osm_ids)]))
+        #pct_codes <- pct$ID[pct_ids]
+        route.up.sub <- route.uptake[route.uptake$schemeID == scheme_id,]
+        #route.up.sub <- route.up.sub[route.up.sub$ID %in% pct_codes,]
+        pct.sub <- pct[pct$ID %in% route.up.sub$ID,]
+        route.up.sub <- left_join(route.up.sub,pct.sub, by = c("ID" = "ID"))
+
+        #Calcualte the percentage of each mode
+        route.up.sub$p_underground <- route.up.sub$underground / (route.up.sub$all_16p - route.up.sub$pct.census)
+        route.up.sub$p_train <- route.up.sub$train / (route.up.sub$all_16p - route.up.sub$pct.census)
+        route.up.sub$p_bus <- route.up.sub$bus / (route.up.sub$all_16p - route.up.sub$pct.census)
+        route.up.sub$p_taxi <- route.up.sub$taxi / (route.up.sub$all_16p - route.up.sub$pct.census)
+        route.up.sub$p_motorcycle <- route.up.sub$motorcycle / (route.up.sub$all_16p - route.up.sub$pct.census)
+        route.up.sub$p_carorvan <- route.up.sub$carorvan / (route.up.sub$all_16p - route.up.sub$pct.census)
+        route.up.sub$p_passenger <- route.up.sub$passenger / (route.up.sub$all_16p - route.up.sub$pct.census)
+        route.up.sub$p_onfoot <- route.up.sub$onfoot / (route.up.sub$all_16p - route.up.sub$pct.census)
+        route.up.sub$p_other <- route.up.sub$other / (route.up.sub$all_16p - route.up.sub$pct.census)
+
+        #Calcualte the decrease in each mode
+        route.up.sub$d_underground <- route.up.sub$p_underground * route.up.sub$uptake
+        route.up.sub$d_train <- route.up.sub$p_train * route.up.sub$uptake
+        route.up.sub$d_bus <- route.up.sub$p_bus * route.up.sub$uptake
+        route.up.sub$d_taxi <- route.up.sub$p_taxi * route.up.sub$uptake
+        route.up.sub$d_motorcycle <- route.up.sub$p_motorcycle * route.up.sub$uptake
+        route.up.sub$d_carorvan <- route.up.sub$p_carorvan * route.up.sub$uptake
+        route.up.sub$d_passenger <- route.up.sub$p_passenger * route.up.sub$uptake
+        route.up.sub$d_onfoot <- route.up.sub$p_onfoot * route.up.sub$uptake
+        route.up.sub$d_other <- route.up.sub$p_other * route.up.sub$uptake
+
+        drivenow <- sum(route.up.sub$taxi, route.up.sub$motorcycle, route.up.sub$carorvan, na.rm = T)
+        driveafter <- round(drivenow - sum(route.up.sub$d_taxi, route.up.sub$d_motorcycle, route.up.sub$d_carorvan, na.rm = T),0)
+
+        schemes$ndrive_before[e] <- drivenow
+        schemes$ndrive_after[e] <- driveafter
+
+        #caluclate the drivign distance
+        route.up.sub$drivedistnow <- route.up.sub$taxi + route.up.sub$motorcycle + route.up.sub$carorvan * route.up.sub$length / 1000
+        route.up.sub$drivedistafter <- (route.up.sub$taxi - route.up.sub$d_taxi) + (route.up.sub$motorcycle - route.up.sub$d_motorcycle) + (route.up.sub$carorvan - route.up.sub$d_carorvan) * route.up.sub$length / 1000
+
+        schemes$carkm_before[e] <- sum(route.up.sub$drivedistnow, na.rm = T)
+        schemes$carkm_after[e] <- sum(route.up.sub$drivedistafter, na.rm = T)
+
+
+
+      }
+
+      schemes$carkm <- schemes$carkm_after - schemes$carkm_before
+
+
+
+
+
+
+      #schemes$carkm <- - (schemes$ncycle_after - schemes$ncycle_before) * round(runif(nrow(schemes), 0.0, 5), 2) * 2 * 220
 
       schemes <- st_cast(schemes, "MULTILINESTRING")
       schemes$length <- as.numeric(st_length(schemes))
@@ -45,7 +164,7 @@ for(b in 1:length(regions)){
       # From WebTAG A4.1.6
       # Value of jounrey ambience benefit of cycling facilities 2015 prices and values
 
-      qual.data <- data.frame(scheme = c("Off-road segregated cycle track", "On-road segregated cycle lane", "On-road non-segregated cycle lane", "Wider lane", "Shared bus lane"), value = c(8.07,3.43,3.41,2.08,0.88))
+
 
       schemes$jouney_qual_ben <- NA
       for(a in 1:nrow(schemes)){
@@ -73,27 +192,7 @@ for(b in 1:length(regions)){
       schemes$health_deathavoided <- NA
       schemes$health_benefit <- NA
 
-      #Gender and age split of the observed main-mode cycle trips in England (reference: NTS 2012-14).
-      gender_split <- data.frame(Male = c(16,39,13,5,1), Female = c(4,16,5,1,0))
-      row.names(gender_split) <- c("0-19","20-49","50-64","65-80","80+")
 
-      # Observed speed of main mode cycling trips (miles/hour) in England (reference: NTS 2012-2014).
-      gender_speed <- data.frame(Male = c(6.12,9.12,8.91,7.48,7.99), Female = c(4.45,7.22,7.07,5.99,4.2))
-      row.names(gender_speed) <- c("0-19","20-49","50-64","65-80","80+")
-
-      #Background mortality rates by age and gender (reference: Global Burden of Disease Study 2015 results for England)
-      gender_mortality <- data.frame(Male = c(4.1949E-04,1.1833E-03,6.2669E-03,2.4591E-02,1.1471E-01), Female = c(3.1919E-04,7.1164E-04,4.1887E-03,1.6686E-02,9.9484E-02))
-      row.names(gender_mortality) <- c("0-19","20-49","50-64","65-80","80+")
-
-      #Discounted, average Years of Life Lost (YLL) loss per death
-      gender_YLL <- data.frame(Male = c(47.71,34.06,23.73,15.13,5.78), Female = c(48.00,33.55,23.73,14.34,5.78))
-      row.names(gender_YLL) <- c("0-19","20-49","50-64","65-80","80+")
-
-      #Discount rate
-      years <- 0:20
-      dis <- (1/1.015) ** years
-      discount <- data.frame(year = years, discount = dis )
-      rm(years,dis)
       #For now assume that cycle along the lenght of the scheme
 
       for(c in 1:nrow(schemes)){
