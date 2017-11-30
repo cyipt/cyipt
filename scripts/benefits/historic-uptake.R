@@ -10,32 +10,36 @@ region_name = "Bristol"
 # read-in data ----
 lads = readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.Rds") %>%
   st_transform(4326)
-z_msoa = msoa2011_vsimple %>%
+z = msoa2011_vsimple %>%
   select(geo_code = msoa11cd)
-u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
-download.file(u_flow_11, "../cyipt-bigdata/l_all.Rds")
+# u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
+# download.file(u_flow_11, "../cyipt-bigdata/l_all.Rds")
 
 flow_11 = readRDS("../cyipt-bigdata/l_all.Rds") %>%
   st_as_sf()
+flow_11 = select(flow_11, geo_code1, geo_code2, all, bicycle) %>%
+  filter(geo_code1 %in% z$geo_code, geo_code2 %in% z$geo_code) %>%
+  filter(all > 50)
 # flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
 #   as(Class = "sf")
 c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp") %>%
   st_transform(4326)
 
-aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
-aggzone = filter(aggzones, ttwa11nm == region_name)
-# aggzone = st_buffer(aggzones, dist = 0) # for all of UK
-aggzone = flow_11 %>%
-  st_transform(27700) %>%
-  st_buffer(1000, 4) %>%
-  st_union() %>%
-  st_transform(4326)
-plot(aggzone)
-
-# subset areal data to region and aggregate msoa-cas flows ----
-c_oa01 = c_oa01[aggzone, ] # get points
-z = z_msoa[c_oa01, ]
-cas = cas2003_simple[c_oa01, ]
+# if using aggregating zones
+# aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
+# aggzone = filter(aggzones, ttwa11nm == region_name)
+# # aggzone = st_buffer(aggzones, dist = 0) # for all of UK
+# aggzone = flow_11 %>%
+#   st_transform(27700) %>%
+#   st_buffer(1000, 4) %>%
+#   st_union() %>%
+#   st_transform(4326)
+# plot(aggzone)
+#
+# # subset areal data to region and aggregate msoa-cas flows ----
+# c_oa01 = c_oa01[aggzone, ] # get points
+# z = z[c_oa01, ]
+# cas = cas2003_simple[c_oa01, ]
 
 # read-in and process infra data ----
 sc2sd = readRDS("../cyinfdat/sc2sd") %>%
@@ -53,36 +57,39 @@ b = old_infra %>%
   st_buffer(dist = 500, nQuadSegs = 4) %>%
   st_union() %>%
   st_transform(4326)
-qtm(b)
+# qtm(b)
 
 # subset lines of interest and aggregate them to cas level
 selb = st_intersects(flow_11, b)
+saveRDS(selb, "selb.Rds")
 selb_logical = lengths(selb) > 0
 flow_11b = flow_11[selb_logical, ]
 flow_11nb = flow_11[!selb_logical, ]
-sum(flow_11b$all) # 2.8 million affected
+sum(flow_11b$all) # 2 million affected when all > 50
 set.seed(20012011)
 flow_11nb_sample = sample_n(flow_11nb, nrow(flow_11b))
 flow_11 = rbind(flow_11b, flow_11nb_sample)
 
 summary(flow_11$geo_code1 %in% z$geo_code)
-f11 = select(flow_11, geo_code1, geo_code2, all, bicycle) %>%
-  st_set_geometry(NULL) %>%
-  filter(geo_code1 %in% z$geo_code, geo_code2 %in% z$geo_code) %>%
-  filter(all > 20)
+summary(flow_11$geo_code2 %in% z$geo_code)
+flow
+f11 = st_set_geometry(flow_11, NULL)
 
-sum(f11$all) # 4.6m
-
-# subset lines touching cycle infra -> sample
-l11 = od2line(f11, )
+sum(f11$all) # 4m
+summary(z$geo_code %in% f11$geo_code1)
+summary(f11$geo_code1 %in% z$geo_code)
+summary(f11$geo_code2 %in% z$geo_code)
+summary(z$geo_code %in% f11$geo_code1 | z$geo_code %in% f11$geo_code2)
+z = z[z$geo_code %in% f11$geo_code1 | z$geo_code %in% f11$geo_code2, ]
+cas
 
 # time-consuming...
-system.time({od_11 = od_aggregate(flow = f11[1:99,], zones = z, aggzones = cas)})
-# see look-up:
+system.time({od_11 = od_aggregate(flow = f11, zones = z, aggzones = cas)})
+
 od_11 = od_11 %>%
   na.omit() %>%
   mutate(pcycle11 = bicycle / all) %>%
-  select(o = flow_new_orig, d = flow_new_dest, all11 = all, pcycle11)
+  select(o = new_orig, d = new_dest, all11 = all, pcycle11)
 
 # process OD data ----
 # od_01 = read_csv("../cyoddata/od_01.csv", skip = 4, col_names = F)
@@ -101,7 +108,7 @@ cas_codes = select(cas2003_simple, ons_label, name) %>%
 od_01 = inner_join(od_01, select(cas_codes, ons_label_o = ons_label, o = name))
 sum(od_01$all, na.rm = T) # 44 million
 od_01 = inner_join(od_01, select(cas_codes, ons_label_d = ons_label, d = name)) # removes ~20m ppl
-sum(od_01$all, na.rm = T) # 44 million
+sum(od_01$all, na.rm = T) # 23 million
 
 od_01$o = od_01$ons_label_o
 od_01$d = od_01$ons_label_d
@@ -109,7 +116,7 @@ od_01 = od_01 %>% mutate(pcycle01 = bicycle / all) %>%
   select(o, d, pcycle01, all01 = all)
 
 od_01_region = od_01 %>%
-  filter(o %in% cas$ons_label, d %in% cas$ons_label) # 6k results
+  filter(o %in% cas$ons_label, d %in% cas$ons_label) # 1.9m results
 
 summary(od_01_region$o %in% od_11$o) # test readiness to merge with 2011
 od_01_region = od_01_region %>%
@@ -219,3 +226,7 @@ qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend.
 # # incongruence example
 # st_crs(lads)
 # st_intersects(z, lads[lads$lad16nm == "Bristol, ",])
+# see look-up:
+# u_lookup = "https://opendata.arcgis.com/datasets/65544c20a5804677a2594fe750bf4482_0.csv"
+# download.file(u_lookup, "../cyipt-inputs-official/ward-lookup.csv")
+# lookup = read_csv("../cyipt-inputs-official/ward-lookup.csv")
