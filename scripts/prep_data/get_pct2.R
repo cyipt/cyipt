@@ -32,7 +32,7 @@ getpctvalues <- function(i){
                       pct.gen = sum(pct.sub$pct.gen),
                       pct.dutch = sum(pct.sub$pct.dutch) ,
                       pct.ebike = sum(pct.sub$pct.ebike),
-                      pct.total = sum(pct.sub$total))
+                      pct.total = sum(pct.sub$pct.total))
 }
 
 
@@ -44,13 +44,13 @@ for(b in 1:length(regions)){
     #Get file
     osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
     #Check if PCT values exist in the file
-    if(all(c("pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike") %in% names(osm)) & skip){
+    if(all(c("pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike","pct.total") %in% names(osm)) & skip){
       message(paste0("PCT values already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Getting PCT values for ",regions[b]," at ",Sys.time()))
 
       #If overwriting remove old data
-      col.to.keep <- names(osm)[!names(osm) %in% c("pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike")]
+      col.to.keep <- names(osm)[!names(osm) %in% c("pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike","pct.total")]
       osm <- osm[,col.to.keep]
       rm(col.to.keep)
 
