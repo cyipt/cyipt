@@ -9,6 +9,8 @@ pct <- pct[,c("ID","all_16p","pct.census","carorvan","av_incline")]
 
 names(pct) <- c("id","total","cyclists","drivers","hilliness","geometry") #Remove punctuation from names for POSTGIS
 
+
+pct <- pct[pct$total > 2,]
 pct <- st_transform(pct, 4326)
 
 #Reduce precison of data to reduce file size
