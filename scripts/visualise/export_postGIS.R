@@ -1,9 +1,3 @@
-library(stringr)
-library(sf)
-
-#regions <- list.dirs(path = "../cyipt-bigdata/osm-prep", full.names = FALSE) # Now get regions from the master file
-#regions <- regions[2:length(regions)]
-
 regions <- regions.todo
 regions.list <- list()
 
@@ -22,7 +16,7 @@ for(b in 1:length(regions)){
     names(osm) <- str_replace_all(names(osm),"[[:punct:]]","") #Remove punctuation from names for POSTGIS
 
     #Reduce precison of data to reduce file size
-    osm$geometry <- st_as_binary(osm$geometry, precision = 1000000)
+    osm$geometry <- st_as_binary(osm$geometry, precision = 100000)
     osm$geometry <- st_as_sfc(osm$geometry)
 
     #convert to well known text
@@ -85,11 +79,25 @@ for(i in 1:nrow(osm.all)){
 }
 osm.all <- osm.all[,names(osm.all)[!names(osm.all) %in% c("roadtype","onewaysummary","sidewalk","cyclewayleft","lanespsvforward","lanesforward","lanesbackward","lanespsvbackward","cyclewayright")]]
 
+#Clean Up Numerics to Intergers
+osm.all$aadt <- as.integer(osm.all$aadt)
+osm.all$ncycles <- as.integer(osm.all$ncycles)
+
+osm.all$width <- as.integer(osm.all$width)
+osm.all$widthpath <- as.integer(osm.all$widthpath)
 
 #Rearange Columns
 osm.all <- osm.all[,c("idGlobal","id","osmid","region","name","ref","highway","junction","elevation","maxspeed","segregated","pctcensus",
-  "pctgov", "pctgen", "pctdutch", "pctebike", "width","widthpath","aadt","ncycles","Recommended","DesWidth", "MinWidth", "DesSeparation",
+  "pctgov", "pctgen", "pctdutch", "pctebike","pcttotal", "width","widthpath","aadt","ncycles","Recommended","DesWidth", "MinWidth", "DesSeparation",
   "MinSeparation",  "Existing",  "Change",  "costperm",  "length",  "costTotal",  "groupid",  "rtid",  "geotext")]
+
+for(i in 1:ncol(osm.all)){
+  print(paste0("Column ",colnames(osm.all)[i]," is a ",class(osm.all[,i])))
+  if(class(osm.all[,i]) == "character"){
+    print(paste0("Max length is ",max(nchar(osm.all[,i]), na.rm = T)))
+  }
+}
+
 
 
 #Trim text columns

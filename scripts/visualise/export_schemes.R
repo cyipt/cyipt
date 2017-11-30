@@ -1,12 +1,11 @@
-library(stringr)
-library(sf)
-
-#regions <- list.dirs(path = "../cyipt-bigdata/osm-prep", full.names = FALSE) # Now get regions from the master file
-#regions <- regions[2:length(regions)]
+# Simplify Data for Publication
+# Focu on Reucing Data Size and Increasing Performance
 
 regions <- regions.todo
-regions.list <- list()
 
+
+#Read In Each File and Combine
+regions.list <- list()
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes-simplified.Rds"))){
     #Get file
@@ -26,7 +25,7 @@ for(b in 1:length(regions)){
       schemes <- schemes[!is.na(st_dimension(schemes)),]
 
       #Reduce precison of data to reduce file size
-      schemes$geometry <- st_as_binary(schemes$geometry, precision = 1000000)
+      schemes$geometry <- st_as_binary(schemes$geometry, precision = 100000)
       schemes$geometry <- st_as_sfc(schemes$geometry)
 
       #convert to well known text
