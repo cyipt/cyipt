@@ -151,7 +151,7 @@ for(b in 1:length(regions)){
 
         pct.scheme <- as.data.frame(pct.scheme)
         pct.scheme$geometry <- NULL
-        pct.scheme <- pct.scheme[,"ID","schemeID","exposeLengthLine","exposureLine","perincrease","uptake"]
+        pct.scheme <- pct.scheme[,c("ID","schemeID","exposeLengthLine","exposureLine","perincrease","uptake")]
 
         uptake.route.list[[j]] <- pct.scheme
 
