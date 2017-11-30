@@ -9,6 +9,8 @@ pct <- pct[,c("ID","all_16p","pct.census","carorvan","av_incline")]
 
 names(pct) <- c("id","total","cyclists","drivers","hilliness","geometry") #Remove punctuation from names for POSTGIS
 
+pct <- st_transform(pct, 4326)
+
 #Reduce precison of data to reduce file size
 pct$geometry <- st_as_binary(pct$geometry, precision = 100000)
 pct$geometry <- st_as_sfc(pct$geometry)

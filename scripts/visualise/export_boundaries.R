@@ -9,6 +9,8 @@ ttwa <- ttwa[,c("objectid","ttwa11cd","ttwa11nm")]
 
 names(ttwa) <- c("id","code","name","geometry") #Remove punctuation from names for POSTGIS
 
+ttwat <- st_transform(ttwa, 4326)
+
 #Reduce precison of data to reduce file size
 ttwa$geometry <- st_as_binary(ttwa$geometry, precision = 100000)
 ttwa$geometry <- st_as_sfc(ttwa$geometry)
