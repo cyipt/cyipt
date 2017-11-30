@@ -14,6 +14,7 @@ z_msoa = msoa2011_vsimple %>%
   select(geo_code = msoa11cd)
 u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
 download.file(u_flow_11, "../cyipt-bigdata/l_all.Rds")
+
 flow_11 = readRDS("../cyipt-bigdata/l_all.Rds") %>%
   st_as_sf()
 # flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
@@ -55,17 +56,30 @@ b = old_infra %>%
 qtm(b)
 
 # subset lines of interest and aggregate them to cas level
-# flow_11 = flow_11[b, ]
-# cas = cas[b, ]
-# z = z[b, ]
+selb = st_intersects(flow_11, b)
+selb_logical = lengths(selb) > 0
+flow_11b = flow_11[selb_logical, ]
+flow_11nb = flow_11[!selb_logical, ]
+sum(flow_11b$all) # 2.8 million affected
+set.seed(20012011)
+flow_11nb_sample = sample_n(flow_11nb, nrow(flow_11b))
+flow_11 = rbind(flow_11b, flow_11nb_sample)
 
 summary(flow_11$geo_code1 %in% z$geo_code)
 f11 = select(flow_11, geo_code1, geo_code2, all, bicycle) %>%
   st_set_geometry(NULL) %>%
   filter(geo_code1 %in% z$geo_code, geo_code2 %in% z$geo_code) %>%
   filter(all > 20)
+
+sum(f11$all) # 4.6m
+
+# subset lines touching cycle infra -> sample
+l11 = od2line(f11, )
+
 # time-consuming...
-od_11 = od_aggregate(flow = f11, zones = z, aggzones = cas) %>%
+system.time({od_11 = od_aggregate(flow = f11[1:99,], zones = z, aggzones = cas)})
+# see look-up:
+od_11 = od_11 %>%
   na.omit() %>%
   mutate(pcycle11 = bicycle / all) %>%
   select(o = flow_new_orig, d = flow_new_dest, all11 = all, pcycle11)
