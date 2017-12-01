@@ -15,31 +15,28 @@ z = msoa2011_vsimple %>%
 # u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
 # download.file(u_flow_11, "../cyipt-bigdata/l_all.Rds")
 
-flow_11 = readRDS("../cyipt-bigdata/l_all.Rds") %>%
+flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds") %>%
   st_as_sf()
-flow_11 = select(flow_11, geo_code1, geo_code2, all, bicycle) %>%
-  filter(geo_code1 %in% z$geo_code, geo_code2 %in% z$geo_code) %>%
-  filter(all > 50)
+
 # flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
 #   as(Class = "sf")
 c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp") %>%
   st_transform(4326)
 
 # if using aggregating zones
-# aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
+aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
 # aggzone = filter(aggzones, ttwa11nm == region_name)
-# # aggzone = st_buffer(aggzones, dist = 0) # for all of UK
-# aggzone = flow_11 %>%
-#   st_transform(27700) %>%
-#   st_buffer(1000, 4) %>%
-#   st_union() %>%
-#   st_transform(4326)
-# plot(aggzone)
-#
-# # subset areal data to region and aggregate msoa-cas flows ----
-# c_oa01 = c_oa01[aggzone, ] # get points
-# z = z[c_oa01, ]
-# cas = cas2003_simple[c_oa01, ]
+aggzone = st_buffer(aggzones, dist = 0) # for all of UK
+plot(aggzone$geometry)
+
+# subset areal data to region and aggregate msoa-cas flows ----
+c_oa01 = c_oa01[aggzone, ] # get points
+z = z[c_oa01, ]
+cas = cas2003_simple[c_oa01, ]
+flow_11 = select(flow_11_orig, geo_code1, geo_code2, all, bicycle) %>%
+  filter(geo_code1 %in% z$geo_code, geo_code2 %in% z$geo_code) %>%
+  filter(all > 20)
+
 
 # read-in and process infra data ----
 sc2sd = readRDS("../cyinfdat/sc2sd") %>%
@@ -54,7 +51,7 @@ summary(as.factor(old_infra$on_road))
 qtm(old_infra, lines.col = "green")
 b = old_infra %>%
   st_transform(27700) %>%
-  st_buffer(dist = 500, nQuadSegs = 4) %>%
+  st_buffer(dist = 1000, nQuadSegs = 4) %>%
   st_union() %>%
   st_transform(4326)
 # qtm(b)
@@ -72,7 +69,6 @@ flow_11 = rbind(flow_11b, flow_11nb_sample)
 
 summary(flow_11$geo_code1 %in% z$geo_code)
 summary(flow_11$geo_code2 %in% z$geo_code)
-flow
 f11 = st_set_geometry(flow_11, NULL)
 
 sum(f11$all) # 4m
@@ -81,7 +77,6 @@ summary(f11$geo_code1 %in% z$geo_code)
 summary(f11$geo_code2 %in% z$geo_code)
 summary(z$geo_code %in% f11$geo_code1 | z$geo_code %in% f11$geo_code2)
 z = z[z$geo_code %in% f11$geo_code1 | z$geo_code %in% f11$geo_code2, ]
-cas
 
 # time-consuming...
 system.time({od_11 = od_aggregate(flow = f11, zones = z, aggzones = cas)})
@@ -90,7 +85,6 @@ od_11 = od_11 %>%
   na.omit() %>%
   mutate(pcycle11 = bicycle / all) %>%
   select(o = new_orig, d = new_dest, all11 = all, pcycle11)
-
 # process OD data ----
 # od_01 = read_csv("../cyoddata/od_01.csv", skip = 4, col_names = F)
 # names(od_01) = c("o", "d", "all", "mfh", "car", "bicycle", "foot")
@@ -151,18 +145,28 @@ for(i in 1:nrow(l)) {
 }
 summary(l$exposure)
 sel_na = is.na(l$exposure)
-plot(l$dist, l$exposure)
 l$exposure[sel_na] = 0
+plot(l$dist, l$exposure)
 m = lm(p_uptake ~ dist + exposure, l, weights = all11)
 summary(m)
 p = (predict(m, l) + l$pcycle01) * l$all11
+# install.packages("xgboost")
+library(xgboost)
+train = select(l, p_uptake, all11, dist, exposure) %>%
+  sample_frac(0.5) %>%
+  st_set_geometry(NULL) %>%
+  as.matrix()
+m = xgboost(train[, -(1:2)], train[, 1], weight = train[, 2], nrounds = 10)
+lx = select(l, dist, exposure) %>%
+  st_set_geometry(NULL) %>%
+  as.matrix()
+p = (predict(m, lx) + l$pcycle01) * l$all11
 sum(p)
 psimple = l$pcycle01 * l$all11
 sum(psimple) # 4000+ more cyclists estimated
 cor(l$all11, p)^2
 cor(l$all11, psimple)^2
-cor(l$all01 * l$pcycle01, p)
-cor(l$all01 * l$pcycle01, psimple)
+xgb.plot.importance(xgb.importance(model = m))
 
 # Estimate uptake
 schemes = readRDS("../cyipt-bigdata/osm-prep/Bristol/schemes.Rds")
