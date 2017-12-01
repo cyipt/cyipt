@@ -50,7 +50,8 @@ sc2sd = readRDS("../cyinfdat/sc2sd") %>%
 # all before 2011
 sl2sc = readRDS("../cyinfdat/ri_04_11_dft") %>%
   select(date = BuildYear, on_road = OnRoad)
-old_infra = rbind(sc2sd, sl2sc)
+old_infra = rbind(sc2sd, sl2sc) %>%
+  st_transform(4326)
 summary(as.factor(old_infra$on_road))
 # qtm(old_infra, lines.col = "green")
 b = old_infra %>%
@@ -59,6 +60,25 @@ b = old_infra %>%
   st_union() %>%
   st_transform(4326)
 # qtm(b)
+date_switch = function(d){
+  d = sapply(d, switch,
+         "2004/5" = "2005-01-01",
+         "2005/6" = "2006-01-01",
+         "2006/7" = "2007-01-01",
+         "2007/8" = "2008-01-01",
+         "2008/9" = "2009-01-01",
+         "2009/2010" = "2010-01-01",
+         "2010/2011" = "2011-01-01",
+         NA
+         )
+  unname(unlist(d))
+}
+d = lubridate::ymd(date_switch(old_infra$date))
+length(d)
+nrow(old_infra)
+old_infra$new_date = lubridate::ymd(date_switch(old_infra$date))
+old_infra = na.omit(old_infra)
+old_infra$years_complete = as.numeric(lubridate::ymd("2011-03-27") - old_infra$new_date) / 365
 
 # subset lines of interest and aggregate them to cas level
 selb = st_intersects(l_joined, b)
@@ -102,8 +122,28 @@ sum(l$all01 * l$pcycle01) / sum(l$all01)
 sum(l$all11 * l$pcycle11) / sum(l$all11) # 1% increase in affected areas
 
 # crude measure of exposure: % of route near 1 cycle path
-i = 1
+i = 79
 l$exposure = NA
+line_exposure = function(rf_b, old_infra) {
+  sel_infra = st_intersects(rf_b, old_infra)
+  res = data.frame(
+    length_on_road = rep(0, nrow(rf_b)),
+    length_off_road = rep(0, nrow(rf_b)),
+    years_complete = rep(0, nrow(rf_b))
+                         )
+  for(i in seq_len(nrow(rf_b))) {
+    if(length(sel_infra[[i]]) == 0) {
+      next()
+    } else {
+    intersection = st_intersection(old_infra[sel_infra[[i]], ], rf_b$geometry[i])
+    res$length_on_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "t", ])))
+    res$length_off_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "f", ])))
+    res$years_complete[i] = mean(intersection$years_complete)
+    }
+  }
+  res
+}
+res_exp = line_exposure(rf_b, old_infra)
 for(i in 1:nrow(l)) {
   intersection = st_intersection(l$geometry[i], b)
   if(length(intersection) > 0) {
