@@ -20,6 +20,10 @@ plot(region_shape$geometry)
 z = z[region_shape, ]
 # u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
 # download.file(u_flow_11, "../cyipt-bigdata/l_all.Rds")
+u_rf = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/rf_all.Rds"
+download.file(u_rf, "../cyipt-bigdata/rf.Rds")
+rf_all_orig = readRDS("../cyipt-bigdata/rf.Rds")
+
 # flow_11_orig = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
 #   as(Class = "sf")
 flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds")
@@ -78,6 +82,19 @@ qtm(l[l$all11 > 100 & l$pcycle11 > 0.3,])
 plot(l$geometry) # works
 # qtm(l) + qtm(b)
 
+# subsetting fastest routes
+sel_rf = rf_all_orig$id %in% paste(l$o, l$d)
+rf_all = rf_all_orig[sel_rf,]
+rf = rf_all %>%
+  st_as_sf()
+summary(rf$id == paste(l$o, l$d)) # check they match
+plot(l[9999, ])
+plot(l$geometry[9999])
+plot(rf$geometry[9999], add = T)
+rf_b = rf %>% st_transform(27700) %>%
+  st_buffer(dist = 200, nQuadSegs = 4) %>%
+  st_transform(4326)
+
 # testing
 sum(l$all01) # 2.1 million
 sum(l$all11) # 3.4 million
@@ -101,6 +118,7 @@ l$dist = as.numeric(st_length(l))
 plot(l$dist, l$exposure)
 l = l %>% mutate(p_uptake = pcycle11 - pcycle01)
 m = lm(p_uptake ~ dist + exposure, l, weights = all11)
+# m = lm(pcycle11 * all11 - pcycle01 * all01 ~ dist + exposure, l, weights = all11) # 5% variability
 summary(m)
 p = (predict(m, l) + l$pcycle01) * l$all11
 # install.packages("xgboost")
