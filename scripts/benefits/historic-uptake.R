@@ -8,35 +8,35 @@ library(stplanr)
 region_name = "Bristol"
 
 # read-in data ----
-lads = readRDS("../cyipt-bigdata/boundaries/local_authority/local_authority.Rds") %>%
-  st_transform(4326)
 z = msoa2011_vsimple %>%
   select(geo_code = msoa11cd)
-# u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
-# download.file(u_flow_11, "../cyipt-bigdata/l_all.Rds")
-
-flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds") %>%
-  st_as_sf()
-
-# flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
-#   as(Class = "sf")
-c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp") %>%
-  st_transform(4326)
-
 # if using aggregating zones
-aggzones = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
-# aggzone = filter(aggzones, ttwa11nm == region_name)
-aggzone = st_buffer(aggzones, dist = 0) # for all of UK
-plot(aggzone$geometry)
+region_shape = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
+# region_shape = filter(region_shape, ttwa11nm == region_name)
+region_shape = st_buffer(region_shape, dist = 0) # for all of UK
+plot(region_shape$geometry)
 
 # subset areal data to region and aggregate msoa-cas flows ----
-c_oa01 = c_oa01[aggzone, ] # get points
-z = z[c_oa01, ]
-cas = cas2003_simple[c_oa01, ]
-flow_11 = select(flow_11_orig, geo_code1, geo_code2, all, bicycle) %>%
-  filter(geo_code1 %in% z$geo_code, geo_code2 %in% z$geo_code) %>%
-  filter(all > 20)
+z = z[region_shape, ]
+# u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
+# download.file(u_flow_11, "../cyipt-bigdata/l_all.Rds")
+# flow_11_orig = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
+#   as(Class = "sf")
+flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds")
+l11 = flow_11_orig %>%
+  st_as_sf() %>%
+  mutate(pcycle11 = bicycle / all) %>%
+  select(o = geo_code1, d = geo_code2, all11 = all, pcycle11) %>%
+  filter(o %in% z$geo_code, d %in% z$geo_code) %>%
+  filter(all11 > 20) # 130k when >20
 
+od_01_new = readRDS("../cyoddata/od_01_new.Rds")
+l_joined = left_join(l11, od_01_new) %>%
+  na.omit()
+plot(l$all01, l$all11) # much better fit
+cor(l$all01 * l$pcycle01, l$all11 * l$pcycle11)^2 # half of 11 cycling estimated by 01 cycling
+sum(l$pcycle01 * l$all01) / sum(l$all01) # 3.6% 01
+sum(l$pcycle11 * l$all11) / sum(l$all11) # 4.1% 11
 
 # read-in and process infra data ----
 sc2sd = readRDS("../cyinfdat/sc2sd") %>%
@@ -48,7 +48,7 @@ sl2sc = readRDS("../cyinfdat/ri_04_11_dft") %>%
   select(date = BuildYear, on_road = OnRoad)
 old_infra = rbind(sc2sd, sl2sc)
 summary(as.factor(old_infra$on_road))
-qtm(old_infra, lines.col = "green")
+# qtm(old_infra, lines.col = "green")
 b = old_infra %>%
   st_transform(27700) %>%
   st_buffer(dist = 1000, nQuadSegs = 4) %>%
@@ -57,81 +57,32 @@ b = old_infra %>%
 # qtm(b)
 
 # subset lines of interest and aggregate them to cas level
-selb = st_intersects(flow_11, b)
+selb = st_intersects(l_joined, b)
 saveRDS(selb, "selb.Rds")
 selb_logical = lengths(selb) > 0
-flow_11b = flow_11[selb_logical, ]
-flow_11nb = flow_11[!selb_logical, ]
-sum(flow_11b$all) # 2 million affected when all > 50
-set.seed(20012011)
-flow_11nb_sample = sample_n(flow_11nb, nrow(flow_11b))
-flow_11 = rbind(flow_11b, flow_11nb_sample)
+l = l_joined[selb_logical, ]
 
-summary(flow_11$geo_code1 %in% z$geo_code)
-summary(flow_11$geo_code2 %in% z$geo_code)
-f11 = st_set_geometry(flow_11, NULL)
+# lb = l_joined[selb_logical, ]
+# lnb = flow_11[!selb_logical, ]
+# sum(lb$all) # 2 million affected when all > 50
+# set.seed(20012011)
+# lnb_sample = sample_n(lnb, nrow(lb))
+# l = rbind(lb, lnb_sample)
 
-sum(f11$all) # 4m
-summary(z$geo_code %in% f11$geo_code1)
-summary(f11$geo_code1 %in% z$geo_code)
-summary(f11$geo_code2 %in% z$geo_code)
-summary(z$geo_code %in% f11$geo_code1 | z$geo_code %in% f11$geo_code2)
-z = z[z$geo_code %in% f11$geo_code1 | z$geo_code %in% f11$geo_code2, ]
+# sanity checks on lines
+summary(l$o %in% z$geo_code)
+summary(l$d %in% z$geo_code)
+qtm(l[l$all01 > 100 & l$pcycle01 > 0.3,])
+qtm(l[l$all11 > 100 & l$pcycle11 > 0.3,])
 
-# time-consuming...
-system.time({od_11 = od_aggregate(flow = f11, zones = z, aggzones = cas)})
-
-od_11 = od_11 %>%
-  na.omit() %>%
-  mutate(pcycle11 = bicycle / all) %>%
-  select(o = new_orig, d = new_dest, all11 = all, pcycle11)
-# process OD data ----
-# od_01 = read_csv("../cyoddata/od_01.csv", skip = 4, col_names = F)
-# names(od_01) = c("o", "d", "all", "mfh", "car", "bicycle", "foot")
-# sum(od_01$all, na.rm = T) # 48.5 million
-# od_01$all = od_01$all - od_01$mfh
-# sum(od_01$all, na.rm = T) # 44 million
-# od_01$mfh = NULL
-# saveRDS(od_01, "../cyoddata/od_01.Rds")
-od_01 = readRDS("../cyoddata/od_01.Rds")
-
-cas_codes = select(cas2003_simple, ons_label, name) %>%
-  st_set_geometry(NULL) %>%
-  filter(!duplicated(name), name %in% od_01$o | name %in% od_01$d)
-# join-on the ons labels
-od_01 = inner_join(od_01, select(cas_codes, ons_label_o = ons_label, o = name))
-sum(od_01$all, na.rm = T) # 44 million
-od_01 = inner_join(od_01, select(cas_codes, ons_label_d = ons_label, d = name)) # removes ~20m ppl
-sum(od_01$all, na.rm = T) # 23 million
-
-od_01$o = od_01$ons_label_o
-od_01$d = od_01$ons_label_d
-od_01 = od_01 %>% mutate(pcycle01 = bicycle / all) %>%
-  select(o, d, pcycle01, all01 = all)
-
-od_01_region = od_01 %>%
-  filter(o %in% cas$ons_label, d %in% cas$ons_label) # 1.9m results
-
-summary(od_01_region$o %in% od_11$o) # test readiness to merge with 2011
-od_01_region = od_01_region %>%
-  filter(all01 > 10, o %in% od_11$o, d %in% od_11$d) %>%
-  na.omit()
-
-od = inner_join(od_01_region, od_11)
-od = mutate(od, p_uptake = (pcycle11 - pcycle01))
-
-l = od2line(flow = od, cas)
 plot(l$geometry) # works
-l$dist = as.numeric(st_length(l))
-l = filter(l, dist > 0, dist < 10000) %>%
-  na.omit()
-qtm(l) + qtm(b)
+# qtm(l) + qtm(b)
 
 # testing
-sum(l$all01) # 100k
-sum(l$all11) # many more in 2011
+sum(l$all01) # 2.1 million
+sum(l$all11) # 3.4 million
 sum(l$all01 * l$pcycle01) / sum(l$all01)
-sum(l$all11 * l$pcycle11) / sum(l$all11) # doubling in cycling in Avon in affected routes
+sum(l$all11 * l$pcycle11) / sum(l$all11) # 1% increase in affected areas
 
 # crude measure of exposure: % of route near 1 cycle path
 i = 1
@@ -146,7 +97,9 @@ for(i in 1:nrow(l)) {
 summary(l$exposure)
 sel_na = is.na(l$exposure)
 l$exposure[sel_na] = 0
+l$dist = as.numeric(st_length(l))
 plot(l$dist, l$exposure)
+l = l %>% mutate(p_uptake = pcycle11 - pcycle01)
 m = lm(p_uptake ~ dist + exposure, l, weights = all11)
 summary(m)
 p = (predict(m, l) + l$pcycle01) * l$all11
@@ -161,12 +114,12 @@ lx = select(l, dist, exposure) %>%
   st_set_geometry(NULL) %>%
   as.matrix()
 p = (predict(m, lx) + l$pcycle01) * l$all11
+xgb.plot.importance(xgb.importance(model = m))
 sum(p)
 psimple = l$pcycle01 * l$all11
 sum(psimple) # 4000+ more cyclists estimated
 cor(l$all11, p)^2
 cor(l$all11, psimple)^2
-xgb.plot.importance(xgb.importance(model = m))
 
 # Estimate uptake
 schemes = readRDS("../cyipt-bigdata/osm-prep/Bristol/schemes.Rds")
@@ -234,3 +187,41 @@ qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend.
 # u_lookup = "https://opendata.arcgis.com/datasets/65544c20a5804677a2594fe750bf4482_0.csv"
 # download.file(u_lookup, "../cyipt-inputs-official/ward-lookup.csv")
 # lookup = read_csv("../cyipt-inputs-official/ward-lookup.csv")
+# process OD data ----
+# od_01 = read_csv("../cyoddata/od_01.csv", skip = 4, col_names = F)
+# names(od_01) = c("o", "d", "all", "mfh", "car", "bicycle", "foot")
+# sum(od_01$all, na.rm = T) # 48.5 million
+# od_01$all = od_01$all - od_01$mfh
+# sum(od_01$all, na.rm = T) # 44 million
+# od_01$mfh = NULL
+# saveRDS(od_01, "../cyoddata/od_01.Rds")
+# od_01 = readRDS("../cyoddata/od_01.Rds")
+# cas_codes = select(cas2003_simple, ons_label, name) %>%
+#   st_set_geometry(NULL) %>%
+#   filter(!duplicated(name), name %in% od_01$o | name %in% od_01$d)
+# # join-on the ons labels
+# od_01 = read_csv("../cyoddata/msoa_01_11_work.csv", skip = 4, col_names = F) # 12 million OD pairs
+# names(od_01) = c("o", "d", "all", "mfh", "underground", "train", "bus", "taxi",
+#                  "car_driver", "car_passenger", "motorcycle", "bicycle", "foot", "other")
+# barplot(colSums(od_01[3:ncol(od_01)], na.rm = T))
+# od_01$all = od_01$all - od_01$mfh
+# od_01 = select(od_01, o, d, all, bicycle)
+# saveRDS(od_01, "../cyoddata/od_01.Rds")
+# od_01 = readRDS("../cyoddata/od_01.Rds")
+# lookup_msoa = read_csv("../cyipt-inputs-official/MSOA01_MSOA11_LAD11_EW_LU.csv")
+# summary(od_01$o %in% lookup_msoa$MSOA01NM)
+# summary(od_01$o %in% lookup_msoa$MSOA11NM) # ~ 9% not 1-to-1 fit
+# lookup_msoa$o = lookup_msoa$MSOA01NM
+# lookup_msoa$d = lookup_msoa$MSOA01NM
+# lookup_msoa$o11 = lookup_msoa$MSOA11CD
+# lookup_msoa$d11 = lookup_msoa$MSOA11CD
+# od_01_j1 = left_join(od_01, select(lookup_msoa, o, o11))
+# od_01_j2 = inner_join(od_01_j1, select(lookup_msoa, d, d11))
+# od_01_new = od_01_j2 %>%
+#   select(o = o11, d = d11, all, bicycle) %>%
+#   filter(all > 0) %>%
+#   group_by(o, d) %>%
+#   summarise(all = sum(all), bicycle = sum(bicycle)) %>%
+#   mutate(pcycle01 = bicycle / all) %>%
+#   select(o, d, all01 = all, pcycle01)
+# saveRDS(od_01_new, "../cyoddata/od_01_new.Rds")
