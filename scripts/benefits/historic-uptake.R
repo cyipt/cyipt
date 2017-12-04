@@ -20,8 +20,8 @@ plot(region_shape$geometry)
 z = z[region_shape, ]
 # u_flow_11 = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/l_all.Rds"
 # download.file(u_flow_11, "../cyipt-bigdata/l_all.Rds")
-u_rf = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/rf_all.Rds"
-download.file(u_rf, "../cyipt-bigdata/rf.Rds")
+# u_rf = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/rf_all.Rds"
+# download.file(u_rf, "../cyipt-bigdata/rf.Rds")
 rf_all_orig = readRDS("../cyipt-bigdata/rf.Rds")
 
 # flow_11_orig = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
@@ -37,55 +37,62 @@ l11 = flow_11_orig %>%
 od_01_new = readRDS("../cyoddata/od_01_new.Rds")
 l_joined = left_join(l11, od_01_new) %>%
   na.omit()
-plot(l$all01, l$all11) # much better fit
-cor(l$all01 * l$pcycle01, l$all11 * l$pcycle11)^2 # half of 11 cycling estimated by 01 cycling
-sum(l$pcycle01 * l$all01) / sum(l$all01) # 3.6% 01
-sum(l$pcycle11 * l$all11) / sum(l$all11) # 4.1% 11
+
 
 # read-in and process infra data ----
+date_switch = function(d){
+  d = sapply(d, switch,
+             "2004/5" = "2005-01-01",
+             "2005/6" = "2006-01-01",
+             "2006/7" = "2007-01-01",
+             "2007/8" = "2008-01-01",
+             "2008/9" = "2009-01-01",
+             "2009/2010" = "2010-01-01",
+             "2010/2011" = "2011-01-01",
+             NA
+  )
+  as.Date(unlist(d))
+}
 sc2sd = readRDS("../cyinfdat/sc2sd") %>%
-  filter(OpenDate < "2010-12-01") %>%
   mutate(OpenDate = as.character(OpenDate)) %>%
-  select(date = OpenDate, on_road = OnRoad)
+  filter(OpenDate < "2010-12-01") %>%
+  select(date = OpenDate, on_road = OnRoad) %>%
+  mutate(funding = "Connect 2") %>%
+  mutate(date = as.Date(date))
 # all before 2011
 sl2sc = readRDS("../cyinfdat/ri_04_11_dft") %>%
-  select(date = BuildYear, on_road = OnRoad)
-old_infra = rbind(sc2sd, sl2sc) %>%
-  st_transform(4326)
+  select(date = BuildYear, on_road = OnRoad) %>%
+  mutate(funding = "Links to schools") %>%
+  mutate(date = date_switch(date))
+sndft = readRDS("../cyinfdat/ri_01_11_non_dft") %>%
+  select(date = OpenDate, on_road = OnRoad) %>%
+  mutate(funding = "Non-DfT")
+old_infra = rbind(sc2sd, sl2sc, sndft) %>%
+  st_transform(4326)  %>%
+  mutate(date = as.Date(date))
 summary(as.factor(old_infra$on_road))
+summary(old_infra$date)
 # qtm(old_infra, lines.col = "green")
+
+old_infra$years_complete = as.numeric(lubridate::ymd("2011-03-27") - old_infra$date) / 365
+summary(old_infra$years_complete)
+old_infra = old_infra %>% filter(years_complete < 10) # removed a few thousand schemes
+
 b = old_infra %>%
   st_transform(27700) %>%
   st_buffer(dist = 1000, nQuadSegs = 4) %>%
   st_union() %>%
   st_transform(4326)
 # qtm(b)
-date_switch = function(d){
-  d = sapply(d, switch,
-         "2004/5" = "2005-01-01",
-         "2005/6" = "2006-01-01",
-         "2006/7" = "2007-01-01",
-         "2007/8" = "2008-01-01",
-         "2008/9" = "2009-01-01",
-         "2009/2010" = "2010-01-01",
-         "2010/2011" = "2011-01-01",
-         NA
-         )
-  unname(unlist(d))
-}
-d = lubridate::ymd(date_switch(old_infra$date))
-length(d)
-nrow(old_infra)
-old_infra$new_date = lubridate::ymd(date_switch(old_infra$date))
-old_infra = na.omit(old_infra)
-old_infra$years_complete = as.numeric(lubridate::ymd("2011-03-27") - old_infra$new_date) / 365
-
 # subset lines of interest and aggregate them to cas level
 selb = st_intersects(l_joined, b)
 saveRDS(selb, "selb.Rds")
 selb_logical = lengths(selb) > 0
 l = l_joined[selb_logical, ]
-
+plot(l$all01, l$all11) # much better fit
+cor(l$all01 * l$pcycle01, l$all11 * l$pcycle11)^2 # half of 11 cycling estimated by 01 cycling
+sum(l$pcycle01 * l$all01) / sum(l$all01) # 3.6% 01
+sum(l$pcycle11 * l$all11) / sum(l$all11) # 4.1% 11
 # lb = l_joined[selb_logical, ]
 # lnb = flow_11[!selb_logical, ]
 # sum(lb$all) # 2 million affected when all > 50
