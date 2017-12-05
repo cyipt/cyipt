@@ -23,10 +23,19 @@ z = z[region_shape, ]
 # u_rf = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/rf_all.Rds"
 # download.file(u_rf, "../cyipt-bigdata/rf.Rds")
 rf_all_orig = readRDS("../cyipt-bigdata/rf.Rds")
+rf11 = rf_all_orig %>%
+  st_as_sf() %>%
+  mutate(pcycle11 = bicycle / all) %>%
+  select(o = geo_code1, d = geo_code2, all11 = all, pcycle11) %>%
+  filter(o %in% z$geo_code, d %in% z$geo_code) %>%
+  filter(all11 > 20) # 130k when >20
+
+
 
 # flow_11_orig = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
 #   as(Class = "sf")
 flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds")
+
 l11 = flow_11_orig %>%
   st_as_sf() %>%
   mutate(pcycle11 = bicycle / all) %>%
@@ -34,8 +43,12 @@ l11 = flow_11_orig %>%
   filter(o %in% z$geo_code, d %in% z$geo_code) %>%
   filter(all11 > 20) # 130k when >20
 
+# add straight line geometry to rf11 for faster default plotting
+rf11$geometry_rf = rf$geometry
+rf11$geometry = l11$geometry
+
 od_01_new = readRDS("../cyoddata/od_01_new.Rds")
-l_joined = left_join(l11, od_01_new) %>%
+l_joined = left_join(rf11, od_01_new) %>%
   na.omit()
 
 
@@ -67,7 +80,8 @@ sl2sc = readRDS("../cyinfdat/ri_04_11_dft") %>%
 sndft = readRDS("../cyinfdat/ri_01_11_non_dft") %>%
   select(date = OpenDate, on_road = OnRoad) %>%
   mutate(funding = "Non-DfT")
-old_infra = rbind(sc2sd, sl2sc, sndft) %>%
+# old_infra = rbind(sc2sd, sl2sc, sndft) %>%
+old_infra = rbind(sc2sd) %>%
   st_transform(4326)  %>%
   mutate(date = as.Date(date))
 summary(as.factor(old_infra$on_road))
@@ -93,40 +107,37 @@ plot(l$all01, l$all11) # much better fit
 cor(l$all01 * l$pcycle01, l$all11 * l$pcycle11)^2 # half of 11 cycling estimated by 01 cycling
 sum(l$pcycle01 * l$all01) / sum(l$all01) # 3.6% 01
 sum(l$pcycle11 * l$all11) / sum(l$all11) # 4.1% 11
-# lb = l_joined[selb_logical, ]
-# lnb = flow_11[!selb_logical, ]
-# sum(lb$all) # 2 million affected when all > 50
-# set.seed(20012011)
-# lnb_sample = sample_n(lnb, nrow(lb))
-# l = rbind(lb, lnb_sample)
+lnb = l_joined[!selb_logical, ]
+set.seed(20012011)
+lnb_sample = sample_n(lnb, nrow(lb))
+l = rbind(l, lnb_sample)
 
 # sanity checks on lines
 summary(l$o %in% z$geo_code)
 summary(l$d %in% z$geo_code)
-qtm(l[l$all01 > 100 & l$pcycle01 > 0.3,])
-qtm(l[l$all11 > 100 & l$pcycle11 > 0.3,])
+qtm(l[l$pcycle01 > 0.3,])
+qtm(l[l$pcycle11 > 0.3,])
 
 plot(l$geometry) # works
 # qtm(l) + qtm(b)
 
 # subsetting fastest routes
-sel_rf = rf_all_orig$id %in% paste(l$o, l$d)
-rf_all = rf_all_orig[sel_rf,]
-rf = rf_all %>%
-  st_as_sf()
-summary(rf$id == paste(l$o, l$d)) # check they match
-plot(l[9999, ])
-plot(l$geometry[9999])
-plot(rf$geometry[9999], add = T)
-rf_b = rf %>% st_transform(27700) %>%
+l_rf = l
+l_rf$geometry = NULL
+l_rf$geometry = l_rf$geometry_rf
+l_rf$geometry_rf = NULL
+class(l_rf)
+plot(l_rf[1:9, ])
+rf_b = l_rf %>%
+  st_transform(27700) %>%
   st_buffer(dist = 200, nQuadSegs = 4) %>%
   st_transform(4326)
 
-# testing
-sum(l$all01) # 2.1 million
-sum(l$all11) # 3.4 million
+# data checks
+sum(l$all01)
+sum(l$all11)
 sum(l$all01 * l$pcycle01) / sum(l$all01)
-sum(l$all11 * l$pcycle11) / sum(l$all11) # 1% increase in affected areas
+sum(l$all11 * l$pcycle11) / sum(l$all11)
 l = l %>% mutate(p_uptake = pcycle11 - pcycle01)
 
 # crude measure of exposure: % of route near 1 cycle path: old measure of exposure
@@ -150,18 +161,19 @@ i = 79
 l$exposure = NA
 line_exposure = function(rf_b, old_infra) {
   sel_infra = st_intersects(rf_b, old_infra)
+  n_lines = ifelse(is(rf_b, "sf"), nrow(rf_b), length(rf_b))
   res = data.frame(
-    id = rep(0, nrow(rf_b)),
-    length_on_road = rep(0, nrow(rf_b)),
-    length_off_road = rep(0, nrow(rf_b)),
-    years_complete = rep(0, nrow(rf_b))
+    id = rep(0, n_lines),
+    length_on_road = rep(0, n_lines),
+    length_off_road = rep(0, n_lines),
+    years_complete = rep(0, n_lines)
                          )
-  for(i in seq_len(nrow(rf_b))) {
-    res$id[i] = rf_b$id[i]
+  for(i in seq_len(n_lines)) {
+    # res$id[i] = rf_b$id[i]
     if(length(sel_infra[[i]]) == 0) {
       next()
     } else {
-      res$id[i] = rf_b$id[i]
+      # res$id[i] = rf_b$id[i]
     intersection = st_intersection(old_infra[sel_infra[[i]], ], rf_b$geometry[i])
     res$length_on_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "t", ])))
     res$length_off_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "f", ])))
@@ -171,6 +183,7 @@ line_exposure = function(rf_b, old_infra) {
   res
 }
 res_exp = line_exposure(rf_b, old_infra)
+summary(res_exp)
 res_prop = res_exp %>%
   mutate(length_on_road = length_on_road / l$dist, length_off_road = length_off_road / l$dist)
 l$id = paste(l$o, l$d)
