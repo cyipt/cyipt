@@ -127,8 +127,25 @@ sum(l$all01) # 2.1 million
 sum(l$all11) # 3.4 million
 sum(l$all01 * l$pcycle01) / sum(l$all01)
 sum(l$all11 * l$pcycle11) / sum(l$all11) # 1% increase in affected areas
+l = l %>% mutate(p_uptake = pcycle11 - pcycle01)
 
-# crude measure of exposure: % of route near 1 cycle path
+# crude measure of exposure: % of route near 1 cycle path: old measure of exposure
+# for(i in 1:nrow(l)) {
+#   intersection = st_intersection(l$geometry[i], b)
+#   if(length(intersection) > 0) {
+#     l$exposure[i] = st_length(intersection) /
+#       st_length(l$geometry[i])
+#   }
+# }
+# sel_na = is.na(l$exposure)
+# l$exposure[sel_na] = 0
+# l$dist = as.numeric(st_length(l))
+# plot(l$dist, l$exposure)
+# summary(l$exposure)
+# m = lm(p_uptake ~ dist + exposure, l, weights = all11)
+# p = (predict(m, l) + l$pcycle01) * l$all11
+
+# new measure
 i = 79
 l$exposure = NA
 line_exposure = function(rf_b, old_infra) {
@@ -151,23 +168,11 @@ line_exposure = function(rf_b, old_infra) {
   res
 }
 res_exp = line_exposure(rf_b, old_infra)
-for(i in 1:nrow(l)) {
-  intersection = st_intersection(l$geometry[i], b)
-  if(length(intersection) > 0) {
-    l$exposure[i] = st_length(intersection) /
-      st_length(l$geometry[i])
-  }
-}
-summary(l$exposure)
-sel_na = is.na(l$exposure)
-l$exposure[sel_na] = 0
-l$dist = as.numeric(st_length(l))
-plot(l$dist, l$exposure)
-l = l %>% mutate(p_uptake = pcycle11 - pcycle01)
-m = lm(p_uptake ~ dist + exposure, l, weights = all11)
-# m = lm(pcycle11 * all11 - pcycle01 * all01 ~ dist + exposure, l, weights = all11) # 5% variability
+l_new = bind_cols(l, res_exp)
+summary(l_new)
+m = lm(p_uptake ~ dist + length_on_road + length_off_road + years_complete, l_new, weights = all11)
+p = (predict(m, l_new) + l$pcycle01) * l$all11
 summary(m)
-p = (predict(m, l) + l$pcycle01) * l$all11
 # install.packages("xgboost")
 library(xgboost)
 train = select(l, p_uptake, all11, dist, exposure) %>%
