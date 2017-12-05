@@ -151,14 +151,17 @@ l$exposure = NA
 line_exposure = function(rf_b, old_infra) {
   sel_infra = st_intersects(rf_b, old_infra)
   res = data.frame(
+    id = rep(0, nrow(rf_b)),
     length_on_road = rep(0, nrow(rf_b)),
     length_off_road = rep(0, nrow(rf_b)),
     years_complete = rep(0, nrow(rf_b))
                          )
   for(i in seq_len(nrow(rf_b))) {
+    res$id[i] = rf_b$id[i]
     if(length(sel_infra[[i]]) == 0) {
       next()
     } else {
+      res$id[i] = rf_b$id[i]
     intersection = st_intersection(old_infra[sel_infra[[i]], ], rf_b$geometry[i])
     res$length_on_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "t", ])))
     res$length_off_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "f", ])))
@@ -168,23 +171,26 @@ line_exposure = function(rf_b, old_infra) {
   res
 }
 res_exp = line_exposure(rf_b, old_infra)
-l_new = bind_cols(l, res_exp)
+res_prop = res_exp %>%
+  mutate(length_on_road = length_on_road / l$dist, length_off_road = length_off_road / l$dist)
+l$id = paste(l$o, l$d)
+l_new = left_join(l, res_prop)
 summary(l_new)
 m = lm(p_uptake ~ dist + length_on_road + length_off_road + years_complete, l_new, weights = all11)
 p = (predict(m, l_new) + l$pcycle01) * l$all11
 summary(m)
 # install.packages("xgboost")
 library(xgboost)
-train = select(l, p_uptake, all11, dist, exposure) %>%
+train = select(l_new, p_uptake, all11, dist, length_on_road, length_off_road, years_complete) %>%
   sample_frac(0.5) %>%
   st_set_geometry(NULL) %>%
   as.matrix()
 m = xgboost(train[, -(1:2)], train[, 1], weight = train[, 2], nrounds = 10)
-lx = select(l, dist, exposure) %>%
+lx = select(l_new, dist, length_on_road, length_off_road, years_complete) %>%
   st_set_geometry(NULL) %>%
   as.matrix()
 p = (predict(m, lx) + l$pcycle01) * l$all11
-xgb.plot.importance(xgb.importance(model = m))
+xgb.plot.importance(xgb.importance(feature_names = colnames(lx), model = m))
 sum(p)
 psimple = l$pcycle01 * l$all11
 sum(psimple) # 4000+ more cyclists estimated
