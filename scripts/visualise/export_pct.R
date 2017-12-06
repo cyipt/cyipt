@@ -1,5 +1,7 @@
 # Export Regions for Database
 library(sf)
+library(tmap)
+tmap_mode("view")
 
 
 # pcts
@@ -11,11 +13,15 @@ names(pct) <- c("id","total","cyclists","drivers","hilliness","geometry") #Remov
 
 
 pct <- pct[pct$total > 2,]
+pct <- st_simplify(pct, dTolerance = 10) # 5.3GB unsimplified
 pct <- st_transform(pct, 4326)
+
 
 #Reduce precison of data to reduce file size
 pct$geometry <- st_as_binary(pct$geometry, precision = 100000)
 pct$geometry <- st_as_sfc(pct$geometry)
+
+qtm(pct[1:10,]) # Check the resutls are ok
 
 #convert to well known text
 pct$geotext <- st_as_text(pct$geometry)

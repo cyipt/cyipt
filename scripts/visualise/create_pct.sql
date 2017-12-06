@@ -7,11 +7,11 @@ CREATE TABLE IF NOT EXISTS pctlsoa (
 		total INT NOT NULL,
 		cyclists INT NOT NULL,
 		drivers INT NOT NULL,
-		hilliness REAL NOT NULL,
+		hilliness REAL NULL,
 		geotext GEOMETRY NOT NULL
     );
 
-COPY pctlsoa FROM '/home/malcolm/pctlsoa.csv'  csv HEADER;
+COPY pctlsoa FROM '/home/malcolm/pct.csv'  csv HEADER;
 
 ALTER TABLE pctlsoa OWNER to cyipt;
 
