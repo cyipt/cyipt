@@ -139,8 +139,10 @@ for(b in 1:length(regions)){
         route.up.sub$drivedistnow <- route.up.sub$taxi + route.up.sub$motorcycle + route.up.sub$carorvan * route.up.sub$length / 1000
         route.up.sub$drivedistafter <- (route.up.sub$taxi - route.up.sub$d_taxi) + (route.up.sub$motorcycle - route.up.sub$d_motorcycle) + (route.up.sub$carorvan - route.up.sub$d_carorvan) * route.up.sub$length / 1000
 
-        schemes$carkm_before[e] <- sum(route.up.sub$drivedistnow, na.rm = T)
-        schemes$carkm_after[e] <- sum(route.up.sub$drivedistafter, na.rm = T)
+        # Multimply Up to a year
+
+        schemes$carkm_before[e] <- sum(route.up.sub$drivedistnow, na.rm = T) * 2 * 220
+        schemes$carkm_after[e] <- sum(route.up.sub$drivedistafter, na.rm = T) * 2 * 220
 
 
 
@@ -247,7 +249,27 @@ for(b in 1:length(regions)){
 
       # GHG emissions
 
+      pdiesel <- 0.39 #Proportion of diesel cars https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/608374/vehicle-licensing-statistics-2016.pdf
+      velo <- 48 # average speed assumed to be 30 mph
 
+      schemes$co2saved <- NA
+
+      for(g in 1:nrow(schemes)){
+        #Fuel Consumption for petrol and desiel cars
+        cons.petrol <- (1.18011 / velo) + 0.04639 + (-0.00009 * velo) + (0.000003 * velo **2) * (- schemes$carkm[g] * (1 - pdiesel))
+        cons.diesel <- (0.51887 / velo) + 0.06556 + (-0.00062 * velo) + (0.000005 * velo **2) * (- schemes$carkm[g] * pdiesel)
+
+        #convert litres to kg co2e
+        emiss.petrol <- cons.petrol * 2.160
+        emiss.diesel <- cons.diesel * 2.556
+
+        schemes$co2saved[g] <- round(emiss.petrol + emiss.diesel,0)
+        rm(emiss.diesel, emiss.petrol, cons.petrol, cons.diesel)
+
+      }
+
+      #Convert to £ benefit based on WebTAG Databook A 3.3.
+      schemes$ghgbenefit <- round(schemes$co2saved / 1000 * 64.66,0)
 
 
 
