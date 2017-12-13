@@ -1,0 +1,92 @@
+COBALT Input File
+General Scheme Section
+
+Scheme Name
+Example scheme
+
+Years Subsection
+Current Year	2013
+Base Year	2010
+Without-Scheme
+Year 1		2015
+Year 2		2021
+Year 3
+Year 4
+Year 5
+With-Scheme
+Year 1		2015
+Year 2		2021
+Year 3
+Year 4
+Year 5
+
+Scheme Opening Year	2010
+
+
+Link Input Section
+
+Link Classification Subsection
+Link		Road		Length	Speed Limit
+Name		Type		(km)		(mph)
+L119		4		0.38		40
+
+Link Flow Subsection
+Link	 	Base Year		Without-Scheme Flows 							With-Scheme Flows
+Name		Flows		Year 1	Year 2	Year 3	Year 4	Year 5	Year 1	Year 2	Year 3	Year 4	Year 5
+L119		 3538		 4101	 5510				 4085	 5489
+
+Link Local Accident Rate Subsection
+Link	Observed Accidents	First 	Observed	Local Severity Split
+Name				Accident Year		Ratio		Year
+L119		8,3,5		2007						*A locally observed pre-calculated rate
+
+
+Junction Input Section
+
+Junction Classification Subsection
+Junction	Junction	Highest		Highest		Speed Limit
+Name		Type		Carriageway	Standard	(mph)
+N115		4		Dual		Major		60
+
+Junction Flow Subsection
+Base Year Flows
+Junction	Arm 1	Arm 2	Arm 3	Arm 4	Arm 5	Arm 6
+Name		(Major)	(Minor)	(Major)	(Minor)
+N115		5685	3177	4951
+
+Without-Scheme Flows
+Junction	Year		Arm 1	Arm 2	Arm 3	Arm 4	Arm 5	Arm 6
+Name				(Major)	(Minor)	(Major)	(Minor)
+N115		1		 6590	 3682	 5739				*You can use the index number of the year
+N115		2		 6590	 3682	 5739				*You can use the index number of the year
+
+With-Scheme Flows
+Junction	Year		Arm 1	Arm 2	Arm 3	Arm 4	Arm 5	Arm 6
+Name				(Major)	(Minor)	(Major)	(Minor)
+N115		2015		 6576	 3728	 5803				*Or you can use the years directly
+N115		2021		 6576	 3728	 5803				*Or you can use the years directly
+
+Junction Local Accident Rate Subsection
+Junction	Observed Accidents	First 		Observed Local Severity Split
+Name					Accident Year		Ratio		Year
+N115		0.311R		2007						*A locally observed pre-calculated rate
+
+
+Link and Junction Combined Input Section
+
+Combined Classification Subsection
+Link		Road	Length	Speed Limit
+Name		Type	(km)	(mph)
+L120		4		0.38		40
+
+Combined Flow Subsection
+Link	 	Base Year	Without-Scheme Flows 			With-Scheme Flows
+Name		Flows		Year 1	Year 2	Year 3	Year 4	Year 5	Year 1	Year 2	Year 3	Year 4	Year 5
+L120		 3538		 4101	 5510				 4085	 5489
+
+Combined Local Accident Rate Subsection
+Link		Observed Accidents	First 		Observed Local Severity Split
+Name					Accident Year		Ratio		Year
+L120		0.311R		2007						*A locally observed pre-calculated rate
+
+

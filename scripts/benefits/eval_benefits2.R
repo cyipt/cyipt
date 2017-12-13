@@ -291,11 +291,11 @@ for(b in 1:length(regions)){
 
 
       # Total Benefits
-       schemes$totalBen <- schemes$congestion_benefit + schemes$health_benefit + schemes$jouney_qual_ben
+       schemes$totalBen <- schemes$congestion_benefit + schemes$health_benefit + schemes$jouney_qual_ben + schemes$ghgbenefit
 
        schemes$costBenRatio <- round(schemes$totalBen/schemes$costTotal,1)
 
-       #foo <- as.data.frame(schemes)
+     #foo <- as.data.frame(schemes)
        #foo$geometry <- NULL
 
 
