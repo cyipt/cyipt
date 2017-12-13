@@ -26,7 +26,7 @@ rf_all_orig = readRDS("../cyipt-bigdata/rf.Rds")
 rf11 = rf_all_orig %>%
   st_as_sf() %>%
   mutate(pcycle11 = bicycle / all) %>%
-  select(o = geo_code1, d = geo_code2, all11 = all, pcycle11) %>%
+  select(o = geo_code1, d = geo_code2, all11 = all, pcycle11, dist = e_dist_km) %>%
   filter(o %in% z$geo_code, d %in% z$geo_code) %>%
   filter(all11 > 20) # 130k when >20
 
@@ -44,7 +44,7 @@ l11 = flow_11_orig %>%
   filter(all11 > 20) # 130k when >20
 
 # add straight line geometry to rf11 for faster default plotting
-rf11$geometry_rf = rf$geometry
+rf11$geometry_rf = rf11$geometry
 rf11$geometry = l11$geometry
 
 od_01_new = readRDS("../cyoddata/od_01_new.Rds")

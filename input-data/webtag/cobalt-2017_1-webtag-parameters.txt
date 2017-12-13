@@ -1,0 +1,579 @@
+COBALT Parameter File
+Version 2017.1
+
+Cost Base Year
+2010
+
+Appraisal Period
+60
+
+Discount Rate
+Years from	Discount
+Current Year	Rate (%)
+30		3.5
+75		3
+125		2.5
+
+Cost per Casualty
+Severity	Cost
+Fatal		1,556,244
+Serious		174,878 
+Slight		13,481 
+
+Cost per Accident
+Severity	Insurance	Damage to Property
+		Administration	Urban	Rural	Motorway
+Fatal		285		7,441	12,621	16,054
+Serious		178		3,998	 5,753	13,698
+Slight		108		2,353	 3,814	 6,930
+Damage		 51		1,682	 2,515	 2,417
+				Police Cost
+				Urban	Rural	Motorway
+Fatal				 16,755	 17,205	17,405
+Serious				  1,850	  2,310	 2,439
+Slight				    478	    656	   547
+Damage				     35	     20	    17
+
+Compound Annual Rates of Growth of Accident Values
+Range of Years	Rate of Growth (%p.a.)
+2010-2011	0.67
+2011-2012	0.65
+2012-2013	1.27
+2013-2014	2.29
+2014-2015	1.39
+2015-2016	0.97
+2016-2017	1.3
+2017-2018	0.85
+2018-2019	1.07
+2019-2020	1.24
+2020-2021	1.37
+2021-2022	1.55
+2022-2023	1.6
+2023-2024	1.67
+2024-2025	1.77
+2025-2026	1.84
+2026-2027	1.87
+2027-2028	1.86
+2028-2029	1.82
+2029-2030	1.79
+2030-2031	1.79
+2031-2032	1.79
+2032-2033	1.8
+2033-2034	1.81
+2034-2035	1.84
+2035-2036	1.86
+2036-2037	1.9
+2037-2038	1.97
+2038-2039	2.02
+2039-2040	2.06
+2040-2041	2.06
+2041-2042	2.04
+2042-2043	2.02
+2043-2044	2
+2044-2045	1.99
+2045-2046	1.95
+2046-2047	1.92
+2047-2048	1.91
+2048-2049	1.91
+2049-2050	1.92
+2050-2051	1.93
+2051-2052	1.99
+2052-2053	2.01
+2053-2054	2.02
+2054-2055	2.01
+2055-2056	1.99
+2056-2057	1.97
+2057-2058	1.98
+2058-2059	1.99
+2059-2060	2.04
+2060-2061	2.06
+2061-2062	2.07
+2062-2063	2.08
+2063-2064	2.06
+2064-2065	2.05
+2065-2066	2.03
+2066-2067	2.02
+2067-2068	2.02
+2068-2069	2.01
+2069-2070	2.01
+2070-2071	2.01
+2071-2072	2
+2072-2073	2
+2073-2074	2
+2074-2075	2
+2075-2076	2
+2076-2077	2
+2077-2078	2
+2078-2079	2
+2079-2080	2
+2080-2081	2
+2081-2082	2
+2082-2083	2
+2083-2084	2
+2084-2085	2.01
+2085-2086	2.01
+2086-2087	2.01
+2087-2088	2.01
+2088-2089	2.01
+2089-2090	2.01
+2090-2091	2.01
+2091-2092	2.01
+2092-2093	2.01
+2093-2094	2.01
+2094-2095	2.01
+2095-2096	2.01
+2096-2097	2.01
+2097-2098	2.01
+2098-2099	2.01
+2099-2100	2.01
+2100+ 		2.01
+
+Number of Damage Only Accidents per PIA
+				Urban	Rural	Motorway
+Damage				17.7	7.8	7.6
+
+Link Only Accident Proportions
+Base Year
+2009
+Road Type	Speed Limit	Accident Proportions	Road Description		
+		(mph)		Fatal	Serious	Slight
+1-3		>40		0.019	0.104	0.877	Motorways
+4-8		30/40		0.014	0.145	0.841	S2 A Roads		
+4-8		>40		0.046	0.206	0.748	S2 A Roads		
+9		30/40		0.010	0.145	0.846	Other S2 Roads		
+9		>40		0.026	0.193	0.780	Other S2 Roads		
+10-15		30/40		0.017	0.135	0.849	Dual Carriageways	
+10-15		>40		0.028	0.135	0.837	Dual Carriageways	
+
+Link and Junction Combined Accident Proportions
+Base Year
+2009
+Road Type	Speed Limit	Accident Proportions	Road Description		
+		(mph)		Fatal	Serious	Slight
+1-3		>40		0.018	0.101	0.882	Motorways		
+4-8		30/40		0.008	0.122	0.869	S2 A Roads		
+4-8		>40		0.034	0.187	0.779	S2 A Roads		
+9		30/40		0.007	0.126	0.867	Other S2 Roads		
+9		>40		0.024	0.187	0.789	Other S2 Roads		
+10-15		30/40		0.009	0.104	0.887	Dual Carriageways	
+10-15		>40		0.023	0.127	0.850	Dual Carriageways	
+
+Junction Only Accident Proportions
+Base Year
+2000
+Junction Type	Speed Limit	Accident Proportions	Junction Description			
+		(mph)		Fatal	Serious	Slight
+2,4		30/40		0.0072	0.1240	0.8688	Priority (3 Arm)			
+1,3		>40		0.0243	0.1883	0.7874	
+6,8		30/40		0.0060	0.1162	0.8778	Priority (4 Arm)			
+5,7		>40		0.0271	0.2064	0.7665	
+10,12		30/40		0.0060	0.1162	0.8778	Priority (5 Arm)			
+9,11		>40		0.0271	0.2064	0.7665	
+14,16		30/40		0.0072	0.1240	0.8688	Priority w Ghost Island (3 Arm)		
+13,15		>40		0.0243	0.1883	0.7874	
+18,20		30/40		0.0060	0.1162	0.8778	Priority w Ghost Island (4 Arm)		
+17,19		>40		0.0271	0.2064	0.7665	
+22,24		30/40		0.0060	0.1162	0.8778	Priority w Ghost Island (5 Arm)		
+21,23		>40		0.0271	0.2064	0.7665	
+26,28		30/40		0.0072	0.1240	0.8688	Priority w Single Lane Dualling (3 Arm)	
+25,27		>40		0.0243	0.1883	0.7874	
+30,32		30/40		0.0060	0.1162	0.8778	Priority w Single Lane Dualling (4 Arm)	
+29,31		>40		0.0271	0.2064	0.7665	
+34,36		30/40		0.0060	0.1162	0.8778	Priority w Single Lane Dualling (5 Arm)	
+33,35		>40		0.0271	0.2064	0.7665	
+38,40		30/40		0.0060	0.1066	0.8874	Traffic Signals	(3 Arm)			
+37,39		>40		0.0092	0.1171	0.8737	
+42,44		30/40		0.0060	0.1069	0.8871	Traffic Signals	(4 Arm)			
+41,43		>40		0.0088	0.1153	0.8759	
+46,48		30/40		0.0060	0.1069	0.8871	Traffic Signals	(5 Arm)			
+45,47		>40		0.0088	0.1153	0.8759	
+50,52		30/40		0.0027	0.0746	0.9227	Roundabouts (Standard, 3 Arm)		
+49,51		>40		0.0056	0.0912	0.9032	
+54,56		30/40		0.0027	0.0746	0.9227	Roundabouts (Standard, 4 Arm)		
+53,55		>40		0.0056	0.0912	0.9032	
+58,60		30/40		0.0027	0.0746	0.9227	Roundabouts (Standard, 5/6 Arm)		
+57,59		>40		0.0056	0.0912	0.9032	
+62,64		30/40		0.0027	0.0746	0.9227	Roundabouts (Small, 3 Arm)		
+61,63		>40		0.0056	0.0912	0.9032	
+66,68		30/40		0.0027	0.0746	0.9227	Roundabouts (Small, 4 Arm)		
+65,67		>40		0.0056	0.0912	0.9032	
+70,72		30/40		0.0027	0.0746	0.9227	Roundabouts (Small, 5/6 Arm)		
+69,71		>40		0.0056	0.0912	0.9032	
+74,76		30/40		0.0028	0.0868	0.9104	Roundabout (Mini, 3 Arm)		
+73,75		>40		0.0056	0.0912	0.9032	
+78,80		30/40		0.0028	0.0868	0.9104	Roundabout (Mini, 4 Arm)		
+77,79		>40		0.0056	0.0912	0.9032	
+82,84		30/40		0.0028	0.0868	0.9104	Roundabout (Mini, 5/6 Arm)		
+81,83		>40		0.0056	0.0912	0.9032	
+86,88		30/40		0.0031	0.0643	0.9326	Roundabouts (Signalised, 3 Arm)		
+85,87		>40		0.0039	0.0624	0.9337	
+90,92		30/40		0.0031	0.0643	0.9326	Roundabouts (Signalised, 4 Arm)		
+89,91		>40		0.0039	0.0624	0.9337	
+94,96		30/40		0.0031	0.0643	0.9326	Roundabouts (Signalised, 5/6 Arm)	
+93,95		>40		0.0039	0.0624	0.9337	
+
+Link Only Accident Rates and Change Factors
+Base Year
+2009
+Road		Speed Limit	Accident	Beta	Road Description
+Type		(mph)		Rate		Factor
+1		50/60/70	0.063		0.956	Motorways		
+2		50/60/70	0.063		0.956	Motorways		
+3		50/60/70	0.075		0.956	Motorways		
+4		30/40		0.175		0.964	Modern S2 Roads		
+4		>40		0.143		0.958	Modern S2 Roads		
+5		30/40		0.175		0.964	Modern S2 Roads with HS	
+5		>40		0.143		0.958	Modern S2 Roads with HS	
+6		30/40		0.206		0.964	Modern WS2 Roads	
+6		>40		0.082		0.958	Modern WS2 Roads	
+7		30/40		0.206		0.964	Modern WS2 Roads with HS		
+7		>40		0.082		0.958	Modern WS2 Roads with HS		
+8		30/40		0.206		0.964	Older S2 A Roads	
+8		>40		0.143		0.958	Older S2 A Roads	
+9		30/40		0.195		0.957	Other S2 Roads		
+9		>40		0.163		0.935	Other S2 Roads		
+10		30/40		0.148		0.965	Modern D2 Roads		
+10		>40		0.077		0.960	Modern D2 Roads		
+11		30/40		0.154		0.965	Modern D2 Roads with HS	
+11		>40		0.059		0.960	Modern D2 Roads with HS		
+12		30/40		0.154		0.965	Older D2 Roads		
+12		>40		0.077		0.960	Older D2 Roads			
+13		30/40		0.184		0.949	Modern D3+ Roads	
+13		>40		0.101		0.956	Modern D3+ Roads	
+14		30/40		0.184		0.949	Modern D3+ Roads with HS		
+14		>40		0.101		0.956	Modern D3+ Roads with HS	
+15		30/40		0.184		0.949	Older D3+ Roads		
+15		>40		0.101		0.956	Older D3+ Roads				
+
+Link and Junction Combined Accident Rates and Change Factors
+Base Year
+2009
+Road		Speed Limit	Accident	Beta	Road Description		
+Type		(mph)		Rate		Factor
+1		50/60/70	0.080		0.956	Motorways		
+2		50/60/70	0.067		0.956	Motorways		
+3		50/60/70	0.079		0.956	Motorways		
+4		30/40		0.532		0.959	Modern S2 Roads		
+4		>40		0.244		0.955	Modern S2 Roads		
+5		30/40		0.532		0.959	Modern S2 Roads with HS	
+5		>40		0.244		0.955	Modern S2 Roads with HS	
+6		30/40		0.863		0.959	Modern WS2 Roads	
+6		>40		0.163		0.955	Modern WS2 Roads	
+7		30/40		0.863		0.959	Modern WS2 Roads w. HS	
+7		>40		0.163		0.955	Modern WS2 Roads w. HS	
+8		30/40		0.863		0.959	Older S2 A Roads	
+8		>40		0.244		0.955	Older S2 A Roads	
+9		30/40		0.559		0.951	Other S2 Roads		
+9		>40		0.233		0.933	Other S2 Roads		
+10		30/40		0.553		0.967	Modern D2 Roads		
+10		>40		0.107		0.956	Modern D2 Roads		
+11		30/40		0.599		0.967	Modern D2 Roads with HS	
+11		>40		0.072		0.956	Modern D2 Roads with HS	
+12		30/40		0.599		0.967	Older D2 Roads		
+12		>40		0.107		0.956	Older D2 Roads		
+13		30/40		0.620		0.951	Modern D3+ Roads	
+13		>40		0.123		0.946	Modern D3+ Roads	
+14		30/40		0.620		0.951	Modern D3+ Roads w. HS	
+14		>40		0.123		0.946	Modern D3+ Roads w. HS	
+15		30/40		0.620		0.951	Older D3+ Roads		
+15		>40		0.123		0.946	Older D3+ Roads		
+
+Link Only and Link and Junction Combined Accident Beta Factor Changes over Time
+Range of Years	Change to Beta Factor
+2004-2019	1
+2020-2029	0.5
+2030-2039	0.25
+2040+		0
+
+Link Only Casualty Rates
+Base Year
+2009
+Road Type	Speed Limit	Casualties per P.I.A.	Road Description
+		(mph)		Fatal	Serious	Slight
+1-3		50/60/70	0.0210	0.1290	1.464	Motorways		
+4-8		30/40		0.0150	0.1620	1.154	S2 A Roads		
+4-8		>40		0.0520	0.2740	1.251	S2 A Roads		
+9		30/40		0.0100	0.1560	1.071	Other S2 Roads		
+9		>40		0.0280	0.2300	1.178	Other S2 Roads		
+10-15		30/40		0.0180	0.1480	1.183	Dual Carriageways	
+10-15		>40		0.0310	0.1610	1.328	Dual Carriageways	
+
+Link and Junction Combined Casualty Rates
+Base Year
+2009
+Road Type	Speed Limit	Casualties per P.I.A.	Road Description
+		(mph)		Fatal	Serious	Slight
+1-3		50/60/70	0.0200	0.1230	1.455	Motorways		
+4-8		30/40		0.0090	0.1320	1.176	S2 A Roads		
+4-8		>40		0.0380	0.2380	1.300	S2 A Roads		
+9		30/40		0.0070	0.1340	1.132	Other S2 Roads		
+9		>40		0.0260	0.2220	1.218	Other S2 Roads		
+10-15		30/40		0.0090	0.1120	1.238	Dual Carriageways	
+10-15		>40		0.0250	0.1510	1.297	Dual Carriageways	
+
+Link Only Casualty Change Factors
+Base Year
+2009
+Road Type	Speed Limit	Beta Factor		Road Description
+		(mph)		Fatal	Serious	Slight
+1-3		50/60/70	0.978	0.979	1.002	Motorways		
+4-8		30/40		0.971	0.995	1.001	S2 A Roads		
+4-8		>40		0.979	0.983	1.002	S2 A Roads		
+9		30/40		0.985	0.997	1.001	Other S2 Roads		
+9		>40		0.987	0.989	0.998	Other S2 Roads		
+10-15		30/40		0.998	0.990	1.002	Dual Carriageways	
+10-15		>40		0.984	0.985	0.998	Dual Carriageways	
+
+Link and Junction Combined Casualty Change Factors
+Base Year
+2009
+Road Type	Speed Limit	Beta Factor		Road Description
+		(mph)		Fatal	Serious	Slight
+1-3		50/60/70	0.978	0.979	1.002	Motorways		
+4-8		30/40		0.971	0.995	1.001	S2 A Roads		
+4-8		>40		0.979	0.983	1.002	S2 A Roads		
+9		30/40		0.985	0.997	1.001	Other S2 Roads		
+9		>40		0.987	0.989	0.998	Other S2 Roads		
+10-15		30/40		0.998	0.990	1.002	Dual Carriageways	
+10-15		>40		0.984	0.985	0.998	Dual Carriageways	
+
+Link Only and Link and Junction Combined Casualty Beta Factor Changes over Time
+Range of Years	Change to Beta Factor
+1995-2019	1
+2020+		0
+
+Junction Only Accident Parameters
+Base Year
+1997
+Junction	Speed Limit	Coeffiecient	Power	Arms	Highest		Formula	Junction Description		
+Type		(mph)		'a'		'b'		Link (S/D)	Type
+1		>40		0.195		0.460	3	S		C	Priority			
+2		20/30/40	0.195		0.460	3	S		C	Priority			
+3		>40		0.195		0.460	3	D		C	Priority			
+4		20/30/40	0.195		0.460	3	D		C	Priority			
+5		>40		0.361		0.440	4	S		I	Priority			
+6		20/30/40	0.361		0.440	4	S		I	Priority			
+7		>40		0.240		0.710	4	D		C	Priority			
+8		20/30/40	0.240		0.710	4	D		C	Priority			
+9		>40		0.361		0.440	5	S		I	Priority			
+10		20/30/40	0.361		0.440	5	S		I	Priority			
+11		>40		0.361		0.440	5	D		I	Priority			
+12		20/30/40	0.361		0.440	5	D		I	Priority			
+13		>40		0.195		0.460	3	S		C	Priority w Ghost Island		
+14		20/30/40	0.195		0.460	3	S		C	Priority w Ghost Island
+15		>40		0.195		0.460	3	D		C	Priority w Ghost Island
+16		20/30/40	0.195		0.460	3	D		C	Priority w Ghost Island
+17		>40		0.361		0.440	4	S		I	Priority w Ghost Island
+18		20/30/40	0.361		0.440	4	S		I	Priority w Ghost Island
+19		>40		0.240		0.710	4	D		C	Priority w Ghost Island
+20		20/30/40	0.240		0.710	4	D		C	Priority w Ghost Island
+21		>40		0.361		0.440	5	S		I	Priority w Ghost Island
+22		20/30/40	0.361		0.440	5	S		I	Priority w Ghost Island
+23		>40		0.361		0.440	5	D		I	Priority w Ghost Island
+24		20/30/40	0.361		0.440	5	D		I	Priority w Ghost Island
+25		>40		0.195		0.460	3	S		C	Priority w Single Lane Dualling	
+26		20/30/40	0.195		0.460	3	S		C	Priority w Single Lane Dualling	
+27		>40		0.195		0.460	3	D		C	Priority w Single Lane Dualling	
+28		20/30/40	0.195		0.460	3	D		C	Priority w Single Lane Dualling	
+29		>40		0.361		0.440	4	S		I	Priority w Single Lane Dualling	
+30		20/30/40	0.361		0.440	4	S		I	Priority w Single Lane Dualling	
+31		>40		0.240		0.710	4	D		C	Priority w Single Lane Dualling	
+32		20/30/40	0.240		0.710	4	D		C	Priority w Single Lane Dualling	
+33		>40		0.361		0.440	5	S		I	Priority w Single Lane Dualling	
+34		20/30/40	0.361		0.440	5	S		I	Priority w Single Lane Dualling	
+35		>40		0.361		0.440	5	D		I	Priority w Single Lane Dualling	
+36		20/30/40	0.361		0.440	5	D		I	Priority w Single Lane Dualling	
+37		>40		0.223		0.610	3	S		I	Signals				
+38		20/30/40	0.223		0.610	3	S		I	Signals				
+39		>40		0.494		0.420	3	D		C	Signals				
+40		20/30/40	0.291		0.510	3	D		C	Signals				
+41		>40		1.378		0.200	4	S		C	Signals				
+42		20/30/40	1.378		0.200	4	S		C	Signals				
+43		>40		0.494		0.420	4	D		C	Signals				
+44		20/30/40	0.291		0.510	4	D		C	Signals				
+45		>40		0.254		0.620	5/6	S		I	Signals				
+46		20/30/40	0.254		0.620	5/6	S		I	Signals				
+47		>40		0.238		0.850	5/6	D		I	Signals				
+48		20/30/40	0.160		0.970	5/6	D		I	Signals				
+49		>40		0.033		0.760	3	S		C	Roundabouts (Standard)		
+50		20/30/40	0.033		0.760	3	S		C	Roundabouts (Standard)		
+51		>40		0.033		0.760	3	D		C	Roundabouts (Standard)		
+52		20/30/40	0.033		0.760	3	D		C	Roundabouts (Standard)		
+53		>40		0.024		0.890	4	S		C	Roundabouts (Standard)		
+54		20/30/40	0.048		0.740	4	S		C	Roundabouts (Standard)		
+55		>40		0.063		0.690	4	D		C	Roundabouts (Standard)		
+56		20/30/40	0.022		0.850	4	D		C	Roundabouts (Standard)		
+57		>40		0.007		1.770	5/6	S		I	Roundabouts (Standard)		
+58		20/30/40	0.014		1.530	5/6	S		I	Roundabouts (Standard)		
+59		>40		0.019		1.420	5/6	D		I	Roundabouts (Standard)		
+60		20/30/40	0.006		1.730	5/6	D		I	Roundabouts (Standard)		
+61		>40		0.033		0.760	3	S		C	Roundabouts (Small)		
+62		20/30/40	0.033		0.760	3	S		C	Roundabouts (Small)		
+63		>40		0.033		0.760	3	D		C	Roundabouts (Small)		
+64		20/30/40	0.033		0.760	3	D		C	Roundabouts (Small)		
+65		>40		0.101		0.660	4	S		C	Roundabouts (Small)		
+66		20/30/40	0.263		0.540	4	S		C	Roundabouts (Small)		
+67		>40		0.101		0.660	4	D		C	Roundabouts (Small)		
+68		20/30/40	0.263		0.540	4	D		C	Roundabouts (Small)		
+69		>40		0.044		1.280	5/6	S		I	Roundabouts (Small)		
+70		20/30/40	0.095		1.140	5/6	S		I	Roundabouts (Small)		
+71		>40		0.044		1.280	5/6	D		I	Roundabouts (Small)		
+72		20/30/40	0.095		1.140	5/6	D		I	Roundabouts (Small)		
+73		>40		0.012		1.040	3	S		C	Roundabouts (Mini)		
+74		20/30/40	0.012		1.040	3	S		C	Roundabouts (Mini)		
+75		>40		0.012		1.040	3	D		C	Roundabouts (Mini)		
+76		20/30/40	0.012		1.040	3	D		C	Roundabouts (Mini)		
+77		>40		0.070		0.640	4	S		C	Roundabouts (Mini)		
+78		20/30/40	0.070		0.640	4	S		C	Roundabouts (Mini)		
+79		>40		0.070		0.640	4	D		C	Roundabouts (Mini)		
+80		20/30/40	0.070		0.640	4	D		C	Roundabouts (Mini)		
+81		>40		0.013		1.470	5/6	S		I	Roundabouts (Mini)		
+82		20/30/40	0.013		1.470	5/6	S		I	Roundabouts (Mini)		
+83		>40		0.013		1.470	5/6	D		I	Roundabouts (Mini)		
+84		20/30/40	0.013		1.470	5/6	D		I	Roundabouts (Mini)		
+85		>40		0.033		0.760	3	S		C	Roundabouts (Signalled)		
+86		20/30/40	0.033		0.760	3	S		C	Roundabouts (Signalled)		
+87		>40		0.033		0.760	3	D		C	Roundabouts (Signalled)		
+88		20/30/40	0.033		0.760	3	D		C	Roundabouts (Signalled)		
+89		>40		0.024		0.890	4	S		C	Roundabouts (Signalled)		
+90		20/30/40	0.048		0.740	4	S		C	Roundabouts (Signalled)		
+91		>40		0.063		0.690	4	D		C	Roundabouts (Signalled)		
+92		20/30/40	0.022		0.850	4	D		C	Roundabouts (Signalled)		
+93		>40		0.007		1.770	5/6	S		I	Roundabouts (Signalled)		
+94		20/30/40	0.014		1.530	5/6	S		I	Roundabouts (Signalled)		
+95		>40		0.019		1.420	5/6	D		I	Roundabouts (Signalled)		
+96		20/30/40	0.006		1.730	5/6	D		I	Roundabouts (Signalled)		
+
+Junction Only Accident Change Factors
+Base Year
+2000
+Classification	Speed Limit	Beta
+		(mph)		Factor
+Major		20/30/40	0.991
+Major		>40		0.984
+Minor		20/30/40	0.976
+Minor		>40		0.996
+
+Junction Only Accident Beta Factor Changes over Time
+Range of Years	Change to Beta Factor
+1995-2010	1
+2011-2020	0.5
+2021-2030	0.25
+2031+		0
+
+Junction Only Casualty Rates
+Base Year
+2000
+Junction Type	Casualties per P.I.A.
+		Fatal	Serious	Slight
+1		0.0265	0.2413	1.355
+2		0.0075	0.1350	1.144
+3		0.0265	0.2413	1.355
+4		0.0075	0.1350	1.144
+5		0.0295	0.2793	1.459
+6		0.0062	0.1292	1.244
+7		0.0295	0.2793	1.459
+8		0.0062	0.1292	1.244
+9		0.0295	0.2793	1.459
+10		0.0062	0.1292	1.244
+11		0.0295	0.2793	1.459
+12		0.0062	0.1292	1.244
+13		0.0265	0.2413	1.355
+14		0.0075	0.1350	1.144
+15		0.0265	0.2413	1.355
+16		0.0075	0.1350	1.144
+17		0.0295	0.2793	1.459
+18		0.0062	0.1292	1.244
+19		0.0295	0.2793	1.459
+20		0.0062	0.1292	1.244
+21		0.0295	0.2793	1.459
+22		0.0062	0.1292	1.244
+23		0.0295	0.2793	1.459
+24		0.0062	0.1292	1.244
+25		0.0265	0.2413	1.355
+26		0.0075	0.1350	1.144
+27		0.0265	0.2413	1.355
+28		0.0075	0.1350	1.144
+29		0.0295	0.2793	1.459
+30		0.0062	0.1292	1.244
+31		0.0295	0.2793	1.459
+32		0.0062	0.1292	1.244
+33		0.0295	0.2793	1.459
+34		0.0062	0.1292	1.244
+35		0.0295	0.2793	1.459
+36		0.0062	0.1292	1.244
+37		0.0092	0.1631	1.444
+38		0.0064	0.1157	1.214
+39		0.0092	0.1631	1.444
+40		0.0064	0.1157	1.214
+41		0.0095	0.1423	1.467
+42		0.0061	0.1177	1.253
+43		0.0095	0.1423	1.467
+44		0.0061	0.1177	1.253
+45		0.0095	0.1423	1.467
+46		0.0061	0.1177	1.253
+47		0.0095	0.1423	1.467
+48		0.0061	0.1177	1.253
+49		0.0060	0.1019	1.214
+50		0.0027	0.0806	1.163
+51		0.0060	0.1019	1.214
+52		0.0027	0.0806	1.163
+53		0.0060	0.1019	1.214
+54		0.0027	0.0806	1.163
+55		0.0060	0.1019	1.214
+56		0.0027	0.0806	1.163
+57		0.0060	0.1019	1.214
+58		0.0027	0.0806	1.163
+59		0.0060	0.1019	1.214
+60		0.0027	0.0806	1.163
+61		0.0060	0.1019	1.214
+62		0.0027	0.0806	1.163
+63		0.0060	0.1019	1.214
+64		0.0027	0.0806	1.163
+65		0.0060	0.1019	1.214
+66		0.0027	0.0806	1.163
+67		0.0060	0.1019	1.214
+68		0.0027	0.0806	1.163
+69		0.0060	0.1019	1.214
+70		0.0027	0.0806	1.163
+71		0.0060	0.1019	1.214
+72		0.0027	0.0806	1.163
+73		0.0060	0.1019	1.214
+74		0.0028	0.0965	1.182
+75		0.0060	0.1019	1.214
+76		0.0028	0.0965	1.182
+77		0.0060	0.1019	1.214
+78		0.0028	0.0965	1.182
+79		0.0060	0.1019	1.214
+80		0.0028	0.0965	1.182
+81		0.0060	0.1019	1.214
+82		0.0028	0.0965	1.182
+83		0.0060	0.1019	1.214
+84		0.0028	0.0965	1.182
+85		0.0039	0.0703	1.258
+86		0.0031	0.0705	1.221
+87		0.0039	0.0703	1.258
+88		0.0031	0.0705	1.221
+89		0.0039	0.0703	1.258
+90		0.0031	0.0705	1.221
+91		0.0039	0.0703	1.258
+92		0.0031	0.0705	1.221
+93		0.0039	0.0703	1.258
+94		0.0031	0.0705	1.221
+95		0.0039	0.0703	1.258
+96		0.0031	0.0705	1.221
+
+Junction Only Casualty Change Factors
+Base Year
+2000
+Classification	Speed Limit	Beta Factor
+		(mph)		Fatal	Serious	Slight
+Major		20/30/40	0.949	0.962	1.010
+Major		>40		0.961	0.959	1.011
+Minor		20/30/40	0.968	0.958	1.006
+Minor		>40		0.976	0.972	1.011
+
+Junction Only Casualty Beta Factor Changes over Time
+Range of Years	Change to Beta Factor
+1995-2010	1
+2011+		0
