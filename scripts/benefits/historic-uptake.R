@@ -240,6 +240,16 @@ b_scheme$bcr = b_scheme$uptake / (b_scheme$costTotal / 1000)
 summary(b_scheme$bcr)
 qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend...
 
+# next steps
+# 1. Length of exposure by Type of infra: Cycle track (off road), Cycle Lane, Cycle street (on road)
+# 2. Hilliness 3. Distance (before/after: for phase)
+# 4. Add change in n. commutes
+# 5. Background
+# Gender and age of origin
+# Backgroud level of cycling
+
+
+
 # communicate:
 # file.copy("scripts/benefits/historic-uptake.R", "./", overwrite = T)
 # knitr::spin("historic-uptake.R")
