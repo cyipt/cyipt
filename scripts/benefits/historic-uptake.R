@@ -167,17 +167,17 @@ line_exposure = function(rf_b, old_infra) {
     length_on_road = rep(0, n_lines),
     length_off_road = rep(0, n_lines),
     years_complete = rep(0, n_lines)
-                         )
+  )
   for(i in seq_len(n_lines)) {
     # res$id[i] = rf_b$id[i]
     if(length(sel_infra[[i]]) == 0) {
       next()
     } else {
       # res$id[i] = rf_b$id[i]
-    intersection = st_intersection(old_infra[sel_infra[[i]], ], rf_b$geometry[i])
-    res$length_on_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "t", ])))
-    res$length_off_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "f", ])))
-    res$years_complete[i] = mean(intersection$years_complete)
+      intersection = st_intersection(old_infra[sel_infra[[i]], ], rf_b$geometry[i])
+      res$length_on_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "t", ])))
+      res$length_off_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "f", ])))
+      res$years_complete[i] = mean(intersection$years_complete)
     }
   }
   res
@@ -185,9 +185,13 @@ line_exposure = function(rf_b, old_infra) {
 res_exp = line_exposure(rf_b, old_infra)
 summary(res_exp)
 res_prop = res_exp %>%
-  mutate(length_on_road = length_on_road / l$dist, length_off_road = length_off_road / l$dist)
-l$id = paste(l$o, l$d)
-l_new = left_join(l, res_prop)
+  mutate(length_on_road = length_on_road / l$dist, length_off_road = length_off_road / l$dist) / 1000
+summary(res_prop)
+# l$id = paste(l$o, l$d)
+l_new = l
+l_new$length_on_road = res_prop$length_on_road
+l_new$length_off_road = res_prop$length_off_road
+l_new$years_complete = res_prop$years_complete
 summary(l_new)
 m = lm(p_uptake ~ dist + length_on_road + length_off_road + years_complete, l_new, weights = all11)
 p = (predict(m, l_new) + l$pcycle01) * l$all11
