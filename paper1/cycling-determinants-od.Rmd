@@ -1,18 +1,19 @@
 ---
 title: 'Estimating the determinants of cycling: from area to road network levels'
 author:
-  - name: Alice Anonymous
-    email: alice@example.com
-    affiliation: Some Institute of Technology
-    corresponding: alice@example.com
-  - name: Bob Security
-    email: bob@example.com
-    affiliation: Another University
+  - name: Robin Lovelace
+    email: r.lovelace@leeds.ac.uk
+    affiliation: University of Leeds
+    corresponding: r.lovelace@leeds.ac.uk
+  - name: Malcolm Morgan
+    affiliation: University of Leeds
+  - name: John Parkin
+    affiliation: University of the West of England
 address:
-  - code: Some Institute of Technology
-    address: Department, Street, City, State, Zip
+  - code: University of Leeds
+    address: Institute for Transport Studies (ITS), 34-40 University Road, University of Leeds, Leeds LS2 9JT, United Kingdom 
   - code: Another University
-    address: Department, Street, City, State, Zip
+    address: Centre for Transport and Society, University of the West of England, Frenchay Campus, Coldharbour Lane, Bristol, BS16 1QY
 abstract: |
   Background: It is important to model the determinants of mode choice for many health-related reasons: to find-out what is holding people back from healthy active travel choices, to understand the drivers of detrimental car dependency, and to identify the causal factors over which public authorities have some control. Another motivation is that model results could feed-into forecasts of behaviour change following specific interventions. Numerous papers have explored the issue but few have been able to provide results that can feed-into models forecasting uptake following local interventions for a number of reasons including small sample size, lack of a temporal component, and use of explanatory variables that cannot easily be applied beyond the case study region. This gap in the literature was identified and tackled as part of a UK Department for Transport funded project to develop a Cycling Infrastructure Prioritisation Toolkit (CyIPT). 
   
@@ -21,26 +22,54 @@ abstract: |
   Results: Preliminary results show a clear infrastructure signal in the noise surrounding mode choice but other factors seem to be at play. Further research over the coming months will seek to improve the model and our resulting ability to forecast uptake at the local level from specific interventions.
   
   Conclusions: Newly available data, combined with emerging high performance and open source statistical software, mean that large natural experiments on the impact of new infrastructure on mode choice can now be performed at the national level using geographically detailed data at the origin-destination level. This has the potential to make the prioritisation of new infrastructure much more evidence-based and holds the promise of allowing a-priori benefit-cost estimates to be automated to support transport planners to enable a rapid transition away from fossil fuels and towards healthy travel patterns across the world, in urban and rural areas alike.
-  
-author_summary: |
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id. Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
 
-bibliography: mybibfile.bib
-output: rticles::plos_article
-csl: plos.csl
+bibliography: /home/robin/allrefs.bib
+output:
+  rticles::elsevier_article:
+        number_sections: yes
 ---
 
-_Text based on plos sample manuscript, see [http://journals.plos.org/ploscompbiol/s/latex](http://journals.plos.org/ploscompbiol/s/latex)_
+# Preliminary info {-}
+
+- Target journal: transport and health: 
+- "3000–6000 words"
 
 # Introduction
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id. Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
+- Policy context and need
 
-A list
+- The fact it builds on the PCT [@lovelace_propensity_2017]
 
-- Item 1
-- Item 2
+- Natural experiments with before/after [@heinen_changes_2015] [@prins_causal_2016]
+    
+- Impact on safety: [@reynolds_impact_2009]
 
-Here are two sample references: @Feynman1963118 [@Dirac1953888].
+- Categorisations of research into cycling/infrastructure relationship. Target group / trip type (commuting) / dependent variable / geographic level (person, area, school - suggested) - table
+
+
+
+## Area-level studies
+
+[@parkin_estimation_2008]
+
+## Organisational level studies
+
+## Individual-level studies
+
+- [@heinen_does_2017; @heinen_role_2011]
+    
+
+# Data and methods
+
+# Computation
+
+The method described in the previous section was implemented in the statistical programming language R [@rcoreteam_language_2017].
+
+- Description of the historic uptake script
+- Rerunning with different parameters for sensitivity tests
+
+# Results
+
+# Conclusions
 
 # References {#references .unnumbered}
