@@ -1,0 +1,357 @@
+"Existing","Recommended","onewaysummary","Change","costperm"
+"Main Road - Cycling Allowed 0 no no 0","None","Two Way","no change",0
+"Minor Road - Cycling Allowed 0 no no 0","None","Two Way","no change",0
+"Trunk Road - Cycling Allowed 0 no no 0","None","Two Way","no change",0
+"Trunk Road - Cycling Allowed 0 no no 0","None","One Way","no change",0
+"Residential Road - Cycling Allowed 0 no no 0","None","Two Way","no change",0
+"motorway - Cycling Forbidden 0 no no 0","None","One Way","no change",0
+"Shared Path 0 no no 0","None","Not Applicable","no change",0
+"Minor Road - Cycling Allowed 0 no no 0","None","One Way","no change",0
+"motorway_link - Cycling Forbidden 0 no no 0","None","One Way","no change",0
+"Residential Road - Cycling Allowed 0 no no 0","None","One Way","no change",0
+"Main Road - Cycling Allowed 0 no no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 0 no no 0","None","One Way","no change",0
+"Main Road - Cycling Allowed 0 no no 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Main Road - Cycling Allowed 1 share_busway no 0","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Main Road - Cycling Allowed 0 no no 0","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Trunk Road - Cycling Allowed 0 no no 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Main Road Link - Cycling Allowed 0 no no 0","None","One Way","no change",0
+"Residential Road - Cycling Allowed 0 no no 0","Cycle Lanes","Two Way","upgrade (both sides)",460
+"Minor Road - Cycling Allowed 0 no no 0","Cycle Street","Two Way","upgrade (both sides)",15
+"Minor Road - Cycling Allowed 0 lane no 0","None","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 0 lane no 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"Trunk Road Link - Cycling Allowed 0 no no 0","None","One Way","no change",0
+"Main Road - Cycling Allowed 0 no no 0","Cycle Lanes","Two Way","upgrade (both sides)",460
+"Minor Road - Cycling Allowed 0 no no 0","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Main Road - Cycling Allowed 0 no no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Cycleway 0 no no 0","Segregated Cycle Track on Path","Two Way","upgrade",190
+"Cycleway 0 no no 0","Cycle Lane on Path","Two Way","no change",0
+"Minor Road - Cycling Allowed 0 no no 0","Cycle Street","One Way","upgrade (one side)",15
+"Main Road - Cycling Allowed 0 lane lane 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 0 no no 0","Cycle Lanes","One Way","upgrade (one side)",180
+"Main Road Link - Cycling Allowed 0 no no 0","Cycle Lanes","One Way","upgrade (one side)",180
+"Trunk Road Link - Cycling Allowed 0 no no 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Main Road - Cycling Allowed 0 lane lane 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Residential Road - Cycling Allowed 0 no no 0","Cycle Street","Two Way","upgrade (both sides)",15
+"Main Road - Cycling Allowed 0 no no 0","Cycle Street","Two Way","upgrade (both sides)",15
+"Main Road - Cycling Allowed 0 no lane 0","None","One Way","downgrade",0
+"Trunk Road Link - Cycling Allowed 0 lane no 0","None","One Way","downgrade",0
+"Trunk Road Link - Cycling Allowed 0 no no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Minor Road - Cycling Allowed 0 no no 0","Cycle Lanes","Two Way","upgrade (both sides)",460
+"Trunk Road - Cycling Allowed 0 no no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Trunk Road - Cycling Allowed 0 no no 0","Cycle Lanes","One Way","upgrade (one side)",180
+"Trunk Road - Cycling Allowed 0 no no 0","Cycle Street","One Way","upgrade (one side)",15
+"Minor Road - Cycling Allowed 1 share_busway no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Minor Road - Cycling Allowed 1 share_busway no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Main Road - Cycling Allowed 0 no share_busway 1","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Minor Road - Cycling Allowed 0 no lane 0","Cycle Street","One Way - Two Way Cycling","upgrade (one side)",15
+"Residential Road - Cycling Allowed 0 no no 0","Cycle Lanes","One Way","upgrade (one side)",180
+"Main Road - Cycling Allowed 0 lane lane 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 1 share_busway share_busway 1","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Minor Road - Cycling Allowed 0 no lane 0","Cycle Street","One Way","upgrade (one side)",15
+"Trunk Road - Cycling Allowed 0 no no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 0 no share_busway 1","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Cycleway 0 no no 0","None","Two Way","no change",0
+"Minor Road - Cycling Allowed 0 lane lane 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane no 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 no share_busway 1","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane lane 0","None","One Way","downgrade",0
+"Minor Road - Cycling Allowed 1 share_busway no 0","None","One Way","downgrade",0
+"Main Road Link - Cycling Allowed 0 lane lane 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane no 0","Cycle Street","Two Way","upgrade (one side)",15
+"Main Road - Cycling Allowed 0 no no 0","Cycle Street","One Way","upgrade (one side)",15
+"Main Road - Cycling Allowed 1 share_busway no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Minor Road - Cycling Allowed 0 no no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Minor Road - Cycling Allowed 0 no no 0","Cycle Lanes","One Way","upgrade (one side)",180
+"Main Road - Cycling Allowed 0 no no 0","Cycle Lanes with light segregation","Two Way","upgrade (both sides)",740
+"Main Road - Cycling Allowed 0 lane no 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"Segregated Cycleway 0 no no 0","None","Two Way","no change",0
+"Path - Cycling Forbidden 0 no no 0","None","Not Applicable","no change",0
+"Main Road - Cycling Allowed 0 lane no 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane lane 0","None","One Way - Two Way Cycling","downgrade",0
+"Minor Road - Cycling Allowed 0 no lane 0","None","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 0 no no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Path - Cycling Forbidden 0 no no 0","Cycle Lane on Path","Not Applicable","upgrade",140
+"Segregated Cycleway 0 no no 0","Segregated Cycle Track on Path","Two Way","no change",0
+"Minor Road - Cycling Allowed 1 share_busway lane 0","Cycle Street","One Way","no change",0
+"Main Road - Cycling Allowed 1 share_busway no 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"Cycleway 0 no no 0","Cycle Lane on Path","One Way","no change",0
+"Shared Path 0 no no 0","Cycle Lane on Path","Not Applicable","upgrade",140
+"Trunk Road Link - Cycling Allowed 0 no lane 0","None","One Way","downgrade",0
+"Residential Road - Cycling Allowed 0 no no 0","Cycle Street","One Way","upgrade (one side)",15
+"Living Street 0 no no 0","None","Two Way","no change",0
+"Segregated Cycleway 0 no no 0","Cycle Lane on Path","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 1 share_busway no 0","Cycle Street","One Way","no change",0
+"Residential Road - Cycling Allowed 0 no lane 0","None","One Way","downgrade",0
+"Residential Road - Cycling Allowed 1 share_busway no 0","None","One Way","downgrade",0
+"Minor Road - Cycling Allowed 0 no lane 0","None","One Way - Two Way Cycling","downgrade",0
+"Minor Road - Cycling Allowed 1 share_busway no 0","Cycle Street","Two Way","upgrade (one side)",15
+"Residential Road - Cycling Allowed 0 no lane 0","Cycle Street","One Way - Two Way Cycling","upgrade (one side)",15
+"Living Street 0 no lane 0","None","One Way","downgrade",0
+"Trunk Road - Cycling Allowed 1 share_busway no 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Trunk Road - Cycling Allowed 0 no no 0","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Cycleway 0 no no 0","None","One Way","no change",0
+"Trunk Road Link - Cycling Allowed 0 no no 0","None","Two Way","no change",0
+"Trunk Road - Cycling Allowed 0 track track 0","None","Two Way","downgrade",0
+"Segregated Shared Path 0 no no 0","None","Not Applicable","no change",0
+"Main Road - Cycling Allowed 1 share_busway no 0","None","One Way","downgrade",0
+"Minor Road - Cycling Allowed 0 track track 0","None","Two Way","downgrade",0
+"Residential Road - Cycling Allowed 0 no lane 0","Cycle Street","Two Way","upgrade (one side)",15
+"Segregated Shared Path 0 no no 0","Cycle Lane on Path","Not Applicable","downgrade",0
+"Residential Road - Cycling Allowed 0 no lane 0","None","One Way - Two Way Cycling","downgrade",0
+"Living Street 0 no no 0","Cycle Street","Two Way","no change",0
+"Residential Road - Cycling Allowed 0 no lane 0","Cycle Lanes","One Way","upgrade (one side)",180
+"Minor Road - Cycling Allowed 1 share_busway lane 0","None","One Way - Two Way Cycling","downgrade",0
+"Main Road - Cycling Allowed 0 no lane 0","Cycle Lanes","One Way","upgrade (one side)",180
+"Main Road Link - Cycling Allowed 0 no no 0","None","Two Way","no change",0
+"Residential Road - Cycling Allowed 0 no no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Minor Road - Cycling Allowed 0 no no 0","None","One Way - Two Way Cycling","no change",0
+"Minor Road - Cycling Allowed 0 no track 0","None","One Way","downgrade",0
+"Minor Road - Cycling Allowed 0 lane no 0","None","One Way","downgrade",0
+"Minor Road - Cycling Allowed 1 share_busway no 0","Cycle Lanes","One Way","no change",0
+"Main Road - Cycling Allowed 0 no no 0","Cycle Lanes with light segregation","One Way","upgrade (one side)",370
+"Minor Road - Cycling Allowed 1 share_busway no 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane lane 0","Cycle Street","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 no lane 0","None","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 0 no lane 0","None","One Way","downgrade",0
+"Residential Road - Cycling Allowed 0 no lane 0","Cycle Lanes","One Way - Two Way Cycling","upgrade (one side)",180
+"Trunk Road - Cycling Allowed 0 lane lane 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 no share_busway 1","None","One Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 no share_busway 1","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Trunk Road - Cycling Allowed 0 track track 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane lane 0","Cycle Lanes with light segregation","Two Way","upgrade (both sides)",740
+"Trunk Road - Cycling Allowed 1 share_busway no 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane lane 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Trunk Road - Cycling Allowed 0 lane lane 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Minor Road - Cycling Allowed 1 share_busway lane 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane no 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Main Road - Cycling Allowed 0 no share_busway 1","Cycle Street","Two Way","upgrade (one side)",15
+"Trunk Road - Cycling Allowed 1 share_busway no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Main Road - Cycling Allowed 1 share_busway no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 1 share_busway no 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 no lane 0","None","One Way - Two Way Cycling","downgrade",0
+"Main Road - Cycling Allowed 0 track track 0","Stepped Cycle Tracks","Two Way","no change",0
+"Residential Road - Cycling Allowed 1 share_busway no 0","None","Two Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 lane lane 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Minor Road - Cycling Allowed 0 lane lane 0","None","One Way","downgrade",0
+"Minor Road - Cycling Allowed 1 share_busway share_busway 1","Cycle Street","Two Way","downgrade",0
+"Residential Road - Cycling Allowed 0 track track 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane lane 0","Cycle Lanes","Two Way","no change",0
+"Main Road - Cycling Allowed 0 lane no 0","Cycle Lanes with light segregation","One Way","upgrade (one side)",370
+"Minor Road - Cycling Allowed 0 track track 0","None","One Way","downgrade",0
+"Trunk Road - Cycling Allowed 1 share_busway no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 0 lane no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Residential Road - Cycling Allowed 0 no lane 0","Cycle Street","One Way","upgrade (one side)",15
+"Trunk Road - Cycling Allowed 0 lane no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Trunk Road Link - Cycling Allowed 0 lane lane 0","None","One Way","downgrade",0
+"Segregated Cycleway 0 no no 0","None","One Way","no change",0
+"Trunk Road - Cycling Allowed 1 share_busway share_busway 1","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 no lane 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road Link - Cycling Allowed 0 no no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Main Road - Cycling Allowed 0 track track 0","None","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 0 lane lane 0","Cycle Lanes","Two Way","no change",0
+"Trunk Road - Cycling Allowed 0 lane lane 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Trunk Road Link - Cycling Allowed 0 no no 0","Cycle Lanes","One Way","upgrade (one side)",180
+"Minor Road - Cycling Allowed 0 no lane 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"Residential Road - Cycling Allowed 0 lane lane 0","None","One Way","downgrade",0
+"Residential Road - Cycling Allowed 0 lane lane 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 0 lane no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 0 no lane 0","Cycle Street","Two Way","upgrade (one side)",15
+"Main Road - Cycling Allowed 1 share_busway no 0","Cycle Lanes with light segregation","One Way","upgrade (one side)",370
+"Main Road - Cycling Allowed 1 share_busway no 0","Cycle Lanes","One Way","no change",0
+"Minor Road - Cycling Allowed 0 lane no 0","Cycle Street","Two Way","upgrade (one side)",15
+"Trunk Road Link - Cycling Allowed 1 share_busway no 0","None","One Way","downgrade",0
+"Residential Road - Cycling Allowed 0 lane lane 0","Cycle Lanes","One Way","no change",0
+"Residential Road - Cycling Allowed 0 lane lane 0","Cycle Lanes","Two Way","no change",0
+"Residential Road - Cycling Allowed 0 lane no 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"Residential Road - Cycling Allowed 0 no lane 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"Main Road - Cycling Allowed 0 no lane 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"Minor Road - Cycling Allowed 0 lane lane 0","Cycle Street","Two Way","downgrade",0
+"Segregated Cycleway 0 no no 0","Cycle Lane on Path","One Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 lane no 0","None","One Way","downgrade",0
+"Residential Road - Cycling Allowed 0 no no 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Minor Road - Cycling Allowed 0 no share_busway 1","None","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 0 no share_busway 1","None","One Way","downgrade",0
+"Shared Path 0 no no 0","Segregated Cycle Track on Path","Not Applicable","upgrade",190
+"Minor Road - Cycling Allowed 0 lane lane 0","Cycle Street","One Way","no change",0
+"Cycleway 0 no no 0","Segregated Cycle Track on Path","One Way","upgrade",190
+"Main Road - Cycling Allowed 1 share_busway lane 0","None","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 0 lane no 0","Cycle Lanes","One Way","no change",0
+"Path - Cycling Forbidden 0 no no 0","Segregated Cycle Track on Path","Not Applicable","upgrade",190
+"Main Road - Cycling Allowed 0 lane no 0","Cycle Street","One Way","no change",0
+"Trunk Road - Cycling Allowed 0 track track 0","Stepped Cycle Tracks","One Way","no change",0
+"Residential Road - Cycling Allowed 0 no track 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane lane 0","Cycle Lanes","One Way","no change",0
+"Minor Road - Cycling Allowed 0 no lane 0","Cycle Street","Two Way","upgrade (one side)",15
+"Residential Road - Cycling Allowed 1 share_busway lane 0","Cycle Lanes","One Way","no change",0
+"Residential Road - Cycling Allowed 1 share_busway lane 0","None","One Way","downgrade",0
+"Trunk Road - Cycling Allowed 1 share_busway no 0","Cycle Street","One Way","no change",0
+"Living Street 0 no no 0","None","One Way","no change",0
+"Minor Road - Cycling Allowed 1 share_busway lane 0","Cycle Street","One Way - Two Way Cycling","downgrade",0
+"Residential Road - Cycling Allowed 0 lane lane 0","Cycle Street","Two Way","downgrade",0
+"Residential Road - Cycling Allowed 0 no no 0","Cycle Lanes with light segregation","Two Way","upgrade (both sides)",740
+"Main Road Link - Cycling Allowed 0 no no 0","Cycle Lanes","Two Way","upgrade (both sides)",460
+"Residential Road - Cycling Allowed 0 no no 0","None","One Way - Two Way Cycling","no change",0
+"Residential Road - Cycling Allowed 0 no no 0","Cycle Lanes with light segregation","One Way","upgrade (one side)",370
+"Main Road - Cycling Allowed 0 lane lane 0","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Residential Road - Cycling Allowed 0 no no 0","Cycle Lanes","One Way - Two Way Cycling","upgrade (both sides)",460
+"Residential Road - Cycling Allowed 0 no no 0","Cycle Street","One Way - Two Way Cycling","upgrade (both sides)",15
+"Main Road - Cycling Allowed 0 no track 0","None","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 1 share_busway no 0","Cycle Street","One Way - Two Way Cycling","upgrade (one side)",15
+"Residential Road - Cycling Allowed 0 lane lane 0","Cycle Lanes with light segregation","Two Way","upgrade (both sides)",740
+"Main Road - Cycling Allowed 0 track no 0","Segregated Cycle Track","Two Way","upgrade (one side)",725
+"Residential Road - Cycling Allowed 0 no lane 0","None","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 1 share_busway lane 0","None","Two Way","downgrade",0
+"Main Road Link - Cycling Allowed 0 lane lane 0","Cycle Lanes","One Way","no change",0
+"Minor Road - Cycling Allowed 0 no no 0","Cycle Street","One Way - Two Way Cycling","upgrade (both sides)",15
+"Residential Road - Cycling Allowed 0 lane no 0","Cycle Street","Two Way","upgrade (one side)",15
+"Minor Road - Cycling Allowed 0 no lane 0","Cycle Lanes","One Way","upgrade (one side)",180
+"Special Road - Cycling Forbidden 1 share_busway no 0","None","Not Applicable","downgrade",0
+"Minor Road - Cycling Allowed 1 share_busway no 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"Main Road - Cycling Allowed 0 lane no 0","Cycle Lanes","One Way","no change",0
+"Residential Road - Cycling Allowed 0 lane lane 0","None","Two Way","downgrade",0
+"Residential Road - Cycling Allowed 0 lane no 0","None","One Way","downgrade",0
+"Residential Road - Cycling Allowed 0 lane no 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 1 share_busway share_busway 1","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 track no 0","Stepped Cycle Tracks","One Way","no change",0
+"Residential Road - Cycling Allowed 0 track no 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 track no 0","None","Two Way","downgrade",0
+"Main Road Link - Cycling Allowed 0 no no 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Minor Road - Cycling Allowed 0 no track 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 track no 0","Segregated Cycle Track","One Way","no change",0
+"Minor Road - Cycling Allowed 0 track no 0","None","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 0 track no 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 track no 0","None","One Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 lane lane 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 no track 0","Segregated Cycle Track","Two Way","upgrade (one side)",725
+"Trunk Road - Cycling Allowed 0 no track 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Main Road - Cycling Allowed 0 track track 0","None","One Way","downgrade",0
+"Special Road - Cycling Forbidden 0 no no 0","None","Not Applicable","no change",0
+"Residential Road - Cycling Allowed 0 lane track 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 no lane 0","Cycle Lanes","One Way - Two Way Cycling","upgrade (one side)",180
+"Main Road Link - Cycling Allowed 1 share_busway no 0","None","One Way","downgrade",0
+"Trunk Road Link - Cycling Allowed 0 track track 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 no track 0","Cycle Street","One Way","upgrade (one side)",15
+"Main Road - Cycling Allowed 0 no track 0","Cycle Lanes","One Way","upgrade (one side)",180
+"Main Road - Cycling Allowed 0 no track 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 track track 0","Cycle Lanes","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 no share_busway 1","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Main Road - Cycling Allowed 1 share_busway lane 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 0 lane share_busway 1","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Minor Road - Cycling Allowed 0 lane lane 0","Cycle Street","One Way - Two Way Cycling","downgrade",0
+"Main Road - Cycling Allowed 0 track track 0","Cycle Street","Two Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 no lane 0","None","Two Way","downgrade",0
+"Trunk Road Link - Cycling Allowed 0 lane lane 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Trunk Road - Cycling Allowed 0 no no 0","Cycle Lanes","Two Way","upgrade (both sides)",460
+"Trunk Road - Cycling Allowed 0 lane no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Trunk Road Link - Cycling Allowed 0 no no 0","Cycle Lanes","Two Way","upgrade (both sides)",460
+"Trunk Road - Cycling Allowed 0 lane no 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Living Street 0 no no 0","Cycle Street","One Way","no change",0
+"Main Road - Cycling Allowed 0 no track 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"motorway_link - Cycling Forbidden 0 no no 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Living Street 1 share_busway lane 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 track track 0","Segregated Cycle Track","Two Way","no change",0
+"Trunk Road - Cycling Allowed 1 share_busway lane 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Trunk Road Link - Cycling Allowed 0 lane lane 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane lane 0","Cycle Lanes with light segregation","One Way","upgrade (one side)",370
+"Minor Road - Cycling Allowed 0 track track 0","Cycle Lanes","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 1 share_busway lane 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Residential Road - Cycling Allowed 0 lane no 0","Cycle Lanes","One Way","no change",0
+"Main Road - Cycling Allowed 0 track track 0","Segregated Cycle Track","One Way","no change",0
+"Trunk Road - Cycling Allowed 0 lane lane 0","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Main Road - Cycling Allowed 0 lane track 0","Cycle Lanes","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 track no 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"Trunk Road - Cycling Allowed 0 track no 0","None","One Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 lane no 0","None","Two Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 track no 0","Stepped Cycle Tracks","One Way","no change",0
+"Trunk Road - Cycling Allowed 0 no lane 0","None","One Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 track no 0","Segregated Cycle Track","Two Way","upgrade (one side)",725
+"Trunk Road - Cycling Allowed 0 track track 0","Segregated Cycle Track","One Way","no change",0
+"Trunk Road - Cycling Allowed 0 no track 0","Stepped Cycle Tracks","Two Way","upgrade (one side)",480
+"Residential Road - Cycling Allowed 0 lane lane 0","None","One Way - Two Way Cycling","downgrade",0
+"Living Street 1 share_busway no 0","Cycle Street","Two Way","no change",0
+"Living Street 0 no no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Trunk Road - Cycling Allowed 1 share_busway share_busway 1","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 0 lane track 0","Stepped Cycle Tracks","One Way - Two Way Cycling","upgrade (one side)",480
+"Trunk Road - Cycling Allowed 0 lane share_busway 1","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 0 track no 0","Cycle Street","Two Way","upgrade (one side)",15
+"Trunk Road - Cycling Allowed 0 lane share_busway 1","None","Two Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 track lane 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane lane 0","Cycle Street","One Way","no change",0
+"Living Street 1 share_busway no 0","None","One Way","downgrade",0
+"Trunk Road Link - Cycling Allowed 0 lane no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Main Road - Cycling Allowed 0 track lane 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane track 0","None","Two Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 no share_busway 1","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane share_busway 1","None","Two Way","downgrade",0
+"Main Road Link - Cycling Allowed 0 lane no 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 lane track 0","Stepped Cycle Tracks","Two Way","upgrade (one side)",480
+"Trunk Road - Cycling Allowed 0 track lane 0","Stepped Cycle Tracks","Two Way","upgrade (one side)",480
+"Trunk Road - Cycling Allowed 0 track track 0","Stepped Cycle Tracks","Two Way","no change",0
+"Trunk Road - Cycling Allowed 0 no lane 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Trunk Road - Cycling Allowed 0 track no 0","Stepped Cycle Tracks","Two Way","upgrade (one side)",480
+"Minor Road - Cycling Allowed 0 no no 0","Segregated Cycle Track","One Way","upgrade (one side)",725
+"Residential Road - Cycling Allowed 0 track no 0","Cycle Street","Two Way","upgrade (one side)",15
+"Minor Road - Cycling Allowed 0 track track 0","Cycle Street","Two Way","downgrade",0
+"Trunk Road Link - Cycling Allowed 0 no no 0","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Main Road - Cycling Allowed 0 track no 0","Stepped Cycle Tracks","Two Way","upgrade (one side)",480
+"Minor Road - Cycling Allowed 0 track track 0","None","One Way - Two Way Cycling","downgrade",0
+"Main Road Link - Cycling Allowed 0 no no 0","Stepped Cycle Tracks","Two Way","upgrade (both sides)",960
+"Main Road - Cycling Allowed 1 share_busway no 0","Cycle Street","One Way","no change",0
+"Minor Road - Cycling Allowed 0 track no 0","Cycle Street","One Way","no change",0
+"Minor Road - Cycling Allowed 0 track no 0","Cycle Street","Two Way","upgrade (one side)",15
+"Main Road - Cycling Allowed 0 track track 0","Stepped Cycle Tracks","One Way","no change",0
+"Main Road - Cycling Allowed 1 share_busway share_busway 1","Cycle Lanes","Two Way","no change",0
+"Main Road - Cycling Allowed 0 lane share_busway 1","None","One Way","downgrade",0
+"Minor Road - Cycling Allowed 1 share_busway lane 0","Cycle Street","Two Way","downgrade",0
+"Main Road - Cycling Allowed 1 share_busway lane 0","None","One Way","downgrade",0
+"Residential Road - Cycling Allowed 0 track track 0","Cycle Lanes","Two Way","downgrade",0
+"Living Street 0 no lane 0","Cycle Street","One Way - Two Way Cycling","no change",0
+"Minor Road - Cycling Allowed 0 no track 0","Cycle Street","One Way","upgrade (one side)",15
+"Main Road Link - Cycling Allowed 0 no no 0","Cycle Street","One Way","upgrade (one side)",15
+"Main Road - Cycling Allowed 0 no share_busway 1","Cycle Lanes","Two Way","upgrade (one side)",180
+"Trunk Road - Cycling Allowed 1 share_busway no 0","None","Two Way","downgrade",0
+"Living Street 0 lane lane 0","None","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 no track 0","Stepped Cycle Tracks","Two Way","upgrade (one side)",480
+"Main Road - Cycling Allowed 0 lane no 0","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Main Road - Cycling Allowed 0 no lane 0","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Main Road - Cycling Allowed 0 no no 0","None","One Way - Two Way Cycling","no change",0
+"Living Street 0 no no 0","Cycle Street","One Way - Two Way Cycling","no change",0
+"Main Road - Cycling Allowed 0 lane lane 0","Cycle Street","One Way - Two Way Cycling","downgrade",0
+"Living Street 0 no lane 0","Cycle Street","One Way","no change",0
+"Minor Road - Cycling Allowed 1 share_busway share_busway 1","Cycle Street","One Way","no change",0
+"Trunk Road - Cycling Allowed 1 share_busway no 0","Segregated Cycle Track","Two Way","upgrade (both sides)",1450
+"Minor Road - Cycling Allowed 0 lane no 0","Cycle Street","One Way","no change",0
+"Trunk Road - Cycling Allowed 0 track no 0","Segregated Cycle Track","One Way","no change",0
+"Trunk Road - Cycling Allowed 0 no track 0","None","Two Way","downgrade",0
+"Trunk Road - Cycling Allowed 0 track no 0","Cycle Lanes","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 track no 0","Cycle Lanes","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 track lane 0","Stepped Cycle Tracks","Two Way","upgrade (one side)",480
+"Main Road - Cycling Allowed 0 lane share_busway 1","Cycle Lanes","Two Way","no change",0
+"Main Road Link - Cycling Allowed 0 lane no 0","Cycle Street","One Way","no change",0
+"Trunk Road Link - Cycling Allowed 0 track no 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 1 share_busway track 0","Stepped Cycle Tracks","Two Way","upgrade (one side)",480
+"Main Road - Cycling Allowed 1 share_busway track 0","None","Two Way","downgrade",0
+"Living Street 0 no no 0","Cycle Lanes","Two Way","upgrade (both sides)",460
+"Main Road - Cycling Allowed 0 track share_busway 1","None","Two Way","downgrade",0
+"Main Road Link - Cycling Allowed 1 share_busway no 0","Cycle Lanes","Two Way","upgrade (one side)",180
+"Residential Road - Cycling Allowed 0 no track 0","None","One Way - Two Way Cycling","downgrade",0
+"Main Road - Cycling Allowed 0 track track 0","Cycle Lanes","One Way","downgrade",0
+"Trunk Road Link - Cycling Allowed 0 no no 0","Cycle Street","One Way","upgrade (one side)",15
+"Minor Road - Cycling Allowed 0 no track 0","None","One Way - Two Way Cycling","downgrade",0
+"Main Road - Cycling Allowed 1 share_busway track 0","Cycle Lanes","Two Way","downgrade",0
+"Main Road Link - Cycling Allowed 0 lane no 0","Stepped Cycle Tracks","One Way","upgrade (one side)",480
+"Main Road - Cycling Allowed 0 track share_busway 1","Stepped Cycle Tracks","Two Way","upgrade (one side)",480
+"Main Road - Cycling Allowed 1 share_busway lane 0","Cycle Lanes","Two Way","no change",0
+"Residential Road - Cycling Allowed 0 no track 0","Cycle Street","One Way - Two Way Cycling","upgrade (one side)",15
+"Main Road - Cycling Allowed 0 track lane 0","Cycle Street","Two Way","downgrade",0
+"Main Road - Cycling Allowed 0 track lane 0","Cycle Lanes","Two Way","downgrade",0
+"Trunk Road Link - Cycling Allowed 0 no no 0","Cycle Street","Two Way","upgrade (both sides)",15
+"Residential Road - Cycling Allowed 0 track no 0","None","One Way","downgrade",0
+"Main Road - Cycling Allowed 0 no lane 0","Cycle Street","One Way","upgrade (one side)",15
+"Living Street 1 share_busway no 0","None","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 0 no lane 0","Cycle Lanes","One Way - Two Way Cycling","upgrade (one side)",180
+"Main Road - Cycling Allowed 0 track track 0","Cycle Lanes with light segregation","Two Way","downgrade",0
+"Minor Road - Cycling Allowed 0 track track 0","Cycle Street","One Way","no change",0
+"Main Road - Cycling Allowed 0 track share_busway 1","Segregated Cycle Track","Two Way","upgrade (one side)",725
+"Minor Road - Cycling Allowed 0 no track 0","Cycle Lanes","Two Way","upgrade (one side)",180
