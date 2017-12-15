@@ -27,7 +27,7 @@ library(stringr)
 library(dplyr)
 library(parallel)
 library(igraph)
-
+tmap_mode("view")
 
 #########################################
 
