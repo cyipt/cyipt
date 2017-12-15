@@ -14,7 +14,7 @@ z = msoa2011_vsimple %>%
 region_shape = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
 # region_shape = filter(region_shape, ttwa11nm == region_name)
 region_shape = st_buffer(region_shape, dist = 0) # for all of UK
-plot(region_shape$geometry)
+qtm(region_shape)
 
 # subset areal data to region and aggregate msoa-cas flows ----
 z = z[region_shape, ]
@@ -23,18 +23,18 @@ z = z[region_shape, ]
 # u_rf = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/rf_all.Rds"
 # download.file(u_rf, "../cyipt-bigdata/rf.Rds")
 rf_all_orig = readRDS("../cyipt-bigdata/rf.Rds")
-rf11 = rf_all_orig %>%
+# flow_11_orig = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
+#   as(Class = "sf")
+flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds")
+o = order(rf_all_orig$id)
+rf_new_order = rf_all_orig[o,]
+
+rf11 = rf_new_order %>%
   st_as_sf() %>%
   mutate(pcycle11 = bicycle / all) %>%
   select(o = geo_code1, d = geo_code2, all11 = all, pcycle11, dist = e_dist_km) %>%
   filter(o %in% z$geo_code, d %in% z$geo_code) %>%
   filter(all11 > 20) # 130k when >20
-
-
-
-# flow_11_orig = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
-#   as(Class = "sf")
-flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds")
 
 l11 = flow_11_orig %>%
   st_as_sf() %>%
@@ -103,32 +103,20 @@ selb = st_intersects(l_joined, b)
 saveRDS(selb, "selb.Rds")
 selb_logical = lengths(selb) > 0
 l = l_joined[selb_logical, ]
-plot(l$all01, l$all11) # much better fit
-cor(l$all01 * l$pcycle01, l$all11 * l$pcycle11)^2 # half of 11 cycling estimated by 01 cycling
-sum(l$pcycle01 * l$all01) / sum(l$all01) # 3.6% 01
-sum(l$pcycle11 * l$all11) / sum(l$all11) # 4.1% 11
 lnb = l_joined[!selb_logical, ]
 set.seed(20012011)
-lnb_sample = sample_n(lnb, nrow(lb))
+lnb_sample = sample_n(lnb, nrow(l))
 l = rbind(l, lnb_sample)
 
 # sanity checks on lines
 summary(l$o %in% z$geo_code)
 summary(l$d %in% z$geo_code)
-qtm(l[l$pcycle01 > 0.3,])
+qtm(l[l$pcycle01 > 0.3,]) +
+  qtm(l$geometry_rf[l$pcycle01 > 0.3])
 qtm(l[l$pcycle11 > 0.3,])
 
-plot(l$geometry) # works
-# qtm(l) + qtm(b)
-
 # subsetting fastest routes
-l_rf = l
-l_rf$geometry = NULL
-l_rf$geometry = l_rf$geometry_rf
-l_rf$geometry_rf = NULL
-class(l_rf)
-plot(l_rf[1:9, ])
-rf_b = l_rf %>%
+rf_b = l$geometry_rf %>%
   st_transform(27700) %>%
   st_buffer(dist = 200, nQuadSegs = 4) %>%
   st_transform(4326)
@@ -139,22 +127,6 @@ sum(l$all11)
 sum(l$all01 * l$pcycle01) / sum(l$all01)
 sum(l$all11 * l$pcycle11) / sum(l$all11)
 l = l %>% mutate(p_uptake = pcycle11 - pcycle01)
-
-# crude measure of exposure: % of route near 1 cycle path: old measure of exposure
-# for(i in 1:nrow(l)) {
-#   intersection = st_intersection(l$geometry[i], b)
-#   if(length(intersection) > 0) {
-#     l$exposure[i] = st_length(intersection) /
-#       st_length(l$geometry[i])
-#   }
-# }
-# sel_na = is.na(l$exposure)
-# l$exposure[sel_na] = 0
-# l$dist = as.numeric(st_length(l))
-# plot(l$dist, l$exposure)
-# summary(l$exposure)
-# m = lm(p_uptake ~ dist + exposure, l, weights = all11)
-# p = (predict(m, l) + l$pcycle01) * l$all11
 
 # new measure
 i = 79
@@ -174,7 +146,7 @@ line_exposure = function(rf_b, old_infra) {
       next()
     } else {
       # res$id[i] = rf_b$id[i]
-      intersection = st_intersection(old_infra[sel_infra[[i]], ], rf_b$geometry[i])
+      intersection = st_intersection(old_infra[sel_infra[[i]], ], rf_b[i])
       res$length_on_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "t", ])))
       res$length_off_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "f", ])))
       res$years_complete[i] = mean(intersection$years_complete)
@@ -193,9 +165,13 @@ l_new$length_on_road = res_prop$length_on_road
 l_new$length_off_road = res_prop$length_off_road
 l_new$years_complete = res_prop$years_complete
 summary(l_new)
+psimple = l$pcycle01 * l$all11 # simple model
 m = lm(p_uptake ~ dist + length_on_road + length_off_road + years_complete, l_new, weights = all11)
 p = (predict(m, l_new) + l$pcycle01) * l$all11
+p[is.na(p)] = 0
 summary(m)
+sum(psimple)
+sum(p)
 # install.packages("xgboost")
 library(xgboost)
 train = select(l_new, p_uptake, all11, dist, length_on_road, length_off_road, years_complete) %>%
@@ -209,7 +185,6 @@ lx = select(l_new, dist, length_on_road, length_off_road, years_complete) %>%
 p = (predict(m, lx) + l$pcycle01) * l$all11
 xgb.plot.importance(xgb.importance(feature_names = colnames(lx), model = m))
 sum(p)
-psimple = l$pcycle01 * l$all11
 sum(psimple) # 4000+ more cyclists estimated
 cor(l$all11, p)^2
 cor(l$all11, psimple)^2
@@ -328,3 +303,37 @@ qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend.
 #   mutate(pcycle01 = bicycle / all) %>%
 #   select(o, d, all01 = all, pcycle01)
 # saveRDS(od_01_new, "../cyoddata/od_01_new.Rds")
+
+# nrow(rf_all_orig)
+# nrow(flow_11_orig)
+# qtm(flow_11_orig[399999,]) +
+#   qtm(rf_all_orig[399999,]) # they're not the same
+# summary(flow_11_orig$id == rf_all_orig$id)
+# m = rf_all_orig$id %in% flow_11_orig$id
+# m = flow_11_orig$id %in% rf_all_orig$id
+# summary(m)
+# summary(duplicated(rf_all_orig$id))
+# summary(duplicated(flow_11_orig$id))
+# identical(order(flow_11_orig$id), order(rf_all_orig$id))
+# plot(order(flow_11_orig$id))
+# plot(order(rf_all_orig$id))
+#
+# summary(flow_11_orig$id == rf_new_order$id)
+# qtm(flow_11_orig[399999,]) +
+#   qtm(rf_new_order[399999,]) # they're not the same
+
+# crude measure of exposure: % of route near 1 cycle path: old measure of exposure
+# for(i in 1:nrow(l)) {
+#   intersection = st_intersection(l$geometry[i], b)
+#   if(length(intersection) > 0) {
+#     l$exposure[i] = st_length(intersection) /
+#       st_length(l$geometry[i])
+#   }
+# }
+# sel_na = is.na(l$exposure)
+# l$exposure[sel_na] = 0
+# l$dist = as.numeric(st_length(l))
+# plot(l$dist, l$exposure)
+# summary(l$exposure)
+# m = lm(p_uptake ~ dist + exposure, l, weights = all11)
+# p = (predict(m, l) + l$pcycle01) * l$all11
