@@ -134,15 +134,28 @@ for(a in seq(from = 1, to = nrow(bounds))){
         lines[,colcheck[b]] <- NA
       }
     }
-    #Add in any missing columns
-    for(c in 1:length(colcheck)){
-      if(check.loops[c]){
-        #Do nothing
-      }else{
-        #Add the column filled with NAs
-        lines.loops[,colcheck[c]] <- NA
+
+    if(nrow(lines.loops)>0){
+      #Add in any missing columns
+      for(c in 1:length(colcheck)){
+        if(check.loops[c]){
+          #Do nothing
+        }else{
+          #Add the column filled with NAs
+          lines.loops[,colcheck[c]] <- NA
+        }
+      }
+    }else{
+      for(c in 1:length(colcheck)){
+        if(check.loops[c]){
+          #Do nothing
+        }else{
+          #Add the column filled with NAs
+          lines.loops[,colcheck[c]] <- character(0)
+        }
       }
     }
+
 
     lines <- lines[ ,colcheck]
     lines.loops <- lines.loops[ ,colcheck]
