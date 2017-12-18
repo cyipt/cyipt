@@ -29,12 +29,17 @@ flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds")
 o = order(rf_all_orig$id)
 rf_new_order = rf_all_orig[o,]
 
-rf11 = rf_new_order %>%
-  st_as_sf() %>%
+rf11_sf = rf_new_order %>%
+  st_as_sf()
+
+rf11 = rf11_sf %>%
   mutate(pcycle11 = bicycle / all) %>%
-  select(o = geo_code1, d = geo_code2, all11 = all, pcycle11, dist = e_dist_km) %>%
+  select(o = geo_code1, d = geo_code2, all11 = all, pcycle11, dist = rf_dist_km,
+         hilliness = rf_avslope_perc, qdf = dist_rq_rf, car_driver) %>%
   filter(o %in% z$geo_code, d %in% z$geo_code) %>%
-  filter(all11 > 20) # 130k when >20
+  filter(all11 > 20) %>% # 130k when >20
+  mutate(pcar = car_driver / all11) %>%
+  select(-car_driver)
 
 l11 = flow_11_orig %>%
   st_as_sf() %>%
@@ -163,10 +168,14 @@ summary(res_prop)
 l_new = l
 l_new$length_on_road = res_prop$length_on_road
 l_new$length_off_road = res_prop$length_off_road
+l_new$length_off_road_sq = res_prop$length_off_road^2
 l_new$years_complete = res_prop$years_complete
+l_new$dist_sq = l_new$dist^2
 summary(l_new)
 psimple = l$pcycle01 * l$all11 # simple model
-m = lm(p_uptake ~ dist + length_on_road + length_off_road + years_complete, l_new, weights = all11)
+m = lm(p_uptake ~ dist + dist_sq + length_on_road + length_off_road + length_off_road_sq + years_complete
+       + hilliness + qdf + pcar + off_road_dist + pcycle01, data = l_new, weights = all11)
+saveRDS(m, "m.Rds")
 p = (predict(m, l_new) + l$pcycle01) * l$all11
 p[is.na(p)] = 0
 summary(m)
@@ -186,8 +195,8 @@ p = (predict(m, lx) + l$pcycle01) * l$all11
 xgb.plot.importance(xgb.importance(feature_names = colnames(lx), model = m))
 sum(p)
 sum(psimple) # 4000+ more cyclists estimated
-cor(l$all11, p)^2
-cor(l$all11, psimple)^2
+cor(l$pcycle11 * l$all11, p)^2
+cor(l$all11 * l$pcycle11, psimple)^2
 
 # Estimate uptake
 schemes = readRDS("../cyipt-bigdata/osm-prep/Bristol/schemes.Rds")
