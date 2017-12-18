@@ -41,7 +41,9 @@ for(a in 1:length(regions)){
       osm$highway <- as.character(osm$highway)
       osm$cycleway.left <- as.character(osm$cycleway.left)
       osm$cycleway.right <- as.character(osm$cycleway.right)
+      osm$cycleway.otherside <- as.character(osm$cycleway.otherside)
       osm$cycleway <- as.character(osm$cycleway)
+      osm$segregated <- as.character(osm$segregated)
 
       #Convert to intergers
       osm$lanes <- as.integer(as.character(osm$lanes))
@@ -62,7 +64,7 @@ for(a in 1:length(regions)){
       not.allowed <- c("proposed","planned","escape","demolished","abandoned","dismantled",
                        "crossing","raceway","traffic_island","ohm:military:Trench","junction",
                        "escalator","corridor","construction","services","bus_stop","elevator",
-                       "stepping_stones","disused","rest_area")
+                       "stepping_stones","disused","rest_area","gallop","traffic_signals")
       osm <- osm[!(osm$highway %in% not.allowed),]
       rm(not.allowed)
 
@@ -70,14 +72,11 @@ for(a in 1:length(regions)){
       ###############################################################################
       #step 11: clean depreciated highway tags
       ################################################################################
-      osm$highway[osm$highway == "byway"] <- "track"
-      osm$highway[osm$highway == "unsurfaced"] <- "track"
-      osm$highway[osm$highway == "layby"] <- "service"
-      osm$highway[osm$highway == "access"] <- "service"
-      osm$highway[osm$highway == "manoeuvring_forecourt"] <- "service"
-      osm$highway[osm$highway == "no"] <- "path"
-      osm$highway[osm$highway == "mini_roundabout"] <- "residential"
-
+      osm$highway[osm$highway %in% c("trail", "byway", "unsurfaced" ) ] <- "track"
+      osm$highway[osm$highway %in% c("layby","access","manoeuvring_forecourt")] <- "service"
+      osm$highway[osm$highway %in% c("no","none") ] <- "path"
+      osm$highway[osm$highway %in% c("mini_roundabout","residentiaal")] <- "residential"
+      osm$highway[osm$highway %in% c("yes") ] <- "road"
 
       ################################################################################
       #Step 8: clean junctions
@@ -672,12 +671,31 @@ for(a in 1:length(regions)){
       ##########################################################################
       # Step 2:  Cycling Infrastrure
 
+      #Import in the sometimes uses cycleway.otherside
+      for(e in 1:nrow(osm)){
+        if(!is.na(osm$cycleway.otherside[e]) & is.na(osm$cycleway.right[e])){
+          osm$cycleway.right[e] <- osm$cycleway.otherside[e]
+          osm$cycleway.otherside[e] <- NA
+        }else if(!is.na(osm$cycleway.otherside[e]) & !is.na(osm$cycleway.right[e])){
+          if(osm$cycleway.otherside[e] == osm$cycleway.right[e]){
+            osm$cycleway.otherside[e] <- NA
+          }
+        }
+      }
+      rm(e)
+      if(!all(is.na(osm$cycleway.otherside))){
+        message("cycleway.otherside error")
+        error.check <- osm[!is.na(osm$cycleway.otherside),]
+        stop()
+      }
+
+
       # Sometimes we people double tag cycleway rather than using the left and right tags
       for(m in 1:nrow(osm)){
         if(is.na(osm$cycleway.left[m]) & is.na(osm$cycleway.right[m]) & !is.na(osm$cycleway[m]) ){
           #Check for ; character
           if(grepl(";",osm$cycleway[m])){
-            spt <- unlist(strsplit("lane_right;opposite_track", ";", fixed = TRUE))
+            spt <- unlist(strsplit(osm$cycleway[m], ";", fixed = TRUE))
             #print(spt)
             osm$cycleway.left[m] <- spt[1]
             osm$cycleway.right[m] <- spt[2]
@@ -688,104 +706,255 @@ for(a in 1:length(regions)){
       }
       rm(m)
 
+      means.lane <- c("lane_left","1.25","Lane","yes","bothways","both")
+      means.opposite_lane <- c("opposite_late", "opposite_lane","lane_right","opposite","right:lane")
+      means.track <- c("trck","segregated","tracks","separate")
+      means.opposite_track <- c("opposite_track")
+      means.busway <- c("shared_busway")
+      means.opposite_busway <- c("opposite_share_busway")
+      not.allowed <- c("service","squeezed","highway","road","shared","shared_lane","designated", "proposed",
+                       "only_sunday", "crawler_lane","shared use","sidewalk","none", "share_sidewalk",
+                       "pavement_left","sidepath","use_sidepath","restaurant route","crossing","permissive")
+
       #clean up incorect tagging
-      osm$cycleway.left[osm$cycleway.left %in% c("opposite_late", "opposite_lane", "lane_right", "lane_left","shared_lane;lane")] <- "lane"
-      osm$cycleway.left[osm$cycleway.left %in% c("opposite_track")] <- "track"
-      osm$cycleway.left[osm$cycleway.left %in% c("opposite_share_busway","shared_busway")] <- "share_busway"
+      osm$cycleway.left[osm$cycleway.left %in% means.lane] <- "lane"
+      osm$cycleway.left[osm$cycleway.left %in% means.track] <- "track"
+      osm$cycleway.left[osm$cycleway.left %in% means.opposite_lane] <- "opposite_lane"
+      osm$cycleway.left[osm$cycleway.left %in% means.opposite_track] <- "opposite_track"
+      osm$cycleway.left[osm$cycleway.left %in% means.busway] <- "share_busway"
+      osm$cycleway.left[osm$cycleway.left %in% means.opposite_busway] <- "opposite_share_busway"
+      osm$cycleway.left[osm$cycleway.left %in% not.allowed ] <- "no"
 
-      osm$cycleway.right[osm$cycleway.right %in% c("opposite_late", "opposite_lane", "lane_right", "lane_left","shared_lane;lane")] <- "lane"
-      osm$cycleway.right[osm$cycleway.right %in% c("opposite_track")] <- "track"
-      osm$cycleway.right[osm$cycleway.right %in% c("opposite_share_busway","shared_busway")] <- "share_busway"
+      osm$cycleway.right[osm$cycleway.right %in% c(means.lane,means.opposite_lane)] <- "lane"
+      osm$cycleway.right[osm$cycleway.right %in% c(means.track,means.opposite_track)] <- "track"
+      osm$cycleway.right[osm$cycleway.right %in% means.busway] <- "share_busway"
+      osm$cycleway.right[osm$cycleway.right %in% means.opposite_busway] <- "opposite_share_busway"
+      osm$cycleway.right[osm$cycleway.right %in% not.allowed ] <- "no"
 
-      osm$cycleway[osm$cycleway %in% c("opposite_late", "lane_right", "lane_left","crossing","yes","bothways")] <- "lane"
-      osm$cycleway[osm$cycleway %in% c("trck","segregated","tracks","separate")] <- "track"
-      osm$cycleway[osm$cycleway %in% c("shared_busway")] <- "share_busway"
+      osm$cycleway[osm$cycleway %in% means.lane] <- "lane"
+      osm$cycleway[osm$cycleway %in% means.track] <- "track"
+      osm$cycleway[osm$cycleway %in% means.opposite_lane] <- "opposite_lane"
+      osm$cycleway[osm$cycleway %in% means.opposite_track] <- "opposite_track"
+      osm$cycleway[osm$cycleway %in% means.busway] <- "share_busway"
+      osm$cycleway[osm$cycleway %in% means.opposite_busway] <- "opposite_share_busway"
+      osm$cycleway[osm$cycleway %in% not.allowed ] <- "no"
 
-      not.allowed <- c("service","squeezed","highway","road","shared","shared_lane","designated", "proposed", "only_sunday", "crawler_lane","shared use","sidewalk","none")
-      osm$cycleway.left[osm$cycleway.left %in% c(not.allowed,"opposite") ] <- "no" #found this common in oxford but no clear infrastucture
-      osm$cycleway.right[osm$cycleway.right %in% c(not.allowed,"opposite")] <- "no"
-      osm$cycleway[osm$cycleway %in%  not.allowed] <- "no"
-      rm(not.allowed)
 
+      rm(not.allowed, means.opposite_busway, means.busway, means.opposite_track, means.track, means.opposite_lane, means.lane)
+
+      if(!all(c(osm$cycleway,osm$cycleway.left,osm$cycleway.right) %in% c(NA,"no","track","lane","opposite_lane","share_busway","opposite_track","opposite_share_busway"))){
+        message("Invalid Cycle Infrastrucutre Tags Before Cleaning")
+        print(unique(c(osm$cycleway,osm$cycleway.left,osm$cycleway.right)))
+        stop()
+      }
+
+
+
+      ########################
+      # New Cycle Infra Method with one way roads
+      #####
 
       for(d in 1:nrow(osm)){
-        if(osm$highway[d] %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track","bus_guideway")){
-          #Left and right lanes are not a valid concept
-          osm$cycleway.left[d] <- "no"
-        }else{
-          if(!is.na(osm$cycleway.left[d])){
-            #Keep the existing value
+        #Etablish the Main cases
+        highway <- osm$highway[d]
+        left <- osm$cycleway.left[d]
+        right <- osm$cycleway.right[d]
+        main <- osm$cycleway[d]
+        oneway <- osm$onewaysummary[d]
 
-          }else if(!is.na(osm$cycleway[d])){
-            if(osm$cycleway[d] %in% c("No","no")){
-              #Do Nothing
-              osm$cycleway.left[d] <- "no"
-            }else if(osm$cycleway[d] %in% c("opposite","opposite_lane","opposite_track","opposite_share_busway")){
-              #Do nothing as this is on the right side
-              osm$cycleway.left[d] <- "no"
-            }else if(osm$cycleway[d] == "right"){
-              osm$cycleway.left[d] <- "no"
-            }else if(osm$cycleway[d] == "left"){
-              osm$cycleway.left[d] <- "lane"
+        #Some Road types left and right lanes are not a valid concept
+        if(highway %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track","bus_guideway")){
+          osm$cycleway.left[d] <- "no"
+          osm$cycleway.right[d] <- "no"
+        }else if( (is.na(main)  | main  == "no") &
+            (is.na(left)  | left  == "no") &
+            (is.na(right) | right == "no") ){
+          # No info assume that there is no cycle infrastrucutre
+          osm$cycleway.left[d] <- "no"
+          osm$cycleway.right[d] <- "no"
+          osm$cycleway[d] <- "no"
+        }else if(!is.na(main) & is.na(left) & is.na(right)){
+          #Simple Case have main and no left or right data
+          #Check for specific opposite side cases
+          if(main %in% c("opposite_lane","opposite_track","opposite_share_busway")){
+            osm$cycleway.left[d] <- "no"
+            if(main == "opposite_lane"){
+              osm$cycleway.right[d] <- "lane"
+            }else if(main == "opposite_track"){
+              osm$cycleway.right[d] <- "track"
+            }else if(main == "opposite_share_busway"){
+              osm$cycleway.right[d] <- "share_busway"
             }else{
-              osm$cycleway.left[d] <- osm$cycleway[d]
+              message("Unsusal Error 3")
+              stop()
+            }
+          }else if(oneway == "Two Way"){
+            #Two way road so put cycle infra on both sides
+            osm$cycleway.left[d] <- main
+            osm$cycleway.right[d] <- main
+          }else if(oneway == "One Way - Two Way Cycling"){
+            #Check for contra flow cycle infra
+            if(main %in% c("opposite","opposite_lane") ){
+              osm$cycleway.left[d] <- "no"
+              osm$cycleway.right[d] <- "lane"
+            }else if(main %in% c("lane","track")){
+              osm$cycleway.left[d] <- main
+              osm$cycleway.right[d] <- main
+            }else if(main %in% c("opposite_track")){
+              osm$cycleway.left[d] <- "no"
+              osm$cycleway.right[d] <- "track"
+            }else{
+              message(paste0("Unusual Case: 2  main = ",main," left = ",left," right = ",right," highway = ",highway," oneway = ",oneway," line = ",d))
+              qtm(osm[d,], lines.lwd = 4)
+              Sys.sleep(3)
+              stop()
             }
           }else{
-            #No data
-            osm$cycleway.left[d] <- "no"
+            #One way raod so put cycle infra on the left
+            osm$cycleway.left[d] <- main
+            osm$cycleway.right[d] <- "no"
           }
+        }else if(!is.na(left) & !is.na(right)){
+          #We have Full left and right info so do nothing
+        }else if( (is.na(main) | main == "no")  & !is.na(left) & is.na(right)){
+          #We only have info for the left side assume it is complete
+          osm$cycleway.right[d] <- "no"
+        }else if( (is.na(main) | main == "no") & is.na(left) & !is.na(right)){
+          #We only have info for the right side assume it is complete
+          osm$cycleway.left[d] <- "no"
+        }else if(main %in% c("opposite_lane","opposite_track","opposite") & (is.na(left) | left == "no" ) & right %in% c("lane","track")){
+          #Contra flow with main also tagged as opposite
+          osm$cycleway.left[d] <- "no"
+        }else if(!is.na(main) & !is.na(left)){
+          if(main == left & (!is.na(left) | left == "no") & oneway == "One Way" )  {
+            #Oneway road where main and the left have both been tagged
+            osm$cycleway.right[d] <- "no"
+          }else if(main != left){
+            osm$cycleway.right[d] <- main
+          }else if(main == left){
+            osm$cycleway.right[d] <- "no"
+          }else{
+            message(paste0("Unusual Case: 5a  main = ",main," left = ",left," right = ",right," highway = ",highway," oneway = ",oneway," line = ",d))
+            stop()
+          }
+        }else if(!is.na(main) & !is.na(right)){
+          if(main == right & (!is.na(right) | right == "no") & oneway == "One Way" )  {
+            #Oneway road where main and the right have both been tagged
+            osm$cycleway.left[d] <- "no"
+          }else if(main != right){
+            osm$cycleway.left[d] <- main
+          }else if(main == right){
+            osm$cycleway.left[d] <- "no"
+          }else{
+            message(paste0("Unusual Case: 5b  main = ",main," left = ",left," right = ",right," highway = ",highway," oneway = ",oneway," line = ",d))
+            stop()
+          }
+        }else{
+          message(paste0("Unusual Case: 1  main = ",main," left = ",left," right = ",right," highway = ",highway," oneway = ",oneway," line = ",d))
+          qtm(osm[d,], lines.lwd = 4)
+          Sys.sleep(3)
+          stop()
         }
+
+        if(!osm$cycleway.left[d] %in% c("no","track","lane","share_busway") | !osm$cycleway.right[d] %in% c("no","track","lane","share_busway") ){
+          message("testing error")
+          message(paste0("Unusual Case: 4  main = ",main," left = ",left," right = ",right," highway = ",highway," oneway = ",oneway," line = ",d))
+          stop()
+        }
+
+
+
+        #End of Loop
+        rm(left,right,main,highway,oneway)
       }
       rm(d)
-      osm$cycleway.left[osm$cycleway.left == "designated"] <- "no" #unclear how this is used so assuming no actual lanes
-      #osm$cycleway.left <- as.factor(osm$cycleway.left)
+
+      if(!all(c(osm$cycleway.left,osm$cycleway.right) %in% c("no","track","lane","share_busway"))){
+        message("Invalid Cycle Infrastrucutre Tags After Cleaning")
+        print(unique(c(osm$cycleway.left,osm$cycleway.right)))
+        stop()
+      }
+
+
+
+      #for(d in 1:nrow(osm)){
+      #  if(osm$highway[d] %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track","bus_guideway")){
+      #    #Left and right lanes are not a valid concept
+      #    osm$cycleway.left[d] <- "no"
+      #  }else{
+      #    if(!is.na(osm$cycleway.left[d])){
+      #      #Keep the existing value
+      #
+      #    }else if(!is.na(osm$cycleway[d])){
+      #      if(osm$cycleway[d] %in% c("No","no")){
+      #        #Do Nothing
+      #        osm$cycleway.left[d] <- "no"
+      #      }else if(osm$cycleway[d] %in% c("opposite","opposite_lane","opposite_track","opposite_share_busway")){
+      #        #Do nothing as this is on the right side
+      #        osm$cycleway.left[d] <- "no"
+      #      }else if(osm$cycleway[d] %in% c("right","right:lane","lane:right")){
+      #        osm$cycleway.left[d] <- "no"
+      #      }else if(osm$cycleway[d] %in% c("left","lane:left","left:lane")){
+      #        osm$cycleway.left[d] <- "lane"
+      #      }else{
+      #        osm$cycleway.left[d] <- osm$cycleway[d]
+      #      }
+      #    }else{
+      #      #No data
+      #      osm$cycleway.left[d] <- "no"
+      #    }
+      #  }
+      #}
+      #rm(d)
+      #osm$cycleway.left[osm$cycleway.left == "designated"] <- "no" #unclear how this is used so assuming no actual lanes
+      ###osm$cycleway.left <- as.factor(osm$cycleway.left)
       #summary(osm$cycleway.left)
 
-      for(e in 1:nrow(osm)){
-        if(osm$highway[e] %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")){
-          #Left and right lanes are not a valid concept
-          osm$cycleway.right[e] <- "no"
-        }else{
-          if(!is.na(osm$cycleway.right[e])){
-            #Keep the existing value
-          }else if(!is.na(osm$cycleway[e])){
-            if(osm$cycleway[e] %in% c("No","no")){
-              #Do Nothing
-              osm$cycleway.right[e] <- "no"
-            }else if(osm$cycleway[e] %in% c("opposite","opposite_lane")){
-              #Do something as this is on the right side
-              osm$cycleway.right[e] <- "lane"
-            }else if(osm$cycleway[e] == "opposite_track"){
-              osm$cycleway.right[e] <- "track"
-            }else if(osm$cycleway[e] == "right"){
-              osm$cycleway.right[e] <- "lane"
-            }else if(osm$cycleway[e] == "left"){
-              osm$cycleway.right[e] <- "no"
-            }else{
-              osm$cycleway.right[e] <- osm$cycleway[e]
-            }
-          }else{
-            #No data
-            osm$cycleway.right[e] <- "no"
-          }
-        }
-      }
-      rm(e)
+      #for(e in 1:nrow(osm)){
+      #  if(osm$highway[e] %in% c("bridleway", "corridor","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")){
+      #    #Left and right lanes are not a valid concept
+      #    osm$cycleway.right[e] <- "no"
+      #  }else{
+      #    if(!is.na(osm$cycleway.right[e])){
+      #      #Keep the existing value
+      #    }else if(!is.na(osm$cycleway[e])){
+      #      if(osm$cycleway[e] %in% c("No","no")){
+      #        #Do Nothing
+      #        osm$cycleway.right[e] <- "no"
+      #      }else if(osm$cycleway[e] %in% c("opposite","opposite_lane")){
+      #        #Do something as this is on the right side
+      #        osm$cycleway.right[e] <- "lane"
+      #      }else if(osm$cycleway[e] == "opposite_track"){
+      #        osm$cycleway.right[e] <- "track"
+      #      }else if(osm$cycleway[e] %in% c("right","right:lane","lane:right")){
+      #        osm$cycleway.right[e] <- "lane"
+      #      }else if(osm$cycleway[e] %in% c("left","lane:left","left:lane")){
+      #        osm$cycleway.right[e] <- "no"
+      #      }else{
+      #        osm$cycleway.right[e] <- osm$cycleway[e]
+      #      }
+      #    }else{
+      #      #No data
+      #      osm$cycleway.right[e] <- "no"
+      #    }
+      #  }
+      #}
+      #rm(e)
 
       #Cleanup Results
-      osm$cycleway.right[is.na(osm$cycleway.right)] <- "no"
-      osm$cycleway.right[osm$cycleway.right %in% c("opposite","opposite_lane","yes")] <- "lane"
-      osm$cycleway.right[osm$cycleway.right %in% c("opposite_track","separate") ] <- "track"
-      osm$cycleway.right[osm$cycleway.right == "opposite_share_busway" ] <- "share_busway"
+      #osm$cycleway.right[is.na(osm$cycleway.right)] <- "no"
+      #osm$cycleway.right[osm$cycleway.right %in% c("opposite","opposite_lane","yes","both")] <- "lane"
+      #osm$cycleway.right[osm$cycleway.right %in% c("opposite_track","separate","buffered cycle lane; contraflow to oneway") ] <- "track"
+      #osm$cycleway.right[osm$cycleway.right == "opposite_share_busway" ] <- "share_busway"
 
-      osm$cycleway.left[is.na(osm$cycleway.left)] <- "no"
-      osm$cycleway.left[osm$cycleway.left %in% c("opposite","opposite_lane","yes")] <- "lane"
-      osm$cycleway.left[osm$cycleway.left %in% c("opposite_track","separate") ] <- "track"
-      osm$cycleway.left[osm$cycleway.left == "opposite_share_busway" ] <- "share_busway"
+      #osm$cycleway.left[is.na(osm$cycleway.left)] <- "no"
+      #osm$cycleway.left[osm$cycleway.left %in% c("opposite","opposite_lane","yes","both")] <- "lane"
+      #osm$cycleway.left[osm$cycleway.left %in% c("opposite_track","separate","buffered cycle lane; contraflow to oneway") ] <- "track"
+      #osm$cycleway.left[osm$cycleway.left == "opposite_share_busway" ] <- "share_busway"
 
 
       #osm$cycleway.right <- as.factor(osm$cycleway.right)
-      summary(osm$cycleway.right)
+      #summary(osm$cycleway.right)
 
       #Check for errors
       #If doubt assume no cycle infrastrucutre
@@ -793,11 +962,8 @@ for(a in 1:length(regions)){
       osm$cycleway.right[osm$cycleway.right == "share_busway" & osm$lanes.psv.backward == 0] <- "no"
 
       #Otherwise assume that all psv lanes are ok for cycling
-      osm$cycleway.left[osm$lanes.psv.forward == 1] <- "share_busway"
-      osm$cycleway.right[osm$lanes.psv.backward == 1] <- "share_busway"
-
-
-
+      osm$cycleway.left[osm$lanes.psv.forward >= 1] <- "share_busway"
+      osm$cycleway.right[osm$lanes.psv.backward >= 1] <- "share_busway"
 
       #Paths Don't have lanes
       osm$lanes.backward[osm$roadtype %in% c("Shared Path","Path - Cycling Forbidden","Segregated Shared Path","Cycleway")] <- 0
@@ -811,11 +977,13 @@ for(a in 1:length(regions)){
 
       if(length(unique(osm$cycleway.right)[!(unique(osm$cycleway.right) %in% c("no","lane","track","share_busway"))]) != 0){
         message(paste0("Unrecognised values in cycleway.right" ))
+        print(unique(osm$cycleway.right))
         stop()
       }
 
       if(length(unique(osm$cycleway.left)[!(unique(osm$cycleway.left) %in% c("no","lane","track","share_busway"))]) != 0){
         message(paste0("Unrecognised values in cycleway.left" ))
+        print(unique(osm$cycleway.left))
         stop()
       }
 

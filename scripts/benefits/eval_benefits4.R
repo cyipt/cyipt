@@ -53,7 +53,173 @@ discount <- data.frame(year = years, discount = dis )
 rm(years,dis)
 
 ##########################################
+# function
 
+get.benefits <- function(f){
+  #for(f in 1:nrow(route.up.sub)){
+
+
+  # create results tables
+  results <- data.frame(id = route.up.sub$ID[f] , absenteeism_benefit = NA, health_deathavoided = NA, health_benefit = NA, quality_benefit = NA)
+
+
+  # Physical Activity
+  # Based on http://www.cedar.iph.cam.ac.uk/blog/dft-tag-cedar-010917/
+  # Estiamte the age and gender spit of the new cyclists and lost walkers
+
+  increase_cyclers <- route.up.sub$uptake[f]
+  decrease_walkers <- route.up.sub$d_onfoot[f]
+
+  increase_cyclers <- gender_split / 100 * increase_cyclers
+  decrease_walkers <- gender_split / 100 * decrease_walkers
+
+  #############################
+  # Health Benefits of Cycling
+  ############################
+
+  #convert to hours per week for each gender and age bracket
+  cycle_hours <- (route.up.sub$disthealth[f] * 4.22) / gender_speed # distance per week = distance * 4.22 (days per week)
+
+  #convert to METS
+  #Average Metabolically Equivalent Tasks (MET) for cycling
+  #(reference: Compendium of Physical Activities, https://sites.google.com/site/compendiumofphysicalactivities/)
+  cycle_deathsavoided <-  cycle_hours * 6.8
+
+  #Convert to Relative Risks
+  # Relative risks (RRs) for all-cause mortality for cycling (reference: Kelly et al. 2014) 0.9
+  cycle_deathsavoided <-  exp(cycle_deathsavoided * log(0.9)/11.25)
+
+  # Max benefits from cycling (benefit cap) 0.55
+  cycle_deathsavoided[cycle_deathsavoided < 0.55] <- 0.55
+
+  #Convert to PAF due to cycling
+  cycle_deathsavoided <- 1 - cycle_deathsavoided
+
+  #Convert to Deaths Avoided
+  cycle_deathsavoided <- cycle_deathsavoided * gender_mortality * increase_cyclers
+  #factor out 0-19 years
+  cycle_deathsavoided[1,] <- c(0,0)
+
+  #Calc Years of Life Lost
+  cycle_yearslost <- cycle_deathsavoided * gender_YLL
+
+  cycle_health_benefits <- discount
+  cycle_health_benefits$benefits <- cycle_health_benefits$discount * sum(cycle_yearslost) * 60000 # Value of a startical life in 2012
+
+
+
+
+
+  ##################################
+  # Health Disbenefits of Less Walking
+  ##################################
+
+
+  #convert to hours per week for each gender and age bracket
+  walk_hours <- (route.up.sub$disthealth[f] * 4.22) / walking_speed # distance per week = distance * 4.22 (days per week)
+
+  #convert to METS
+  #Average Metabolically Equivalent Tasks (MET) for cycling
+  #(reference: Compendium of Physical Activities, https://sites.google.com/site/compendiumofphysicalactivities/)
+  walk_deathsincrease <-  walk_hours * 3.3
+
+  #Convert to Relative Risks
+  # Relative risks (RRs) for all-cause mortality for cycling (reference: Kelly et al. 2014) 0.9
+  walk_deathsincrease <-  exp(walk_deathsincrease * log(0.9)/11.25)
+
+  # Max benefits from walking (benefit cap) 0.55
+  walk_deathsincrease[walk_deathsincrease < 0.7] <- 0.7
+
+  #Convert to PAF due to cycling
+  walk_deathsincrease <- 1 - walk_deathsincrease
+
+  #Convert to Deaths Avoided
+  walk_deathsincrease <- walk_deathsincrease * gender_mortality * decrease_walkers * -1
+  #factor out 0-19 years
+  walk_deathsincrease[1,] <- c(0,0)
+
+  #Calc Years of Life Lost
+  walk_yearslost <- walk_deathsincrease * gender_YLL
+
+  walk_health_benefits <- discount
+  walk_health_benefits$benefits <- walk_health_benefits$discount * sum(walk_yearslost) * 60000 # Value of a startical life in 2012
+
+
+
+  results$health_deathavoided <- sum(cycle_deathsavoided) + sum(walk_deathsincrease)
+  results$health_benefit <- sum(cycle_health_benefits$benefits + walk_health_benefits$benefits)
+
+  ###############################################
+  # Absenteeism
+  ##############################################
+
+  # Calcualte the Number of people who are doing an additonal 30 minute of exercies
+  # Convert from hours per weeks to minutes per days to effective people getting extra 30 min per day
+  cycle_extraexercies <- (cycle_hours / 4.22 * 60) * increase_cyclers / 30
+  walk_lessexercies <- (walk_hours / 4.22 * 60) * decrease_walkers / 30
+
+  # Zero Out the Retired
+  cycle_extraexercies[4,] <- c(0,0)
+  cycle_extraexercies[5,] <- c(0,0)
+
+  walk_lessexercies[4,] <- c(0,0)
+  walk_lessexercies[5,] <- c(0,0)
+
+  # Calcualte recution in absenteeism
+  # 25% reduction on average of 6.8 days per year
+  # average of £19.27 per hour for 7.48 hours per day
+
+  cycle_absenteeism <-  sum(cycle_extraexercies * 6.8 * 0.25) * 19.27 * 7.48
+  walk_absenteeism <-  sum(walk_lessexercies * 6.8 * 0.25) * 19.27 * 7.48
+
+  results$absenteeism_benefit <- cycle_absenteeism - walk_absenteeism
+
+  ###################################################
+  # Jounrey Quality
+  ##################################################
+
+  # Jouney Qualitiy
+  # From WebTAG A4.1.6
+  # Value of jounrey ambience benefit of cycling facilities 2015 prices and values
+
+  #For Each Route Get the length of the route that is on the scheme
+  # Get the osm lines that make up this route
+  route.up.osms <- unique(unlist(pct2osm[ (1:nrow(pct))[pct$ID ==  route.up.sub$ID[f] ] ]))
+
+  #Get the ones that are also in the scheme
+  route.up.osms <- route.up.osms[route.up.osms %in% osm_ids]
+  osm.route.sub <- osm[route.up.osms,]
+
+  #Select correct value and convert to £ / s
+  osm.route.sub$qualval <- NA
+
+  for(a in seq_len(nrow(osm.route.sub))){
+    #Select correct value and convert to £ / s
+    if(osm.route.sub$Recommended[a] %in% c("Segregated Cycle Track", "Stepped Cycle Tracks", "Cycle Lanes with light segregation")){
+      osm.route.sub$qualval[a] <- qual.data$value[qual.data$scheme == "On-road segregated cycle lane"] / 100 / 60
+    }else if(osm.route.sub$Recommended[a] == "Cycle Lanes"){
+      osm.route.sub$qualval[a] <- qual.data$value[qual.data$scheme == "On-road non-segregated cycle lane"] / 100 / 60
+    }else if(osm.route.sub$Recommended[a] == "Segregated Cycle Track on Path"){
+      osm.route.sub$qualval[a] <- qual.data$value[qual.data$scheme == "Off-road segregated cycle track"] / 100 / 60
+    }else{
+      osm.route.sub$qualval[a] <- 0
+    }
+  }
+
+  #Ben = #cyclists X length cycled / 8 mph  X value of time cycled X 2 for return journey * 220 days per year * 0.5 (rule of half) + same again for existing without rule of half
+  osm.route.sub$jouney_qual_ben <- (route.up.sub$uptake[f]) * osm.route.sub$length * 0.5 / 3.576 * osm.route.sub$qualval * 2 * 220 * 0.5 + (route.up.sub$pct.census[f]) * osm.route.sub$length * 0.5 / 3.576 * osm.route.sub$qualval * 2 * 220
+  results$quality_benefit <- sum(osm.route.sub$jouney_qual_ben)
+
+
+  return(results)
+}
+
+
+
+
+
+
+######################
 #List folders
 #regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
 #regions <- regions[2:length(regions)]
@@ -120,33 +286,20 @@ for(b in 1:length(regions)){
       #Add Empty Columns
       schemes$ndrive_before <- NA
       schemes$ndrive_after <- NA
-
-
       schemes$absenteeism_benefit <- NA
       schemes$health_deathavoided <- NA
       schemes$health_benefit <- NA
 
-
-
-
       schemes <- st_cast(schemes, "MULTILINESTRING")
       schemes$length <- as.numeric(st_length(schemes))
-
-
 
       for(e in 1:nrow(schemes)){
         message(paste0(Sys.time()," Doing scheme ",e," of ",nrow(schemes)))
 
         scheme_id <- schemes$group_id[e]
         osm_ids <- osm$id[osm$group_id == scheme_id]
-        #pct_ids <- unique(unlist(osm2pct[unique(osm_ids)]))
-        #pct_codes <- pct$ID[pct_ids]
         route.up.sub <- route.uptake[route.uptake$schemeID == scheme_id,]
-        #route.up.sub <- route.up.sub[route.up.sub$ID %in% pct_codes,]
         pct.sub <- pct[pct$ID %in% route.up.sub$ID,]
-        #route.up.sub <- left_join(route.up.sub,pct.sub, by = c("ID" = "ID"))
-
-
 
         drivenow <- sum(route.up.sub$taxi, route.up.sub$motorcycle, route.up.sub$carorvan, na.rm = T)
         driveafter <- round(drivenow - sum(route.up.sub$d_taxi, route.up.sub$d_motorcycle, route.up.sub$d_carorvan, na.rm = T),0)
@@ -159,7 +312,6 @@ for(b in 1:length(regions)){
         route.up.sub$drivedistafter <- (route.up.sub$taxi - route.up.sub$d_taxi) + (route.up.sub$motorcycle - route.up.sub$d_motorcycle) + (route.up.sub$carorvan - route.up.sub$d_carorvan) * route.up.sub$length / 1000
 
         # Multimply Up to a year
-
         schemes$carkm_before[e] <- sum(route.up.sub$drivedistnow, na.rm = T) * 2 * 220
         schemes$carkm_after[e] <- sum(route.up.sub$drivedistafter, na.rm = T) * 2 * 220
         schemes$carkm[e] <- schemes$carkm_after[e] - schemes$carkm_before[e]
@@ -174,168 +326,37 @@ for(b in 1:length(regions)){
 
         #dist <- schemes$length[e] * 1.9 / 1609.34  # convert to miles * 1.9 (two way weighting factor)
         route.up.sub$disthealth <- route.up.sub$length * 1.9 / 1609.34 # convert to miles * 1.9 (two way weighting factor)
-
-        route.up.sub$absenteeism_benefit <- NA
-        route.up.sub$health_deathavoided <- NA
-        route.up.sub$health_benefit <- NA
+        #route.up.sub$absenteeism_benefit <- NA
+        #route.up.sub$health_deathavoided <- NA
+        #route.up.sub$health_benefit <- NA
 
         #Loop over each route and get the health benefits
-        for(f in 1:nrow(route.up.sub)){
 
-          # create results tables
-          results <- data.frame(id = f , absenteeism_benefit = NA, health_deathavoided = NA, health_benefit = NA )
-
-
-          # Physical Activity
-          # Based on http://www.cedar.iph.cam.ac.uk/blog/dft-tag-cedar-010917/
-          # Estiamte the age and gender spit of the new cyclists and lost walkers
-
-          increase_cyclers <- route.up.sub$uptake[f]
-          decrease_walkers <- route.up.sub$d_onfoot[f]
-
-          increase_cyclers <- gender_split / 100 * increase_cyclers
-          decrease_walkers <- gender_split / 100 * decrease_walkers
-
-          #############################
-          # Health Benefits of Cycling
-          ############################
-
-          #convert to hours per week for each gender and age bracket
-          cycle_hours <- (route.up.sub$disthealth[f] * 4.22) / gender_speed # distance per week = distance * 4.22 (days per week)
-
-          #convert to METS
-          #Average Metabolically Equivalent Tasks (MET) for cycling
-          #(reference: Compendium of Physical Activities, https://sites.google.com/site/compendiumofphysicalactivities/)
-          cycle_deathsavoided <-  cycle_hours * 6.8
-
-          #Convert to Relative Risks
-          # Relative risks (RRs) for all-cause mortality for cycling (reference: Kelly et al. 2014) 0.9
-          cycle_deathsavoided <-  exp(cycle_deathsavoided * log(0.9)/11.25)
-
-          # Max benefits from cycling (benefit cap) 0.55
-          cycle_deathsavoided[cycle_deathsavoided < 0.55] <- 0.55
-
-          #Convert to PAF due to cycling
-          cycle_deathsavoided <- 1 - cycle_deathsavoided
-
-          #Convert to Deaths Avoided
-          cycle_deathsavoided <- cycle_deathsavoided * gender_mortality * increase_cyclers
-          #factor out 0-19 years
-          cycle_deathsavoided[1,] <- c(0,0)
-
-          #Calc Years of Life Lost
-          cycle_yearslost <- cycle_deathsavoided * gender_YLL
-
-          cycle_health_benefits <- discount
-          cycle_health_benefits$benefits <- cycle_health_benefits$discount * sum(cycle_yearslost) * 60000 # Value of a startical life in 2012
-
-
-
-
-
-          ##################################
-          # Health Disbenefits of Less Walking
-          ##################################
-
-
-          #convert to hours per week for each gender and age bracket
-          walk_hours <- (route.up.sub$disthealth[f] * 4.22) / walking_speed # distance per week = distance * 4.22 (days per week)
-
-          #convert to METS
-          #Average Metabolically Equivalent Tasks (MET) for cycling
-          #(reference: Compendium of Physical Activities, https://sites.google.com/site/compendiumofphysicalactivities/)
-          walk_deathsincrease <-  walk_hours * 3.3
-
-          #Convert to Relative Risks
-          # Relative risks (RRs) for all-cause mortality for cycling (reference: Kelly et al. 2014) 0.9
-          walk_deathsincrease <-  exp(walk_deathsincrease * log(0.9)/11.25)
-
-          # Max benefits from walking (benefit cap) 0.55
-          walk_deathsincrease[walk_deathsincrease < 0.7] <- 0.7
-
-          #Convert to PAF due to cycling
-          walk_deathsincrease <- 1 - walk_deathsincrease
-
-          #Convert to Deaths Avoided
-          walk_deathsincrease <- walk_deathsincrease * gender_mortality * decrease_walkers * -1
-          #factor out 0-19 years
-          walk_deathsincrease[1,] <- c(0,0)
-
-          #Calc Years of Life Lost
-          walk_yearslost <- walk_deathsincrease * gender_YLL
-
-          walk_health_benefits <- discount
-          walk_health_benefits$benefits <- walk_health_benefits$discount * sum(walk_yearslost) * 60000 # Value of a startical life in 2012
-
-
-
-          route.up.sub$health_deathavoided[f] <- sum(cycle_deathsavoided) + sum(walk_deathsincrease)
-          route.up.sub$health_benefit[f] <- sum(cycle_health_benefits$benefits + walk_health_benefits$benefits)
-
-          ###############################################
-          # Absenteeism
-          ##############################################
-
-          # Calcualte the Number of people who are doing an additonal 30 minute of exercies
-          # Convert from hours per weeks to minutes per days to effective people getting extra 30 min per day
-          cycle_extraexercies <- (cycle_hours / 4.22 * 60) * increase_cyclers / 30
-          walk_lessexercies <- (walk_hours / 4.22 * 60) * decrease_walkers / 30
-
-          # Zero Out the Retired
-          cycle_extraexercies[4,] <- c(0,0)
-          cycle_extraexercies[5,] <- c(0,0)
-
-          walk_lessexercies[4,] <- c(0,0)
-          walk_lessexercies[5,] <- c(0,0)
-
-          # Calcualte recution in absenteeism
-          # 25% reduction on average of 6.8 days per year
-          # average of £19.27 per hour for 7.48 hours per day
-
-          cycle_absenteeism <-  sum(cycle_extraexercies * 6.8 * 0.25) * 19.27 * 7.48
-          walk_absenteeism <-  sum(walk_lessexercies * 6.8 * 0.25) * 19.27 * 7.48
-
-          route.up.sub$absenteeism_benefit[f] <- cycle_absenteeism - walk_absenteeism
-
-          ###################################################
-          # Jounrey Quality
-          ##################################################
-
-          # Jouney Qualitiy
-          # From WebTAG A4.1.6
-          # Value of jounrey ambience benefit of cycling facilities 2015 prices and values
-
-          #For Each Route Get the length of the route that is on the scheme
-          # Get the osm lines that make up this route
-          route.up.osms <- unique(unlist(pct2osm[ (1:nrow(pct))[pct$ID ==  route.up.sub$ID[f] ] ]))
-
-          #Get the ones that are also in the scheme
-          route.up.osms <- route.up.osms[route.up.osms %in% osm_ids]
-          osm.route.sub <- osm[route.up.osms,]
-
-          #Select correct value and convert to £ / s
-          osm.route.sub$qualval <- NA
-
-          for(a in seq_len(nrow(osm.route.sub))){
-            #Select correct value and convert to £ / s
-            if(osm.route.sub$Recommended[a] %in% c("Segregated Cycle Track", "Stepped Cycle Tracks", "Cycle Lanes with light segregation")){
-              osm.route.sub$qualval[a] <- qual.data$value[qual.data$scheme == "On-road segregated cycle lane"] / 100 / 60
-            }else if(osm.route.sub$Recommended[a] == "Cycle Lanes"){
-              osm.route.sub$qualval[a] <- qual.data$value[qual.data$scheme == "On-road non-segregated cycle lane"] / 100 / 60
-            }else if(osm.route.sub$Recommended[a] == "Segregated Cycle Track on Path"){
-              osm.route.sub$qualval[a] <- qual.data$value[qual.data$scheme == "Off-road segregated cycle track"] / 100 / 60
-            }else{
-              osm.route.sub$qualval[a] <- 0
-            }
-          }
-
-          #Ben = #cyclists X length cycled / 8 mph  X value of time cycled X 2 for return journey * 220 days per year * 0.5 (rule of half) + same again for existing without rule of half
-          osm.route.sub$jouney_qual_ben <- (route.up.sub$uptake[f]) * osm.route.sub$length * 0.5 / 3.576 * osm.route.sub$qualval * 2 * 220 * 0.5 + (route.up.sub$pct.census[f]) * osm.route.sub$length * 0.5 / 3.576 * osm.route.sub$qualval * 2 * 220
-          route.up.sub$quality_benefit[f] <- sum(osm.route.sub$jouney_qual_ben)
-
-
-
+        foo <- function(x){
+          return(x + 1)
         }
+
+        ##########################################################
+        #Parallel
+        start <- Sys.time()
+        fun <- function(cl){
+          parLapply(cl, 1:nrow(route.up.sub),get.benefits)
+        }
+        cl <- makeCluster(ncores) #make clusert and set number of cores
+        clusterExport(cl=cl, varlist=c("route.up.sub", "qual.data","gender_split","gender_speed","walking_speed","gender_mortality",
+                                       "gender_YLL","discount","pct2osm","osm","osm_ids","pct"), envir=environment())
+        #clusterExport(cl=cl, c('find.pct.lines') )
+        clusterEvalQ(cl, {library(sf)})
+        healthbens <- fun(cl)
+        stopCluster(cl)
+
+        end <- Sys.time()
+        message(paste0("Did ",nrow(route.up.sub)," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+        ##########################################################
+
+        healthbens <- bind_rows(healthbens)
+
+        route.up.sub <- left_join(route.up.sub,healthbens, by = c("ID" = "id"))
 
         schemes$absenteeism_benefit[e] <- sum(route.up.sub$absenteeism_benefit, na.rm = T)
         schemes$health_deathavoided[e] <- sum(route.up.sub$health_deathavoided, na.rm = T)

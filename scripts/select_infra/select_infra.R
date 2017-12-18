@@ -53,11 +53,11 @@ get.costs <- function(d){
   osm.sub <- osm[d,]
 
   #Get Costs
-  costs.sub <- costs[costs$Existing == osm.sub$Existing[1] & costs$Recommended == osm.sub$Recommended[1],]
+  costs.sub <- costs[costs$Existing == osm.sub$Existing[1] & costs$Recommended == osm.sub$Recommended[1] & costs$onewaysummary == osm.sub$onewaysummary[1],]
 
   #Check for errors
   if(nrow(costs.sub) != 1){
-    message(paste0("Error: Not valid costs for line ",d))
+    message(paste0("Error: Not valid costs for line ",d," ",nrow(costs.sub)))
     stop()
   }
 
@@ -73,7 +73,7 @@ regions <- regions.todo
 
 rules.onroad <- read.csv("../cyipt/input-data/InfraSelectionRules_OnRoad.csv", stringsAsFactors = FALSE)
 rules.offroad <- read.csv("../cyipt/input-data/InfraSelectionRules_OffRoad.csv", stringsAsFactors = FALSE)
-costs <- read.csv("../cyipt/input-data/Costs.csv", stringsAsFactors = FALSE)
+costs <- read.csv("../cyipt/input-data/costs2.csv", stringsAsFactors = FALSE)
 
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
@@ -115,7 +115,7 @@ for(b in 1:length(regions)){
       #For testing only
 
       summary <- as.data.frame(osm)
-      summary <- summary[,c("Existing","Recommended")]
+      summary <- summary[,c("Existing","Recommended","onewaysummary")]
       summary <- unique(summary)
       costs.summary <- costs[,c("Existing","Recommended")]
       #write.csv(summary, paste0("../cyipt-bigdata/osm-prep/",regions[b],"/RoadCombis.csv"), row.names = F)
