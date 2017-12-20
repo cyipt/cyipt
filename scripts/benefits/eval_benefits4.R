@@ -253,15 +253,15 @@ for(b in 1:length(regions)){
       #Calcualte Uptake Values
 
       #Calcualte the percentage of each mode exclusing cycling
-      route.uptake$p_underground <- elseif(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$underground / (route.uptake$all_16p - route.uptake$pct.census))
-      route.uptake$p_train <- elseif(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$train / (route.uptake$all_16p - route.uptake$pct.census))
-      route.uptake$p_bus <- elseif(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$bus / (route.uptake$all_16p - route.uptake$pct.census))
-      route.uptake$p_taxi <- elseif(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$taxi / (route.uptake$all_16p - route.uptake$pct.census))
-      route.uptake$p_motorcycle <- elseif(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$motorcycle / (route.uptake$all_16p - route.uptake$pct.census))
-      route.uptake$p_carorvan <- elseif(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$carorvan / (route.uptake$all_16p - route.uptake$pct.census))
-      route.uptake$p_passenger <- elseif(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$passenger / (route.uptake$all_16p - route.uptake$pct.census))
-      route.uptake$p_onfoot <- elseif(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$onfoot / (route.uptake$all_16p - route.uptake$pct.census))
-      route.uptake$p_other <- elseif(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$other / (route.uptake$all_16p - route.uptake$pct.census))
+      route.uptake$p_underground <- ifelse(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$underground / (route.uptake$all_16p - route.uptake$pct.census))
+      route.uptake$p_train <- ifelse(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$train / (route.uptake$all_16p - route.uptake$pct.census))
+      route.uptake$p_bus <- ifelse(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$bus / (route.uptake$all_16p - route.uptake$pct.census))
+      route.uptake$p_taxi <- ifelse(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$taxi / (route.uptake$all_16p - route.uptake$pct.census))
+      route.uptake$p_motorcycle <- ifelse(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$motorcycle / (route.uptake$all_16p - route.uptake$pct.census))
+      route.uptake$p_carorvan <- ifelse(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$carorvan / (route.uptake$all_16p - route.uptake$pct.census))
+      route.uptake$p_passenger <- ifelse(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$passenger / (route.uptake$all_16p - route.uptake$pct.census))
+      route.uptake$p_onfoot <- ifelse(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$onfoot / (route.uptake$all_16p - route.uptake$pct.census))
+      route.uptake$p_other <- ifelse(route.uptake$all_16p == route.uptake$pct.census,0, route.uptake$other / (route.uptake$all_16p - route.uptake$pct.census))
 
       #Calcualte the decrease in each mode
       route.uptake$d_underground <- route.uptake$p_underground * route.uptake$uptake
