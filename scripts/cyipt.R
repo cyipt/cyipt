@@ -60,7 +60,7 @@ source("scripts/prep_data/prep_osm.R")
 #Step 5: Get the PCT estimate of number of cyclists
 source("scripts/prep_data/get_pct2.R")
 
-#Step 6: Get raod width esitmates
+#Step 6: Get road width esitmates
 source("scripts/prep_data/get_widths.R")
 
 #Step 7:Evaluate Infrastrucutre Options
