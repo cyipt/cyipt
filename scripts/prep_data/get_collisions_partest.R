@@ -7,7 +7,9 @@
 library(sf)
 library(dplyr)
 library(parallel)
-library(foreach)
+library(tmap)
+tmap_mode("view")
+#library(foreach)
 
 
 #Settings now come from master file
@@ -19,8 +21,9 @@ library(foreach)
 
 
 #Get the
-get.collisions <- function(a,osm,acc,junc,grid_osm,grid_acc,grid_junc){
+get.collisions <- function(a){
   #acc.sub <- acc[a,]
+  #message(paste0(Sys.time()," Doing ",a))
   acc.sub <- acc[a,c("AccRefGlobal","JunctionDetail","geometry")]
   gridid <- grid_acc[a][[1]]
 
@@ -72,17 +75,6 @@ get.collisions <- function(a,osm,acc,junc,grid_osm,grid_acc,grid_junc){
 }
 
 
-count.collisions.lines <- function(c){
-  lineid <- osm$id[c]
-  acc.sub <- acc.lines[acc.lines$CollisionLine == lineid,]
-  nslight <- length(acc.sub$Severity[acc.sub$Severity == "Slight"])
-  nserious <- length(acc.sub$Severity[acc.sub$Severity == "Serious"])
-  nfatal <- length(acc.sub$Severity[acc.sub$Severity == "Fatal"])
-  result <- data.frame(lineid = lineid, nslight = nslight, nserious = nserious, nfatal= nfatal)
-  return(result)
-}
-
-
 
 
 #List folders
@@ -106,10 +98,11 @@ for(b in 1:length(regions)){
       rm(col.to.keep)
 
       #Get collisions data
-      acc <- readRDS(paste0("../cyipt-bigdata/collisions/",regions[b],"/collisions-summary.Rds"))
+      acc <- readRDS(paste0("../cyipt-bigdata/collisions/regions/",regions[b],"/collisions-summary.Rds"))
 
       #Get junction locations
       junc <- readRDS(paste0("../cyipt-bigdata/osm-raw/",regions[b],"/osm-junction-points.Rds"))
+      junc$osm_id <- as.integer(junc$osm_id)
 
       #Performacne Tweak, Preallocate object to a gid to reduce processing time
       grid <- st_make_grid(osm, n = c(100,100), "polygons")
@@ -124,96 +117,59 @@ for(b in 1:length(regions)){
 
       #Get the Collisions Values
       m = 1 #Start
-      n = 200
-      #n = nrow(acc) #End
-
-      ##########################################################
-      #Parallel
-      start <- Sys.time()
-      #fun <- function(cl){
-      #  parLapply(cl, m:n,get.collisions)
-      #}
-      cl <- makeCluster(ncores) #make clusert and set number of cores
-      clusterExport(cl=cl, varlist=c("osm", "acc","junc","grid_osm","grid_acc","grid_junc"))
-      clusterEvalQ(cl, {library(sf)})
-      #clusterSplit(cl, m:n)
-      #respar <- fun(cl)
-      respar <- parLapply(cl,m:n,get.collisions,osm = osm,acc = acc,junc = junc,grid_osm = grid_osm,grid_acc = grid_acc,grid_junc = grid_junc)
-      stopCluster(cl)
-      respar <- do.call("rbind",respar)
-      end <- Sys.time()
-      message(paste0("Did ",n-m + 1," collisions in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+      #n = 200
+      n = nrow(acc) #End
 
 
-      foo <- get.collisions(1,osm,acc,junc,grid_osm,grid_acc,grid_junc)
-      start <- Sys.time()
-      foo <- lapply(1:10,get.collisions,osm = osm,acc = acc,junc = junc,grid_osm = grid_osm,grid_acc = grid_acc,grid_junc = grid_junc)
-      end <- Sys.time()
-      message(round(difftime(end,start,units = "secs"),2))
-      foo <- do.call("rbind",foo)
-
-
-      df1 <- data.frame(a = 1:26000, b = rep(letters,1000), c = rep(c("a","b"), 13), stringsAsFactors = F)
-      df2 <- data.frame(d = 1:26, e = letters, stringsAsFactors = F)
-
-      func <- function(i){
-        df2.sub <- df2[i,]
-        letter <- df2.sub$e[[1]]
-
-        df1.sub <- df1[df1$b == letter,]
-        numb.a <- length(df1.sub$c[df1.sub$c == "a"])
-        numb.b <- length(df1.sub$c[df1.sub$c == "b"])
-
-        result <- data.frame(d = letter, A = numb.a, B = numb.b)
-        return(result)
-      }
-
-      foo <- func(1)
-
-
-
-      ##########################################################
-      rm(n,m,cl,grid_osm,start,end)
-
-      #Join togther data
-      acc <- left_join(acc,respar, by = c("AccRefGlobal" = "AccRefGlobal"))
-      acc.lines <- acc[!is.na(acc$CollisionLine),]
-      acc.junc <- acc[!is.na(acc$CollisionJunc),]
-
-      saveRDS(acc,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/collisions.Rds"))
-
-      m = 1
-      n = nrow(osm)
-
-      #Summarise Collison Data for Each Road
       ##########################################################
       #Parallel
       start <- Sys.time()
       fun <- function(cl){
-        parLapply(cl, m:n,count.collisions.lines)
+        parLapply(cl, m:n, get.collisions)
       }
       cl <- makeCluster(ncores) #make clusert and set number of cores
-      clusterExport(cl=cl, varlist=c("osm", "acc.lines"))
-      clusterEvalQ(cl, {library(sf)}) #; {splitmulti()}) #Need to load splitmuliin corectly
+      clusterEvalQ(cl, {library(sf)})
+      clusterExport(cl=cl, varlist=c("osm", "acc","junc","grid_osm","grid_acc","grid_junc"), envir=environment())
+      #clusterSplit(cl, m:n)
       respar <- fun(cl)
+      #respar <- parLapply(cl,m:n,get.collisions)
       stopCluster(cl)
-      respar <- do.call("rbind",respar)
+      respar <- bind_rows(respar)
       end <- Sys.time()
-      message(paste0("Counted collisions for ",n," roads in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
-      ##########################################################
-      rm(n,m,cl,start,end)
+      message(paste0("Did ",n-m + 1," collisions in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+      ##################################################
+      rm(n,m,cl,grid_osm,start,end)
 
-      osm <- left_join(osm,respar, by = c("id" = "lineid"))
+      #Join togther data
+      acc <- left_join(acc,respar, by = c("AccRefGlobal" = "AccRefGlobal"))
+      acc.lines <- as.data.frame(acc[!is.na(acc$CollisionLine),])
+      acc.lines$geometry <- NULL
+      acc.junc <- as.data.frame(acc[!is.na(acc$CollisionJunc),])
+      acc.lines$geometry <- NULL
 
+      saveRDS(acc,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/collisions.Rds"))
+
+      acc.lines <- acc.lines %>%
+        group_by(CollisionLine) %>%
+        summarise(ncollisions = length(AccRefGlobal), bikeCas = sum(nCasualtiesBike), totalCas = sum(nCasualties), totalVeh = sum(nVehicles))
+
+      acc.junc <- acc.junc %>%
+        group_by(CollisionJunc) %>%
+        summarise(ncollisions = length(AccRefGlobal), bikeCas = sum(nCasualtiesBike), totalCas = sum(nCasualties), totalVeh = sum(nVehicles))
+
+      osm <- left_join(osm,acc.lines, by = c("id" = "CollisionLine"))
+      junc <- left_join(junc,acc.junc, by = c("osm_id" = "CollisionJunc"))
 
 
       #Save results
       if(overwrite){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+        saveRDS(junc,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-junctions.Rds"))
       }else{
-        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-pct.Rds"))
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-colisions.Rds"))
+        saveRDS(junc,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-junctions.Rds"))
       }
-      rm(osm,pct.all,respar)
+      rm(osm,acc.junc,acc.lines,junc,respar,acc)
 
 
 
