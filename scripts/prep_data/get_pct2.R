@@ -166,7 +166,7 @@ for(b in 1:length(regions)){
       pct_vals <- bind_rows(pct_vals)
 
       osm <- left_join(osm, pct_vals, by = c("id" = "id"))
-      Sys.time()
+      rm(cl,end,n,m)
 
 
 
@@ -182,7 +182,7 @@ for(b in 1:length(regions)){
       }else{
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-pct.Rds"))
       }
-      rm(osm,pct.all,pct_vals,osm2pct,pct2osm,grid,grid_grid2osm,grid_pct2grid)
+      rm(osm,pct.all,pct_vals,osm2pct,pct2osm,grid,grid_grid2osm,grid_pct2grid, pol, bounds)
 
 
 
