@@ -43,15 +43,15 @@ regions <- regions.todo
 #regions <- "Bristol"
 
 for(b in 1:length(regions)){
-  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
+  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))){
     #Check if Uptake values exist
-    if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct-up.Rds")) & skip){
+    if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/pct-up.Rds")) & skip){
       message(paste0("Uptake numbers already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Getting uptake values for ",regions[b]," at ",Sys.time()))
 
       #Get file
-      osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+      osm <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))
       model <- readRDS("../cyipt/input-data/m3.Rds")
 
 
@@ -73,134 +73,141 @@ for(b in 1:length(regions)){
       # simple test make quietness always equal to 100
 
       #get the list of scheme_nos
-      scheme_nos <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
-      scheme_nos <- unique(scheme_nos$group_id)
-      scheme_nos <- scheme_nos[!is.na(scheme_nos)]
-      scheme_nos <- scheme_nos[order(scheme_nos)]
+      scheme_nos <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes.Rds"))
+
+      if(all(class(scheme_nos) == c("sf","data.frame"))){
+        scheme_nos <- unique(scheme_nos$group_id)
+        scheme_nos <- scheme_nos[!is.na(scheme_nos)]
+        scheme_nos <- scheme_nos[order(scheme_nos)]
 
 
-      osm$group_id[is.na(osm$group_id)] <- 0 # repalce NAs with 0 scheme number
+        osm$group_id[is.na(osm$group_id)] <- 0 # repalce NAs with 0 scheme number
 
-      # Loop over schemes
-      uptake.list <- list()
-      uptake.route.list <- list()
+        # Loop over schemes
+        uptake.list <- list()
+        uptake.route.list <- list()
 
-      for(j in scheme_nos){
+        for(j in scheme_nos){
 
-        #Find the exposure to the scheme of each pct straigh line
-        #scheme.buff <- st_buffer(osm[osm$group_id == j,], 20, nQuadSegs = 8)
-        #scheme.buff <- scheme.buff %>% group_by(group_id) %>% summarise()
-
-
-        # Find Exposed Length
-        # St_length does not like mix of lines and mulilines to split, calc, recombine
-        #lines.scheme <- pct[scheme.buff,]
-        #lines.scheme <- st_intersection(lines.scheme,scheme.buff)
-
-        #lines.scheme.l <-  lines.scheme[st_geometry_type(lines.scheme) == "LINESTRING",]
-        #lines.scheme.ml <-  lines.scheme[st_geometry_type(lines.scheme) == "MULTILINESTRING",]
-
-        # Check for Lines
-        #if(nrow(lines.scheme.l)>0){
-        #  lines.scheme.l$exposeLengthLine <- as.numeric(st_length(lines.scheme.l))
-        #  lines.scheme.l <- as.data.frame(lines.scheme.l)
-        #  lines.scheme.l$geometry <- NULL
-       # }
-
-        #Check for mulilines
-        #if(nrow(lines.scheme.ml)>0){
-        #  lines.scheme.ml$exposeLengthLine <- as.numeric(st_length(lines.scheme.ml))
-        #  lines.scheme.ml <- as.data.frame(lines.scheme.ml)
-        #  lines.scheme.ml$geometry <- NULL
-        #}
-
-        #Recombine
-        #if(nrow(lines.scheme.l) > 0 & nrow(lines.scheme.ml) > 0){
-        #  lines.scheme <- bind_rows(lines.scheme.l, lines.scheme.ml)
-        #}else if(nrow(lines.scheme.l) == 0 & nrow(lines.scheme.ml) > 0){
-        #  lines.scheme <- lines.scheme.ml
-        #}else if(nrow(lines.scheme.l) > 0 & nrow(lines.scheme.ml) == 0){
-        #  lines.scheme <- lines.scheme.l
-        #}else{
-        #  message(paste0(" Something has gone wrong with ",j))
-        #}
-
-        #Calcualte Exposure
-        #lines.scheme$exposureLine <- lines.scheme$exposeLength / lines.scheme$length
-        #lines.scheme <- lines.scheme[,c("ID","exposeLengthLine","exposureLine")]
-        #rm(scheme.buff, lines.scheme.l, lines.scheme.ml)
+          #Find the exposure to the scheme of each pct straigh line
+          #scheme.buff <- st_buffer(osm[osm$group_id == j,], 20, nQuadSegs = 8)
+          #scheme.buff <- scheme.buff %>% group_by(group_id) %>% summarise()
 
 
-        #Get the roads in the schemes
-        scheme.osm_ids <- osm$id[osm$group_id == j] # get the osm ids for this scheme
-        scheme.pct_ids <- unique(unlist(osm2pct[scheme.osm_ids])) # get the pct ids for this scheme
+          # Find Exposed Length
+          # St_length does not like mix of lines and mulilines to split, calc, recombine
+          #lines.scheme <- pct[scheme.buff,]
+          #lines.scheme <- st_intersection(lines.scheme,scheme.buff)
+
+          #lines.scheme.l <-  lines.scheme[st_geometry_type(lines.scheme) == "LINESTRING",]
+          #lines.scheme.ml <-  lines.scheme[st_geometry_type(lines.scheme) == "MULTILINESTRING",]
+
+          # Check for Lines
+          #if(nrow(lines.scheme.l)>0){
+          #  lines.scheme.l$exposeLengthLine <- as.numeric(st_length(lines.scheme.l))
+          #  lines.scheme.l <- as.data.frame(lines.scheme.l)
+          #  lines.scheme.l$geometry <- NULL
+          # }
+
+          #Check for mulilines
+          #if(nrow(lines.scheme.ml)>0){
+          #  lines.scheme.ml$exposeLengthLine <- as.numeric(st_length(lines.scheme.ml))
+          #  lines.scheme.ml <- as.data.frame(lines.scheme.ml)
+          #  lines.scheme.ml$geometry <- NULL
+          #}
+
+          #Recombine
+          #if(nrow(lines.scheme.l) > 0 & nrow(lines.scheme.ml) > 0){
+          #  lines.scheme <- bind_rows(lines.scheme.l, lines.scheme.ml)
+          #}else if(nrow(lines.scheme.l) == 0 & nrow(lines.scheme.ml) > 0){
+          #  lines.scheme <- lines.scheme.ml
+          #}else if(nrow(lines.scheme.l) > 0 & nrow(lines.scheme.ml) == 0){
+          #  lines.scheme <- lines.scheme.l
+          #}else{
+          #  message(paste0(" Something has gone wrong with ",j))
+          #}
+
+          #Calcualte Exposure
+          #lines.scheme$exposureLine <- lines.scheme$exposeLength / lines.scheme$length
+          #lines.scheme <- lines.scheme[,c("ID","exposeLengthLine","exposureLine")]
+          #rm(scheme.buff, lines.scheme.l, lines.scheme.ml)
 
 
-        pct.scheme <- pct[scheme.pct_ids,]
-        #pct.scheme <- left_join(pct.scheme, lines.scheme, by = c("ID" = "ID"))
-
-        #For each route get the length of on road and off road infa
-        exposure.lengths <- lapply(1:nrow(pct.scheme), get.exposure)
-        exposure.lengths <- bind_rows(exposure.lengths)
-
-        pct.scheme <- left_join(pct.scheme, exposure.lengths, by = c("ID" = "ID"))
-        pct.scheme$exposeOffRoad <- pct.scheme$lengthOffRoad / pct.scheme$length
-        pct.scheme$exposeOnRoad <- pct.scheme$lengthOnRoad / pct.scheme$length
-        pct.scheme$yearcomplete <- 0 #placeholder duration
-        pct.scheme$pcar <- pct.scheme$carorvan / pct.scheme$all_16p
-
-        # New Exposure Method
-        pct.scheme.mat <- as.data.frame(pct.scheme[,c("length","exposeOffRoad","exposeOnRoad","yearcomplete","pcar")])
-        pct.scheme.mat$geometry <- NULL
+          #Get the roads in the schemes
+          scheme.osm_ids <- osm$id[osm$group_id == j] # get the osm ids for this scheme
+          scheme.pct_ids <- unique(unlist(osm2pct[scheme.osm_ids])) # get the pct ids for this scheme
 
 
-        names(pct.scheme.mat) <- c("dist", "length_on_road", "length_off_road", "years_complete","pcar")
+          pct.scheme <- pct[scheme.pct_ids,]
+          #pct.scheme <- left_join(pct.scheme, lines.scheme, by = c("ID" = "ID"))
 
-        pct.scheme.mat$dist <- pct.scheme.mat$dist / 1000 # convert from m to km
-        pct.scheme.mat$length_on_road_sq <- pct.scheme.mat$length_on_road ** 2
-        pct.scheme.mat$length_off_road_sq <- pct.scheme.mat$length_off_road ** 2
-        pct.scheme.mat$length_on_road <- NULL
+          #For each route get the length of on road and off road infa
+          exposure.lengths <- lapply(1:nrow(pct.scheme), get.exposure)
+          exposure.lengths <- bind_rows(exposure.lengths)
 
-        #pct.scheme.mat <- as.matrix(pct.scheme.mat)
+          pct.scheme <- left_join(pct.scheme, exposure.lengths, by = c("ID" = "ID"))
+          pct.scheme$exposeOffRoad <- pct.scheme$lengthOffRoad / pct.scheme$length
+          pct.scheme$exposeOnRoad <- pct.scheme$lengthOnRoad / pct.scheme$length
+          pct.scheme$yearcomplete <- 0 #placeholder duration
+          pct.scheme$pcar <- pct.scheme$carorvan / pct.scheme$all_16p
 
-        pct.scheme$perincrease <- round(predict(object = model, pct.scheme.mat),3)
-        pct.scheme$uptake <- pct.scheme$perincrease * pct.scheme$all_16p
-
-        #foo <- as.data.frame(pct.scheme[,c("ID","pct.census","all_16p","perincrease","uptake")])
-        #foo$geometry <- NULL
-
-        uptake <- data.frame(scheme = j, census = sum(pct.scheme$pct.census), model.future = round(sum(pct.scheme$pct.census) + sum(pct.scheme$uptake),0))
-
-        pct.scheme$schemeID <- j
+          # New Exposure Method
+          pct.scheme.mat <- as.data.frame(pct.scheme[,c("length","exposeOffRoad","exposeOnRoad","yearcomplete","pcar")])
+          pct.scheme.mat$geometry <- NULL
 
 
-        uptake.list[[j]] <- uptake
+          names(pct.scheme.mat) <- c("dist", "length_on_road", "length_off_road", "years_complete","pcar")
 
-        pct.scheme <- as.data.frame(pct.scheme)
-        pct.scheme$geometry <- NULL
-        pct.scheme <- pct.scheme[,c("ID","schemeID","exposeOffRoad","exposeOnRoad","perincrease","uptake")]
+          pct.scheme.mat$dist <- pct.scheme.mat$dist / 1000 # convert from m to km
+          pct.scheme.mat$length_on_road_sq <- pct.scheme.mat$length_on_road ** 2
+          pct.scheme.mat$length_off_road_sq <- pct.scheme.mat$length_off_road ** 2
+          pct.scheme.mat$length_on_road <- NULL
 
-        uptake.route.list[[j]] <- pct.scheme
+          #pct.scheme.mat <- as.matrix(pct.scheme.mat)
+
+          pct.scheme$perincrease <- round(predict(object = model, pct.scheme.mat),3)
+          pct.scheme$uptake <- pct.scheme$perincrease * pct.scheme$all_16p
+
+          #foo <- as.data.frame(pct.scheme[,c("ID","pct.census","all_16p","perincrease","uptake")])
+          #foo$geometry <- NULL
+
+          uptake <- data.frame(scheme = j, census = sum(pct.scheme$pct.census), model.future = round(sum(pct.scheme$pct.census) + sum(pct.scheme$uptake),0))
+
+          pct.scheme$schemeID <- j
 
 
-        rm(pct.scheme, pct.scheme.mat, uptake, scheme.osm_ids, scheme.pct_ids)
-        #rm(pct.scheme, pct.scheme.mat, uptake, cor, scheme.osm_ids, scheme.pct_ids)
+          uptake.list[[j]] <- uptake
 
-        message(paste0("Done scheme ",j," at ",Sys.time()))
+          pct.scheme <- as.data.frame(pct.scheme)
+          pct.scheme$geometry <- NULL
+          pct.scheme <- pct.scheme[,c("ID","schemeID","exposeOffRoad","exposeOnRoad","perincrease","uptake")]
 
+          uptake.route.list[[j]] <- pct.scheme
+
+
+          rm(pct.scheme, pct.scheme.mat, uptake, scheme.osm_ids, scheme.pct_ids)
+          #rm(pct.scheme, pct.scheme.mat, uptake, cor, scheme.osm_ids, scheme.pct_ids)
+
+          message(paste0("Done scheme ",j," at ",Sys.time()))
+
+        }
+
+        uptake.fin <- bind_rows(uptake.list)
+        uptake.fin$change <- uptake.fin$model.future - uptake.fin$census
+        uptake.fin$per <- round(uptake.fin$change / uptake.fin$census * 100, 2)
+
+        uptake.route <- bind_rows(uptake.route.list)
+
+
+        saveRDS(uptake.fin,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))
+        saveRDS(uptake.route,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/route-uptake.Rds"))
+
+        rm(osm,model, osm2pct, pct2osm, scheme_nos)
+      }else{
+        message(paste0("No schemes for ",regions[b]))
       }
 
-      uptake.fin <- bind_rows(uptake.list)
-      uptake.fin$change <- uptake.fin$model.future - uptake.fin$census
-      uptake.fin$per <- round(uptake.fin$change / uptake.fin$census * 100, 2)
 
-      uptake.route <- bind_rows(uptake.route.list)
-
-
-      saveRDS(uptake.fin,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/scheme-uptake.Rds"))
-      saveRDS(uptake.route,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/route-uptake.Rds"))
-
-      rm(osm,model, osm2pct, pct2osm, scheme_nos)
 
     }
 
