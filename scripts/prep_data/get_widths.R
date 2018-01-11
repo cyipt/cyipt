@@ -261,6 +261,7 @@ for(b in 1:length(regions)){
     #Check if width values exist in the file
     if(all(c("width","widthpath") %in% names(osm)) & skip){
       message(paste0("Road width values already calcualted for ",regions[b]," so skipping"))
+      rm(osm)
     }else{
       message(paste0("Getting road width values for ",regions[b]," at ",Sys.time()))
 
@@ -300,13 +301,14 @@ for(b in 1:length(regions)){
 
       # Read in the OS region(S)
       os.list <- list()
-      for(c in seq(1,length(os.region.name))){
-        os.sub <- readRDS(paste0("../cyipt-securedata/os/",os.region.name[c],".Rds"))
+      for(i in seq(1,length(os.region.name))){
+        os.sub <- readRDS(paste0("../cyipt-securedata/os/",os.region.name[i],".Rds"))
         os.sub$DESCGROUP <- as.character(os.sub$DESCGROUP)
         os.sub <- st_cast(os.sub, "POLYGON")
-        os.list[[c]] <- os.sub
+        os.list[[i]] <- os.sub
         rm(os.sub)
       }
+      rm(i)
 
       #Bind the list togther
       os <- bind_rows(os.list) #much faster than rbind but mangle the sf format, all geometies must be same type
@@ -370,7 +372,7 @@ for(b in 1:length(regions)){
       }else{
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-width.Rds"))
       }
-      rm(osm, os, grid_os, grid_osm,n,m,os.region.name, poi, pol)
+      rm(osm, os, grid_os, grid_osm,n,m,os.region.name, poi, pol, os.region, bounds)
 
 
     }
