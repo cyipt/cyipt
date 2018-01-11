@@ -1,20 +1,49 @@
 library(sf)
 
+#functions
+clean.vars <- function(x,prefix){
+  for(b in 1:ncol(x)){
+    if(class(x[,b]) == "character" & names(x)[b] != "geotext"){
+      x[,b] <- as.factor(x[,b])
+      message("Changing ",names(x)[b]," from character to factor")
+    }
+
+    if(class(x[,b]) == "factor"){
+      message("Changing ",names(x)[b]," from factor to interger")
+      #Create a lookup table
+      lookup <- data.frame(code = 1:nlevels(x[,b]), label = levels(x[,b]))
+      # Save ou the lookup table
+      write.csv(lookup,paste0("../cyipt-bigdata/forDB/lookup/",prefix,"_",colnames(x[b]),".csv"), row.names = F)
+      x[,b] <- as.integer(x[,b])
+    }else if(class(x[,b]) == "numeric"){
+      if(all(unique(x[,b]) %in% c(NA, 0:10000) )){
+        message("Changing ",names(x)[b]," from numeric to interger")
+        x[,b] <- as.integer(x[,b])
+      }
+    }
+  }
+  return(x)
+}
+
+clean.nas <- function(x){
+  togo <- NA
+  for(i in 1:ncol(x)){
+    if(all(is.na(x[,i]))){
+      message(paste0("removing ",names(x)[i]))
+      togo <- c(togo,i)
+
+    }
+  }
+  togo <- togo[!is.na(togo)]
+  x[,togo] <- NULL
+  return(x)
+}
+
+
+#code
 acc.all <- readRDS("../cyipt-bigdata/collisions/acc.Rds")
 cas.all <- readRDS("../cyipt-bigdata/collisions/cas.Rds")
 veh.all <- readRDS("../cyipt-bigdata/collisions/veh.Rds")
-
-
-#Get bounding box
-#pol2 <- data.frame(id = 1, geometry = NA)
-#st_geometry(pol2) <- st_sfc(st_polygon(list(rbind(c(0,0),c(700000,0),c(700000,1230000),c(0,1230000),c(c(0,0))))) )
-#st_crs(pol2) <- 27700
-
-
-#Remove Points no in the bounding box
-#nrow(acc.all)
-#acc.all <- acc.all[st_intersects(pol2,acc.all)[[1]],]
-#nrow(acc.all)
 
 #Change Geometry for DB
 acc.all <- st_transform(acc.all, 4326)
@@ -39,17 +68,45 @@ acc.all <- acc.all[,c("AccRefGlobal","DateTime","Severity", "nVehicles","nCasual
                       "JunctionDetail","JunctionControl", "RoadClass2", "RoadNumber2","CrossingControl",
                       "CrossingFacilities","Light","Weather","Surface","SpecialConditions","Hazards","geotext")]
 
+cas.all <- cas.all[,c("AccRefGlobal","VehicleRef","CasualtyRef","CasualtyClass","CasSex","Age",
+                      "PedestrianMovement","PedestrianDirection","SchoolPupil","SeatBelt","CarPassenger",
+                      "BusPassenger","CasualtyType","MaintenanceWorker","HomeArea","CasualtyIMD")]
 
-classes <- lapply(acc.all, class)
-for(b in 1:length(classes)){
-  if(classes[b] == "factor"){
-    #Create a lookup table
-    lookup <- data.frame(code = 1:nlevels(acc.all[,b]), label = levels(acc.all[,b]))
-    # Save ou the lookup table
-    write.csv(lookup,paste0("../cyipt-bigdata/forDB/lookup/",colnames(acc.all[b]),".csv"), row.names = F)
-    acc.all[,b] <- as.integer(acc.all[,b])
-  }
-}
+veh.all <- veh.all[,c("AccRefGlobal","VehicleRef","VehicleType",
+                      "TowingArticulation","Manoeuvre","VehFrom","VehTo",
+                      "LocationRoad","LocationRestrictedAway","Junction","SkiddingOverturning",
+                      "ObjectInCarriageway","LeavingCarriageway","ObjectOffCarriageway","VehicleLetter",
+                      "PointofImpact","OtherVehicle","CombinedDamage","RoofUndersideDamage",
+                      "SexDriver","AgeDriver","VehAgeBand",
+                      "HitRun","ForeignVehicle","LeftHandDrive",
+                      "EngineSize","Propulsion","AgeVehicle","DriverIMD",
+                      "DriverArea","VehicleIMD","JourneyPurpose")]
+
+
+
+#remove data missign lables
+#cas.all[cas.all == "Data missing or out of range"] <- NA
+#acc.all[acc.all == "Data missing or out of range"] <- NA
+#veh.all[veh.all == "Data missing or out of range"] <- NA
+
+#Remove any all NA columns
+veh.all <- clean.nas(veh.all)
+cas.all <- clean.nas(cas.all)
+
+
+object.size(acc.all)
+acc.all <- clean.vars(acc.all,"acc")
+object.size(acc.all)
+
+object.size(veh.all)
+veh.all <- clean.vars(veh.all,"veh")
+object.size(veh.all)
+
+
+object.size(cas.all)
+cas.all <- clean.vars(cas.all,"cas")
+object.size(cas.all)
+
 
 
 write.csv(acc.all,"../cyipt-bigdata/forDB/accidents.csv", row.names = F, na = "")

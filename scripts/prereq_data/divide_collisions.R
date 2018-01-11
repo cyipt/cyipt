@@ -11,11 +11,6 @@ count.bike.cas <- function(b){
   return(ncycle)
 }
 
-
-
-
-
-
 #code
 
 acc.all <- readRDS("../cyipt-bigdata/collisions/acc.Rds")
