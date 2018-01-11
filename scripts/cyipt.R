@@ -63,6 +63,9 @@ source("scripts/prep_data/get_pct2.R")
 #Step 6: Get road width esitmates
 source("scripts/prep_data/get_widths.R")
 
+#Step 7: Get Collisions
+source("scripts/prep_data/get_collisions.R")
+
 #Step 7:Evaluate Infrastrucutre Options
 source("scripts/select_infra/select_infra.R")
 
@@ -73,7 +76,7 @@ source("scripts/select_infra/compare_widths.R")
 source("scripts/select_infra/make_schemes.R")
 
 #Step 10: get uptake
-source("scripts/uptake/calc_uptake_exposure.R")
+source("scripts/uptake/calc_uptake_exposure3.R")
 
 #Step 11: Summarise Schemes
 source("scripts/select_infra/summarise_schemes.R")
