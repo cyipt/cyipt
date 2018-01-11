@@ -15,6 +15,11 @@ library(igraph)
 #ncores <- 4 #number of cores to use in parallel processing
 #overwrite <- FALSE #Overwrite or create new file
 
+#create directory
+if(!dir.exists(paste0("../cyipt-bigdata/osm-recc"))){
+  dir.create(paste0("../cyipt-bigdata/osm-recc"))
+}
+
 #Functions
 recc.infra <- function(c){
   not_road <- c("bridleway","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")
@@ -77,13 +82,18 @@ costs <- read.csv("../cyipt/input-data/costs2.csv", stringsAsFactors = FALSE)
 
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
-    #Get file
-    osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
-    #Check if PCT values exist in the file
-    if(all(c("Existing","Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation","Change","costperm","length","costTotal") %in% names(osm)) & skip){
+
+    #Check if Infra file has already been created
+    if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds")) & skip){
       message(paste0("infrastructure types values already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Getting infrastructure types values for ",regions[b]," at ",Sys.time()))
+
+      #Get file
+      osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+
+      #create dir
+      dir.create(paste0("../cyipt-bigdata/osm-recc/",regions[b]))
 
       #If overwriting remove old data
       col.to.keep <- names(osm)[!names(osm) %in% c("Existing","Recommended","DesWidth","MinWidth","DesSeparation","MinSeparation","Change","costperm","length","costTotal")]
@@ -117,7 +127,7 @@ for(b in 1:length(regions)){
       summary <- as.data.frame(osm)
       summary <- summary[,c("Existing","Recommended","onewaysummary")]
       summary <- unique(summary)
-      costs.summary <- costs[,c("Existing","Recommended")]
+      costs.summary <- costs[,c("Existing","Recommended","onewaysummary")]
       #write.csv(summary, paste0("../cyipt-bigdata/osm-prep/",regions[b],"/RoadCombis.csv"), row.names = F)
       compar  <- function(a1,a2)
       {
@@ -147,9 +157,9 @@ for(b in 1:length(regions)){
 
       #Save results
       if(overwrite){
-        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))
       }else{
-        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-reccinfra.Rds"))
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines-reccinfra.Rds"))
       }
       rm(osm)
 

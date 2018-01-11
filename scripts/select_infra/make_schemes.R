@@ -23,14 +23,14 @@ library(igraph)
 regions <- regions.todo
 
 for(b in 1:length(regions)){
-  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
+  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))){
     #Get file
-    osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+    osm <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))
     #Check if PCT values exist in the file
     if(all(c("group_id") %in% names(osm)) & skip){
       message(paste0("Scheme numbers already calcualted for ",regions[b]," so skipping"))
     }else{
-      message(paste0("Getting infrastructure types values for ",regions[b]," at ",Sys.time()))
+      message(paste0("Getting schemes for ",regions[b]," at ",Sys.time()))
 
       #If overwriting remove old data
       col.to.keep <- names(osm)[!names(osm) %in% c("group_id")]
@@ -110,11 +110,11 @@ for(b in 1:length(regions)){
 
       #Save results
       if(overwrite){
-        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
-        saveRDS(schemes,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))
+        saveRDS(schemes,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes.Rds"))
       }else{
-        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-schemes.Rds"))
-        saveRDS(schemes,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines-schemes.Rds"))
+        saveRDS(schemes,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes.Rds"))
       }
       rm(osm,schemes)
 

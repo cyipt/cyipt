@@ -23,14 +23,14 @@ library(igraph)
 regions <- regions.todo
 
 for(b in 1:length(regions)){
-  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))){
+  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))){
     #Get file
-    osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+    osm <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))
     #Check if PCT values exist in the file
     if(all(c("calcwidthnow","calcwidthrec") %in% names(osm)) & skip){
-      message(paste0("Scheme numbers already calcualted for ",regions[b]," so skipping"))
+      message(paste0("Road width comparision calcualted for ",regions[b]," so skipping"))
     }else{
-      message(paste0("Getting infrastructure types values for ",regions[b]," at ",Sys.time()))
+      message(paste0("Getting road width comparision for ",regions[b]," at ",Sys.time()))
 
       #If overwriting remove old data
       col.to.keep <- names(osm)[!names(osm) %in% c("calcwidthnow","calcwidthrec")]
@@ -352,9 +352,9 @@ for(b in 1:length(regions)){
 
       #Save results
       if(overwrite){
-        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))
       }else{
-        saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-widthseval.Rds"))
+        saveRDS(osm,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines-widthseval.Rds"))
 
       }
       rm(osm)
