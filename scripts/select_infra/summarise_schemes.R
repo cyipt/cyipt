@@ -23,33 +23,44 @@ library(igraph)
 regions <- regions.todo
 
 for(b in 1:length(regions)){
-  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))){
+  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes.Rds"))){
     #Get file
-    scheme <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))
+    scheme <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes.Rds"))
     #Check if PCT values exist in the file
     if(FALSE & skip){
       message(paste0("Scheme Simplification already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Summarising Schemes for ",regions[b]," at ",Sys.time()))
 
-      #Dump Unneded Data
-      scheme <- scheme[,c("group_id","costTotal","Recommended")]
+      if(class(scheme) != "numeric"){
+        if(nrow(scheme) > 0){
+          #Dump Unneded Data
+          scheme <- scheme[,c("group_id","costTotal","Recommended")]
 
-      #Summarise
-      scheme <- scheme %>%
-        group_by(group_id) %>%
-        summarise(costTotal = sum(costTotal), type = Recommended[which.max(table(Recommended))] )
+          #Summarise
+          scheme <- scheme %>%
+            group_by(group_id) %>%
+            summarise(costTotal = sum(costTotal), type = Recommended[which.max(table(Recommended))] )
 
-      #Get uptake data
-      uptake <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/scheme-uptake.Rds"))
-      scheme <- left_join(scheme,uptake, by = c("group_id" = "scheme"))
+          #Get uptake data
+          uptake <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))
+          scheme <- left_join(scheme,uptake, by = c("group_id" = "scheme"))
 
-      #Add Exta Calcs
-      scheme$costperperson <- round(scheme$costTotal / scheme$change,2)
+          #Add Exta Calcs
+          scheme$costperperson <- round(scheme$costTotal / scheme$change,2)
 
 
 
-      saveRDS(scheme,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes-simplified.Rds"))
+          saveRDS(scheme,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes-simplified.Rds"))
+        }else{
+          message(paste0("No data for ",regions[b]," at ",Sys.time()))
+        }
+
+      }else{
+        message(paste0("No Schemes for ",regions[b]," at ",Sys.time()))
+      }
+
+
 
       rm(scheme)
 
