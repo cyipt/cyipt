@@ -323,10 +323,10 @@ for(b in 1:length(regions)){
 
       #Compare Measured and Calcualted Width
       osm$widthdiffnow <- osm$widthpath - osm$calcwidthnow
-      hist(osm$widthdiffnow, breaks = -40:40)
+      #hist(osm$widthdiffnow, breaks = -40:40)
 
       osm$widthdiffrec <- osm$widthpath - osm$calcwidthrec
-      hist(osm$widthdiffrec, breaks = -40:40)
+      #hist(osm$widthdiffrec, breaks = -40:40)
 
       #Categorise with Width Difference
       osm$widthstatus <- NA
