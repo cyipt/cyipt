@@ -226,20 +226,20 @@ get.benefits <- function(f){
 regions <- regions.todo
 
 for(b in 1:length(regions)){
-  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes.Rds"))){
+  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes-simplified.Rds"))){
     #Get in all the data
 
-    osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
+    osm <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))
     osm$group_id[is.na(osm$group_id)] <- 0
 
 
-    schemes <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes-simplified.Rds"))
+    schemes <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes-simplified.Rds"))
     osm2pct <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm2pct.Rds"))
     pct2osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct2osm.Rds"))
     pct <- readRDS(paste0("../cyipt-securedata/pct-regions/",regions[b],".Rds"))
     pct <- as.data.frame(pct)
     pct <- pct[,c("ID","length","all_16p","pct.census","underground","train","bus","taxi","motorcycle","carorvan","passenger","onfoot","other")]
-    route.uptake <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/route-uptake.Rds"))
+    route.uptake <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/route-uptake.Rds"))
     route.uptake <- route.uptake[,c("ID","schemeID","perincrease","uptake")]
     route.uptake <- left_join(route.uptake, pct, by = c("ID" = "ID"))
 
@@ -293,7 +293,7 @@ for(b in 1:length(regions)){
       schemes <- st_cast(schemes, "MULTILINESTRING")
       schemes$length <- as.numeric(st_length(schemes))
 
-      for(e in 1:nrow(schemes)){
+      for(e in seq_along(1:nrow(schemes)) ){
         message(paste0(Sys.time()," Doing scheme ",e," of ",nrow(schemes)))
 
         scheme_id <- schemes$group_id[e]
@@ -348,6 +348,7 @@ for(b in 1:length(regions)){
 
         end <- Sys.time()
         message(paste0("Did ",nrow(route.up.sub)," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+        rm(end, fun, cl, start)
         ##########################################################
 
         healthbens <- bind_rows(healthbens)
@@ -363,7 +364,7 @@ for(b in 1:length(regions)){
 
       }
 
-
+      rm(e)
 
 
       ######################################################################
@@ -383,7 +384,7 @@ for(b in 1:length(regions)){
 
       schemes$co2saved <- NA
 
-      for(g in 1:nrow(schemes)){
+      for(g in seq_along(1:nrow(schemes)) ){
         #Fuel Consumption for petrol and desiel cars
         cons.petrol <- (1.18011 / velo) + 0.04639 + (-0.00009 * velo) + (0.000003 * velo **2) * (- schemes$carkm[g] * (1 - pdiesel))
         cons.diesel <- (0.51887 / velo) + 0.06556 + (-0.00062 * velo) + (0.000005 * velo **2) * (- schemes$carkm[g] * pdiesel)
@@ -396,7 +397,7 @@ for(b in 1:length(regions)){
         rm(emiss.diesel, emiss.petrol, cons.petrol, cons.diesel)
 
       }
-
+      rm(g)
       #Convert to £ benefit based on WebTAG Databook A 3.3.
       schemes$ghg_benefit <- round(schemes$co2saved / 1000 * 64.66,0)
 
@@ -438,7 +439,7 @@ for(b in 1:length(regions)){
       ####################################################################
 
        schemes$totalBen <- schemes$congestion_benefit + schemes$health_benefit +
-                            schemes$jouney_qual_ben + schemes$ghg_benefit +
+                            schemes$quality_benefit + schemes$ghg_benefit +
                             schemes$absenteeism_benefit
                             #+ schemes$airqual_benefit +
                             #schemes$noise_benefit + schemes$tax_benefit
