@@ -5,6 +5,7 @@ tmap_mode("view")
 library(ukboundaries)
 library(tidyverse)
 library(stplanr)
+library(osmdata)
 region_name = "Bristol"
 
 # read-in data ----
@@ -32,6 +33,11 @@ rf_new_order = rf_all_orig[o,]
 rf11_sf = rf_new_order %>%
   st_as_sf()
 
+ukbound = getbb("Great Britain")
+# ukways = dodgr::dodgr_streetnet("Great Britain") # fail
+ukways = osmdata_sf(q = opq(bbox = "Great Britain"), doc = "../cyipt-bigdata/gb_ways.osm")
+
+# Process lines data ----
 rf11 = rf11_sf %>%
   mutate(pcycle11 = bicycle / all) %>%
   select(o = geo_code1, d = geo_code2, all11 = all, pcycle11, dist = rf_dist_km,
@@ -47,6 +53,8 @@ l11 = flow_11_orig %>%
   select(o = geo_code1, d = geo_code2, all11 = all, pcycle11) %>%
   filter(o %in% z$geo_code, d %in% z$geo_code) %>%
   filter(all11 > 20) # 130k when >20
+
+
 
 # add straight line geometry to rf11 for faster default plotting
 rf11$geometry_rf = rf11$geometry
@@ -85,8 +93,11 @@ sl2sc = readRDS("../cyinfdat/ri_04_11_dft") %>%
 sndft = readRDS("../cyinfdat/ri_01_11_non_dft") %>%
   select(date = OpenDate, on_road = OnRoad) %>%
   mutate(funding = "Non-DfT")
+
+# add Martin's Transport direct data here
+
 # old_infra = rbind(sc2sd, sl2sc, sndft) %>%
-old_infra = rbind(sc2sd) %>%
+old_infra = rbind(sc2sd, sl2sc, sndft) %>%
   st_transform(4326)  %>%
   mutate(date = as.Date(date))
 summary(as.factor(old_infra$on_road))
@@ -112,6 +123,34 @@ lnb = l_joined[!selb_logical, ]
 set.seed(20012011)
 lnb_sample = sample_n(lnb, nrow(l))
 l = rbind(l, lnb_sample)
+
+# add new variables to old infra data ----
+way1 = readRDS("../cyipt-bigdata/osm-prep/Andover/osm-lines.Rds")
+plot(way1$geometry)
+dirs = file.path(list.dirs("../cyipt-bigdata/osm-prep/"), "osm-lines.Rds")
+ways <- list()
+
+Sys.time({
+  for(i in dirs[-c(1, 2)]) {
+    way1 = readRDS(i)
+    ways[[i]] <- way1
+    print(i)
+  }
+
+  ways_all = bind_rows(ways)
+  ways_all = as.data.frame(ways_all)
+  ways_all$geometry <- st_sfc(ways_all$geometry)
+
+  ways_all = st_sf(ways_all)
+
+})
+
+l = purrr::map(dirs[-1] ~
+             readRDS(.)
+         )
+
+
+
 
 # sanity checks on lines
 summary(l$o %in% z$geo_code)
@@ -168,17 +207,20 @@ summary(res_prop)
 l_new = l
 l_new$length_on_road = res_prop$length_on_road
 l_new$length_off_road = res_prop$length_off_road
+l_new$length_on_road_sq = res_prop$length_on_road^2
 l_new$length_off_road_sq = res_prop$length_off_road^2
 l_new$years_complete = res_prop$years_complete
 l_new$dist_sq = l_new$dist^2
 summary(l_new)
 psimple = l$pcycle01 * l$all11 # simple model
-m = lm(p_uptake ~ dist + dist_sq + length_on_road + length_off_road + length_off_road_sq + years_complete
-       + hilliness + qdf + pcar + off_road_dist + pcycle01, data = l_new, weights = all11)
+m = lm(p_uptake ~ dist + length_off_road +
+       length_on_road_sq + length_off_road_sq + years_complete
+       + pcar, data = l_new, weights = all11)
 saveRDS(m, "m.Rds")
 p = (predict(m, l_new) + l$pcycle01) * l$all11
 p[is.na(p)] = 0
 summary(m)
+summary(l_new)
 sum(psimple)
 sum(p)
 # install.packages("xgboost")
