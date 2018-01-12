@@ -43,7 +43,7 @@ regions <- regions.todo
 #regions <- "Bristol"
 
 for(b in 1:length(regions)){
-  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))){
+  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes.Rds"))){
     #Check if Uptake values exist
     if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/pct-up.Rds")) & skip){
       message(paste0("Uptake numbers already calcualted for ",regions[b]," so skipping"))
