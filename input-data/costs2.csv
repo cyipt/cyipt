@@ -529,3 +529,5 @@ Residential Road - Cycling Allowed 0 no track 0,Cycle Street,One Way,upgrade (bo
 Main Road - Cycling Allowed 0 no no 0,Cycle Lanes,One Way - Two Way Cycling,upgrade (both sides),460
 Main Road - Cycling Allowed 1 share_busway no 0,Segregated Cycle Track,One Way,upgrade (one side),725
 Main Road - Cycling Allowed 0 no share_busway 1,Cycle Lanes,One Way - Two Way Cycling,upgrade (one side),180
+Minor Road - Cycling Allowed 1 share_busway no 0,Segregated Cycle Track,One Way,upgrade (one side),725
+Trunk Road - Cycling Allowed 0 no track 0,Cycle Lanes,One Way,downgrade,0
