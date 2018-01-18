@@ -1,13 +1,5 @@
 # Aim: download osm lines and junction points
 
-#library(sf)
-#library(osmdata)
-#library(tmap)
-#library(stringr)
-
-#Settings
-#Settings are now taken from the cyipt master file
-# skip <- FALSE
 
 #create directory
 if(!dir.exists(paste0("../cyipt-bigdata/osm-raw"))){
@@ -18,19 +10,11 @@ if(!dir.exists(paste0("../cyipt-bigdata/osm-raw"))){
 #Get Boundy
 bounds <- readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
 
-#Subset to england
-#bounds$lad16cd <- as.character(bounds$lad16cd)
-#bounds <- bounds[substr(bounds$lad16cd,1,1) == "E",]
-
 #subset the regions to do from the master file
 bounds <- bounds[bounds$ttwa11nm %in% regions.todo,]
 
 
-#Transform to WGS84
-#bounds <- st_transform(bounds,4326)
-
 #Columns to keep
-
 colcheck <- c("osm_id","name",
               #"FIXME","abutters","access","access.backward","access.conditional","access.motor_vehicle","addr.city",
               #"addr.housename","addr.housenumber","addr.interpolation","addr.postcode","addr.street","agricultural","alt_name","ambulance","amenity","area","attraction",
@@ -87,13 +71,12 @@ colcheck <- c("osm_id","name",
               "geometry")
 
 
-#uncomment for loop for all regions
+
 for(a in seq(from = 1, to = nrow(bounds))){
   #Get Region Name
   region_nm <- as.character(bounds$ttwa11nm[a])
-  #region_nm <- str_replace_all(region_nm,"[[:punct:]]","")
-  #region_nm <- str_replace_all(region_nm," ","")
   exists <- dir.exists(paste0("../cyipt-bigdata/osm-raw/",region_nm))
+
   #Skip if already done
   if(skip & exists){
     print(paste0("Skipping download of ",region_nm))
@@ -120,17 +103,14 @@ for(a in seq(from = 1, to = nrow(bounds))){
     lines.loops$osm_id <- as.numeric(as.character(lines.loops$osm_id))
     points$osm_id <- as.numeric(as.character(points$osm_id))
 
-
     #remove the invalid polygons
     lines.loops <- lines.loops[!is.na(lines.loops$highway),]
     lines.loops <- lines.loops[is.na(lines.loops$area),]
-    #qtm(lines.loops)
 
-
+    #Add in any missing columns
     check <- colcheck %in% names(lines)
     check.loops <- colcheck %in% names(lines.loops)
 
-    #Add in any missing columns
     for(b in 1:length(colcheck)){
       if(check[b]){
         #Do nothing
@@ -174,11 +154,9 @@ for(a in seq(from = 1, to = nrow(bounds))){
     lines.loops <- lines.loops[st_is_valid(lines.loops) %in% TRUE,]
     points <- points[st_is_valid(points) %in% TRUE,]
 
-
     #Bind togther
     lines <- rbind(lines,lines.loops)
     rm(lines.loops)
-
 
     #CHange to British National Grid
     lines <- st_transform(lines, 27700)
@@ -192,17 +170,11 @@ for(a in seq(from = 1, to = nrow(bounds))){
     #Download osm used a square bounding box, now trim to the exact boundry
     #note that lines that that cross the boundary are still included
 
-    #simple subset does not work well with large data sets
-    #inter.points <- st_intersects(points[1:10,],region_shp)
-
     lines <- lines[region_shp,]
     points <- points[region_shp,]
 
     #now cut the lines to the boundary
     lines <- st_intersection(region_shp,lines)
-
-
-
 
     #Save the lines
     saveRDS(lines, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-lines.Rds"))
@@ -233,7 +205,7 @@ for(a in seq(from = 1, to = nrow(bounds))){
     points <- points[!duplicated(points$geometry),]
 
 
-
+    #Save results
     saveRDS(points, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-junction-points.Rds"))
     message(paste0("Finished downloading ",region_nm," at ",Sys.time()))
     rm(lines,region_shp,region_nm, len, points, inter, rowsum, exists)
