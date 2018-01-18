@@ -7,9 +7,9 @@ regions <- regions.todo
 #Read In Each File and Combine
 regions.list <- list()
 for(b in 1:length(regions)){
-  if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes-simplified.Rds"))){
+  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes-simplified.Rds"))){
     #Get file
-    schemes <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes-simplified.Rds"))
+    schemes <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes-simplified.Rds"))
 
     if("data.frame" %in% class(schemes)){
       print(nrow(schemes))
@@ -55,14 +55,21 @@ schemes.all <- do.call("rbind",regions.list)
 schemes.all$idGlobal <- 1:nrow(schemes.all)
 
 #Reorder columns
-schemes.all <- schemes.all[,c("idGlobal","groupid","region","costTotal","costperperson","ncyclebefore","ncycleafter","type","change","per",
-                              "carkm","length","jouneyqualben","healthdeathavoided",
-                              "healthbenefit","congestionbenefit","totalBen","costBenRatio","geotext")]
+schemes.all <- schemes.all[,c("idGlobal","groupid","region","costTotal","costperperson","ncyclebefore","ncycleafter",
+                              "type","change","per","length",
+                              "ndrivebefore","ndriveafter","carkmbefore","carkmafter","carkm",
+                              "absenteeismbenefit","healthdeathavoided","healthbenefit",
+                              "qualitybenefit","accidentsbenefit","co2saved","ghgbenefit",
+                              "congestionbenefit","totalBen","costBenRatio","geotext")]
 
 #Rename for Database
-names(schemes.all) <- c("idGlobal","groupid","region","cost","costperperson","ncyclebefore","ncycleafter","infratype","change","per",
-                        "carkm","length","jouneyqualben","healthdeathavoided",
-                        "healthbenefit","congestionbenefit","totalBen","costBenRatio","geotext")
+#costTotal and type
+names(schemes.all) <- c("idGlobal","groupid","region","cost","costperperson","ncyclebefore","ncycleafter",
+                        "infratype","change","per","length",
+                        "ndrivebefore","ndriveafter","carkmbefore","carkmafter","carkm",
+                        "absenteeismbenefit","healthdeathavoided","healthbenefit",
+                        "qualitybenefit","accidentsbenefit","co2saved","ghgbenefit",
+                        "congestionbenefit","totalBen","costBenRatio","geotext")
 
 print(summary(as.factor(schemes.all$region)))
 
