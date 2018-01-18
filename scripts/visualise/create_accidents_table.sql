@@ -22,6 +22,8 @@ CREATE TABLE accidents (
     Surface SMALLINT NULL,
     SpecialConditions SMALLINT NULL,
     Hazards SMALLINT NULL,
+    CollisionJunc INT NULL,
+    CollisionLine INT NULL,
     geotext  GEOMETRY NULL
     );
 
