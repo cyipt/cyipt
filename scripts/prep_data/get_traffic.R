@@ -1,16 +1,4 @@
-#Gets PCT Values for the road segments
-
-############################################
-#NOTE: THIS OVERRIGHTS EXISTING FILES RATHER THAN CREATING NEW FILES
-#############################################
-
-library(sf)
-library(dplyr)
-
-#Settings now come from master file
-#skip <- FALSE #Skip Files that already have PCT values
-#ncores <- 4 #number of cores to use in parallel processing
-#overwrite <- FALSE #Overwrite or create new file
+#Gets Traffic Values for the road segments
 
 #Functions
 #Function for classified roads
@@ -30,10 +18,6 @@ get.aadt.class <- function(e){
     #Make a big buffer around the point
     voronoi <- st_buffer(traffic.sub, 1000)
   }
-
-  #qtm(traffic.sub) +
-  #  qtm(osm.sub) +
-  #  qtm(voronoi)
 
   #Find Intersections of roads with vernoi polygons
   inter <- st_intersects(osm.sub,voronoi)
@@ -66,12 +50,7 @@ get.aadt.unclass <- function(j){
 }
 
 
-#List folders
-#regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
-#regions <- regions[2:length(regions)]
 regions <- regions.todo
-
-
 
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-clean/",regions[b],"/osm-lines.Rds"))){
@@ -110,9 +89,8 @@ for(b in 1:length(regions)){
       #Separate Calssified and Unlassified Roads
       traffic.class <- traffic.points[!substr(traffic.points$road,1,1) %in% c("U","C"),]
       traffic.unclass <- traffic.points[substr(traffic.points$road,1,1) %in% c("U","C"),]
-      #traffic.class <- traffic.points[regexpr('U', traffic.points$road) != 1,]
-      #traffic.unclass <- traffic.points[regexpr('U', traffic.points$road) == 1,]
-      nrow(traffic.class) + nrow(traffic.unclass) == nrow(traffic.points)
+
+      #nrow(traffic.class) + nrow(traffic.unclass) == nrow(traffic.points)
       rm(traffic.points)
 
       #start with the classified
