@@ -1,14 +1,5 @@
 #Gets road widths from OS data
 
-#Libraries
-library(sf)
-library(dplyr)
-library(parallel)
-
-
-#Functions
-source("R/functions.R")
-
 #Big Function
 getroadwidths <- function(a){
   #Get data
@@ -26,11 +17,6 @@ getroadwidths <- function(a){
   AOI <- AOI["geometry"]
   os_sub <- os_presub[st_intersects(AOI,os_presub)[[1]],] #Faster selection from smaller dataset
 
-  #test plots
-  #plot(AOI)
-  #plot(line, add = T)
-  #plot(os_presub, add = T, border = "Red")
-  #plot(os_sub, add = T, border = "Green")
   rm(gridno,os_grids,os_presub)
 
   #Create road and roadside polygons
@@ -249,8 +235,6 @@ getroadwidths <- function(a){
 #Start of Code
 ####################################
 
-#List folders
-#regions <- list.dirs(path = "../cyipt-bigdata/osm-prep", full.names = FALSE) #now from master file
 
 regions <- regions.todo
 
@@ -270,7 +254,6 @@ for(b in 1:length(regions)){
       osm <- osm[,col.to.keep]
       rm(col.to.keep)
 
-
       #Get bounding box
       ext <- st_bbox(osm)
       ext <- st_sfc(st_polygon(list(rbind(c(ext[1],ext[2]),c(ext[3],ext[2]),c(ext[3],ext[4]),c(ext[1],ext[4]),c(c(ext[1],ext[2]))))) )
@@ -287,17 +270,8 @@ for(b in 1:length(regions)){
 
       #get region
       os.region <- readRDS("../cyipt-bigdata/boundaries/regions.Rds")
-      #os.region <- os.region[st_intersects(poi,os.region)[[1]],]
       os.region <- os.region[bounds,]
-
       os.region.name <- as.character(os.region$name)
-
-      #If can make direct match try closest region, works for costal towns
-      #if(length(os.region.name) == 0){
-      #  os.region <- readRDS("../cyipt-bigdata/boundaries/regions.Rds")
-      #  dists <- as.vector(st_distance(os.region,poi))
-      #  os.region.name <- as.character(os.region$name[dists == min(dists)])
-      #}
 
       # Read in the OS region(S)
       os.list <- list()
@@ -312,7 +286,6 @@ for(b in 1:length(regions)){
 
       #Bind the list togther
       os <- bind_rows(os.list) #much faster than rbind but mangle the sf format, all geometies must be same type
-      #cut <- do.call("rbind",cut_list)
       rm(os.list)
 
       #rebuild the sf object
@@ -324,13 +297,6 @@ for(b in 1:length(regions)){
       #subset back to the region
       os <- os[bounds,]
 
-
-      #rm(os.region)
-
-      #Get correct OS data
-      #os <- readRDS(paste0("../cyipt-securedata/os/",os.region.name,".Rds"))
-      #os <- os[st_intersects(pol,os)[[1]],] #subset to data within the area of intrest
-
       #Performacne Tweak, Preallocate object to a gid to reduce processing time
       os_cent <- st_centroid(os)
       osm_cent <- st_centroid(osm)
@@ -339,15 +305,13 @@ for(b in 1:length(regions)){
       grid_os <- st_intersects(grid, os_cent)
       rm(grid, os_cent, osm_cent)
 
-
-      m = 1 #Start
-      n = nrow(osm) #End
-
-      message(paste0("Preparations complete, starting data collection at ",Sys.time()))
-
+      if(verbose){message(paste0("Preparations complete, starting data collection at ",Sys.time()))}
 
       ##########################################################
       #Parallel
+
+      m = 1 #Start
+      n = nrow(osm) #End
       start <- Sys.time()
       fun <- function(cl){
         parLapply(cl, m:n,getroadwidths)
@@ -357,9 +321,9 @@ for(b in 1:length(regions)){
       clusterEvalQ(cl, {library(sf); source("R/functions.R")}) #; {splitmulti()}) #Need to load splitmuliin corectly
       respar <- fun(cl)
       stopCluster(cl)
-      respar <- do.call("rbind",respar)
+      respar <- bind_rows(respar)
       end <- Sys.time()
-      message(paste0("Did ",(n-m)+1," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+      if(verbose){message(paste0("Did ",(n-m)+1," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))}
       ##########################################################
 
       #Join togther data
