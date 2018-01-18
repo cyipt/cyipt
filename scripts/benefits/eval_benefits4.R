@@ -450,7 +450,7 @@ for(b in 1:length(regions)){
        #foo$geometry <- NULL
 
 
-      saveRDS(schemes,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/schemes-simplified.Rds"))
+      saveRDS(schemes,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes-simplified.Rds"))
 
       #rm(scheme)
 
