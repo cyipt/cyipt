@@ -1,29 +1,27 @@
-#Gets PCT Values for the road segments
-
-############################################
-#NOTE: THIS OVERRIGHTS EXISTING FILES RATHER THAN CREATING NEW FILES
-#############################################
-
-library(sf)
-library(dplyr)
-library(parallel)
-library(igraph)
-
-
-#Settings now come from master file
-#skip <- FALSE #Skip Files that already have PCT values
-#ncores <- 4 #number of cores to use in parallel processing
-#overwrite <- FALSE #Overwrite or create new file
+#Reccomends infrastructure for the road segments
 
 #create directory
 if(!dir.exists(paste0("../cyipt-bigdata/osm-recc"))){
   dir.create(paste0("../cyipt-bigdata/osm-recc"))
 }
 
-#Functions
-recc.infra <- function(c){
+# Functions
+
+# testing fucntion
+compar  <- function(a1,a2)
+{
+  a1.vec <- apply(a1, 1, paste, collapse = "")
+  a2.vec <- apply(a2, 1, paste, collapse = "")
+  a1.without.a2.rows <- a1[!a1.vec %in% a2.vec,]
+  return(a1.without.a2.rows)
+}
+
+
+# main functions
+
+recc.infra <- function(i){
   not_road <- c("bridleway","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")
-  osm.sub <- osm[c,]
+  osm.sub <- osm[i,]
 
   #On road or off road
   if(osm.sub$highway[1] %in% not_road){
@@ -43,7 +41,7 @@ recc.infra <- function(c){
     }
 
     if(nrow(rules.sub) != 1){
-      message(paste0("Error: Not valid rules for line ",c))
+      message(paste0("Error: Not valid rules for line ",i))
       stop()
     }
 
@@ -71,9 +69,8 @@ get.costs <- function(d){
   return(costs.sub)
 }
 
-#List folders
-#regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
-#regions <- regions[2:length(regions)]
+#Start of main code
+
 regions <- regions.todo
 
 rules.onroad <- read.csv("../cyipt/input-data/InfraSelectionRules_OnRoad.csv", stringsAsFactors = FALSE)
@@ -100,15 +97,32 @@ for(b in 1:length(regions)){
       osm <- osm[,col.to.keep]
       rm(col.to.keep)
 
-      ##############################################
       #Create temp aadt values with no NAs
       osm$aadt.temp <- osm$aadt
       osm$aadt.temp[is.na(osm$aadt.temp)] <- 0
 
       ###########################################################################################################
       #Step 1: Compare Against Rules Table
-      res <- lapply(1:nrow(osm),recc.infra)
-      res <- do.call("rbind", res)
+
+      ##########################################################
+      #Parallel
+      m = 1
+      n = nrow(osm)
+      start <- Sys.time()
+      fun <- function(cl){
+        parLapply(cl, m:n,recc.infra)
+      }
+      cl <- makeCluster(ncores) #make clusert and set number of cores
+      clusterExport(cl=cl, varlist=c("rules.onroad", "rules.offroad","osm"))
+      clusterExport(cl=cl, c('recc.infra') )
+      clusterEvalQ(cl, {library(sf)})
+      res <- fun(cl)
+      stopCluster(cl)
+      end <- Sys.time()
+      if(verbose){message(paste0("Did ",n," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))}
+      ##########################################################
+
+      res <- bind_rows(res)
 
       #join in resutls
       osm <- left_join(osm, res, by = c("id" = "id"))
@@ -118,42 +132,34 @@ for(b in 1:length(regions)){
       rm(res)
 
       ######################################################################################
-      #Summary Existing Infra
+      #Step 2: Summary Existing Infra
 
       osm$Existing <- paste0(osm$roadtype," ",osm$lanes.psv.forward," ",osm$cycleway.left," ",osm$cycleway.right," ",osm$lanes.psv.backward)
 
-      #For testing only
-
-      summary <- as.data.frame(osm)
-      summary <- summary[,c("Existing","Recommended","onewaysummary")]
-      summary <- unique(summary)
-      costs.summary <- costs[,c("Existing","Recommended","onewaysummary")]
-      #write.csv(summary, paste0("../cyipt-bigdata/osm-prep/",regions[b],"/RoadCombis.csv"), row.names = F)
-      compar  <- function(a1,a2)
-      {
-        a1.vec <- apply(a1, 1, paste, collapse = "")
-        a2.vec <- apply(a2, 1, paste, collapse = "")
-        a1.without.a2.rows <- a1[!a1.vec %in% a2.vec,]
-        return(a1.without.a2.rows)
-      }
-      comp <- compar(summary,costs.summary)
-
-
-
-
       ###########################################################################
       #Step 3: Costs
-      res2 <- lapply(1:nrow(osm),get.costs)
-      res2 <- do.call("rbind", res2)
+      res2 <- try(lapply(1:nrow(osm),get.costs))
 
-      #join in resutls
+      if(class(res2) == "try-error"){
+        summary <- as.data.frame(osm)
+        summary <- summary[,c("Existing","Recommended","onewaysummary")]
+        summary <- unique(summary)
+        costs.summary <- costs[,c("Existing","Recommended","onewaysummary")]
+        comp <- compar(summary,costs.summary)
+        rm(summary, costs.summary)
+        print(comp)
+        stop()
+      }else{
+        res2 <- bind_rows(res2)
+      }
+
+      # join in resutls
       osm <- left_join(osm, res2, by = c("id" = "id"))
       rm(res2)
 
       #Step 7: Find lenghts and total costs
       osm$length <- as.numeric(st_length(osm))
       osm$costTotal <- as.integer(osm$costperm * osm$length)
-
 
       #Save results
       if(overwrite){
