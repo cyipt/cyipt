@@ -79,7 +79,7 @@ for(a in seq(from = 1, to = nrow(bounds))){
 
   #Skip if already done
   if(skip & exists){
-    print(paste0("Skipping download of ",region_nm))
+    message(paste0(Sys.time(),": Skipping download of ",region_nm))
   }else{
     dir.create(paste0("../cyipt-bigdata/osm-raw/",region_nm))
     #Get Region
@@ -207,8 +207,8 @@ for(a in seq(from = 1, to = nrow(bounds))){
 
     #Save results
     saveRDS(points, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-junction-points.Rds"))
-    message(paste0("Finished downloading ",region_nm," at ",Sys.time()))
-    rm(lines,region_shp,region_nm, len, points, inter, rowsum, exists)
+    message(paste0(Sys.time(),": Finished downloading ",region_nm))
+    rm(lines,region_shp,region_nm, len, points, inter, rowsum, exists, region_nm)
     gc() # Clean memory as using large amounts per loop
   }
 
