@@ -1,26 +1,6 @@
-#Gets PCT Values for the road segments
+#Gets collisons for the road segments and junctions
 
-############################################
-#NOTE: THIS OVERRIGHTS EXISTING FILES RATHER THAN CREATING NEW FILES
-#############################################
-
-library(sf)
-library(dplyr)
-library(parallel)
-library(tmap)
-tmap_mode("view")
-#library(foreach)
-
-
-#Settings now come from master file
-#skip <- FALSE #Skip Files that already have PCT values
-#ncores <- 4 #number of cores to use in parallel processing
-#overwrite <- FALSE #Overwrite or create new file
-
-#Functions
-
-
-#Get the
+#Main Fucntion
 get.collisions <- function(a){
   #acc.sub <- acc[a,]
   #message(paste0(Sys.time()," Doing ",a))
@@ -74,12 +54,7 @@ get.collisions <- function(a){
   return(result)
 }
 
-
-
-
-#List folders
-#regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
-#regions <- regions[2:length(regions)]
+# Start of Code
 regions <- regions.todo
 
 for(b in 1:length(regions)){
@@ -112,17 +87,14 @@ for(b in 1:length(regions)){
       grid_acc <- st_intersects(acc, grid)# Which grid is each collision in?
       rm(grid)
 
-
-      message(paste0("Preparations complete, starting data collection at ",Sys.time()))
+      if(verbose){message(paste0("Preparations complete, starting data collection at ",Sys.time()))}
 
       #Get the Collisions Values
-      m = 1 #Start
-      #n = 200
-      n = nrow(acc) #End
-
-
       ##########################################################
       #Parallel
+      m = 1 #Start
+      n = nrow(acc) #End
+
       start <- Sys.time()
       fun <- function(cl){
         parLapply(cl, m:n, get.collisions)
@@ -130,15 +102,13 @@ for(b in 1:length(regions)){
       cl <- makeCluster(ncores) #make clusert and set number of cores
       clusterEvalQ(cl, {library(sf)})
       clusterExport(cl=cl, varlist=c("osm", "acc","junc","grid_osm","grid_acc","grid_junc"), envir=environment())
-      #clusterSplit(cl, m:n)
       respar <- fun(cl)
-      #respar <- parLapply(cl,m:n,get.collisions)
       stopCluster(cl)
       respar <- bind_rows(respar)
       end <- Sys.time()
-      message(paste0("Did ",n-m + 1," collisions in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
-      ##################################################
+      if(verbose){message(paste0("Did ",n-m + 1," collisions in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))}
       rm(n,m,cl,grid_osm,start,end)
+      ##################################################
 
       #Join togther data
       acc <- left_join(acc,respar, by = c("AccRefGlobal" = "AccRefGlobal"))
@@ -160,7 +130,6 @@ for(b in 1:length(regions)){
       osm <- left_join(osm,acc.lines, by = c("id" = "CollisionLine"))
       junc <- left_join(junc,acc.junc, by = c("osm_id" = "CollisionJunc"))
 
-
       #Save results
       if(overwrite){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
@@ -170,8 +139,6 @@ for(b in 1:length(regions)){
         saveRDS(junc,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-junctions.Rds"))
       }
       rm(osm,acc.junc,acc.lines,junc,respar,acc)
-
-
 
     }
 
