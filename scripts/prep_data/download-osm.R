@@ -1,9 +1,9 @@
 # Aim: download osm lines and junction points
 
-library(sf)
-library(osmdata)
-library(tmap)
-library(stringr)
+#library(sf)
+#library(osmdata)
+#library(tmap)
+#library(stringr)
 
 #Settings
 #Settings are now taken from the cyipt master file
@@ -115,6 +115,11 @@ for(a in seq(from = 1, to = nrow(bounds))){
     points <- res$osm_points
     rm(res,q)
 
+    #Remove Factors
+    lines$osm_id <- as.numeric(as.character(lines$osm_id))
+    lines.loops$osm_id <- as.numeric(as.character(lines.loops$osm_id))
+    points$osm_id <- as.numeric(as.character(points$osm_id))
+
 
     #remove the invalid polygons
     lines.loops <- lines.loops[!is.na(lines.loops$highway),]
@@ -137,21 +142,21 @@ for(a in seq(from = 1, to = nrow(bounds))){
 
     if(nrow(lines.loops)>0){
       #Add in any missing columns
-      for(c in 1:length(colcheck)){
-        if(check.loops[c]){
+      for(i in 1:length(colcheck)){
+        if(check.loops[i]){
           #Do nothing
         }else{
           #Add the column filled with NAs
-          lines.loops[,colcheck[c]] <- NA
+          lines.loops[,colcheck[i]] <- NA
         }
       }
     }else{
-      for(c in 1:length(colcheck)){
-        if(check.loops[c]){
+      for(i in 1:length(colcheck)){
+        if(check.loops[i]){
           #Do nothing
         }else{
           #Add the column filled with NAs
-          lines.loops[,colcheck[c]] <- character(0)
+          lines.loops[,colcheck[i]] <- character(0)
         }
       }
     }
@@ -159,7 +164,7 @@ for(a in seq(from = 1, to = nrow(bounds))){
 
     lines <- lines[ ,colcheck]
     lines.loops <- lines.loops[ ,colcheck]
-    rm(b,c,check, check.loops)
+    rm(b,i,check, check.loops)
 
     #Channge Polygons to Lines
     lines.loops <- st_cast(lines.loops, "LINESTRING")
@@ -196,8 +201,7 @@ for(a in seq(from = 1, to = nrow(bounds))){
     #now cut the lines to the boundary
     lines <- st_intersection(region_shp,lines)
 
-    #Remove Factors
-    lines$osm_id <- as.integer(as.character(lines$osm_id))
+
 
 
     #Save the lines
@@ -227,6 +231,8 @@ for(a in seq(from = 1, to = nrow(bounds))){
 
     #Remove any duplicated points
     points <- points[!duplicated(points$geometry),]
+
+
 
     saveRDS(points, paste0("../cyipt-bigdata/osm-raw/",region_nm,"/osm-junction-points.Rds"))
     message(paste0("Finished downloading ",region_nm," at ",Sys.time()))
