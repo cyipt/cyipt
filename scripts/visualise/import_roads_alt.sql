@@ -1,10 +1,10 @@
-DROP TABLE roads;
-DROP TABLE roadtypes;
-DROP TABLE schemes;
-DROP INDEX IF EXISTS schemes_gindx;
-DROP INDEX IF EXISTS roads_gindx;
+DROP TABLE alt_roads;
+DROP TABLE alt_roadtypes;
+DROP TABLE alt_schemes;
+DROP INDEX IF EXISTS alt_schemes_gindx;
+DROP INDEX IF EXISTS alt_roads_gindx;
 
-CREATE TABLE IF NOT EXISTS roads (
+CREATE TABLE IF NOT EXISTS alt_roads (
 		idGlobal INT PRIMARY KEY,
 		id INT NOT NULL,
 		osmid INT NULL,
@@ -50,13 +50,13 @@ CREATE TABLE IF NOT EXISTS roads (
 		geotext GEOMETRY NOT NULL
     );
 
-COPY roads FROM '/home/malcolm/roads.csv'  csv HEADER;
+COPY alt_roads FROM '/home/malcolm/roads.csv'  csv HEADER;
 
-ALTER TABLE roads OWNER to cyipt;
+ALTER TABLE alt_roads OWNER to cyipt;
 
-CREATE INDEX roads_gindx ON roads USING GIST (geotext);
+CREATE INDEX alt_roads_gindx ON alt_roads USING GIST (geotext);
 
-CREATE TABLE IF NOT EXISTS roadtypes(
+CREATE TABLE IF NOT EXISTS alt_roadtypes(
 
 		rtid INT PRIMARY KEY,
 		roadtype VARCHAR(100) NULL,
@@ -71,11 +71,11 @@ CREATE TABLE IF NOT EXISTS roadtypes(
     );
 
 
-COPY roadtypes FROM '/home/malcolm/roadtypes.csv'  csv HEADER;
+COPY alt_roadtypes FROM '/home/malcolm/roadtypes.csv'  csv HEADER;
 
-ALTER TABLE roadtypes OWNER to cyipt;
+ALTER TABLE alt_roadtypes OWNER to cyipt;
 
-CREATE TABLE IF NOT EXISTS schemes (
+CREATE TABLE IF NOT EXISTS alt_schemes (
       idGlobal INT PRIMARY KEY,
       groupid INT NOT NULL,
       region VARCHAR(255) NULL,
@@ -105,8 +105,8 @@ CREATE TABLE IF NOT EXISTS schemes (
       geotext GEOMETRY NOT NULL
     );
 
-COPY schemes FROM '/home/malcolm/schemes.csv'  csv HEADER;
+COPY alt_schemes FROM '/home/malcolm/schemes.csv'  csv HEADER;
 
-ALTER TABLE schemes OWNER to cyipt;
+ALTER TABLE alt_schemes OWNER to cyipt;
 
-CREATE INDEX schemes_gindx ON schemes USING GIST (geotext);
+CREATE INDEX alt_schemes_gindx ON alt_schemes USING GIST (geotext);
