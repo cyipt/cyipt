@@ -73,7 +73,7 @@ source("scripts/select_infra/select_infra.R")
 source("scripts/select_infra/compare_widths.R")
 
 #Step 9: Group into schemes
-source("scripts/select_infra/make_schemes.R")
+source("scripts/select_infra/make_schemes2.R")
 
 #Step 10: get uptake
 source("scripts/uptake/calc_uptake_exposure3.R")
