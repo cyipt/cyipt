@@ -1,11 +1,6 @@
 #Gets PCT Values for the road segments
 
-############################################
-#NOTE: THIS OVERRIGHTS EXISTING FILES RATHER THAN CREATING NEW FILES
-#############################################
-
 #Functions
-source("R/functions.R")
 
 find.pct.lines <- function(i){
   #message(i)
@@ -78,16 +73,15 @@ for(b in 1:length(regions)){
       #add total column
       pct.all$total <- pct.all$pct.census + pct.all$onfoot + pct.all$workathome + pct.all$underground + pct.all$train + pct.all$bus + pct.all$taxi + pct.all$motorcycle + pct.all$carorvan + pct.all$passenger + pct.all$other
 
-
       # Check if pct lines are completly inside the region
       inside <- st_contains_properly(bounds,pct.all, sparse = FALSE)
       inside <- t(inside)
       pct.all$insideRegion <- inside[,1]
       rm(inside)
-      message(paste0("Warning: ",sum(pct.all$insideRegion == FALSE)," of ",length(pct.all$ID)," (",round(sum(pct.all$insideRegion == FALSE)/length(pct.all$ID)*100,1)," %)"," of PCT lines cross the region boundary"))
-      #qtm(pct.all[!pct.all$insideRegion,])
+      if(verbose){message(paste0("Warning: ",sum(pct.all$insideRegion == FALSE)," of ",length(pct.all$ID)," (",round(sum(pct.all$insideRegion == FALSE)/length(pct.all$ID)*100,1)," %)"," of PCT lines cross the region boundary"))}
 
-      saveRDS(pct.all,paste0("../cyipt-securedata/pct-regions/",regions[b],".Rds")) #save selection for later use
+      #save selection for later use
+      saveRDS(pct.all,paste0("../cyipt-securedata/pct-regions/",regions[b],".Rds"))
 
       #remove the values we no longer need
       pct.all <- pct.all[,c("ID","pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike","all_16p")]
@@ -98,7 +92,7 @@ for(b in 1:length(regions)){
       grid_pct2grid <- st_intersects(pct.all, grid) # Which grids is each pct line in?
       grid_grid2osm <- st_intersects(grid, osm)# for each grid which osm lines cross it
 
-      #pct2osm <- lapply(1:nrow(pct.all), find.pct.lines)
+      # Make a PCT to OSM Lookup Table
       ##########################################################
       #Parallel
       m = 1
@@ -115,15 +109,13 @@ for(b in 1:length(regions)){
       stopCluster(cl)
 
       end <- Sys.time()
-      message(paste0("Did ",n," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+      if(verbose){message(paste0("Did ",n," lines in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))}
       ##########################################################
 
       saveRDS(pct2osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/pct2osm.Rds"))
 
-      # Convert A PCT to OSM lookup to an OSM 2 PCT lookup
+      # Convert A PCT to OSM lookup to an OSM to PCT lookup
       # We do this in a backwards way becuase we need the PCT to OSM one later
-
-      #osm2pct <- lapply(1:nrow(osm), getpctids)
       ##########################################################
       #Parallel
       m = 1
@@ -139,13 +131,12 @@ for(b in 1:length(regions)){
       stopCluster(cl)
 
       end <- Sys.time()
-      message(paste0("Got ",n," lines of PCT ids in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+      if(verbose){message(paste0("Got ",n," lines of PCT ids in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))}
       ##########################################################
 
       saveRDS(osm2pct,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm2pct.Rds"))
 
-      #Now for each osm like get the pct values
-
+      #Now for each osm line get the pct values
       ##########################################################
       #Parallel
       m = 1
@@ -161,20 +152,12 @@ for(b in 1:length(regions)){
       pct_vals <- fun(cl)
       stopCluster(cl)
       end <- Sys.time()
-      message(paste0("Got ",n," lines of PCT values in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))
+      if(verbose){message(paste0("Got ",n," lines of PCT values in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))}
       ##########################################################
       pct_vals <- bind_rows(pct_vals)
 
       osm <- left_join(osm, pct_vals, by = c("id" = "id"))
       rm(cl,end,n,m)
-
-
-
-      #qtm(osm[3,], lines.lwd = 6, lines.col = "red" ) + qtm(pct.all[osm2pct[[3]], ], lines.lwd = 2, lines.col = "green")
-
-
-
-
 
       #Save results
       if(overwrite){
@@ -183,8 +166,6 @@ for(b in 1:length(regions)){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-pct.Rds"))
       }
       rm(osm,pct.all,pct_vals,osm2pct,pct2osm,grid,grid_grid2osm,grid_pct2grid, pol, bounds)
-
-
 
     }
 
