@@ -32,7 +32,7 @@ for(b in 1:length(regions)){
     }else{
       message(paste0("Summarising Schemes for ",regions[b]," at ",Sys.time()))
 
-      if(class(scheme) != "numeric"){
+      if(class(scheme)[1] != "numeric"){
         if(nrow(scheme) > 0){
           #Dump Unneded Data
           scheme <- scheme[,c("group_id","costTotal","Recommended")]
