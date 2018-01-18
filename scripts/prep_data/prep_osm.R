@@ -5,12 +5,6 @@
 # 2) The points where the lines are split, i.e. junction locations
 
 
-
-library(sf)
-library(dplyr)
-
-#source("R/functions.R")
-
 #FUnction to Splitlines
 splitlines <- function(a){
   line_sub <- osm[a,]
@@ -26,13 +20,6 @@ splitlines <- function(a){
 }
 
 #Settings
-
-#skip <- FALSE #SKIP EXISTING FOLDERS #setting now from master file
-
-#List folders
-
-#regions <- list.dirs(path = "../cyipt-bigdata/osm-clean", full.names = FALSE) #region no from master file
-#regions <- regions[2:length(regions)]
 regions <- regions.todo
 
 #create directory
@@ -46,7 +33,7 @@ for(a in 1:length(regions)){
     if(file.exists(paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-lines.Rds")) & skip){
       message("Skipping as done before")
     }else{
-      #Create ouptu dir
+      #Create output dir
       dir.create(paste0("../cyipt-bigdata/osm-prep/",regions[a]))
 
       #Reading in data
@@ -59,7 +46,6 @@ for(a in 1:length(regions)){
       cut_list <- lapply(1:nrow(osm), splitlines)
 
       cut <- bind_rows(cut_list) #much faster than rbind but mangle the sf format, all geometies must be same type
-      #cut <- do.call("rbind",cut_list)
       rm(cut_list)
 
       #rebuild the sf object
@@ -71,11 +57,7 @@ for(a in 1:length(regions)){
       # check for dupliates
       cut <- cut[!duplicated(cut$geometry),]
 
-
-
       #Split MULTILINESTRING into LINESTRING
-      #result <- splitmulti(cut,"MULTILINESTRING","LINESTRING")
-      #rm(cut)
 
       #Add ID
       cut$id <- 1:nrow(cut)
@@ -84,17 +66,9 @@ for(a in 1:length(regions)){
       #Save Out Data
       saveRDS(cut, paste0("../cyipt-bigdata/osm-prep/",regions[a],"/osm-lines.Rds"))
 
-      message(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(cut)))
+      if(verbose){message(paste0("Started with ",nrow(osm)," lines, finished with ",nrow(cut)))}
       rm(osm, cut, bounds,buff,inter, points)
       gc()
-
-      #################################
-      #Remove Cleaned Data
-
-      #if(overwrite){
-      #  unlink(paste0("../cyipt-bigdata/osm-clean/",regions[a]), recursive = T)
-      #}
-
 
     }
   }else{
