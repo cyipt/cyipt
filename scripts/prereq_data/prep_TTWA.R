@@ -14,6 +14,8 @@ bounds$ttwa11nm <- as.character(bounds$ttwa11nm)
 bounds$ttwa11nm <- str_replace_all(bounds$ttwa11nm,"[[:punct:]]","")
 bounds$ttwa11nm <- str_replace_all(bounds$ttwa11nm," ","")
 
+bounds <- bounds[order(bounds$ttwa11nm),]
+
 bounds <- st_transform(bounds, 4326)
 
 saveRDS(bounds,"../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
