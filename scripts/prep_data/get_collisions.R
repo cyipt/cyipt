@@ -62,13 +62,13 @@ for(b in 1:length(regions)){
     #Get file
     osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines.Rds"))
     #Check if PCT values exist in the file
-    if(all(c("bikeCas","totalCas","totalVeh") %in% names(osm)) & skip){
+    if(all(c("ncollisionsSlight","ncollisionsSerious","ncollisionsFatal","bikeCasSlight","bikeCasSerious","bikeCasFatal","totalCasSlight","totalCasSerious","totalCasFatal","totalVeh") %in% names(osm)) & skip){
       message(paste0("Collisions values already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Getting Collisions values for ",regions[b]," at ",Sys.time()))
 
       #If overwriting remove old data
-      col.to.keep <- names(osm)[!names(osm) %in% c("bikeCas","totalCas","totalVeh")]
+      col.to.keep <- names(osm)[!names(osm) %in% c("ncollisionsSlight","ncollisionsSerious","ncollisionsFatal","bikeCasSlight","bikeCasSerious","bikeCasFatal","totalCasSlight","totalCasSerious","totalCasFatal","totalVeh")]
       osm <- osm[,col.to.keep]
       rm(col.to.keep)
 
@@ -77,7 +77,6 @@ for(b in 1:length(regions)){
 
       #Get junction locations
       junc <- readRDS(paste0("../cyipt-bigdata/osm-raw/",regions[b],"/osm-junction-points.Rds"))
-      junc$osm_id <- as.integer(junc$osm_id)
 
       #Performacne Tweak, Preallocate object to a gid to reduce processing time
       grid <- st_make_grid(osm, n = c(100,100), "polygons")
@@ -121,11 +120,29 @@ for(b in 1:length(regions)){
 
       acc.lines <- acc.lines %>%
         group_by(CollisionLine) %>%
-        summarise(ncollisions = length(AccRefGlobal), bikeCas = sum(nCasualtiesBike), totalCas = sum(nCasualties), totalVeh = sum(nVehicles))
+        summarise(ncollisionsSlight = length(AccRefGlobal[Severity == "Slight"]),
+                  ncollisionsSerious = length(AccRefGlobal[Severity == "Serious"]),
+                  ncollisionsFatal = length(AccRefGlobal[Severity == "Fatal"]),
+                  bikeCasSlight = sum(nCasualtiesBike[Severity == "Slight"]),
+                  bikeCasSerious = sum(nCasualtiesBike[Severity == "Serious"]),
+                  bikeCasFatal = sum(nCasualtiesBike[Severity == "Fatal"]),
+                  totalCasSlight = sum(nCasualties[Severity == "Slight"]),
+                  totalCasSerious = sum(nCasualties[Severity == "Serious"]),
+                  totalCasFatal = sum(nCasualties[Severity == "Fatal"]),
+                  totalVeh = sum(nVehicles))
 
       acc.junc <- acc.junc %>%
         group_by(CollisionJunc) %>%
-        summarise(ncollisions = length(AccRefGlobal), bikeCas = sum(nCasualtiesBike), totalCas = sum(nCasualties), totalVeh = sum(nVehicles))
+        summarise(ncollisionsSlight = length(AccRefGlobal[Severity == "Slight"]),
+                  ncollisionsSerious = length(AccRefGlobal[Severity == "Serious"]),
+                  ncollisionsFatal = length(AccRefGlobal[Severity == "Fatal"]),
+                  bikeCasSlight = sum(nCasualtiesBike[Severity == "Slight"]),
+                  bikeCasSerious = sum(nCasualtiesBike[Severity == "Serious"]),
+                  bikeCasFatal = sum(nCasualtiesBike[Severity == "Fatal"]),
+                  totalCasSlight = sum(nCasualties[Severity == "Slight"]),
+                  totalCasSerious = sum(nCasualties[Severity == "Serious"]),
+                  totalCasFatal = sum(nCasualties[Severity == "Fatal"]),
+                  totalVeh = sum(nVehicles))
 
       osm <- left_join(osm,acc.lines, by = c("id" = "CollisionLine"))
       junc <- left_join(junc,acc.junc, by = c("osm_id" = "CollisionJunc"))
