@@ -151,7 +151,7 @@ service,share_busway,share_busway,80
 living_street,lane,no,90
 motorway,share_busway,no,15
 unclassified,lane,share_busway,85
-,,,#N/A
+unclassified,track,lane,100
 ,,,#N/A
 ,,,#N/A
 ,,,#N/A
