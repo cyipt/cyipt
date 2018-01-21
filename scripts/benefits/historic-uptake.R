@@ -64,7 +64,6 @@ od_01_new = readRDS("../cyoddata/od_01_new.Rds")
 l_joined = left_join(rf11, od_01_new) %>%
   na.omit()
 
-
 # read-in and process infra data ----
 date_switch = function(d){
   d = sapply(d, switch,
@@ -94,8 +93,14 @@ sndft = readRDS("../cyinfdat/ri_01_11_non_dft") %>%
   select(date = OpenDate, on_road = OnRoad) %>%
   mutate(funding = "Non-DfT")
 
-# add Martin's Transport direct data here
+u_td = "https://github.com/cyclestreets/dft-england-cycling-data-2011/archive/master.zip"
+download.file(u_td, "td.zip")
+unzip("td.zip", exdir = "..")
+system("mv ../dft-england-cycling-data-2011-master ../td") # move to td repo
+untar("../td/dft-england-cycling-data-2011_formatted.geojson.gz")
+g = st_read("../td/dft-england-cycling-data-2011.geojson")
 
+# process historic infra data ----
 # old_infra = rbind(sc2sd, sl2sc, sndft) %>%
 old_infra = rbind(sc2sd, sl2sc, sndft) %>%
   st_transform(4326)  %>%
