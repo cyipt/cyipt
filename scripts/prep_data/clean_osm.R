@@ -68,8 +68,8 @@ for(a in 1:length(regions)){
       osm <- osm[!is.na(osm$highway),] #Must have a highway value for so many reasons
       not.allowed <- c("proposed","planned","escape","demolished","abandoned","dismantled","virtual",
                        "crossing","raceway","traffic_island","ohm:military:Trench","junction",
-                       "escalator","corridor","construction","services","bus_stop","elevator",
-                       "stepping_stones","disused","rest_area","gallop","traffic_signals","platform")
+                       "escalator","corridor","construction","services","bus_stop","elevator","parking",
+                       "stepping_stones","disused","rest_area","gallop","traffic_signals","platform","driveway","ser")
       osm <- osm[!(osm$highway %in% not.allowed),]
       rm(not.allowed)
 
@@ -772,8 +772,8 @@ for(a in 1:length(regions)){
       means.busway <- c("shared_busway")
       means.opposite_busway <- c("opposite_share_busway")
       not.allowed <- c("service","squeezed","highway","road","shared","share","shared_lane","designated", "proposed", "bmx_track","track;shared_use","pavement_right",
-                       "only_sunday", "crawler_lane","shared use","shared_use","sidewalk","none", "share_sidewalk","construction","path","left","right",
-                       "pavement_left","sidepath","use_sidepath","restaurant route","crossing","permissive","buffered cycle lane; contraflow to oneway")
+                       "only_sunday", "crawler_lane","shared use","shared_use","sidewalk","none", "share_sidewalk","construction","path","left","right","dismount",
+                       "pavement_left","sidepath","use_sidepath","restaurant route","crossing","permissive","buffered cycle lane; contraflow to oneway","sidewlk","share_lane")
 
       #clean up incorect tagging
       osm$cycleway.left[osm$cycleway.left %in% means.lane] <- "lane"
