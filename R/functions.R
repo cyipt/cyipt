@@ -70,7 +70,7 @@ splitmulti <- function(x,from,to){
 #Calcualte Widths
 width_estimate <- function(x){
   x$area <- as.numeric(st_area(x))
-  x$perimeter <- as.numeric(st_length(x, dist_fun = geosphere::distGeo))
+  x$perimeter <- as.numeric(st_length(x))
   res <- mapply(FUN = width_apply,x$area, x$perimeter, SIMPLIFY = FALSE)
   return(res)
 }
