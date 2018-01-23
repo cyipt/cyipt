@@ -162,7 +162,7 @@ getroadwidths <- function(a){
 
         #Cut the line with buffered points
         osm_diff <- st_cast(st_difference(line,buff_geom), "LINESTRING")
-        osm_diff$length <- as.numeric(st_length(osm_diff, dist_fun = geosphere::distGeo))
+        osm_diff$length <- as.numeric(st_length(osm_diff))
 
         #Select the rigth segment of the line
         line_main <- osm_diff[osm_diff$length == max(osm_diff$length),]
