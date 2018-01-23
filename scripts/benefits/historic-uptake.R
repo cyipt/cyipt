@@ -93,6 +93,7 @@ sndft = readRDS("../cyinfdat/ri_01_11_non_dft") %>%
   select(date = OpenDate, on_road = OnRoad) %>%
   mutate(funding = "Non-DfT")
 
+# infrastructure on the ground between mid 2008 to 2011
 u_td = "https://github.com/cyclestreets/dft-england-cycling-data-2011/archive/master.zip"
 download.file(u_td, "td.zip")
 unzip("td.zip", exdir = "..")
