@@ -168,8 +168,8 @@ l = bind_cols(l, res)
 
 psimple = l$pcycle01 * l$all11 # simple model
 m = lm(p_uptake ~ infra_length + infra_asphalt, data = l, weights = all11)
-m = lm(p_uptake ~ dist + infra_length +
-         infra_avwidth + infra_cycleway + infra_asphalt, data = l, weights = all11)
+m = lm(p_uptake ~ infra_avwidth + infra_cycleway +
+       infra_asphalt + infra_segregated + infra_residential + infra_unsegregated, data = l, weights = all11)
 saveRDS(m, "m.Rds")
 p_lm = predict(m, l)
 p = (p_lm + l$pcycle01) * l$all11
@@ -179,7 +179,8 @@ sum(psimple)
 sum(p)
 # install.packages("xgboost")
 library(xgboost)
-train = select(l, p_uptake, all11, dist, pcycle01, infra_length, infra_avwidth, infra_cycleway, infra_asphalt) %>%
+train = select(l, p_uptake, all11, infra_length, infra_avwidth, infra_cycleway,
+               infra_asphalt, infra_segregated, infra_residential) %>%
   st_set_geometry(NULL) %>%
   as.matrix()
 m = xgboost(train[, -(1:2)], train[, 1], weight = train[, 2], nrounds = 10)
