@@ -99,20 +99,27 @@ download.file(u_td, "td.zip")
 unzip("td.zip", exdir = "..")
 system("mv ../dft-england-cycling-data-2011-master ../td") # move to td repo
 untar("../td/dft-england-cycling-data-2011_formatted.geojson.gz")
-g = st_read("../td/dft-england-cycling-data-2011.geojson")
+td = st_read("../td/dft-england-cycling-data-2011.geojson")
+td_type = st_geometry_type(td)
+summary(td_type)
+td_p = td[td_type == "POINT", ]
+summary(td_p)
+# plot(td_p$geometry)
+td = td[td_type == "LINESTRING", ]
+old_infra = td # rely on td data for now...
 
-# process historic infra data ----
+# # process historic infra data ----
+# # old_infra = rbind(sc2sd, sl2sc, sndft) %>%
 # old_infra = rbind(sc2sd, sl2sc, sndft) %>%
-old_infra = rbind(sc2sd, sl2sc, sndft) %>%
-  st_transform(4326)  %>%
-  mutate(date = as.Date(date))
-summary(as.factor(old_infra$on_road))
-summary(old_infra$date)
-# qtm(old_infra, lines.col = "green")
-
-old_infra$years_complete = as.numeric(lubridate::ymd("2011-03-27") - old_infra$date) / 365
-summary(old_infra$years_complete)
-old_infra = old_infra %>% filter(years_complete < 10) # removed a few thousand schemes
+#   st_transform(4326)  %>%
+#   mutate(date = as.Date(date))
+# summary(as.factor(old_infra$on_road))
+# summary(old_infra$date)
+# # qtm(old_infra, lines.col = "green")
+#
+# old_infra$years_complete = as.numeric(lubridate::ymd("2011-03-27") - old_infra$date) / 365
+# summary(old_infra$years_complete)
+# old_infra = old_infra %>% filter(years_complete < 10) # removed a few thousand schemes
 
 b = old_infra %>%
   st_transform(27700) %>%
