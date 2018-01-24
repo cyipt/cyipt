@@ -93,6 +93,7 @@ sndft = readRDS("../cyinfdat/ri_01_11_non_dft") %>%
   select(date = OpenDate, on_road = OnRoad) %>%
   mutate(funding = "Non-DfT")
 
+# new historic data ----
 # infrastructure on the ground between mid 2008 to 2011
 u_td = "https://github.com/cyclestreets/dft-england-cycling-data-2011/archive/master.zip"
 download.file(u_td, "td.zip")
@@ -107,8 +108,15 @@ summary(td_p)
 # plot(td_p$geometry)
 td = td[td_type == "LINESTRING", ]
 old_infra = td # rely on td data for now...
+l_sam = l_joined[l_joined$all11 >= 500, ] # 31k lines when 100 (2323 when 500+ for testing)
+sum(l_sam$all11) # 7 million ppl (1.7 m when 500+)
+b = old_infra %>%
+  st_transform(27700) %>%
+  st_buffer(dist = 1000, nQuadSegs = 4) %>%
+  st_transform(4326) # time consuming
+saveRDS(b, "b.Rds")
 
-# # process historic infra data ----
+# # process old historic infra data ----
 # # old_infra = rbind(sc2sd, sl2sc, sndft) %>%
 # old_infra = rbind(sc2sd, sl2sc, sndft) %>%
 #   st_transform(4326)  %>%
@@ -120,47 +128,51 @@ old_infra = td # rely on td data for now...
 # old_infra$years_complete = as.numeric(lubridate::ymd("2011-03-27") - old_infra$date) / 365
 # summary(old_infra$years_complete)
 # old_infra = old_infra %>% filter(years_complete < 10) # removed a few thousand schemes
-
-b = old_infra %>%
-  st_transform(27700) %>%
-  st_buffer(dist = 1000, nQuadSegs = 4) %>%
-  st_union() %>%
-  st_transform(4326)
+# b = old_infra %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 1000, nQuadSegs = 4) %>%
+#   st_union() %>%
+#   st_transform(4326)
 # qtm(b)
 # subset lines of interest and aggregate them to cas level
-selb = st_intersects(l_joined, b)
-saveRDS(selb, "selb.Rds")
-selb_logical = lengths(selb) > 0
-l = l_joined[selb_logical, ]
-lnb = l_joined[!selb_logical, ]
-set.seed(20012011)
-lnb_sample = sample_n(lnb, nrow(l))
-l = rbind(l, lnb_sample)
-
+# selb = st_intersects(l_joined, b) # joining *all* lines
+# saveRDS(selb, "selb.Rds")
+# selb_logical = lengths(selb) > 0
+# l = l_joined[selb_logical, ]
+# lnb = l_joined[!selb_logical, ]
+# set.seed(20012011)
+# lnb_sample = sample_n(lnb, nrow(l))
+# l = rbind(l, lnb_sample)
 # add new variables to old infra data ----
-way1 = readRDS("../cyipt-bigdata/osm-prep/Andover/osm-lines.Rds")
-plot(way1$geometry)
-dirs = file.path(list.dirs("../cyipt-bigdata/osm-prep/"), "osm-lines.Rds")
-ways <- list()
+# way1 = readRDS("../cyipt-bigdata/osm-prep/Andover/osm-lines.Rds")
+# plot(way1$geometry)
+# dirs = file.path(list.dirs("../cyipt-bigdata/osm-prep/"), "osm-lines.Rds")
+# ways <- list()
+#
+# Sys.time({
+#   for(i in dirs[-c(1, 2)]) {
+#     way1 = readRDS(i)
+#     ways[[i]] <- way1
+#     print(i)
+#   }
+#
+#   ways_all = bind_rows(ways)
+#   ways_all = as.data.frame(ways_all)
+#   ways_all$geometry <- st_sfc(ways_all$geometry)
+#
+#   ways_all = st_sf(ways_all)
+#
+# })
+#
+# l = purrr::map(dirs[-1] ~
+#                  readRDS(.)
+# )
 
-Sys.time({
-  for(i in dirs[-c(1, 2)]) {
-    way1 = readRDS(i)
-    ways[[i]] <- way1
-    print(i)
-  }
+# Checks and regression model ----
 
-  ways_all = bind_rows(ways)
-  ways_all = as.data.frame(ways_all)
-  ways_all$geometry <- st_sfc(ways_all$geometry)
 
-  ways_all = st_sf(ways_all)
 
-})
 
-l = purrr::map(dirs[-1] ~
-             readRDS(.)
-         )
 
 
 
