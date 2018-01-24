@@ -23,7 +23,7 @@ z = z[region_shape, ]
 # download.file(u_flow_11, "../cyipt-bigdata/l_all.Rds")
 # u_rf = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/rf_all.Rds"
 # download.file(u_rf, "../cyipt-bigdata/rf.Rds")
-rf_all_orig = readRDS("../cyipt-bigdata/rf.Rds")
+rf_all_orig = readRDS("../../npct/pct-outputs-national/commute/msoa/rf_all.Rds")
 # flow_11_orig = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
 #   as(Class = "sf")
 flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds")
