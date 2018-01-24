@@ -108,87 +108,55 @@ summary(td_p)
 # plot(td_p$geometry)
 td = td[td_type == "LINESTRING", ]
 old_infra = td # rely on td data for now...
-l_sam = l_joined[l_joined$all11 >= 500, ] # 31k lines when 100 (2323 when 500+ for testing)
-sum(l_sam$all11) # 7 million ppl (1.7 m when 500+)
+l = l_joined[l_joined$all11 >= 500, ] # 31k lines when 100 (2323 when 500+ for testing)
+sum(l$all11) # 7 million ppl (1.7 m when 500+)
 b = old_infra %>%
   st_transform(27700) %>%
   st_buffer(dist = 1000, nQuadSegs = 4) %>%
   st_transform(4326) # time consuming
 saveRDS(b, "b.Rds")
-
-# # process old historic infra data ----
-# # old_infra = rbind(sc2sd, sl2sc, sndft) %>%
-# old_infra = rbind(sc2sd, sl2sc, sndft) %>%
-#   st_transform(4326)  %>%
-#   mutate(date = as.Date(date))
-# summary(as.factor(old_infra$on_road))
-# summary(old_infra$date)
-# # qtm(old_infra, lines.col = "green")
-#
-# old_infra$years_complete = as.numeric(lubridate::ymd("2011-03-27") - old_infra$date) / 365
-# summary(old_infra$years_complete)
-# old_infra = old_infra %>% filter(years_complete < 10) # removed a few thousand schemes
-# b = old_infra %>%
-#   st_transform(27700) %>%
-#   st_buffer(dist = 1000, nQuadSegs = 4) %>%
-#   st_union() %>%
-#   st_transform(4326)
-# qtm(b)
-# subset lines of interest and aggregate them to cas level
-# selb = st_intersects(l_joined, b) # joining *all* lines
-# saveRDS(selb, "selb.Rds")
-# selb_logical = lengths(selb) > 0
-# l = l_joined[selb_logical, ]
-# lnb = l_joined[!selb_logical, ]
-# set.seed(20012011)
-# lnb_sample = sample_n(lnb, nrow(l))
-# l = rbind(l, lnb_sample)
-# add new variables to old infra data ----
-# way1 = readRDS("../cyipt-bigdata/osm-prep/Andover/osm-lines.Rds")
-# plot(way1$geometry)
-# dirs = file.path(list.dirs("../cyipt-bigdata/osm-prep/"), "osm-lines.Rds")
-# ways <- list()
-#
-# Sys.time({
-#   for(i in dirs[-c(1, 2)]) {
-#     way1 = readRDS(i)
-#     ways[[i]] <- way1
-#     print(i)
-#   }
-#
-#   ways_all = bind_rows(ways)
-#   ways_all = as.data.frame(ways_all)
-#   ways_all$geometry <- st_sfc(ways_all$geometry)
-#
-#   ways_all = st_sf(ways_all)
-#
-# })
-#
-# l = purrr::map(dirs[-1] ~
-#                  readRDS(.)
-# )
-
-# Checks and regression model ----
-
-
-
-
-
-
-
-
+# l_joined = st_join(l_sam, b) # generates huge output - better on per-route level
+## Estimate exposure per route ----
+rf_b = l$geometry_rf %>%
+  st_transform(27700) %>%
+  st_buffer(dist = 200, nQuadSegs = 4) %>%
+  st_transform(4326)
+sel_infra = st_intersects(rf_b, old_infra)
+i = 1
+# res_list = vector(mode = "list", length = nrow(l))
+res_names = c("infra_length", "infra_avwidth", "infra_cycleway", "infra_tertiary", "infra_residential",
+              "infra_footway", "infra_primary", "infra_segregated", "infra_unsegregated",
+              "infra_shared_use_footpath", "infra_lit", "infra_asphalt")
+res = data.frame(matrix(nrow = nrow(l), ncol = length(res_names)))
+names(res) = res_names
+for(i in 1:nrow(l)) {
+  # plot(rf_b[i])
+  # plot(l[i, ], add = T)
+  local_infra = old_infra[sel_infra[[i]],]
+  plot(local_infra, add = T) # working
+  infra_dists = as.numeric(st_length(local_infra))
+  dist_infra = sum(infra_dists)
+  res$infra_length[i] = dist_infra
+  res$infra_avwidth[i] = weighted.mean(as.numeric(as.character(local_infra$est_width)), w = infra_dists, na.rm = T)
+  res$infra_cycleway[i] = sum(infra_dists[local_infra$highway == "cycleway"], na.rm = T) / dist_infra
+  res$infra_tertiary[i] = sum(infra_dists[local_infra$highway == "tertiary"], na.rm = T) / dist_infra
+  res$infra_residential[i] = sum(infra_dists[local_infra$highway == "residential"], na.rm = T) / dist_infra
+  res$infra_footway[i] = sum(infra_dists[local_infra$highway == "footway"], na.rm = T) / dist_infra
+  res$infra_primary[i] = sum(infra_dists[local_infra$highway == "primary"], na.rm = T) / dist_infra
+  res$infra_segregated[i] = sum(infra_dists[local_infra$segregated == "yes"], na.rm = T) / dist_infra
+  res$infra_unsegregated[i] = sum(infra_dists[local_infra$segregated == "no"], na.rm = T) / dist_infra
+  res$infra_shared_use_footpath[i] = sum(infra_dists[local_infra$segregated == "Shared Use Footpath"], na.rm = T) / dist_infra
+  res$infra_lit[i] = sum(infra_dists[local_infra$lit == "yes"], na.rm = T) / dist_infra
+  res$infra_asphalt[i] = sum(infra_dists[local_infra$surface == "asphalt"], na.rm = T) / dist_infra
+}
+summary(res)
+# model uptake ----
 # sanity checks on lines
 summary(l$o %in% z$geo_code)
 summary(l$d %in% z$geo_code)
 qtm(l[l$pcycle01 > 0.3,]) +
   qtm(l$geometry_rf[l$pcycle01 > 0.3])
 qtm(l[l$pcycle11 > 0.3,])
-
-# subsetting fastest routes
-rf_b = l$geometry_rf %>%
-  st_transform(27700) %>%
-  st_buffer(dist = 200, nQuadSegs = 4) %>%
-  st_transform(4326)
 
 # data checks
 sum(l$all01)
@@ -197,33 +165,6 @@ sum(l$all01 * l$pcycle01) / sum(l$all01)
 sum(l$all11 * l$pcycle11) / sum(l$all11)
 l = l %>% mutate(p_uptake = pcycle11 - pcycle01)
 
-# new measure
-i = 79
-l$exposure = NA
-line_exposure = function(rf_b, old_infra) {
-  sel_infra = st_intersects(rf_b, old_infra)
-  n_lines = ifelse(is(rf_b, "sf"), nrow(rf_b), length(rf_b))
-  res = data.frame(
-    id = rep(0, n_lines),
-    length_on_road = rep(0, n_lines),
-    length_off_road = rep(0, n_lines),
-    years_complete = rep(0, n_lines)
-  )
-  for(i in seq_len(n_lines)) {
-    # res$id[i] = rf_b$id[i]
-    if(length(sel_infra[[i]]) == 0) {
-      next()
-    } else {
-      # res$id[i] = rf_b$id[i]
-      intersection = st_intersection(old_infra[sel_infra[[i]], ], rf_b[i])
-      res$length_on_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "t", ])))
-      res$length_off_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "f", ])))
-      res$years_complete[i] = mean(intersection$years_complete)
-    }
-  }
-  res
-}
-res_exp = line_exposure(rf_b, old_infra)
 summary(res_exp)
 res_prop = res_exp %>%
   mutate(length_on_road = length_on_road / l$dist, length_off_road = length_off_road / l$dist) / 1000
@@ -265,7 +206,7 @@ sum(psimple) # 4000+ more cyclists estimated
 cor(l$pcycle11 * l$all11, p)^2
 cor(l$all11 * l$pcycle11, psimple)^2
 
-# Estimate uptake
+# Estimate uptake ----
 schemes = readRDS("../cyipt-bigdata/osm-prep/Bristol/schemes.Rds")
 plot(schemes$geometry[schemes$group_id == 1])
 sum(st_length(schemes$geometry[schemes$group_id == 1]))
@@ -413,3 +354,84 @@ qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend.
 # summary(l$exposure)
 # m = lm(p_uptake ~ dist + exposure, l, weights = all11)
 # p = (predict(m, l) + l$pcycle01) * l$all11
+
+# # process old historic infra data ----
+# # old_infra = rbind(sc2sd, sl2sc, sndft) %>%
+# old_infra = rbind(sc2sd, sl2sc, sndft) %>%
+#   st_transform(4326)  %>%
+#   mutate(date = as.Date(date))
+# summary(as.factor(old_infra$on_road))
+# summary(old_infra$date)
+# # qtm(old_infra, lines.col = "green")
+#
+# old_infra$years_complete = as.numeric(lubridate::ymd("2011-03-27") - old_infra$date) / 365
+# summary(old_infra$years_complete)
+# old_infra = old_infra %>% filter(years_complete < 10) # removed a few thousand schemes
+# b = old_infra %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 1000, nQuadSegs = 4) %>%
+#   st_union() %>%
+#   st_transform(4326)
+# qtm(b)
+# subset lines of interest and aggregate them to cas level
+# selb = st_intersects(l_joined, b) # joining *all* lines
+# saveRDS(selb, "selb.Rds")
+# selb_logical = lengths(selb) > 0
+# l = l_joined[selb_logical, ]
+# lnb = l_joined[!selb_logical, ]
+# set.seed(20012011)
+# lnb_sample = sample_n(lnb, nrow(l))
+# l = rbind(l, lnb_sample)
+# add new variables to old infra data ----
+# way1 = readRDS("../cyipt-bigdata/osm-prep/Andover/osm-lines.Rds")
+# plot(way1$geometry)
+# dirs = file.path(list.dirs("../cyipt-bigdata/osm-prep/"), "osm-lines.Rds")
+# ways <- list()
+#
+# Sys.time({
+#   for(i in dirs[-c(1, 2)]) {
+#     way1 = readRDS(i)
+#     ways[[i]] <- way1
+#     print(i)
+#   }
+#
+#   ways_all = bind_rows(ways)
+#   ways_all = as.data.frame(ways_all)
+#   ways_all$geometry <- st_sfc(ways_all$geometry)
+#
+#   ways_all = st_sf(ways_all)
+#
+# })
+#
+# l = purrr::map(dirs[-1] ~
+#                  readRDS(.)
+# )
+# # new measure
+# i = 79
+# l$exposure = NA
+# line_exposure = function(rf_b, old_infra) {
+#   sel_infra = st_intersects(rf_b, old_infra)
+#   n_lines = ifelse(is(rf_b, "sf"), nrow(rf_b), length(rf_b))
+#   res = data.frame(
+#     id = rep(0, n_lines),
+#     length_on_road = rep(0, n_lines),
+#     length_off_road = rep(0, n_lines),
+#     years_complete = rep(0, n_lines)
+#   )
+#   for(i in seq_len(n_lines)) {
+#     # res$id[i] = rf_b$id[i]
+#     if(length(sel_infra[[i]]) == 0) {
+#       next()
+#     } else {
+#       # res$id[i] = rf_b$id[i]
+#       intersection = st_intersection(old_infra[sel_infra[[i]], ], rf_b[i])
+#       res$length_on_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "t", ])))
+#       res$length_off_road[i] = as.numeric(sum(st_length(intersection[intersection$on_road == "f", ])))
+#       res$years_complete[i] = mean(intersection$years_complete)
+#     }
+#   }
+#   res
+# }
+# res_exp = line_exposure(rf_b, old_infra)
+
+
