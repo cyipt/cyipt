@@ -55,7 +55,6 @@ l11 = flow_11_orig %>%
   filter(all11 > 20) # 130k when >20
 
 
-
 # add straight line geometry to rf11 for faster default plotting
 rf11$geometry_rf = rf11$geometry
 rf11$geometry = l11$geometry
@@ -108,8 +107,8 @@ summary(td_p)
 # plot(td_p$geometry)
 td = td[td_type == "LINESTRING", ]
 old_infra = td # rely on td data for now...
-l = l_joined[l_joined$all11 >= 500, ] # 31k lines when 100 (2323 when 500+ for testing)
-sum(l$all11) # 7 million ppl (1.7 m when 500+)
+l = l_joined[l_joined$all11 >= 500 & l_joined$all01 >= 500, ] # 614
+sum(l$all11) # 7 million ppl (500k when 500+)
 b = old_infra %>%
   st_transform(27700) %>%
   st_buffer(dist = 1000, nQuadSegs = 4) %>%
@@ -150,6 +149,7 @@ for(i in 1:nrow(l)) {
   res$infra_asphalt[i] = sum(infra_dists[local_infra$surface == "asphalt"], na.rm = T) / dist_infra
 }
 summary(res)
+res[is.na(res)] <- 0
 # model uptake ----
 # sanity checks on lines
 summary(l$o %in% z$geo_code)
@@ -164,45 +164,31 @@ sum(l$all11)
 sum(l$all01 * l$pcycle01) / sum(l$all01)
 sum(l$all11 * l$pcycle11) / sum(l$all11)
 l = l %>% mutate(p_uptake = pcycle11 - pcycle01)
+l = bind_cols(l, res)
 
-summary(res_exp)
-res_prop = res_exp %>%
-  mutate(length_on_road = length_on_road / l$dist, length_off_road = length_off_road / l$dist) / 1000
-summary(res_prop)
-# l$id = paste(l$o, l$d)
-l_new = l
-l_new$length_on_road = res_prop$length_on_road
-l_new$length_off_road = res_prop$length_off_road
-l_new$length_on_road_sq = res_prop$length_on_road^2
-l_new$length_off_road_sq = res_prop$length_off_road^2
-l_new$years_complete = res_prop$years_complete
-l_new$dist_sq = l_new$dist^2
-summary(l_new)
 psimple = l$pcycle01 * l$all11 # simple model
-m = lm(p_uptake ~ dist + length_off_road +
-       length_on_road_sq + length_off_road_sq + years_complete
-       + pcar, data = l_new, weights = all11)
+m = lm(p_uptake ~ infra_length + infra_asphalt, data = l, weights = all11)
+m = lm(p_uptake ~ dist + infra_length +
+         infra_avwidth + infra_cycleway + infra_asphalt, data = l, weights = all11)
 saveRDS(m, "m.Rds")
-p = (predict(m, l_new) + l$pcycle01) * l$all11
+p_lm = predict(m, l)
+p = (p_lm + l$pcycle01) * l$all11
 p[is.na(p)] = 0
 summary(m)
-summary(l_new)
 sum(psimple)
 sum(p)
 # install.packages("xgboost")
 library(xgboost)
-train = select(l_new, p_uptake, all11, dist, length_on_road, length_off_road, years_complete) %>%
-  sample_frac(0.5) %>%
+train = select(l, p_uptake, all11, dist, pcycle01, infra_length, infra_avwidth, infra_cycleway, infra_asphalt) %>%
   st_set_geometry(NULL) %>%
   as.matrix()
 m = xgboost(train[, -(1:2)], train[, 1], weight = train[, 2], nrounds = 10)
-lx = select(l_new, dist, length_on_road, length_off_road, years_complete) %>%
-  st_set_geometry(NULL) %>%
-  as.matrix()
-p = (predict(m, lx) + l$pcycle01) * l$all11
-xgb.plot.importance(xgb.importance(feature_names = colnames(lx), model = m))
+saveRDS(m, "m-xgboost.Rds")
+p_perc = predict(m, train)
+p = (p_perc + l$pcycle01) * l$all11
+xgb.plot.importance(xgb.importance(feature_names = colnames(train)[-(1:2)], model = m))
 sum(p)
-sum(psimple) # 4000+ more cyclists estimated
+sum(psimple)
 cor(l$pcycle11 * l$all11, p)^2
 cor(l$all11 * l$pcycle11, psimple)^2
 
@@ -433,5 +419,43 @@ qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend.
 #   res
 # }
 # res_exp = line_exposure(rf_b, old_infra)
-
+# res_prop = res_exp %>%
+#   mutate(length_on_road = length_on_road / l$dist, length_off_road = length_off_road / l$dist) / 1000
+# summary(res_prop)
+# l$id = paste(l$o, l$d)
+# l_new = l
+# l_new$length_on_road = res_prop$length_on_road
+# l_new$length_off_road = res_prop$length_off_road
+# l_new$length_on_road_sq = res_prop$length_on_road^2
+# l_new$length_off_road_sq = res_prop$length_off_road^2
+# l_new$years_complete = res_prop$years_complete
+# l_new$dist_sq = l_new$dist^2
+# summary(l_new)
+# psimple = l$pcycle01 * l$all11 # simple model
+# m = lm(p_uptake ~ dist + length_off_road +
+#          length_on_road_sq + length_off_road_sq + years_complete
+#        + pcar, data = l_new, weights = all11)
+# saveRDS(m, "m.Rds")
+# p = (predict(m, l_new) + l$pcycle01) * l$all11
+# p[is.na(p)] = 0
+# summary(m)
+# summary(l_new)
+# sum(psimple)
+# sum(p)
+# # install.packages("xgboost")
+# library(xgboost)
+# train = select(l_new, p_uptake, all11, dist, length_on_road, length_off_road, years_complete) %>%
+#   sample_frac(0.5) %>%
+#   st_set_geometry(NULL) %>%
+#   as.matrix()
+# m = xgboost(train[, -(1:2)], train[, 1], weight = train[, 2], nrounds = 10)
+# lx = select(l_new, dist, length_on_road, length_off_road, years_complete) %>%
+#   st_set_geometry(NULL) %>%
+#   as.matrix()
+# p = (predict(m, lx) + l$pcycle01) * l$all11
+# xgb.plot.importance(xgb.importance(feature_names = colnames(lx), model = m))
+# sum(p)
+# sum(psimple) # 4000+ more cyclists estimated
+# cor(l$pcycle11 * l$all11, p)^2
+# cor(l$all11 * l$pcycle11, psimple)^2
 
