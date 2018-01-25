@@ -10,12 +10,13 @@
 #Regions are selected using the file  ../cyipt/input-data/RegionsToDo.csv
 #To do a region just put y in the do column of this csv file
 
-skip <- TRUE #Should the code skip regions that have already been done?
+skip <- FALSE #Should the code skip regions that have already been done?
 overwrite <- TRUE #Some stages overwrite existing files, for example by adding an extra column of data
                    #Note that not overwriting may cause later stagest to fail if they expect earlier stages
                    #resutls to be in the starting file
-ncores <- 6 #Some functions use parallel processing how many clusters should be run?
+ncores <- 2 #Some functions use parallel processing how many clusters should be run?
 verbose <- TRUE #Get extra messages and information
+all.regions <- TRUE #Ignore the regions to do file and do all regions
 
 
 ##########################################
@@ -35,11 +36,13 @@ source("R/functions.R")
 
 #Start of code
 #Select regions to do using the regions to do file
-
 regions.todo <- read.csv("../cyipt/input-data/RegionsToDo.csv", stringsAsFactors = F)
-regions.todo <- regions.todo[!is.na(regions.todo$do),]
-regions.todo <- regions.todo$region[regions.todo$do == "y"]
-
+if(!all.regions){
+  regions.todo <- regions.todo[!is.na(regions.todo$do),]
+  regions.todo <- regions.todo$region[regions.todo$do == "y"]
+}else{
+  regions.todo <- regions.todo$region
+}
 #regions.todo <- "Manchester"
 
 message("CyIPT will run for the following regions:")
