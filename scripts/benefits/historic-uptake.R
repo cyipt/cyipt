@@ -106,8 +106,9 @@ summary(td_p)
 # plot(td_p$geometry)
 td = td[td_type == "LINESTRING", ]
 old_infra = td # rely on td data for now...
-l = l_joined[l_joined$all11 >= 500 & l_joined$all01 >= 500, ] # 614
-sum(l$all11) # 7 million ppl (500k when 500+)
+min_od_sample = 200 # lower bound to subset routes (for testing)
+l = l_joined[l_joined$all11 >= min_od_sample & l_joined$all01 >= min_od_sample, ]
+sum(l$all11) # 7 million ppl (500k when 500+, 2m when 200)
 b = old_infra %>%
   st_transform(27700) %>%
   st_buffer(dist = 1000, nQuadSegs = 4) %>%
@@ -146,6 +147,13 @@ for(i in 1:nrow(l)) {
   res$infra_shared_use_footpath[i] = sum(infra_dists[local_infra$segregated == "Shared Use Footpath"], na.rm = T) / dist_infra
   res$infra_lit[i] = sum(infra_dists[local_infra$lit == "yes"], na.rm = T) / dist_infra
   res$infra_asphalt[i] = sum(infra_dists[local_infra$surface == "asphalt"], na.rm = T) / dist_infra
+
+  # Along A road without infrastructure
+
+  # Along B road
+
+  # Along 20, 30, 40, and 60 mph roads
+
 }
 summary(res)
 res[is.na(res)] <- 0
