@@ -99,7 +99,11 @@ for(b in 1:length(regions)){
 
       #Create temp aadt values with no NAs
       osm$aadt.temp <- osm$aadt
-      osm$aadt.temp[is.na(osm$aadt.temp)] <- 0
+      busy.raodtypes <- c("motorway","motorway_link","primary","primary_link","secondary","secondary_link","tertiary","tertiary_link","trunk","trunk_link")
+      # Main roads have voer 2500 AADT (i.e no cycle streets)
+      # Otherwise 0 which has the same affect as an vlaue between 0 and 2500
+      osm$aadt.temp[is.na(osm$aadt.temp) & !(osm$highway %in% busy.raodtypes)] <- 0
+      osm$aadt.temp[is.na(osm$aadt.temp) & (osm$highway %in% busy.raodtypes)] <- 2501
 
       ###########################################################################################################
       #Step 1: Compare Against Rules Table
