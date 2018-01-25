@@ -146,7 +146,7 @@ for(a in 1:length(regions)){
             osm$maxspeed[b] <- 30
           }else if(type == "service" ){
             osm$maxspeed[b] <- 20
-          }else if(type %in% c("path","bridleway","construction","cycleway","demolished","escalator","footway","living_street","steps","track","unclassified")){
+          }else if(type %in% c("path","bridleway","construction","cycleway","demolished","escalator","footway","living_street","steps","track","unclassified","pedestrian")){
             osm$maxspeed[b] <- 10
           }else{
             osm$maxspeed[b] <- 60
