@@ -23,7 +23,7 @@ z = z[region_shape, ]
 # download.file(u_flow_11, "../cyipt-bigdata/l_all.Rds")
 # u_rf = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/rf_all.Rds"
 # download.file(u_rf, "../cyipt-bigdata/rf.Rds")
-rf_all_orig = readRDS("../../npct/pct-outputs-national/commute/msoa/rf_all.Rds")
+rf_all_orig = readRDS("../cyipt-bigdata/rf.Rds")
 # flow_11_orig = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
 #   as(Class = "sf")
 flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds")
@@ -35,7 +35,7 @@ rf11_sf = rf_new_order %>%
 
 ukbound = getbb("Great Britain")
 # ukways = dodgr::dodgr_streetnet("Great Britain") # fail
-ukways = osmdata_sf(q = opq(bbox = "Great Britain"), doc = "../cyipt-bigdata/gb_ways.osm")
+# ukways = osmdata_sf(q = opq(bbox = "Great Britain"), doc = "../cyipt-bigdata/gb_ways.osm")
 
 # Process lines data ----
 rf11 = rf11_sf %>%
@@ -62,48 +62,13 @@ od_01_new = readRDS("../cyoddata/od_01_new.Rds")
 l_joined = left_join(rf11, od_01_new) %>%
   na.omit()
 
-# read-in and process infra data ----
-date_switch = function(d){
-  d = sapply(d, switch,
-             "2004/5" = "2005-01-01",
-             "2005/6" = "2006-01-01",
-             "2006/7" = "2007-01-01",
-             "2007/8" = "2008-01-01",
-             "2008/9" = "2009-01-01",
-             "2009/2010" = "2010-01-01",
-             "2010/2011" = "2011-01-01",
-             NA
-  )
-  as.Date(unlist(d))
-}
-sc2sd = readRDS("../cyinfdat/sc2sd") %>%
-  mutate(OpenDate = as.character(OpenDate)) %>%
-  filter(OpenDate < "2010-12-01") %>%
-  select(date = OpenDate, on_road = OnRoad) %>%
-  mutate(funding = "Connect 2") %>%
-  mutate(date = as.Date(date))
-# all before 2011
-sl2sc = readRDS("../cyinfdat/ri_04_11_dft") %>%
-  select(date = BuildYear, on_road = OnRoad) %>%
-  mutate(funding = "Links to schools") %>%
-  mutate(date = date_switch(date))
-sndft = readRDS("../cyinfdat/ri_01_11_non_dft") %>%
-  select(date = OpenDate, on_road = OnRoad) %>%
-  mutate(funding = "Non-DfT")
-
 # new historic data ----
-# infrastructure on the ground between mid 2008 to 2011
-u_td = "https://github.com/cyclestreets/dft-england-cycling-data-2011/archive/master.zip"
-download.file(u_td, "td.zip")
-unzip("td.zip", exdir = "..")
-system("mv ../dft-england-cycling-data-2011-master ../td") # move to td repo
-untar("../td/dft-england-cycling-data-2011_formatted.geojson.gz")
 td = st_read("../td/dft-england-cycling-data-2011.geojson")
 td_type = st_geometry_type(td)
-summary(td_type)
-td_p = td[td_type == "POINT", ]
-summary(td_p)
-# plot(td_p$geometry)
+# summary(td_type)
+# td_p = td[td_type == "POINT", ]
+# summary(td_p)
+# # plot(td_p$geometry)
 td = td[td_type == "LINESTRING", ]
 old_infra = td # rely on td data for now...
 min_od_sample = 200 # lower bound to subset routes (for testing)
@@ -332,24 +297,35 @@ qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend.
 # summary(flow_11_orig$id == rf_new_order$id)
 # qtm(flow_11_orig[399999,]) +
 #   qtm(rf_new_order[399999,]) # they're not the same
-
-# crude measure of exposure: % of route near 1 cycle path: old measure of exposure
-# for(i in 1:nrow(l)) {
-#   intersection = st_intersection(l$geometry[i], b)
-#   if(length(intersection) > 0) {
-#     l$exposure[i] = st_length(intersection) /
-#       st_length(l$geometry[i])
-#   }
-# }
-# sel_na = is.na(l$exposure)
-# l$exposure[sel_na] = 0
-# l$dist = as.numeric(st_length(l))
-# plot(l$dist, l$exposure)
-# summary(l$exposure)
-# m = lm(p_uptake ~ dist + exposure, l, weights = all11)
-# p = (predict(m, l) + l$pcycle01) * l$all11
-
 # # process old historic infra data ----
+# read-in and process infra data ----
+# date_switch = function(d){
+#   d = sapply(d, switch,
+#              "2004/5" = "2005-01-01",
+#              "2005/6" = "2006-01-01",
+#              "2006/7" = "2007-01-01",
+#              "2007/8" = "2008-01-01",
+#              "2008/9" = "2009-01-01",
+#              "2009/2010" = "2010-01-01",
+#              "2010/2011" = "2011-01-01",
+#              NA
+#   )
+#   as.Date(unlist(d))
+# }
+# sc2sd = readRDS("../cyinfdat/sc2sd") %>%
+#   mutate(OpenDate = as.character(OpenDate)) %>%
+#   filter(OpenDate < "2010-12-01") %>%
+#   select(date = OpenDate, on_road = OnRoad) %>%
+#   mutate(funding = "Connect 2") %>%
+#   mutate(date = as.Date(date))
+# # all before 2011
+# sl2sc = readRDS("../cyinfdat/ri_04_11_dft") %>%
+#   select(date = BuildYear, on_road = OnRoad) %>%
+#   mutate(funding = "Links to schools") %>%
+#   mutate(date = date_switch(date))
+# sndft = readRDS("../cyinfdat/ri_01_11_non_dft") %>%
+#   select(date = OpenDate, on_road = OnRoad) %>%
+#   mutate(funding = "Non-DfT")
 # # old_infra = rbind(sc2sd, sl2sc, sndft) %>%
 # old_infra = rbind(sc2sd, sl2sc, sndft) %>%
 #   st_transform(4326)  %>%
@@ -376,26 +352,48 @@ qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend.
 # set.seed(20012011)
 # lnb_sample = sample_n(lnb, nrow(l))
 # l = rbind(l, lnb_sample)
+# crude measure of exposure: % of route near 1 cycle path: old measure of exposure ----
+# for(i in 1:nrow(l)) {
+#   intersection = st_intersection(l$geometry[i], b)
+#   if(length(intersection) > 0) {
+#     l$exposure[i] = st_length(intersection) /
+#       st_length(l$geometry[i])
+#   }
+# }
+# sel_na = is.na(l$exposure)
+# l$exposure[sel_na] = 0
+# l$dist = as.numeric(st_length(l))
+# plot(l$dist, l$exposure)
+# summary(l$exposure)
+# m = lm(p_uptake ~ dist + exposure, l, weights = all11)
+# p = (predict(m, l) + l$pcycle01) * l$all11
 # add new variables to old infra data ----
 # way1 = readRDS("../cyipt-bigdata/osm-prep/Andover/osm-lines.Rds")
 # plot(way1$geometry)
 # dirs = file.path(list.dirs("../cyipt-bigdata/osm-prep/"), "osm-lines.Rds")
 # ways <- list()
-#
-# Sys.time({
-#   for(i in dirs[-c(1, 2)]) {
-#     way1 = readRDS(i)
-#     ways[[i]] <- way1
-#     print(i)
-#   }
-#
-#   ways_all = bind_rows(ways)
-#   ways_all = as.data.frame(ways_all)
-#   ways_all$geometry <- st_sfc(ways_all$geometry)
-#
-#   ways_all = st_sf(ways_all)
-#
-# })
+# i = dirs[3]
+# for(i in dirs[-c(1, 2)]) {
+#   way1 = readRDS(i)
+#   ways[[i]] <- way1
+#   print(i)
+# }
+# ways_all = bind_rows(ways)
+# ways_all = as.data.frame(ways_all)
+# ways_all$geometry <- st_sfc(ways_all$geometry)
+# ways_all = st_sf(ways_all)
+st_crs(ways_all) = 27700
+saveRDS(ways_all, "../cyipt-bigdata/ways_all.Rds")
+summary(ways_all$maxspeed)
+summary(as.factor(ways_all$roadtype))
+ways_busy = filter(ways_all, maxspeed > 30)
+ways_busy_wgs = st_transform(ways_busy, 4326)
+# infrastructure on the ground between mid 2008 to 2011
+# u_td = "https://github.com/cyclestreets/dft-england-cycling-data-2011/archive/master.zip"
+# download.file(u_td, "td.zip")
+# unzip("td.zip", exdir = "..")
+# system("mv ../dft-england-cycling-data-2011-master ../td") # move to td repo
+# untar("../td/dft-england-cycling-data-2011_formatted.geojson.gz")
 #
 # l = purrr::map(dirs[-1] ~
 #                  readRDS(.)
