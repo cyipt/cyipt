@@ -74,11 +74,11 @@ old_infra = td # rely on td data for now...
 min_od_sample = 200 # lower bound to subset routes (for testing)
 l = l_joined[l_joined$all11 >= min_od_sample & l_joined$all01 >= min_od_sample, ]
 sum(l$all11) # 7 million ppl (500k when 500+, 2m when 200)
-b = old_infra %>%
-  st_transform(27700) %>%
-  st_buffer(dist = 1000, nQuadSegs = 4) %>%
-  st_transform(4326) # time consuming
-saveRDS(b, "b.Rds")
+
+b500 = readRDS("../cyipt-bigdata/b500.Rds")
+b200 = readRDS("../cyipt-bigdata/b200.Rds")
+b100 = readRDS("../cyipt-bigdata/b100.Rds")
+
 # l_joined = st_join(l_sam, b) # generates huge output - better on per-route level
 ## Estimate exposure per route ----
 rf_b = l$geometry_rf %>%
@@ -382,12 +382,53 @@ qtm(filter(b_scheme, bcr > 1)) # schemes with > 1 person cycling per £1k spend.
 # ways_all = as.data.frame(ways_all)
 # ways_all$geometry <- st_sfc(ways_all$geometry)
 # ways_all = st_sf(ways_all)
-st_crs(ways_all) = 27700
-saveRDS(ways_all, "../cyipt-bigdata/ways_all.Rds")
+# st_crs(ways_all) = 27700
+# saveRDS(ways_all, "../cyipt-bigdata/ways_all.Rds")
+ways_all = readRDS("../cyipt-bigdata/ways_all.Rds")
 summary(ways_all$maxspeed)
 summary(as.factor(ways_all$roadtype))
-ways_busy = filter(ways_all, maxspeed > 30)
+ways_busy = filter(ways_all, maxspeed > 30 & highway != "pedestrian")
+ways_busy$length = as.numeric(st_length(ways_busy))
+summary(ways_busy)
+# mapview::mapview(ways_busy[1:2000, ]) # inspect, find which ones to clean
+ways_busy = filter(ways_busy, length > 50)
+ways_busy = rmapshaper::ms_simplify(ways_busy)
 ways_busy_wgs = st_transform(ways_busy, 4326)
+
+saveRDS(ways_busy_wgs, "../cyipt-bigdata/ways_busy_wgs.Rds")
+
+# b1000 = old_infra %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 1000, nQuadSegs = 4) %>%
+#   st_transform(4326) # time consuming
+# saveRDS(b1000, "../cyipt-bigdata/b1000.Rds")
+#
+# b500 = old_infra %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 500, nQuadSegs = 4) %>%
+#   st_transform(4326) # time consuming
+# saveRDS(b500, "../cyipt-bigdata/b500.Rds")
+#
+# b200 = old_infra %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 200, nQuadSegs = 4) %>%
+#   st_transform(4326) # time consuming
+# saveRDS(b200, "../cyipt-bigdata/b200.Rds")
+#
+# b100 = old_infra %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 100, nQuadSegs = 4) %>%
+#   st_transform(4326) # time consuming
+# saveRDS(b100, "../cyipt-bigdata/b100.Rds")
+#
+b200 = readRDS("../cyipt-bigdata/b200.Rds")
+b200u = st_union(b200) # 10 times smaller
+# ways_busy_no_infra = st_difference(ways_busy_wgs, b200) # takes forever
+system.time(ways_busy_no_infra <- st_difference(ways_busy_wgs[1:(nrow(ways_busy_wgs) / 100),], b200u) )
+ways_busy_no_infra = ways_busy_wgs[b200u, , op = st_disjoint]
+
+ways_busy_leeds = ways_busy_wgs[leeds, ]
+qtm(ways_busy_leeds)
 # infrastructure on the ground between mid 2008 to 2011
 # u_td = "https://github.com/cyclestreets/dft-england-cycling-data-2011/archive/master.zip"
 # download.file(u_td, "td.zip")
