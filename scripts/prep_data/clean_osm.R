@@ -33,6 +33,7 @@ for(a in 1:length(regions)){
       osm$busway.right <- as.character(osm$busway.right)
       osm$cycleway <- as.character(osm$cycleway)
       osm$cycleway.left <- as.character(osm$cycleway.left)
+      osm$cycleway.both <- as.character(osm$cycleway.both)
       osm$cycleway.right <- as.character(osm$cycleway.right)
       osm$cycleway.otherside <- as.character(osm$cycleway.otherside)
       osm$designation <- as.character(osm$designation)
@@ -48,6 +49,7 @@ for(a in 1:length(regions)){
       osm$service <- as.character(osm$service)
       osm$shared <- as.character(osm$shared)
       osm$sidewalk <- as.character(osm$sidewalk)
+      osm$surface <- as.character(osm$surface)
       osm$tunnel <- as.character(osm$tunnel)
 
       #Convert to intergers
@@ -60,6 +62,12 @@ for(a in 1:length(regions)){
       osm$lanes.psv <- as.integer(as.character(osm$lanes.psv))
       osm$lanes.psv.backward <- as.integer(as.character(osm$lanes.psv.backward))
       osm$lanes.psv.forward <- as.integer(as.character(osm$lanes.psv.forward))
+
+      #convert to numeric
+      osm$cycleway.left.width <- as.numeric(osm$cycleway.left.width)
+      osm$cycleway.oneside.width <-  NULL # ditch for now as unclear how to clean up
+      osm$cycleway.otherside.width <- NULL
+      osm$cycleway.right.width <- as.numeric(osm$cycleway.right.width)
 
 
       ###############################################################################
@@ -243,6 +251,53 @@ for(a in 1:length(regions)){
 
       osm$segregated[is.na(osm$segregated)] <- "no"
       osm$segregated[osm$segregated != "yes"] <- "no"
+
+
+      # Step 7b: Clean Up Surface
+
+      clean.surface <- function(x){
+        surface.allowed <- c("asphalt","paved","gravel","unpaved","dirt","grass","ground","paving_stones","concrete","compacted","sand","cobblestone","wood","sett","earth","mud","fine_gravel","metal","pebblestone","rock")
+        surface.errors <- data.frame(wrong = c("cobblestone:flattened",
+                                               "stone",
+                                               "as",
+                                               "cobbled",
+                                               "grit"),
+
+                                     right = c("sett",
+                                               "rock",
+                                               "asphalt",
+                                               "cobblestone",
+                                               "gravel"))
+        if(is.na(x)){
+          #Default when no data
+          result <- "asphalt"
+        }else if(x %in% surface.allowed){
+          #Match
+          result <- x
+        # Known Errors
+        }else if(x %in% surface.errors$wrong){
+          result <- surface.errors$right[surface.errors$wrong == x]
+        # Split with comma
+        }else if(grepl(",",x)){
+          result <- str_split(x,",")[[1]][1]
+        }else if(grepl(";",x)){
+          result <- str_split(x,";")[[1]][1]
+        }else{
+          result <- x
+        }
+
+        #Check that it has worked
+        if(result %in% surface.allowed){
+          return(result)
+        }else{
+          message(paste0("Unable to clean ",x))
+          stop()
+        }
+
+      }
+
+      osm$surface <- lapply(osm$surface,clean.surface)
+
 
       ###############################################################################
       #Step 8: Road Type
@@ -675,6 +730,14 @@ for(a in 1:length(regions)){
 
       ##########################################################################
       # Step 10:  Cycling Infrastrure
+
+      for(e in 1:nrow(osm)){
+        if(!is.na(osm$cycleway.both[e])){
+          osm$cycleway.right[e] <- osm$cycleway.both[e]
+          osm$cycleway.left[e] <- osm$cycleway.both[e]
+        }
+      }
+      rm(e)
 
       #Import in the sometimes uses cycleway.otherside
       for(e in 1:nrow(osm)){
