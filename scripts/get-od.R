@@ -11,14 +11,18 @@ library(sf)
 # unzip(zipfile = "out.zip", exdir = "../cyipt-inputs-official/")
 
 oa_lookup = readRDS("../cyipt-inputs-official/OA01_OA11_LAD11_EW_LU.Rds")
-aggzones = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/cambridgeshire/z.Rds")
+aggzones = readRDS("../../npct/pct-outputs-regional-R/commute/msoa/cambridgeshire/z.Rds")
 aggzones = st_as_sf(aggzones)
 
-flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/cambridgeshire/l.Rds")
+flow_11 = readRDS("../../npct/pct-outputs-regional-R/commute/msoa/cambridgeshire/l.Rds")
 c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp")
 z_msoa = st_read("../cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp")
+# get lookup table from:
+# https://ons.maps.arcgis.com/home/item.html?id=552fd4886ebe417fab71da61555d4f8a
+msoa_lookup = read_csv("../cyipt-inputs-official/MSOA01_MSOA11_LAD11_EW_LU.csv")
 
-od01_orig = read_csv("~/data/W301_OUT.csv", col_names = FALSE)
+od01_orig = read_csv("../cyipt-inputs-official/W301_OUT.csv", col_names = FALSE)
+length(unique(od01_orig$X1)) # 175k oas
 od01_joined = left_join(od01_orig, oa_lookup, by = c("X1" = "OA01CDO")) %>%
   distinct(X1, X2, .keep_all = TRUE)
 sum(od01$X3) # check totals
@@ -98,3 +102,8 @@ tm_shape(flow_11j) +
 # cs_all = colsums[(1:12) * 3 - 2]
 # names(cs_all) = names_modes
 # barplot(cs_all) # looks right
+
+od_msoa01 = readRDS("../cyoddata/od_01.Rds")
+od_msoa01_new = readRDS("../cyoddata/od_01_new.Rds")
+summary(od_msoa01$o %in% msoa_lookup$MSOA01NM)
+
