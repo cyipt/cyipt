@@ -54,7 +54,6 @@ l11 = flow_11_orig %>%
   filter(o %in% z$geo_code, d %in% z$geo_code) %>%
   filter(all11 > 20) # 130k when >20
 
-
 # add straight line geometry to rf11 for faster default plotting
 rf11$geometry_rf = rf11$geometry
 rf11$geometry = l11$geometry

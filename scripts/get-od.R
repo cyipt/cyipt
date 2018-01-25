@@ -11,10 +11,10 @@ library(sf)
 # unzip(zipfile = "out.zip", exdir = "../cyipt-inputs-official/")
 
 oa_lookup = readRDS("../cyipt-inputs-official/OA01_OA11_LAD11_EW_LU.Rds")
-aggzones = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/cambridgeshire/z.Rds")
+aggzones = readRDS("../../npct/pct-outputs-regional-R/commute/msoa/cambridgeshire/z.Rds")
 aggzones = st_as_sf(aggzones)
 
-flow_11 = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/cambridgeshire/l.Rds")
+flow_11 = readRDS("../../npct/pct-outputs-regional-R/commute/msoa/cambridgeshire/l.Rds")
 c_oa01 = st_read("../cyipt-inputs-official/Output_Areas_December_2001_Population_Weighted_Centroids.shp")
 z_msoa = st_read("../cyipt-inputs-official/Middle_Layer_Super_Output_Areas_December_2011_Super_Generalised_Clipped_Boundaries_in_England_and_Wales.shp")
 
