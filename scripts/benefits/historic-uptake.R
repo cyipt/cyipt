@@ -6,6 +6,7 @@ library(ukboundaries)
 library(tidyverse)
 library(stplanr)
 library(osmdata)
+library(sf)
 region_name = "Bristol"
 
 # read-in data ----
@@ -395,40 +396,48 @@ ways_busy = filter(ways_busy, length > 50)
 ways_busy = rmapshaper::ms_simplify(ways_busy)
 ways_busy_wgs = st_transform(ways_busy, 4326)
 
-saveRDS(ways_busy_wgs, "../cyipt-bigdata/ways_busy_wgs.Rds")
+st_write(ways_busy_wgs, "../cyipt-bigdata/ways_busy_wgs.geojson")
+ways_busy_simple = st_read("../cyipt-bigdata/simple-national/ways_busy_wgs/ways_busy_wgs.shp") # simplified by http://mapshaper.org/
 
 # b1000 = old_infra %>%
 #   st_transform(27700) %>%
 #   st_buffer(dist = 1000, nQuadSegs = 4) %>%
 #   st_transform(4326) # time consuming
 # saveRDS(b1000, "../cyipt-bigdata/b1000.Rds")
-#
 # b500 = old_infra %>%
 #   st_transform(27700) %>%
-#   st_buffer(dist = 500, nQuadSegs = 4) %>%
+#   st_buffer(dist = 500, nQuadSegs = 2) %>%
 #   st_transform(4326) # time consuming
 # saveRDS(b500, "../cyipt-bigdata/b500.Rds")
-#
 # b200 = old_infra %>%
 #   st_transform(27700) %>%
-#   st_buffer(dist = 200, nQuadSegs = 4) %>%
+#   st_buffer(dist = 200, nQuadSegs = 2) %>%
 #   st_transform(4326) # time consuming
 # saveRDS(b200, "../cyipt-bigdata/b200.Rds")
-#
 # b100 = old_infra %>%
 #   st_transform(27700) %>%
-#   st_buffer(dist = 100, nQuadSegs = 4) %>%
+#   st_buffer(dist = 100, nQuadSegs = 2) %>%
 #   st_transform(4326) # time consuming
 # saveRDS(b100, "../cyipt-bigdata/b100.Rds")
 #
 b200 = readRDS("../cyipt-bigdata/b200.Rds")
-b200u = st_union(b200) # 10 times smaller
+b200u = st_union(b200) # 10 times smaller object.size(x = b200u) / object.size(b200$geometry)
 # ways_busy_no_infra = st_difference(ways_busy_wgs, b200) # takes forever
-system.time(ways_busy_no_infra <- st_difference(ways_busy_wgs[1:(nrow(ways_busy_wgs) / 100),], b200u) )
-ways_busy_no_infra = ways_busy_wgs[b200u, , op = st_disjoint]
+ways_busy_no_infra <- st_difference(ways_busy_simple, b200u)
+saveRDS(ways_busy_no_infra, "../cyipt-bigdata/ways_busy_no_infra.Rds")
+# ways_busy_no_infra = ways_busy_wgs[b200u, , op = st_disjoint]
 
-ways_busy_leeds = ways_busy_wgs[leeds, ]
+
+ways_busy_leeds = ways_busy_no_infra[leeds, ]
+ways_busy_no_infra_leeds = ways_busy_no_infra[leeds, ]
 qtm(ways_busy_leeds)
+cambridge = region_shape %>% filter(grepl("Bris", ttwa11nm))
+ways_busy_cambridge = ways_busy_simple[cambridge, ]
+ways_busy_no_infra_cambridge = ways_busy_no_infra[cambridge, ]
+old_infra_cam = old_infra[cambridge, ]
+qtm(ways_busy_cambridge, lines.col = "green", lines.lwd = 3) +
+  qtm(ways_busy_no_infra_cambridge) +
+  qtm(old_infra_cam, lines.col = "black")
 # infrastructure on the ground between mid 2008 to 2011
 # u_td = "https://github.com/cyclestreets/dft-england-cycling-data-2011/archive/master.zip"
 # download.file(u_td, "td.zip")
