@@ -113,6 +113,16 @@ for(b in 1:length(regions)){
 
         rm(verts,g,clus)
 
+        #Dump Unneded Data
+        schemes <- schemes[,c("group_id","costTotal","Recommended")]
+
+        #Summarise
+        schemes <- schemes %>%
+          group_by(group_id) %>%
+          summarise(costTotal = sum(costTotal), type = Recommended[which.max(table(Recommended))] )
+
+
+
       }else{
         message("No infrastructure upgrades were found")
         osm$group_id <- NA
