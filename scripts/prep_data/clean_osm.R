@@ -86,10 +86,10 @@ for(a in 1:length(regions)){
       #step 2: clean depreciated highway tags
 
       osm$highway[osm$highway %in% c("trail", "byway", "unsurfaced" ) ] <- "track"
-      osm$highway[osm$highway %in% c("layby","access","manoeuvring_forecourt")] <- "service"
+      osm$highway[osm$highway %in% c("layby","access","manoeuvring_forecourt","turning_circle")] <- "service"
       osm$highway[osm$highway %in% c("no","none") ] <- "path"
       osm$highway[osm$highway %in% c("mini_roundabout","residentiaal")] <- "residential"
-      osm$highway[osm$highway %in% c("yes","minor") ] <- "road"
+      osm$highway[osm$highway %in% c("yes","minor", "bridge") ] <- "road"
 
       ################################################################################
       #Step 3: clean junctions
@@ -254,49 +254,36 @@ for(a in 1:length(regions)){
 
 
       # Step 7b: Clean Up Surface
-
+      surface.errors <- read.csv("../cyipt/input-data/osm-clean/surface.csv", stringsAsFactors = F)
       clean.surface <- function(x){
-        surface.allowed <- c("asphalt","paved","gravel","unpaved","dirt","grass","ground","paving_stones","concrete","compacted","sand","cobblestone","wood","sett","earth","mud","fine_gravel","metal","pebblestone","rock")
-        surface.errors <- data.frame(wrong = c("cobblestone:flattened",
-                                               "stone",
-                                               "as",
-                                               "cobbled",
-                                               "grit"),
-
-                                     right = c("sett",
-                                               "rock",
-                                               "asphalt",
-                                               "cobblestone",
-                                               "gravel"))
         if(is.na(x)){
           #Default when no data
           result <- "asphalt"
-        }else if(x %in% surface.allowed){
-          #Match
-          result <- x
-        # Known Errors
-        }else if(x %in% surface.errors$wrong){
-          result <- surface.errors$right[surface.errors$wrong == x]
         # Split with comma
         }else if(grepl(",",x)){
           result <- str_split(x,",")[[1]][1]
         }else if(grepl(";",x)){
           result <- str_split(x,";")[[1]][1]
+        }else if(grepl(":",x)){
+          result <- str_split(x,":")[[1]][1]
         }else{
           result <- x
         }
 
         #Check that it has worked
-        if(result %in% surface.allowed){
-          return(result)
+        if(result %in% surface.errors$value){
+          res2 <- surface.errors$correct[surface.errors$value == result]
+          if(res2 == ""){
+            res2 <- NA
+          }
         }else{
-          message(paste0("Unable to clean ",x))
-          stop()
-        }
+          res2 <- NA
 
+        }
+        return(res2)
       }
 
-      osm$surface <- lapply(osm$surface,clean.surface)
+      osm$surface <- unname(sapply(osm$surface,clean.surface))
 
 
       ###############################################################################
@@ -1056,7 +1043,7 @@ for(a in 1:length(regions)){
 
       ############################################################################################################
       #remove unneeded columns
-      osm <- osm[,c("osm_id","name","ref","highway","junction","roadtype","onewaysummary","elevation","maxspeed","segregated","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right","region","geometry")]
+      osm <- osm[,c("osm_id","name","ref","highway","junction","roadtype","onewaysummary","elevation","maxspeed","surface","segregated","sidewalk","cycleway.left","lanes.psv.forward","lanes.forward","lanes.backward","lanes.psv.backward","cycleway.right","cycleway.left.width","cycleway.right.width","region","geometry")]
 
       #########################################################
       # add in quietness scores
