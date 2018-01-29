@@ -1,0 +1,23 @@
+"value","count","fraction","in_wiki","description","correct"
+"lane",1481,0.5267,TRUE,"A cycle lanes only on one side of the road","lane"
+"opposite_lane",427,0.1518,FALSE,"",
+"track",346,0.123,TRUE,"A track only on one side of the road","track"
+"share_busway",220,0.0782,FALSE,"",
+"opposite_track",143,0.0509,TRUE,"","opposite_track"
+"opposite_share_busway",33,0.0117,FALSE,"",
+"shared_lane",33,0.0117,FALSE,"",
+"share_sidewalk",23,0.0082,FALSE,"",
+"Lane",22,0.0078,FALSE,"",
+"no",21,0.0075,FALSE,"",
+"opposite",19,0.0068,FALSE,"",
+"none",12,0.0043,FALSE,"",
+"sidepath",7,0.0025,FALSE,"",
+"yes",6,0.0021,FALSE,"",
+"shared",5,0.0018,FALSE,"",
+"buffered cycle lane; contraflow to oneway",3,0.0011,FALSE,"",
+"use_sidepath",2,7e-04,FALSE,"",
+"asl",2,7e-04,FALSE,"",
+"share_lane",2,7e-04,FALSE,"",
+"both",2,7e-04,FALSE,"",
+"opposite_late",2,7e-04,FALSE,"",
+"service",1,4e-04,FALSE,"",

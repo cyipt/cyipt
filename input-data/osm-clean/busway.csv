@@ -1,0 +1,8 @@
+"value","count","fraction","in_wiki","description","correct"
+"lane",365,0.7213,TRUE,"A painted lane within the roadway that is for the dedicated use of buses, may be part time.","lane"
+"opposite_lane",115,0.2273,TRUE,"A painted lane allowing buses to travel in the opposite direction on a one way road.","opposite_lane"
+"yes",10,0.0198,FALSE,"",
+"opposite",7,0.0138,FALSE,"",
+"left=lane",4,0.0079,FALSE,"",
+"left",4,0.0079,FALSE,"",
+"designated",1,0.002,FALSE,"",

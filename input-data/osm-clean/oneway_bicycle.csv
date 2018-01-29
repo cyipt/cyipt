@@ -1,0 +1,4 @@
+"value","count","fraction","in_wiki","description","correct"
+"no",1655,0.9366,TRUE,"","no"
+"yes",99,0.056,FALSE,"",
+"opposite",13,0.0074,FALSE,"",

@@ -1,0 +1,6 @@
+"value","count","fraction","in_wiki","description","correct"
+"no",1855,0.9841,FALSE,"",
+"lane",14,0.0074,FALSE,"",
+"shared_lane",10,0.0053,FALSE,"",
+"track",4,0.0021,FALSE,"",
+"share_sidewalk",2,0.0011,FALSE,"",

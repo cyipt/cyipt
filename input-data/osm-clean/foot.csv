@@ -1,0 +1,37 @@
+"value","count","fraction","in_wiki","description","correct"
+"yes",328597,0.6648,TRUE,"","yes"
+"designated",114065,0.2308,TRUE,"","designated"
+"permissive",32099,0.0649,FALSE,"",
+"no",13276,0.0269,TRUE,"","no"
+"unknown",3139,0.0064,FALSE,"",
+"private",1684,0.0034,TRUE,"","private"
+"destination",954,0.0019,FALSE,"",
+"customers",215,4e-04,FALSE,"",
+"official",158,3e-04,TRUE,"","official"
+"use_sidepath",23,0,FALSE,"",
+"public",14,0,FALSE,"",
+"discouraged",6,0,FALSE,"",
+"unofficial",5,0,FALSE,"",
+"no; yes",3,0,FALSE,"",
+"passable",2,0,FALSE,"",
+"probably",2,0,FALSE,"",
+"delivery",2,0,FALSE,"",
+"difficult",2,0,FALSE,"",
+"unsuitable",1,0,FALSE,"",
+"allowed",1,0,FALSE,"",
+"tes",1,0,FALSE,"",
+"no dogs",1,0,FALSE,"",
+"unnofficial",1,0,FALSE,"",
+"permisive @ (06:00-22:00)",1,0,FALSE,"",
+"residents",1,0,FALSE,"",
+"permissive; yes",1,0,FALSE,"",
+"restricted",1,0,FALSE,"",
+"unclassified",1,0,FALSE,"",
+"presumably",1,0,FALSE,"",
+"premissive",1,0,FALSE,"",
+"definitive",1,0,FALSE,"",
+"limited",1,0,FALSE,"",
+"Pollywiggle Drive",1,0,FALSE,"",
+"pedestrian",1,0,FALSE,"",
+"Unknown",1,0,FALSE,"",
+"es",1,0,FALSE,"",

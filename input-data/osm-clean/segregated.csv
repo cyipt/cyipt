@@ -1,0 +1,9 @@
+"value","count","fraction","in_wiki","description","correct"
+"no",24027,0.7457,TRUE,"A cycleway or footway where pedestrians and cyclists share the same area with no segregation.","no"
+"yes",8184,0.254,TRUE,"For a cycleway or footway where there is a separation between the cyclists and the pedestrians.","yes"
+"suspended",3,1e-04,FALSE,"",
+"no; yes",3,1e-04,FALSE,"",
+"destination",2,1e-04,FALSE,"",
+"no;yes",1,0,FALSE,"",
+"yes;no",1,0,FALSE,"",
+"asphalt",1,0,FALSE,"",

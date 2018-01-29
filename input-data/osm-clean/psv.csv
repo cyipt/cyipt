@@ -1,0 +1,17 @@
+"value","count","fraction","in_wiki","description","correct"
+"yes",3210,0.7906,TRUE,"","yes"
+"no",366,0.0901,FALSE,"",
+"designated",221,0.0544,TRUE,"","designated"
+"destination",90,0.0222,FALSE,"",
+"opposite_lane",90,0.0222,FALSE,"",
+"only",25,0.0062,FALSE,"",
+"bus",16,0.0039,FALSE,"",
+"official",12,0.003,FALSE,"",
+"private",10,0.0025,FALSE,"",
+"permissive",8,0.002,FALSE,"",
+"unknown",5,0.0012,FALSE,"",
+"seasonal",3,7e-04,FALSE,"",
+"lane",1,2e-04,FALSE,"",
+"opposite",1,2e-04,FALSE,"",
+"Yes",1,2e-04,FALSE,"",
+"stopping",1,2e-04,FALSE,"",

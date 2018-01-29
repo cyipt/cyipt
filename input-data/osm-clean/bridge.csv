@@ -1,0 +1,19 @@
+"value","count","fraction","in_wiki","description","correct"
+"yes",132146,0.9637,TRUE,"","yes"
+"viaduct",3628,0.0265,TRUE,"A long rail, road, or other bridge made up of many short spans.","viaduct"
+"movable",343,0.0025,TRUE,"Movable span of a bridge (draw, bascule, lift...)","movable"
+"aqueduct",342,0.0025,TRUE,"Aqueduct","aqueduct"
+"boardwalk",309,0.0023,TRUE,"Plank walkway","boardwalk"
+"no",241,0.0018,FALSE,"",
+"suspension",40,3e-04,FALSE,"",
+"footbridge",32,2e-04,FALSE,"",
+"low_water_crossing",22,2e-04,FALSE,"",
+"covered",8,1e-04,TRUE,"Covered bridge","covered"
+"trestle",3,0,TRUE,"Trestle","trestle"
+"cantilever",3,0,TRUE,"Cantilever bridge","cantilever"
+"ramp",2,0,FALSE,"",
+"broken",1,0,FALSE,"",
+"chain",1,0,FALSE,"",
+"culvert",1,0,FALSE,"",
+"swing",1,0,TRUE,"","swing"
+"building",1,0,FALSE,"",

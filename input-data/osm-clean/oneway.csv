@@ -1,0 +1,8 @@
+"value","count","fraction","in_wiki","description","correct"
+"yes",271193,0.8047,TRUE,"","yes"
+"no",63085,0.1872,TRUE,"","no"
+"-1",2427,0.0072,TRUE,"","-1"
+"alternating",286,8e-04,TRUE,"Oneway that changes its direction often","alternating"
+"reversible",8,0,TRUE,"Oneway that changes its direction infrequently","reversible"
+"when finished",3,0,FALSE,"",
+"when finsihed",1,0,FALSE,"",

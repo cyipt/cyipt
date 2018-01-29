@@ -1,0 +1,41 @@
+"value","count","fraction","in_wiki","description","correct"
+"yes",149651,0.6301,TRUE,"","yes"
+"no",45914,0.1933,TRUE,"","no"
+"designated",24752,0.1042,TRUE,"","designated"
+"dismount",8721,0.0367,TRUE,"","dismount"
+"permissive",6110,0.0257,TRUE,"","permissive"
+"private",1533,0.0065,TRUE,"","private"
+"destination",281,0.0012,FALSE,"",
+"mtb",217,9e-04,FALSE,"",
+"unknown",145,6e-04,FALSE,"",
+"use_sidepath",25,1e-04,TRUE,"Compulsory cycleway aside","use_sidepath"
+"discouraged",18,1e-04,FALSE,"",
+"unsuitable",17,1e-04,FALSE,"",
+"official",15,1e-04,TRUE,"","official"
+"customers",14,1e-04,FALSE,"",
+"unofficial",12,1e-04,FALSE,"",
+"hazard",10,0,FALSE,"",
+"asl",7,0,FALSE,"",
+"permit",6,0,FALSE,"",
+"stop",5,0,FALSE,"",
+"delivery",5,0,FALSE,"",
+"wall",4,0,FALSE,"",
+"tolerated",4,0,FALSE,"",
+"map",3,0,FALSE,"",
+"proposed",3,0,FALSE,"",
+"allowed",2,0,FALSE,"",
+"yes; no",2,0,FALSE,"",
+"prohibited",2,0,FALSE,"",
+"not_advisable",1,0,FALSE,"",
+"hub",1,0,FALSE,"",
+"permissive or not at all!",1,0,FALSE,"",
+"ncn",1,0,FALSE,"",
+"y",1,0,FALSE,"",
+"hedge",1,0,FALSE,"",
+"unclear",1,0,FALSE,"",
+"electric",1,0,FALSE,"",
+"e-bicycle",1,0,FALSE,"",
+"jumps",1,0,FALSE,"",
+"would have to be lifted",1,0,FALSE,"",
+"customer",1,0,FALSE,"",
+"narrow",1,0,FALSE,"",

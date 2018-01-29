@@ -1,0 +1,4 @@
+"value","count","fraction","in_wiki","description","correct"
+"lane",138,0.8625,TRUE,"","lane"
+"yes",11,0.0688,FALSE,"",
+"opposite_lane",11,0.0688,FALSE,"",

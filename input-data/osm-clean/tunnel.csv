@@ -1,0 +1,25 @@
+"value","count","fraction","in_wiki","description","correct"
+"yes",38823,0.6811,TRUE,"","yes"
+"culvert",13653,0.2395,TRUE,"For a stream passing under a road. Use it on the section of stream passing under the road.","culvert"
+"building_passage",3823,0.0671,TRUE,"","building_passage"
+"no",616,0.0108,FALSE,"",
+"air_shaft",18,3e-04,FALSE,"",
+"covered",12,2e-04,FALSE,"",
+"cut_and_cover",8,1e-04,FALSE,"",
+"shaft",7,1e-04,FALSE,"",
+"underpass",6,1e-04,FALSE,"",
+"ventilation_shaft",5,1e-04,FALSE,"",
+"cave",4,1e-04,FALSE,"",
+"portal",4,1e-04,FALSE,"",
+"ventilation shaft",3,1e-04,FALSE,"",
+"passage",3,1e-04,FALSE,"",
+"avalanche_protector",2,0,TRUE,"","avalanche_protector"
+"Storehouse_Lake",2,0,FALSE,"",
+"Building_passage",1,0,FALSE,"",
+"box_jack",1,0,FALSE,"",
+"Salterns_Lake",1,0,FALSE,"",
+"Stoke_Common_Lake",1,0,FALSE,"",
+"Sluice_Lake",1,0,FALSE,"",
+"Cockle_Rithe",1,0,FALSE,"",
+"pipe",1,0,FALSE,"",
+"entrance",1,0,FALSE,"",

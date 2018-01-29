@@ -1,0 +1,131 @@
+"value","count","fraction","in_wiki","description","correct"
+"residential",1020881,0.238,TRUE,"Road in a residential area","residential"
+"service",798295,0.1861,TRUE,"Generally for access to a building, service station, beach, campsite, industrial estate, business park, etc.","service"
+"footway",746339,0.174,TRUE,"For designated footpaths, i.e. mainly/exclusively for pedestrians.","footway"
+"unclassified",283106,0.066,TRUE,"Public access road, non-residential.","unclassified"
+"track",273876,0.0638,TRUE,"Roads for agricultural and forestry use etc.","track"
+"bus_stop",235414,0.0549,TRUE,"A bus stop is a place where public buses stop.","bus_stop"
+"path",147088,0.0343,TRUE,"A generic multi-use path open to non-motorized vehicles.","path"
+"tertiary",145863,0.034,TRUE,"A road linking small settlements, or the local centres of a large town or city.","tertiary"
+"primary",93421,0.0218,TRUE,"A highway linking large towns.","primary"
+"cycleway",75247,0.0175,TRUE,"For designated cycleways.","cycleway"
+"secondary",71663,0.0167,TRUE,"A highway linking large towns.","secondary"
+"trunk",69523,0.0162,TRUE,"Important roads that are not motorways.","trunk"
+"crossing",64440,0.015,TRUE,"Pedestrian crossing","crossing"
+"steps",46952,0.0109,TRUE,"For flights of steps on footways and paths.","steps"
+"bridleway",35864,0.0084,TRUE,"A way intended for use by equestrians.","bridleway"
+"traffic_signals",35370,0.0082,TRUE,"A traffic signal for regulating circulation.","traffic_signals"
+"turning_circle",31647,0.0074,TRUE,"A widened area of road that allows vehicles to turn more easily.","turning_circle"
+"pedestrian",18342,0.0043,TRUE,"Roads mainly / exclusively for pedestrians","pedestrian"
+"give_way",16165,0.0038,TRUE,"Used to mark give way signs (also known as yield signs)","give_way"
+"mini_roundabout",13173,0.0031,TRUE,"A road junction where the traffic goes around a painted circle or traversable island and has right of way.","mini_roundabout"
+"trunk_link",11310,0.0026,TRUE,"Driveways or descents of an expressway","trunk_link"
+"motorway",8914,0.0021,TRUE,"High capacity highways designed to safely carry fast motor traffic.","motorway"
+"street_lamp",6645,0.0015,TRUE,"A single pole with one or more lights to illuminate the street.","street_lamp"
+"motorway_link",5480,0.0013,TRUE,"The link roads (sliproads / ramps) leading to and from a motorway.","motorway_link"
+"living_street",4965,0.0012,TRUE,"Road with very low speed limits and other pedestrian friendly traffic rules","living_street"
+"construction",4611,0.0011,TRUE,"","construction"
+"primary_link",4061,9e-04,TRUE,"","primary_link"
+"road",3125,7e-04,TRUE,"Road with unknown classification.","road"
+"passing_place",2943,7e-04,TRUE,"A passing place on a single track road.","passing_place"
+"motorway_junction",2687,6e-04,TRUE,"An exit from a motorway or other major road.","motorway_junction"
+"tertiary_link",2068,5e-04,TRUE,"","tertiary_link"
+"speed_camera",1677,4e-04,TRUE,"A fixed road-side or overhead speed camera","speed_camera"
+"secondary_link",1082,3e-04,TRUE,"","secondary_link"
+"proposed",1006,2e-04,TRUE,"For roads that are about to be built, but where any construction work hasn't yet been started.","proposed"
+"raceway",941,2e-04,TRUE,"A racetrack for motorised racing, eg cars, motorbikes and karts.","raceway"
+"stile",832,2e-04,TRUE,"","stile"
+"elevator",593,1e-04,TRUE,"An elevator (or lift) is used to travel vertically, providing passenger and freight access between pathways at different floor levels.","elevator"
+"stop",593,1e-04,TRUE,"Used to mark stop signs","stop"
+"ford",593,1e-04,TRUE,"A point where a path or road crosses a river or stream which is at times covered by shallow water.","ford"
+"no",545,1e-04,TRUE,"","no"
+"rest_area",357,1e-04,TRUE,"Place where drivers can leave the road to rest, but not refuel.","rest_area"
+"milestone",303,1e-04,TRUE,"A stone or metal marker on the side of a road denoting the reference and distance travelled.","milestone"
+"services",237,1e-04,TRUE,"Place where drivers can leave a road to refuel, rest, or take refreshments.","services"
+"unsurfaced",173,0,TRUE,"","unsurfaced"
+"abandoned",127,0,TRUE,"DEPRECATED! Highway which was abandoned because of change in natural change or change of route.","abandoned"
+"turning_loop",120,0,TRUE,"A widened area of a highway with a non-traversable island for turning around, often circular and at the end of a road.","turning_loop"
+"culvert",108,0,FALSE,"",
+"corridor",101,0,TRUE,"A corridor inside a building","corridor"
+"byway",94,0,TRUE,"Using this tag is discouraged, use highway=track/path + designation + access instead","byway"
+"bus_guideway",84,0,TRUE,"A busway that is side guided ""rails like"", not suitable for other traffic.","bus_guideway"
+"incline",47,0,TRUE,"","incline"
+"junction",43,0,FALSE,"",
+"yield",39,0,TRUE,"","yield"
+"lift",35,0,FALSE,"",
+"incline_steep",35,0,TRUE,"","incline_steep"
+"disused",33,0,TRUE,"","disused"
+"stepping_stones",32,0,FALSE,"",
+"platform",31,0,TRUE,"A platform of a bus station.","platform"
+"waymarker",29,0,FALSE,"",
+"traffic_island",28,0,FALSE,"",
+"escape",27,0,TRUE,"Emergency lane beside long descending slopes for trucks to stop after brake failure.","escape"
+"spiral_staircase",24,0,FALSE,"",
+"emergency_bay",23,0,TRUE,"Emergency bay on a highway","emergency_bay"
+"traffic_mirror",22,0,TRUE,"Mirror that reflects the traffic on one road when direct view is blocked.","traffic_mirror"
+"traffic_sign",21,0,TRUE,"","traffic_sign"
+"layby",20,0,FALSE,"",
+"yes",19,0,TRUE,"","yes"
+"traffic_calming",19,0,TRUE,"","traffic_calming"
+"access",18,0,TRUE,"","access"
+"demolished",16,0,FALSE,"",
+"virtual",14,0,FALSE,"",
+"checkpoint",14,0,FALSE,"",
+"sign",13,0,FALSE,"",
+"escalator",11,0,FALSE,"",
+"ohm:military:Trench",9,0,TRUE,"A trench created by a military force for the purposes of cover.","ohm:military:Trench"
+"island",9,0,FALSE,"",
+"dismantled",7,0,FALSE,"",
+"bus_stop_oos",7,0,FALSE,"",
+"gallop",7,0,FALSE,"",
+"emergency_access_point",7,0,TRUE,"Sign number which can be used to define you current position in case of an emergency","emergency_access_point"
+"traffic_signals;crossing",6,0,FALSE,"",
+"enforcement",4,0,FALSE,"",
+"bus_stand",4,0,FALSE,"",
+"mirror",3,0,FALSE,"",
+"trail",3,0,TRUE,"","trail"
+"planned",3,0,TRUE,"","planned"
+"crossing;traffic_signals",3,0,FALSE,"",
+"flood_alleviation_scheme",2,0,FALSE,"",
+"irish_bridge",2,0,FALSE,"",
+"speed_display",2,0,TRUE,"A dynamic electronic sign that displays the speed of the passer-by motorist","speed_display"
+"naptan_approx_bus_stop",2,0,FALSE,"",
+"grit_bin",2,0,FALSE,"",
+"step",1,0,FALSE,"",
+"gate_pillar",1,0,FALSE,"",
+"parking",1,0,FALSE,"",
+"variable_sign",1,0,FALSE,"",
+"mini_roundabout;give_way",1,0,FALSE,"",
+"ruins",1,0,FALSE,"",
+"memorial",1,0,FALSE,"",
+"intersection",1,0,FALSE,"",
+"ladder",1,0,FALSE,"",
+"signpost",1,0,FALSE,"",
+"electronic_sign",1,0,FALSE,"",
+"buffer",1,0,FALSE,"",
+"street_lamp;bus_stop",1,0,FALSE,"",
+"distance_post",1,0,FALSE,"",
+"destination_sign",1,0,FALSE,"",
+"turning_circle;stile",1,0,FALSE,"",
+"road_sign",1,0,FALSE,"",
+"mini_roundabout;bus_stop",1,0,FALSE,"",
+"ser",1,0,FALSE,"",
+"distance_marker",1,0,FALSE,"",
+"noexit",1,0,TRUE,"","noexit"
+"priority",1,0,TRUE,"","priority"
+"ex_bus_stop",1,0,FALSE,"",
+"milepost",1,0,FALSE,"",
+"bus_stop ?",1,0,FALSE,"",
+"no_exit",1,0,FALSE,"",
+"tram_post",1,0,FALSE,"",
+"motorway_exit",1,0,FALSE,"",
+"give_wy",1,0,FALSE,"",
+"cattle_crossing",1,0,FALSE,"",
+"naptan_bus_stop_approx",1,0,FALSE,"",
+"keep_clear",1,0,FALSE,"",
+"bus_stop_old",1,0,FALSE,"",
+"ramp",1,0,FALSE,"",
+"driveway",1,0,FALSE,"",
+"traffic_signals,crossing",1,0,FALSE,"",
+"entrance",1,0,FALSE,"",
+"none",1,0,FALSE,"",

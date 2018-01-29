@@ -1,0 +1,62 @@
+"value","count","fraction","in_wiki","description","correct"
+"no",20777,0.4136,TRUE,"","no"
+"shared",9411,0.1873,FALSE,"",
+"track",6388,0.1272,TRUE,"Cycle tracks","track"
+"lane",6037,0.1202,TRUE,"Cycle lanes","lane"
+"asl",1509,0.03,TRUE,"On-road Advanced Stop Line for cyclists","asl"
+"segregated",1383,0.0275,FALSE,"",
+"crossing",962,0.0191,TRUE,"","crossing"
+"opposite",703,0.014,TRUE,"One-way street without own bike path, which is open for cyclists in the opposite direction.","opposite"
+"opposite_lane",699,0.0139,TRUE,"One-way street that have a cycling lane going the opposite direction.","opposite_lane"
+"share_busway",652,0.013,TRUE,"Bus lane is designated for use by cyclists","share_busway"
+"shared_lane",619,0.0123,TRUE,"","shared_lane"
+"yes",284,0.0057,FALSE,"",
+"opposite_track",238,0.0047,TRUE,"One-way street that has a cycle track going in the opposite direction.","opposite_track"
+"sidewalk",207,0.0041,FALSE,"",
+"none",82,0.0016,FALSE,"",
+"proposed",64,0.0013,TRUE,"","proposed"
+"separate",37,7e-04,FALSE,"",
+"opposite_share_busway",27,5e-04,TRUE,"","opposite_share_busway"
+"lane:left",19,4e-04,FALSE,"",
+"lane;opposite_lane",17,3e-04,FALSE,"",
+"bump",16,3e-04,FALSE,"",
+"chicane",12,2e-04,FALSE,"",
+"sidepath",9,2e-04,TRUE,"Indicates that a cycleway (or footway) attendant to a street.","sidepath"
+"left",9,2e-04,FALSE,"",
+"path",9,2e-04,FALSE,"",
+"sidewlk",5,1e-04,FALSE,"",
+"right",5,1e-04,FALSE,"",
+"construction",4,1e-04,FALSE,"",
+"designated",4,1e-04,FALSE,"",
+"bmx_track",3,1e-04,FALSE,"",
+"left=lane",3,1e-04,FALSE,"",
+"right:lane",3,1e-04,FALSE,"",
+"mtb",3,1e-04,FALSE,"",
+"pavement_left",3,1e-04,FALSE,"",
+"track;shared_use",2,0,FALSE,"",
+"both",2,0,FALSE,"",
+"dismount",2,0,FALSE,"",
+"shared_busway",2,0,TRUE,"","shared_busway"
+"redway",2,0,FALSE,"",
+"only_sunday",2,0,FALSE,"",
+"pavement_right",1,0,FALSE,"",
+"lane_right;opposite_track",1,0,FALSE,"",
+"no; opposite_lane",1,0,FALSE,"",
+"lane; track",1,0,FALSE,"",
+"asl1",1,0,FALSE,"",
+"end",1,0,FALSE,"",
+"shared use",1,0,FALSE,"",
+"service",1,0,FALSE,"",
+"crawler_lane",1,0,FALSE,"",
+"share",1,0,FALSE,"",
+"aslb",1,0,FALSE,"",
+"road",1,0,FALSE,"",
+"permissive",1,0,FALSE,"",
+"tracks",1,0,FALSE,"",
+"junction",1,0,FALSE,"",
+"highway",1,0,FALSE,"",
+"shared;track;segregated",1,0,FALSE,"",
+"lane; opposite_lane",1,0,FALSE,"",
+"bothways",1,0,FALSE,"",
+"residential",1,0,FALSE,"",
+"restaurant route",1,0,FALSE,"",

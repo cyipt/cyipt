@@ -1,0 +1,5 @@
+"value","count","fraction","in_wiki","description","correct"
+"yes",6,0.375,FALSE,"",
+"opposite",6,0.375,FALSE,"",
+"forward",3,0.1875,FALSE,"",
+"contraflow",1,0.0625,FALSE,"",
