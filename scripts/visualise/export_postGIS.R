@@ -90,7 +90,7 @@ osm.all$widthpath <- as.integer(osm.all$widthpath)
 osm.all <- osm.all[,c("idGlobal","id","osmid","region","name","ref","highway","junction","elevation","maxspeed","segregated","pctcensus",
   "pctgov", "pctgen", "pctdutch", "pctebike","pcttotal",
   "width","widthpath", "calcwidthnow","calcwidthrec","widthdiffnow","widthdiffrec","widthstatus",
-  "ncollisions","bikeCas","totalCas","totalVeh",
+  "ncollisionsSlight","ncollisionsSerious", "ncollisionsFatal","bikeCasSlight","bikeCasSerious","bikeCasFatal","totalCasSlight","totalCasSerious","totalCasFatal","totalVeh",
   "aadt","ncycles","Recommended","DesWidth", "MinWidth", "DesSeparation",
   "MinSeparation",  "Existing",  "Change",  "costperm",  "length",  "costTotal",  "groupid",  "rtid",  "geotext")]
 
