@@ -1,7 +1,7 @@
 # Uptake Functions
 
 #Base on Dose Responce Conecpt
-get.exposure <- function(x){
+get.exposure <- function(x, pct.scheme, scheme.osm_ids){
   route.pct.id <- (1:nrow(pct))[pct$ID == pct.scheme$ID[x] ]
   route.osmids <- unique(pct2osm[[route.pct.id]])
   route.osmids <- route.osmids[route.osmids %in% scheme.osm_ids]
@@ -120,33 +120,54 @@ cyipt.presentvalue <- function(x, years, rate){
 
 # Exercies is good for health
 
-
-
-cyipt.heath <- function(x){
-
+cyipt.health.inputs <- function(){
   ####################################
   # Input Data
+
+  lst <- list()
 
   # Construct Backgorund Input Data
   #Gender and age split of the observed main-mode cycle trips in England (reference: NTS 2012-14).
   gender_split <- data.frame(Male = c(16,39,13,5,1), Female = c(4,16,5,1,0))
-  #row.names(gender_split) <- c("0-19","20-49","50-64","65-80","80+")
+  row.names(gender_split) <- c("0-19","20-49","50-64","65-80","80+")
+  lst[[1]] <- gender_split
 
   # Observed speed of main mode cycling trips (miles/hour) in England (reference: NTS 2012-2014).
   gender_speed <- data.frame(Male = c(6.12,9.12,8.91,7.48,7.99), Female = c(4.45,7.22,7.07,5.99,4.2))
-  #row.names(gender_speed) <- c("0-19","20-49","50-64","65-80","80+")
+  row.names(gender_speed) <- c("0-19","20-49","50-64","65-80","80+")
+  lst[[2]] <- gender_speed
 
   # Observed speed of main mode walking trips (miles/hour) in England (reference: NTS 2012-2014).
   walking_speed <- data.frame(Male = c(2.55,2.74,2.62,2.49,2.11), Female = c(2.53,2.6,2.49,2.35,2.04))
-  #row.names(gender_speed) <- c("0-19","20-49","50-64","65-80","80+")
+  row.names(gender_speed) <- c("0-19","20-49","50-64","65-80","80+")
+  lst[[3]] <- walking_speed
 
   #Background mortality rates by age and gender (reference: Global Burden of Disease Study 2015 results for England)
   gender_mortality <- data.frame(Male = c(4.1949E-04,1.1833E-03,6.2669E-03,2.4591E-02,1.1471E-01), Female = c(3.1919E-04,7.1164E-04,4.1887E-03,1.6686E-02,9.9484E-02))
-  #row.names(gender_mortality) <- c("0-19","20-49","50-64","65-80","80+")
+  row.names(gender_mortality) <- c("0-19","20-49","50-64","65-80","80+")
+  lst[[4]] <- gender_mortality
 
   #Discounted, average Years of Life Lost (YLL) loss per death
   gender_YLL <- data.frame(Male = c(47.71,34.06,23.73,15.13,5.78), Female = c(48.00,33.55,23.73,14.34,5.78))
-  #row.names(gender_YLL) <- c("0-19","20-49","50-64","65-80","80+")
+  row.names(gender_YLL) <- c("0-19","20-49","50-64","65-80","80+")
+  lst[[5]] <- gender_YLL
+
+  return(lst)
+
+}
+
+
+
+cyipt.health <- function(uptake, d_onfoot, disthealth){
+
+  health.inputs <- cyipt.health.inputs()
+
+  gender_split <- health.inputs[[1]]
+  gender_speed <- health.inputs[[2]]
+  walking_speed <- health.inputs[[3]]
+  gender_mortality <- health.inputs[[4]]
+  gender_YLL <- health.inputs[[5]]
+
 
   years <- 0:20
   dis <- (1/1.015) ** years
@@ -158,25 +179,25 @@ cyipt.heath <- function(x){
 
 
   # create results tables
-  results <- data.frame(id = pct.scheme$ID[x] , absenteeism_benefit = NA, health_deathavoided = NA, health_benefit = NA , stringsAsFactors = F)
+  results <- data.frame(absenteeism_benefit = NA, health_deathavoided = NA, health_benefit = NA , stringsAsFactors = F)
 
 
   # Physical Activity
   # Based on http://www.cedar.iph.cam.ac.uk/blog/dft-tag-cedar-010917/
   # Estiamte the age and gender spit of the new cyclists and lost walkers
 
-  increase_cyclers <- pct.scheme$uptake[x]
-  decrease_walkers <- pct.scheme$d_onfoot[x]
+  #increase_cyclers <- pct.scheme$uptake[x]
+  #decrease_walkers <- pct.scheme$d_onfoot[x]
 
-  increase_cyclers <- gender_split / 100 * increase_cyclers
-  decrease_walkers <- gender_split / 100 * decrease_walkers
+  increase_cyclers <- gender_split / 100 * uptake
+  decrease_walkers <- gender_split / 100 * d_onfoot
 
   #############################
   # Health Benefits of Cycling
   ############################
 
   #convert to hours per week for each gender and age bracket
-  cycle_hours <- (pct.scheme$disthealth[x] * 4.22) / gender_speed # distance per week = distance * 4.22 (days per week)
+  cycle_hours <- (disthealth * 4.22) / gender_speed # distance per week = distance * 4.22 (days per week)
 
   #convert to METS
   #Average Metabolically Equivalent Tasks (MET) for cycling
@@ -185,7 +206,7 @@ cyipt.heath <- function(x){
 
   #Convert to Relative Risks
   # Relative risks (RRs) for all-cause mortality for cycling (reference: Kelly et al. 2014) 0.9
-  cycle_deathsavoided <-  exp(cycle_deathsavoided * log(0.9)/11.25)
+  cycle_deathsavoided <-  exp(cycle_deathsavoided * -0.009365379) #log(0.9)/11.25
 
   # Max benefits from cycling (benefit cap) 0.55
   cycle_deathsavoided[cycle_deathsavoided < 0.55] <- 0.55
@@ -201,15 +222,16 @@ cyipt.heath <- function(x){
   #Calc Years of Life Lost
   cycle_yearslost <- cycle_deathsavoided * gender_YLL
 
-  cycle_health_benefits <- discount
-  cycle_health_benefits$benefits <- cycle_health_benefits$discount * sum(cycle_yearslost) * 60000 # Value of a startical life in 2012
+  #cycle_health_benefits <- discount
+  #cycle_health_benefits$benefits <- cycle_health_benefits$discount * sum(cycle_yearslost) * 60000 # Value of a startical life in 2012
+  cycle_health_benefits <- sum(cycle_yearslost) * 60000 # Value of a startical life in 2012
 
   ##################################
   # Health Disbenefits of Less Walking
   ##################################
 
   #convert to hours per week for each gender and age bracket
-  walk_hours <- (pct.scheme$disthealth[x] * 4.22) / walking_speed # distance per week = distance * 4.22 (days per week)
+  walk_hours <- (disthealth * 4.22) / walking_speed # distance per week = distance * 4.22 (days per week)
 
   #convert to METS
   #Average Metabolically Equivalent Tasks (MET) for cycling
@@ -218,7 +240,7 @@ cyipt.heath <- function(x){
 
   #Convert to Relative Risks
   # Relative risks (RRs) for all-cause mortality for cycling (reference: Kelly et al. 2014) 0.9
-  walk_deathsincrease <-  exp(walk_deathsincrease * log(0.9)/11.25)
+  walk_deathsincrease <-  exp(walk_deathsincrease * -0.009365379) #log(0.9)/11.25
 
   # Max benefits from walking (benefit cap) 0.55
   walk_deathsincrease[walk_deathsincrease < 0.7] <- 0.7
@@ -234,11 +256,12 @@ cyipt.heath <- function(x){
   #Calc Years of Life Lost
   walk_yearslost <- walk_deathsincrease * gender_YLL
 
-  walk_health_benefits <- discount
-  walk_health_benefits$benefits <- walk_health_benefits$discount * sum(walk_yearslost) * 60000 # Value of a startical life in 2012
+  #walk_health_benefits <- discount
+  #walk_health_benefits$benefits <- walk_health_benefits$discount * sum(walk_yearslost) * 60000 # Value of a startical life in 2012
+  walk_health_benefits <- sum(walk_yearslost) * 60000 # Value of a startical life in 2012
 
   results$health_deathavoided <- sum(cycle_deathsavoided) + sum(walk_deathsincrease)
-  results$health_benefit <- sum(cycle_health_benefits$benefits + walk_health_benefits$benefits)
+  results$health_benefit <- cycle_health_benefits + walk_health_benefits
 
   ###############################################
   # Absenteeism
@@ -246,8 +269,8 @@ cyipt.heath <- function(x){
 
   # Calcualte the Number of people who are doing an additonal 30 minute of exercies
   # Convert from hours per weeks to minutes per days to effective people getting extra 30 min per day
-  cycle_extraexercies <- (cycle_hours / 4.22 * 60) * increase_cyclers / 30
-  walk_lessexercies <- (walk_hours / 4.22 * 60) * decrease_walkers / 30
+  cycle_extraexercies <- (cycle_hours * 14.21801 ) * increase_cyclers / 30 # 14.21801 = 1 / 4.22 * 60
+  walk_lessexercies <- (walk_hours * 14.21801 ) * decrease_walkers / 30
 
   # Zero Out the Retired
   cycle_extraexercies[4,] <- c(0,0)
@@ -260,14 +283,13 @@ cyipt.heath <- function(x){
   # 25% reduction on average of 6.8 days per year
   # average of £19.27 per hour for 7.48 hours per day
 
-  cycle_absenteeism <-  sum(cycle_extraexercies * 6.8 * 0.25) * 19.27 * 7.48
-  walk_absenteeism <-  sum(walk_lessexercies * 6.8 * 0.25) * 19.27 * 7.48
+  cycle_absenteeism <-  sum(cycle_extraexercies)  * 245.0373 # 245.0373 =  6.8 * 0.25 * 19.27 * 7.48
+  walk_absenteeism <-  sum(walk_lessexercies)  * 245.0373
 
   results$absenteeism_benefit <- cycle_absenteeism - walk_absenteeism
 
   return(results)
 }
-
 
 
 #######################
