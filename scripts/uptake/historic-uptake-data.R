@@ -72,6 +72,7 @@ l_joined = left_join(rf11, od_01_new) %>%
 
 # road net data ----
 # todo: add a bit with all ways, not just busy (40mph+ ones)
+# ways_uk = ...
 ways_busy_no_infra = readRDS("../cyipt-bigdata/ways_busy_no_infra.Rds") # load all intersections with fastest
 
 # new historic data ----
@@ -102,7 +103,7 @@ sel_busy = st_intersects(rf_b, ways_busy_no_infra)
 
 # save results and work in progress ----
 dir.create("../cyipt-bigdata/uptake-files/")
-save(b100, b200, l, rf_b, sel_infra, sel_busy, file = "../cyipt-bigdata/uptake-files/uptake-files-all.Rds")
+save(b100, b200, l, rf_b, sel_infra, sel_busy, old_infra, ways_busy_no_infra, file = "../cyipt-bigdata/uptake-files/uptake-files-all.Rds")
 
 # # Function to Aggregate and clean cycleway tags
 # # take the highest form
