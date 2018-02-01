@@ -1,5 +1,5 @@
 regions <- regions.todo
-regions.list <- list()
+osm.list <- list()
 
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))){
