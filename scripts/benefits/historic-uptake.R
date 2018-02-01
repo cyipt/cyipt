@@ -63,6 +63,10 @@ od_01_new = readRDS("../cyoddata/od_01_new.Rds")
 l_joined = left_join(rf11, od_01_new) %>%
   na.omit()
 
+# road net data ----
+# todo: make this of all roads, not just busyy (40mph+ ones)
+ways_busy_no_infra = readRDS("../cyipt-bigdata/ways_busy_no_infra.Rds") # load all intersections with fastest
+
 # new historic data ----
 td = st_read("../td/dft-england-cycling-data-2011.geojson")
 td_type = st_geometry_type(td)
@@ -84,9 +88,10 @@ b100 = readRDS("../cyipt-bigdata/b100.Rds")
 ## Estimate exposure per route ----
 rf_b = l$geometry_rf %>%
   st_transform(27700) %>%
-  st_buffer(dist = 200, nQuadSegs = 4) %>%
+  st_buffer(dist = 50, nQuadSegs = 4) %>%
   st_transform(4326)
 sel_infra = st_intersects(rf_b, old_infra)
+sel_busy = st_intersects(rf_b, ways_busy_no_infra)
 i = 1
 # res_list = vector(mode = "list", length = nrow(l))
 res_names = c("infra_length", "infra_avwidth", "infra_cycleway", "infra_tertiary", "infra_residential",
@@ -94,16 +99,56 @@ res_names = c("infra_length", "infra_avwidth", "infra_cycleway", "infra_tertiary
               "infra_shared_use_footpath", "infra_lit", "infra_asphalt")
 res = data.frame(matrix(nrow = nrow(l), ncol = length(res_names)))
 names(res) = res_names
+
+
+
+
+# # Function to Aggregate and clean cycleway tags
+# # take the highest form
+# aggregate.cycleway <- function(left,right,oneside,otherside){
+#   if("track" %in% c(left , right, oneside, otherside)){
+#     res <- "track"
+#   }else if("lane" %in% c(left , right, oneside, otherside)){
+#     res <- "lane"
+#   }else if("share_busway" %in% c(left , right, oneside, otherside)){
+#     res <- "share_busway"
+#   }else{
+#     res <- "none"
+#   }
+#   return(res)
+# }
+#
+# ways_busy_no_infra$cycleway.alltype
+# foo <- mapply(aggregate.cycleway,
+#               left = old_infra$cycleway.left,
+#               right = old_infra$cycleway.right,
+#               oneside = old_infra$cycleway.oneside,
+#               otherside = old_infra$cycleway.otherside,
+#               SIMPLIFY = T)
+# summary(as.factor(foo))
+
+i = 2
 for(i in 1:nrow(l)) {
-  # plot(rf_b[i])
-  # plot(l[i, ], add = T)
+
   local_infra = old_infra[sel_infra[[i]],]
-  plot(local_infra, add = T) # working
+  local_roads = ways_busy_no_infra[sel_busy[[i]],]
+  road_dists = as.numeric(st_length(local_roads))
+  roads_dist = sum(road_dists)
+
   infra_dists = as.numeric(st_length(local_infra))
   dist_infra = sum(infra_dists)
+
+  qtm(rf_b[i]) +
+    qtm(l[i, ], add = T) +
+    qtm(local_infra, add = T, lines.col = "green") +
+    qtm(local_roads, add = T, lines.col = "red", lines.lwd = 3)
+
   res$infra_length[i] = dist_infra
   res$infra_avwidth[i] = weighted.mean(as.numeric(as.character(local_infra$est_width)), w = infra_dists, na.rm = T)
   res$infra_cycleway[i] = sum(infra_dists[local_infra$highway == "cycleway"], na.rm = T) / dist_infra
+
+  # todo: add cycle left and right
+
   res$infra_tertiary[i] = sum(infra_dists[local_infra$highway == "tertiary"], na.rm = T) / dist_infra
   res$infra_residential[i] = sum(infra_dists[local_infra$highway == "residential"], na.rm = T) / dist_infra
   res$infra_footway[i] = sum(infra_dists[local_infra$highway == "footway"], na.rm = T) / dist_infra
@@ -114,11 +159,25 @@ for(i in 1:nrow(l)) {
   res$infra_lit[i] = sum(infra_dists[local_infra$lit == "yes"], na.rm = T) / dist_infra
   res$infra_asphalt[i] = sum(infra_dists[local_infra$surface == "asphalt"], na.rm = T) / dist_infra
 
-  # Along A road without infrastructure
+  # Along a busy (> 30 mph) road without infrastructure
+  res$road_20[i] = sum(road_dists[local_roads$maxspeed < 30]) / roads_dist
+  res$road_30[i] = sum(road_dists[local_roads$maxspeed == 30]) / roads_dist
+  res$road_40[i] = sum(road_dists[local_roads$maxspeed > 30 & local_roads$maxspeed <= 40]) / roads_dist
+  res$road_60[i] = sum(road_dists[local_roads$maxspeed > 40]) / roads_dist
+
+  res$road_primary[i] = sum(infra_dists[grep(pattern = "primary", x = local_infra$highway)]) / roads_dist
+  res$road_secondary[i] = sum(infra_dists[grep(pattern = "secondary", x = local_infra$highway)]) / roads_dist
+  res$road_tertiary[i] = sum(infra_dists[grep(pattern = "tertiary", x = local_infra$highway)]) / roads_dist
+  res$road_cycleway[i] = sum(infra_dists[grep(pattern = "cycleway", x = local_infra$highway)]) / roads_dist
+  res$road_path[i] = sum(infra_dists[grep(pattern = "path|pedestrian|track|footway", x = local_infra$highway)]) / roads_dist
+
+  # todo: add breakdown by speed for primary
+  # todo:
+
+  res$road_primary[i] = sum(infra_dists[grep(pattern = "primary", x = local_infra$highway)]) / roads_dist
+  res$road_primary[i] = sum(infra_dists[local_roads$highway == "secondary"]) / roads_dist
 
   # Along B road
-
-  # Along 20, 30, 40, and 60 mph roads
 
 }
 summary(res)
@@ -397,7 +456,6 @@ ways_busy = rmapshaper::ms_simplify(ways_busy)
 ways_busy_wgs = st_transform(ways_busy, 4326)
 
 st_write(ways_busy_wgs, "../cyipt-bigdata/ways_busy_wgs.geojson")
-ways_busy_simple = st_read("../cyipt-bigdata/simple-national/ways_busy_wgs/ways_busy_wgs.shp") # simplified by http://mapshaper.org/
 
 # b1000 = old_infra %>%
 #   st_transform(27700) %>%
@@ -428,14 +486,21 @@ saveRDS(ways_busy_no_infra, "../cyipt-bigdata/ways_busy_no_infra.Rds")
 # ways_busy_no_infra = ways_busy_wgs[b200u, , op = st_disjoint]
 
 
-ways_busy_leeds = ways_busy_no_infra[leeds, ]
+ways_busy_leeds = ways_busy_simple[leeds, ]
 ways_busy_no_infra_leeds = ways_busy_no_infra[leeds, ]
+old_infra_leeds = old_infra[leeds, ]
+
+qtm(ways_busy_no_infra_leeds, lines.lwd = 4) +
+  qtm(ways_busy_leeds, lines.col = "green") +
+  qtm(old_infra_leeds, lines.col = "black")
+
+
 qtm(ways_busy_leeds)
 cambridge = region_shape %>% filter(grepl("Bris", ttwa11nm))
 ways_busy_cambridge = ways_busy_simple[cambridge, ]
 ways_busy_no_infra_cambridge = ways_busy_no_infra[cambridge, ]
 old_infra_cam = old_infra[cambridge, ]
-qtm(ways_busy_cambridge, lines.col = "green", lines.lwd = 3) +
+qtm(ways_busy_leeds, lines.col = "green", lines.lwd = 3) +
   qtm(ways_busy_no_infra_cambridge) +
   qtm(old_infra_cam, lines.col = "black")
 # infrastructure on the ground between mid 2008 to 2011
