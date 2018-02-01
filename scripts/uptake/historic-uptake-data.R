@@ -102,8 +102,7 @@ sel_busy = st_intersects(rf_b, ways_busy_no_infra)
 
 # save results and work in progress ----
 dir.create("../cyipt-bigdata/uptake-files/")
-save.image(file = "../cyipt-bigdata/uptake-files/uptake-files-all.Rds")
-
+save(b100, b200, l, rf_b, sel_infra, sel_busy, file = "../cyipt-bigdata/uptake-files/uptake-files-all.Rds")
 
 # # Function to Aggregate and clean cycleway tags
 # # take the highest form
