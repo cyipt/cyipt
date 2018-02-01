@@ -140,19 +140,25 @@ get.uptakebens <- function(j){
   #Temporairly disabled
   pct.scheme$quality_benefit <- cyipt.jounreyquality()
 
-  benefits_list <- c("absenteeism_benefit", "health_benefit",
-                     "accidents_benefit","airquality_benefit","noise_benefit","co2saved","ghg_benefit",
-                     "congestion_benefit","indirecttax_benefit", "timesaving_benefit")
 
+  #Count changin in the driving modes
+  pct.scheme$d_motorist <- pct.scheme$d_carorvan + pct.scheme$d_motorcycle + pct.scheme$d_taxi
+  benefits_list <- c("absenteeism_benefit", "health_benefit",
+                     "accidents_benefit","airquality_benefit","noise_benefit","ghg_benefit",
+                     "congestion_benefit","indirecttax_benefit", "timesaving_benefit")
+  nonbenefits_list <- c("all_16p","pct.census","uptake","d_onfoot","d_motorist","distCycle.Change","distWalk.Change","distDrive.Change",
+                        "health_deathavoided","co2saved")
   #Summarise All the Benefits
-  pct.scheme.summary <- pct.scheme[,benefits_list]
+  pct.scheme.summary <- pct.scheme[,c(nonbenefits_list,benefits_list)]
   pct.scheme.summary <- colSums(pct.scheme.summary)
 
+  pct.scheme.summary.benefits <- pct.scheme.summary[benefits_list]
+  pct.scheme.summary.nonbenefits <- pct.scheme.summary[nonbenefits_list]
 
   #Convert Extrapolate over Multiple Years
-  benefits_final <- as.data.frame(t(cyipt.presentvalue(pct.scheme.summary, 10, 3.5)))
-  names(benefits_final) <- benefits_list
-  rm(pct.scheme.summary,benefits_list)
+  benefits_final <- as.data.frame(t(c(cyipt.presentvalue(pct.scheme.summary.benefits, 10, 3.5),pct.scheme.summary.nonbenefits) ))
+  names(benefits_final) <- c(benefits_list,nonbenefits_list)
+  #rm(pct.scheme.summary,benefits_list)
 
   benefits_final$scheme_no <- j
   return(benefits_final)
@@ -180,7 +186,9 @@ for(b in seq_len(1:length(regions))){
     if(class(schemes)[1] != "numeric"){
 
       #Check to see if work has already been done
-      col.added <- c("absenteeism_benefit", "health_benefit","accidents_benefit","noise_benefit","co2saved","ghg_benefit","congestion_benefit","indirecttax_benefit","timesaving_benefit")
+      col.added <- c("uptake","d_onfoot","d_motorist","distCycle.Change","distWalk.Change","distDrive.Change",
+                     "health_deathavoided","co2saved","absenteeism_benefit", "health_benefit","accidents_benefit",
+                     "noise_benefit","co2saved","ghg_benefit","congestion_benefit","indirecttax_benefit","timesaving_benefit")
       if(all(col.added %in% names(schemes)) & skip){
         message(paste0("Uptake annd Benefits already calcualted for ",regions[b]," so skipping"))
       }else{
@@ -232,6 +240,15 @@ for(b in seq_len(1:length(regions))){
         #system.time(lapply(1:6,get.uptakebens))
 
         schemes <- left_join(schemes, res, by = c("group_id" = "scheme_no"))
+
+        #Add extra values
+        schemes$benefitTotal <- schemes$absenteeism_benefit + schemes$health_benefit + schemes$accidents_benefit + schemes$noise_benefit + schemes$ghg_benefit + schemes$congestion_benefit + schemes$indirecttax_benefit + schemes$timesaving_benefit
+        schemes$benefitCost <- schemes$benefitTotal / schemes$costTotal
+
+
+
+
+
         saveRDS(schemes, paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes.Rds"))
 
       }
