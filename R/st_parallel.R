@@ -11,12 +11,7 @@ st_parallel <- function(sf_df, sf_func, n_cores, ...){
   #Make the cluster
   cl <- makeCluster( n_cores)
   clusterEvalQ(cl, {library(sf)})
-  clusterExport(cl=cl, varlist=c("sf_df"))
-
-  #Set up the task
-  #fun <- function(cl){
-  #  parLapply(cl, seq_len(nrow(sf_df)),function(x) sf_func(x, ...))
-  #}
+  #clusterExport(cl=cl, varlist=c("sf_df"))
 
   #Run the Task
   #result <- fun(cl)
