@@ -2,6 +2,8 @@
 rm(list = ls()) # start with a blank slate
 library(tmap)
 tmap_mode("view")
+# install.packages("caret")
+library(caret)
 library(tidyverse)
 library(sf)
 load("../cyipt-bigdata/uptake-files/uptake-files-all.Rds")
