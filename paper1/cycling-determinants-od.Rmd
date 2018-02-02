@@ -1,5 +1,5 @@
 ---
-title: 'Estimating the determinants of cycling: from area to road network levels'
+title: 'Estimating the infrastructural determinants of cycling uptake: a national natural experiment at the origin-destination level'
 author:
   - name: Robin Lovelace
     email: r.lovelace@leeds.ac.uk
@@ -23,7 +23,7 @@ abstract: |
   
   Conclusions: Newly available data, combined with emerging high performance and open source statistical software, mean that large natural experiments on the impact of new infrastructure on mode choice can now be performed at the national level using geographically detailed data at the origin-destination level. This has the potential to make the prioritisation of new infrastructure much more evidence-based and holds the promise of allowing a-priori benefit-cost estimates to be automated to support transport planners to enable a rapid transition away from fossil fuels and towards healthy travel patterns across the world, in urban and rural areas alike.
 
-bibliography: /home/robin/allrefs.bib
+bibliography: references.bib
 output:
   rticles::elsevier_article:
         number_sections: yes
