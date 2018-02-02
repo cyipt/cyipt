@@ -1,6 +1,6 @@
 # st_parallel
 st_parallel <- function(sf_df, sf_func, n_cores, ...){
-
+  message(paste0(Sys.time()," setting up parallelisation, n.b for small jobs this is just wasted time"))
   #Look for variaible that need to be passed to the cluster
   # I.e. have we passed any secondary data frames such as for st_intersect
   var_list <- list(...)
@@ -23,6 +23,8 @@ st_parallel <- function(sf_df, sf_func, n_cores, ...){
   clusterEvalQ(cl, {library(sf)})
   clusterExport(cl=cl, varlist= names(var_list), envir = environment() )
 
+  message(paste0(Sys.time()," Unleash the power of ",n_cores," cores!"))
+
   #Run the Task
   result <- clusterApply(
     cl = cl,
@@ -30,6 +32,8 @@ st_parallel <- function(sf_df, sf_func, n_cores, ...){
     fun = function(x) sf_func(x, ...)
   )
   stopCluster(cl)
+
+  message(paste0(Sys.time()," putting the results back together"))
 
   # Combine results back together. Method of combining depends on the output from the function.
   # note this does not work for sgdp which are returned as a list not an sgpb but the contents are the same
@@ -40,8 +44,9 @@ st_parallel <- function(sf_df, sf_func, n_cores, ...){
   } else if (class(result[[1]]) == 'sgbp'){
     #sgbp
     message("sgbp output will be converted to list format")
-    result <- do.call("c", result)
-    names(result) <- NULL
+    #result <- do.call("c", result)
+    #names(result) <- NULL
+
   } else {
     # For sf data.frame using bind_rows as faster than do.call("rbind")
     result <- bind_rows(result)
