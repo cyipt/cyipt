@@ -31,16 +31,16 @@ route.infra.summary <- function(x){
   route.osm$cycleway.after <- ifelse(route.osm$partScheme, route.osm$Recommended,"None")
 
   #highway types that are off road
-  not_road <- c("bridleway","construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")
+  not_road <- c("bridleway","construction","cycleway","escalator","footway","path","pedestrian","steps","track")
 
   #Summarise
   result <- data.frame(ID = pct.scheme$ID[x],
                        lengthTotal = sum(route.osm$length),
                        # Speeds Before
                        # These can't be changed by CyIPT so don't do after
-                       length20mph.before = sum(route.osm$length[route.osm$maxspeed <= 20]),
-                       length30mph.before = sum(route.osm$length[route.osm$maxspeed <= 30 & route.osm$maxspeed > 20]),
-                       length40mph.before = sum(route.osm$length[route.osm$maxspeed >= 40]),
+                       length20mph.before = sum(route.osm$length[route.osm$maxspeed < 30]),
+                       length30mph.before = sum(route.osm$length[route.osm$maxspeed == 30 ]),
+                       length40mph.before = sum(route.osm$length[route.osm$maxspeed > 30]),
 
                        # Highway Type Before
                        # These can't be changed by CyIPT so don't do after
