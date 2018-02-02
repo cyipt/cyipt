@@ -36,7 +36,13 @@ output:
 
 # Introduction
 
-- Policy context and need
+The benefits of cycling for everyday trips are now well-established.
+Uptake of active transport has been shown to improve health and environmental outcomes across a wide range of measures, notably x, y and z.
+Cycling in particular has the potential to transform transport systems in densly populated urban areas because of the mode's speed and and thermodynamic efficiency compared to walking:
+a much higher proportion of motorised trips currently made by motorised modes could be replaced by cycling than by walking.
+The benefits of cycling uptake increase dramatically when new cycle trips replace trips that would have otherwise been made by car 
+
+- Policy context and need [@celis-morales_association_2017]
 
 - The fact it builds on the PCT [@lovelace_propensity_2017]
 
