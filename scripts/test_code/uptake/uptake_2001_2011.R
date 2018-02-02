@@ -4,6 +4,8 @@ library(sp)
 library(dplyr)
 library(stplanr)
 library(parallel)
+library(tmap)
+tmap_mode("view")
 source("../cyipt/R/st_parallel.R")
 
 ############################
@@ -49,12 +51,12 @@ if(file.exists("../cyipt-securedata/uptakemodel/routes01_11.Rds")){
 if(file.exists("../cyipt-securedata/uptakemodel/osm_clean.Rds")){
   osm <- readRDS("../cyipt-securedata/uptakemodel/osm_clean.Rds")
 }else{
-  files <- list.files("../cyipt-bigdata/osm-clean", full.names = T, recursive = T)
+  files <- list.files("../cyipt-bigdata/osm-prep", full.names = T, recursive = T, pattern = "osm-lines")
   osm <- list()
   for(i in seq_len(length(files)) ){
     osm.tmp <- readRDS(files[i])
-    osm.tmp <- osm.tmp[,c("osm_id","highway","maxspeed","surface","segregated","cycleway.left",
-                          "cycleway.right","cycleway.left.width","cycleway.right.width","region","geometry")]
+    osm.tmp <- osm.tmp[,c("id","highway","maxspeed","segregated","cycleway.left",
+                          "cycleway.right","geometry")]
     osm[[i]] <- osm.tmp
     message(paste0(Sys.time()," Done ",files[i]))
   }
@@ -79,13 +81,90 @@ if(file.exists("../cyipt-securedata/uptakemodel/rf_buff.Rds")){
   saveRDS(rf_buff,"../cyipt-securedata/uptakemodel/rf_buff.Rds")
 }
 
+#################################
+# Step 5: get the historic infrastrucutre data
+if(file.exists("../cyipt-securedata/uptakemodel/infra_change.Rds")){
+  infra.change <- readRDS("../cyipt-securedata/uptakemodel/infra_change.Rds")
+}else{
+  #Sustrans Data?
+  infra.sc2sd <- readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyinfdat/sc2sd")
+  infra.sl2sc <- readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyinfdat/ri_04_11_dft")
+  infra.sndft <- readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyinfdat/ri_01_11_non_dft")
+
+  #Merge Together and clean up
+  infra.change <- bind_rows(infra.sc2sd, infra.sl2sc, infra.sndft)
+  rm(infra.sc2sd, infra.sl2sc, infra.sndft)
+  infra.change <- as.data.frame(infra.change)
+  infra.change$geometry <- st_sfc(infra.change$geometry)
+  infra.change <- st_sf(infra.change)
+  st_crs(infra.change) <- 27700
+
+  infra.change$C2_Scheme <- NULL
+  infra.change$LastUpdate <- NULL
+  saveRDS(infra.change,"../cyipt-securedata/uptakemodel/infra_change.Rds")
+}
+
+###################################
+# Step 6: Get the Transport Direct Data
+if(file.exists("../cyipt-securedata/uptakemodel/infra_td.Rds")){
+  infra.td <- readRDS("../cyipt-securedata/uptakemodel/infra_td.Rds")
+}else{
+  #Transport Direct Data
+  infra.td <- st_read("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/td/dft-england-cycling-data-2011.geojson")
+  infra.td <- st_transform(infra.dft, 27700)
+
+  #remove points
+  infra.td <- infra.td[st_geometry_type(infra.td) == "LINESTRING", ]
+
+  saveRDS(infra.td,"../cyipt-securedata/uptakemodel/infra_td.Rds")
+}
 
 ###################################
 # Step 4: Find the OSM roads that intersect the buffered routes
 if(file.exists("../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")){
   inter <- readRDS("../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")
 }else{
-  inter <- st_parallel(sf_df = rf_buff, sf_func = st_intersects, n_cores = 6)
-  saveRDS(osm,"../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")
+  inter <- st_parallel(sf_df = rf_buff, sf_func = st_intersects, n_cores = 6, y = osm)
+  saveRDS(inter,"../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")
 }
+
+
+
+####################################
+# Sanity Check
+qtm(infra.td[1:1000,], lines.lwd = 2, lines.col = "red" ) +
+  qtm(infra.change, lines.lwd = 1, lines.col = "blue")
+
+###################################
+# Step 7: Subset the OSM to only the parts that intersect with the routes
+
+#list the osmids
+foo <- inter[1:5]
+inter.unique <- unlist(foo)
+inter.unique <- unique(inter.unique)
+
+qtm(rf_buff[1,], fill = NULL) +
+  qtm(osm[inter[[1]],], lines.col = "red", lines.lwd = 4)
+
+osm
+
+
+
+foo <- st_parallel(sf_df = rf_buff[1:10, ], sf_func = st_intersects, n_cores = 6, y = osm)
+foo2 <- do.call("c", foo)
+foo3 <- unique(foo2)
+qtm(osm[foo3,])
+
+
+##################################
+# Step 5: For each PCT route Summariase the infrastructure
+
+# create a single aggregate variaible in the osm
+
+osm$infra_summary <- NA
+
+names(osm)
+
+
+
 
