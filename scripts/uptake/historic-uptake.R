@@ -6,7 +6,12 @@ tmap_mode("view")
 library(caret)
 library(tidyverse)
 library(sf)
-load("../cyipt-bigdata/uptake-files/uptake-files-all.Rds")
+load("../cyipt-bigdata/uptake-files/uptake-files-all.Rds") # generated from historic-uptake-data.R
+# read-in data generate by uptake_2001_2011.R
+
+ways_uk <- readRDS("../cyipt-securedata/uptakemodel/osm_clean.Rds")
+old_infra = readRDS("../cyipt-securedata/uptakemodel/infra_historic.Rds") # supercedes previous version
+
 # generate exposure measures per route ----
 # create table to hold results
 res_names = c("infra_length", "infra_length_prop", "infra_avwidth", "infra_cycleway", "infra_tertiary", "infra_residential",

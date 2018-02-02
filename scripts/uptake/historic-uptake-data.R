@@ -1,5 +1,4 @@
-# Aim: create predictive model of uptake of cycling following exposure to infrastructure
-
+# Aim: load data
 # required packages ----
 rm(list = ls()) # start with a blank slate
 devtools::install_github("robinlovelace/ukboundaries")
