@@ -128,6 +128,10 @@ if(file.exists("../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")){
   saveRDS(inter,"../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")
 }
 
+####################################
+# Sanity Check
+qtm(rf_buff[1,], fill = NULL ) +
+  qtm(osm[foo[[1]], ], lines.lwd = 1, lines.col = "red")
 
 
 #################################

@@ -44,7 +44,7 @@ st_parallel <- function(sf_df, sf_func, n_cores, ...){
   } else if (class(result[[1]]) == 'sgbp'){
     #sgbp
     message("sgbp output will be converted to list format")
-    #result <- do.call("c", result)
+    result <- do.call("c", result)
     #names(result) <- NULL
 
   } else {
