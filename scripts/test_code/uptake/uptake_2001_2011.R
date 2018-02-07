@@ -128,8 +128,6 @@ if(file.exists("../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")){
   saveRDS(inter,"../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")
 }
 
-
-
 #################################
 # Stetp 7: Combine the two hsitoric datasets
 if(file.exists("../cyipt-securedata/uptakemodel/infra_historic.Rds")){

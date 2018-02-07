@@ -7,16 +7,20 @@ library(caret)
 library(tidyverse)
 library(sf)
 load("../cyipt-bigdata/uptake-files/uptake-files-all.Rds") # generated from historic-uptake-data.R
-# read-in data generate by uptake_2001_2011.R
+l = readRDS("../cyipt-bigdata/uptake-files/l.Rds")
+names(l)
 
-ways_uk <- readRDS("../cyipt-securedata/uptakemodel/osm_clean.Rds")
-old_infra = readRDS("../cyipt-securedata/uptakemodel/infra_historic.Rds") # supercedes previous version
+# descriptive stats of inputs ----
+summary(l)
+summary(old_infra)
+sum(st_length(old_infra))
 
 # generate exposure measures per route ----
 # create table to hold results
-res_names = c("infra_length", "infra_length_prop", "infra_avwidth", "infra_cycleway", "infra_tertiary", "infra_residential",
-              "infra_footway", "infra_primary", "infra_secondary", "infra_segregated", "infra_unsegregated",
-              "infra_shared_use_footpath", "infra_lit", "infra_asphalt",
+res_names = c("infra_length", "infra_length_prop", "infra_avwidth", "infra_date",
+              "infra_cycleway", "infra_primary", "infra_secondary", "infra_tertiary",
+              "infra_segregated", "infra_unsegregated", "infra_residential",
+              "infra_footway", "infra_shared_use_footpath", "infra_lit", "infra_asphalt",
               "road_busy",
               "road_20", "road_30", "road_40", "road_60",
               "road_primary", "road_secondary", "road_tertiary", "road_cycleway", "road_path")
@@ -45,10 +49,10 @@ for(i in 1:nrow(l)) {
   res$infra_length[i] = dist_infra
   res$infra_length_prop[i] = dist_infra / (l$dist[i] * 1000)
   res$infra_avwidth[i] = weighted.mean(as.numeric(as.character(local_infra$est_width)), w = infra_dists, na.rm = T)
-  res$infra_cycleway[i] = sum(infra_dists[local_infra$highway == "cycleway"], na.rm = T) / dist_infra
+  res$infra_date[i] = mean(local_infra$date)
 
   # todo: add cycle left and right
-
+  res$infra_cycleway[i] = sum(infra_dists[local_infra$highway == "cycleway"], na.rm = T) / dist_infra
   res$infra_residential[i] = sum(infra_dists[local_infra$highway == "residential"], na.rm = T) / dist_infra
   res$infra_footway[i] = sum(infra_dists[local_infra$highway == "footway"], na.rm = T) / dist_infra
   res$infra_primary[i] = sum(infra_dists[local_infra$highway == "primary"], na.rm = T) / dist_infra
@@ -85,21 +89,20 @@ for(i in 1:nrow(l)) {
 }
 summary(res)
 res[is.na(res)] <- 0
-# model uptake ----
-# sanity checks on lines
-# summary(l$o %in% z$geo_code)
-# summary(l$d %in% z$geo_code)
-qtm(l[l$pcycle01 > 0.3,]) +
-  qtm(l$geometry_rf[l$pcycle01 > 0.3])
-qtm(l[l$pcycle11 > 0.3,])
-
-# data checks
+# sanity checks on lines ----
 sum(l$all01)
 sum(l$all11)
 sum(l$all01 * l$pcycle01) / sum(l$all01)
 sum(l$all11 * l$pcycle11) / sum(l$all11)
 l = l %>% mutate(p_uptake = pcycle11 - pcycle01)
 l = bind_cols(l, res)
+# summary(l$o %in% z$geo_code)
+# summary(l$d %in% z$geo_code)
+qtm(l[l$pcycle01 > 0.3,]) +
+  qtm(l$geometry_rf[l$pcycle01 > 0.3])
+qtm(l[l$pcycle11 > 0.3,])
+qtm(l %>% top_n(n = 200, wt = infra_length), basemaps = c("OpenStreetMap.BlackAndWhite", "Thunderforest.OpenCycleMap"), lines.col = "black")
+
 
 psimple = l$pcycle01 * l$all11 # simple model
 m_all_lm = lm(p_uptake ~ dist + infra_length + infra_cycleway + infra_avwidth +
@@ -134,7 +137,8 @@ saveRDS(m, "m-xgboost.Rds")
 p_perc = predict(m, train[, -c(1:2)])
 p = (p_perc + l$pcycle01) * l$all11
 summary(train)
-train_new = train # to test very simple scenarios of change
+train_new = train
+# to test very simple scenarios of change
 train_new[, 3] = 6000
 train_new[, 4] = 1
 p_new = (predict(m, train_new[, -c(1:2)]) + l$pcycle01) * l$all11

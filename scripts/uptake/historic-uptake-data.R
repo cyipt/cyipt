@@ -31,24 +31,31 @@ z = z[region_shape, ]
 # u_rf = "https://github.com/npct/pct-outputs-national/raw/master/commute/msoa/rf_all.Rds"
 # download.file(u_rf, "../cyipt-bigdata/rf.Rds")
 rf_all_orig = readRDS("../cyipt-bigdata/rf.Rds")
+rf_all_orig = rf_new_order %>%
+  st_as_sf()
+# join osm lookup list to results ----
+# rf = readRDS("../cyipt-securedata/uptakemodel/routes01_11.Rds") # not used - same as l$geometry_rf
+# names(rf)
+# rf_all_orig = readRDS("../cyipt-bigdata/rf.Rds")
+# cor(rf$all11, rf_all_orig$all)
+lines_lookup = readRDS("../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")
+rf_all_orig$osm_lookup = lines_lookup
 # flow_11_orig = readRDS("~/npct/pct-outputs-regional-R/commute/msoa/avon/l.Rds") %>%
 #   as(Class = "sf")
 flow_11_orig = readRDS("../cyipt-bigdata/l_all.Rds") # from github/npct
 o = order(rf_all_orig$id)
 rf_new_order = rf_all_orig[o,]
-
-rf11_sf = rf_new_order %>%
-  st_as_sf()
+saveRDS(rf_new_order, "../cyipt-bigdata/uptake-files/rf_new_order.Rds")
 
 ukbound = getbb("Great Britain")
 # ukways = dodgr::dodgr_streetnet("Great Britain") # fail
 # ukways = osmdata_sf(q = opq(bbox = "Great Britain"), doc = "../cyipt-bigdata/gb_ways.osm")
 
 # Process lines data ----
-rf11 = rf11_sf %>%
+rf11 = rf_new_order %>%
   mutate(pcycle11 = bicycle / all) %>%
   select(o = geo_code1, d = geo_code2, all11 = all, pcycle11, dist = rf_dist_km,
-         hilliness = rf_avslope_perc, qdf = dist_rq_rf, car_driver) %>%
+         hilliness = rf_avslope_perc, qdf = dist_rq_rf, car_driver, osm_lookup) %>%
   filter(o %in% z$geo_code, d %in% z$geo_code) %>%
   filter(all11 > 20) %>% # 130k when >20
   mutate(pcar = car_driver / all11) %>%
@@ -69,22 +76,33 @@ od_01_new = readRDS("../cyoddata/od_01_new.Rds")
 l_joined = left_join(rf11, od_01_new) %>%
   na.omit()
 
+saveRDS(l_joined, "../cyipt-bigdata/uptake-files/l_joined.Rds")
+
 # road net data ----
 # todo: add a bit with all ways, not just busy (40mph+ ones)
 # ways_uk = ...
 ways_busy_no_infra = readRDS("../cyipt-bigdata/ways_busy_no_infra.Rds") # load all intersections with fastest
+# read-in data generate by uptake_2001_2011.R
+ways_uk <- readRDS("../cyipt-securedata/uptakemodel/osm_clean.Rds")
+old_infra_all = readRDS("../cyipt-securedata/uptakemodel/infra_historic.Rds") # supercedes previous version
+old_infra = filter(old_infra_all, date > "2001-01-01", date < "2011-01-01")
 
 # new historic data ----
-td = st_read("../td/dft-england-cycling-data-2011.geojson")
-td_type = st_geometry_type(td)
+# td = st_read("../td/dft-england-cycling-data-2011.geojson")
+# td_type = st_geometry_type(td)
 # summary(td_type)
 # td_p = td[td_type == "POINT", ]
 # summary(td_p)
 # # plot(td_p$geometry)
-td = td[td_type == "LINESTRING", ]
-old_infra = td # rely on td data for now...
+# td = td[td_type == "LINESTRING", ]
+# old_infra = td # rely on td data for now...
 l = l_joined[l_joined$all11 >= min_od_sample & l_joined$all01 >= min_od_sample, ]
 sum(l$all11) # 7 million ppl (500k when 500+, 2m when 200)
+
+# check osm data
+qtm(l$geometry[1]) +
+  qtm(ways_uk$geometry[l$osm_lookup[[1]]])
+saveRDS(l, "../cyipt-bigdata/uptake-files/l.Rds")
 
 b500 = readRDS("../cyipt-bigdata/b500.Rds")
 b200 = readRDS("../cyipt-bigdata/b200.Rds")
