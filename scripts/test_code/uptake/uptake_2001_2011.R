@@ -128,6 +128,12 @@ if(file.exists("../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")){
   saveRDS(inter,"../cyipt-securedata/uptakemodel/osm_rf_inter.Rds")
 }
 
+####################################
+# Sanity Check
+qtm(rf_buff[1,], fill = NULL ) +
+  qtm(osm[foo[[1]], ], lines.lwd = 1, lines.col = "red")
+
+
 #################################
 # Stetp 7: Combine the two hsitoric datasets
 if(file.exists("../cyipt-securedata/uptakemodel/infra_historic.Rds")){
