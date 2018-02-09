@@ -381,6 +381,25 @@ dir.create("../cyipt-bigdata/uptake-files/")
 # st_crs(ways_all) = 27700
 # saveRDS(ways_all, "../cyipt-bigdata/ways_all.Rds")
 # ways_all = readRDS("../cyipt-bigdata/ways_all.Rds")
+# summary(as.factor(ways_all$highway))
+# summary(as.factor(ways_all$cycleway.left))
+# summary(as.factor(ways_all$maxspeed ))
+# summary(as.factor(ways_all$cycleway.right ))
+# summary(as.factor(ways_all$region))
+# ways_cycling = ways_all %>%
+#   filter(highway %in% c("cycleway", "primary", "secondary") |
+#            cycleway.left != "no" |
+#            cycleway.right != "no" |
+#            maxspeed == 20)
+# london = osmdata::getbb(place_name = "london", format_out = "sf_polygon")
+# mapview::mapview(london)
+# st_crs(london)
+# st_crs(ways_all)
+# ways_london = st_transform(ways_cycling, 4326)
+# ways_london = ways_london[london, ]
+# pryr::object_size(ways_london)
+# saveRDS(ways_london, "/tmp/ways_london.Rds")
+# zip(zipfile = "ways_london.zip", files = "/tmp/ways_london.Rds")
 # summary(ways_all$maxspeed)
 # summary(as.factor(ways_all$roadtype))
 # ways_busy = filter(ways_all, maxspeed > 30 & highway != "pedestrian")
