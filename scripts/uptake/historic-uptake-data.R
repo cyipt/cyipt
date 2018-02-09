@@ -75,19 +75,11 @@ rf11$geometry = l11$geometry
 od_01_new = readRDS("../cyoddata/od_01_new.Rds")
 l_joined = left_join(rf11, od_01_new) %>%
   na.omit()
-
 saveRDS(l_joined, "../cyipt-bigdata/uptake-files/l_joined.Rds")
+l = l_joined[l_joined$all11 >= min_od_sample & l_joined$all01 >= min_od_sample, ]
+sum(l$all11) # 7 million ppl (500k when 500+, 2m when 200)
 
-# road net data ----
-# todo: add a bit with all ways, not just busy (40mph+ ones)
-# ways_uk = ...
-ways_busy_no_infra = readRDS("../cyipt-bigdata/ways_busy_no_infra.Rds") # load all intersections with fastest
-# read-in data generate by uptake_2001_2011.R
-ways_uk <- readRDS("../cyipt-securedata/uptakemodel/osm_clean.Rds")
-old_infra_all = readRDS("../cyipt-securedata/uptakemodel/infra_historic.Rds") # supercedes previous version
-old_infra = filter(old_infra_all, date > "2001-01-01", date < "2011-01-01")
-
-# new historic data ----
+# road net and old-infra data ----
 # td = st_read("../td/dft-england-cycling-data-2011.geojson")
 # td_type = st_geometry_type(td)
 # summary(td_type)
@@ -96,25 +88,62 @@ old_infra = filter(old_infra_all, date > "2001-01-01", date < "2011-01-01")
 # # plot(td_p$geometry)
 # td = td[td_type == "LINESTRING", ]
 # old_infra = td # rely on td data for now...
-l = l_joined[l_joined$all11 >= min_od_sample & l_joined$all01 >= min_od_sample, ]
-sum(l$all11) # 7 million ppl (500k when 500+, 2m when 200)
+# todo: add a bit with all ways, not just busy (40mph+ ones)
+# ways_uk = ...
+ways_busy_no_infra = readRDS("../cyipt-bigdata/ways_busy_no_infra.Rds") # load all intersections with fastest
+# read-in data generate by uptake_2001_2011.R
+
+ways_uk <- readRDS("../cyipt-securedata/uptakemodel/osm_clean.Rds")
+ways_busy = filter(ways_uk, maxspeed > 30)
+
+old_infra_all = readRDS("../cyipt-securedata/uptakemodel/infra_historic.Rds") # supercedes previous version
+old_infra = filter(old_infra_all, date > "2001-01-01", date < "2011-01-01")
+old_infra_wgs = st_transform(old_infra, 4326)
+old_infra1 = old_infra[1:99, ]
+# ways_touching = ways_busy[old_infra1, ] # inlcudes crossing busy roads
+mapview::mapview(ways_touching) + mapview::mapview(old_infra1) # includes touching...
+
 
 # check osm data
 qtm(l$geometry[1]) +
   qtm(ways_uk$geometry[l$osm_lookup[[1]]])
 saveRDS(l, "../cyipt-bigdata/uptake-files/l.Rds")
 
+# b1000 = old_infra %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 1000, nQuadSegs = 4) %>%
+#   st_transform(4326) # time consuming
+# saveRDS(b1000, "../cyipt-bigdata/b1000.Rds")
+# b500 = old_infra %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 500, nQuadSegs = 2) %>%
+#   st_transform(4326) # time consuming
+# saveRDS(b500, "../cyipt-bigdata/b500.Rds")
+# b200 = old_infra %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 200, nQuadSegs = 2) %>%
+#   st_transform(4326) # time consuming
+# saveRDS(b200, "../cyipt-bigdata/b200.Rds")
+# b100 = old_infra %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 100, nQuadSegs = 2) %>%
+#   st_transform(4326) # time consuming
+# saveRDS(b100, "../cyipt-bigdata/b100.Rds")
+b50 = old_infra %>%
+  st_transform(27700) %>%
+  st_buffer(dist = 100, nQuadSegs = 2) %>%
+  st_transform(4326) # time consuming
+saveRDS(b50, "../cyipt-bigdata/b50.Rds")
 b500 = readRDS("../cyipt-bigdata/b500.Rds")
 b200 = readRDS("../cyipt-bigdata/b200.Rds")
 b100 = readRDS("../cyipt-bigdata/b100.Rds")
+b50 = readRDS("../cyipt-bigdata/b50.Rds")
 
 # l_joined = st_join(l_sam, b) # generates huge output - better on per-route level
 ## Estimate exposure per route ----
-rf_b = l$geometry_rf %>%
-  st_transform(27700) %>%
-  st_buffer(dist = 50, nQuadSegs = 4) %>%
-  st_transform(4326)
+rf_b = b50
 # td_near_routes = st_intersection(td, rf_b) # to clip td (todo and test model if time allows)
+
 sel_infra = st_intersects(rf_b, old_infra)
 sel_busy = st_intersects(rf_b, ways_busy_no_infra)
 # todo: add sel_ways with all ways accross UK
@@ -344,27 +373,6 @@ save(b100, b200, l, rf_b, sel_infra, sel_busy, old_infra, ways_busy_no_infra, fi
 # ways_busy_wgs = st_transform(ways_busy, 4326)
 #
 # st_write(ways_busy_wgs, "../cyipt-bigdata/ways_busy_wgs.geojson")
-
-# b1000 = old_infra %>%
-#   st_transform(27700) %>%
-#   st_buffer(dist = 1000, nQuadSegs = 4) %>%
-#   st_transform(4326) # time consuming
-# saveRDS(b1000, "../cyipt-bigdata/b1000.Rds")
-# b500 = old_infra %>%
-#   st_transform(27700) %>%
-#   st_buffer(dist = 500, nQuadSegs = 2) %>%
-#   st_transform(4326) # time consuming
-# saveRDS(b500, "../cyipt-bigdata/b500.Rds")
-# b200 = old_infra %>%
-#   st_transform(27700) %>%
-#   st_buffer(dist = 200, nQuadSegs = 2) %>%
-#   st_transform(4326) # time consuming
-# saveRDS(b200, "../cyipt-bigdata/b200.Rds")
-# b100 = old_infra %>%
-#   st_transform(27700) %>%
-#   st_buffer(dist = 100, nQuadSegs = 2) %>%
-#   st_transform(4326) # time consuming
-# saveRDS(b100, "../cyipt-bigdata/b100.Rds")
 #
 # b200 = readRDS("../cyipt-bigdata/b200.Rds")
 # b200u = st_union(b200) # 10 times smaller object.size(x = b200u) / object.size(b200$geometry)
