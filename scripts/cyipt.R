@@ -10,11 +10,11 @@
 #Regions are selected using the file  ../cyipt/input-data/RegionsToDo.csv
 #To do a region just put y in the do column of this csv file
 
-skip <- FALSE #Should the code skip regions that have already been done?
+skip <- TRUE #Should the code skip regions that have already been done?
 overwrite <- TRUE #Some stages overwrite existing files, for example by adding an extra column of data
                    #Note that not overwriting may cause later stagest to fail if they expect earlier stages
                    #resutls to be in the starting file
-ncores <- 2 #Some functions use parallel processing how many clusters should be run?
+ncores <- 1 #Some functions use parallel processing how many clusters should be run?
 verbose <- TRUE #Get extra messages and information
 all.regions <- TRUE #Ignore the regions to do file and do all regions
 
@@ -31,6 +31,7 @@ library(tmap)
 tmap_mode("view")
 
 source("R/functions.R")
+source("scripts/benefits/benefits_functions.R")
 
 #########################################
 
@@ -43,7 +44,7 @@ if(!all.regions){
 }else{
   regions.todo <- regions.todo$region
 }
-#regions.todo <- "Manchester"
+#regions.todo <- "Bristol"
 
 message("CyIPT will run for the following regions:")
 print(regions.todo)
@@ -84,7 +85,7 @@ source("scripts/select_infra/make_schemes2.R")
 source("scripts/uptake/calc_uptake_exposure3.R")
 
 #Step 11: Summarise Schemes
-source("scripts/select_infra/summarise_schemes.R")
+#source("scripts/select_infra/summarise_schemes.R")
 
 #Step 12: Calculate Benefits
 source("scripts/benefits/eval_benefits4.R")

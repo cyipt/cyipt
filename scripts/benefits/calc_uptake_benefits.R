@@ -1,5 +1,5 @@
 # Calcualte Uptake and Benefits of schemes
-library(xgboost)
+#library(xgboost)
 
 # FUnctions
 
@@ -11,7 +11,7 @@ get.uptakebens <- function(j){
   scheme.pct_ids <- scheme.pct_ids[order(scheme.pct_ids)]
 
   pct.scheme <- pct[scheme.pct_ids,]
-  message(paste0(Sys.time(), "1: pct.scheme has ",nrow(pct.scheme)," rows"))
+  message(paste0(Sys.time(), ": pct.scheme has ",nrow(pct.scheme)," rows"))
 
   #############################################
   # Uptake Section
@@ -214,7 +214,8 @@ for(b in seq_len(1:length(regions))){
 
         ###################################
         # Get the Uptake Model
-        model <- readRDS("../cyipt/input-data/m3.Rds")
+        #model <- readRDS("../cyipt/input-data/m3.Rds")
+        model <- readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyipt/m.Rds")
         ##################################
 
         #Loop over each scheme and calcualte uptake and benefits
