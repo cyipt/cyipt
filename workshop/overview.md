@@ -1,4 +1,4 @@
-# Prioritising cycling infrastracture: new tools and datasets for the LCWIP process
+# Prioritising cycling infrastructure: new tools and datasets for the LCWIP process
 
 ## Introduction
 
