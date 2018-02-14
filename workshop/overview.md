@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Local and Cycling Walking Plans (LCWIPs) must be developed by Local Authorities across England as part of Cycling and Walking Infrastructure Strategy (CWIS).
+The Government is urging highway authorities in England (outside London) to develop Local Cycling Infrastructure Plans (LCWIPs), as part of its Cycling and Walking Investment Strategy (CWIS).
 A range of new datasets and tools can inform these plans, to ensure that they are evidence-based, cost-effective and prioritised such that the infrastructure that goes in first is the infrastructure that is most urgently needed.
 
 This workshop will provide an overview of new open access datasets and freely available tools that can help with the process based on work conducted as part of the DfT-funded Cycling Infrastructure Prioritisation Toolkit (CyIPT).
