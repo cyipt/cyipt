@@ -14,7 +14,6 @@ library(sf)
 # region_name = "Bristol" # for doing locally (not used)
 min_od_sample = 100 # lower bound to subset routes (for testing)
 
-
 # read-in data ----
 z = msoa2011_vsimple %>%
   select(geo_code = msoa11cd)
@@ -174,7 +173,6 @@ saveRDS(sel_infra, "../cyipt-bigdata/uptake-files/sel_infra.Rds")
 # todo: add sel_ways with all ways accross UK
 
 # save results and work in progress ----
-dir.create("../cyipt-bigdata/uptake-files/")
 # save(b100, b200, l, rf_b, sel_infra, sel_busy, old_infra, ways_busy_no_infra, file = "../cyipt-bigdata/uptake-files/uptake-files-all.Rds")
 
 # # Function to Aggregate and clean cycleway tags
