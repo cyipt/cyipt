@@ -6,7 +6,10 @@ tmap_mode("view")
 library(caret)
 library(tidyverse)
 library(sf)
-load("../cyipt-bigdata/uptake-files/uptake-files-all.Rds") # generated from historic-uptake-data.R
+
+# load files
+sel_infra = readRDS("../cyipt-bigdata/uptake-files/sel_infra.Rds")
+old_infra = readRDS("../cyipt-bigdata/uptake-files/old_infra_wgs.Rds")
 l = readRDS("../cyipt-bigdata/uptake-files/l.Rds")
 names(l)
 
@@ -21,9 +24,11 @@ res_names = c("infra_length", "infra_length_prop", "infra_avwidth", "infra_date"
               "infra_cycleway", "infra_primary", "infra_secondary", "infra_tertiary",
               "infra_segregated", "infra_unsegregated", "infra_residential",
               "infra_footway", "infra_shared_use_footpath", "infra_lit", "infra_asphalt",
-              "road_busy",
-              "road_20", "road_30", "road_40", "road_60",
-              "road_primary", "road_secondary", "road_tertiary", "road_cycleway", "road_path")
+              "infra_40", "infra_60"
+              # "road_busy",
+              # "road_20", "road_30", "road_40", "road_60",
+              # "road_primary", "road_secondary", "road_tertiary", "road_cycleway", "road_path"
+              )
 
 res = data.frame(matrix(nrow = nrow(l), ncol = length(res_names)))
 names(res) = res_names
@@ -32,11 +37,11 @@ i = 2
 for(i in 1:nrow(l)) {
 
   local_infra = old_infra[sel_infra[[i]],]
-  local_roads_busy = ways_busy_no_infra[sel_busy[[i]],]
-  local_roads = local_roads_busy # change this line to when running on full UK dataset: local_roads = ways_uk[sel_busy[[i]],]
-  busy_dists = as.numeric(st_length(local_roads_busy))
-  road_dists = as.numeric(st_length(local_roads))
-  roads_dist = sum(road_dists)
+  # local_roads_busy = ways_busy_no_infra[sel_busy[[i]],]
+  # local_roads = local_roads_busy # change this line to when running on full UK dataset: local_roads = ways_uk[sel_busy[[i]],]
+  # busy_dists = as.numeric(st_length(local_roads_busy))
+  # road_dists = as.numeric(st_length(local_roads))
+  # roads_dist = sum(road_dists)
 
   infra_dists = as.numeric(st_length(local_infra))
   dist_infra = sum(infra_dists)
@@ -64,27 +69,29 @@ for(i in 1:nrow(l)) {
   res$infra_lit[i] = sum(infra_dists[local_infra$lit == "yes"], na.rm = T) / dist_infra
   res$infra_asphalt[i] = sum(infra_dists[local_infra$surface == "asphalt"], na.rm = T) / dist_infra
 
-  res$road_busy[i] = sum(busy_dists) / (l$dist[i] * 1000)
+  # res$road_busy[i] = sum(busy_dists) / (l$dist[i] * 1000)
 
-  # Along a busy (> 30 mph) road without infrastructure
-  res$road_20[i] = sum(road_dists[local_roads$maxspeed < 30]) / roads_dist
-  res$road_30[i] = sum(road_dists[local_roads$maxspeed == 30]) / roads_dist
-  res$road_40[i] = sum(road_dists[local_roads$maxspeed > 30 & local_roads$maxspeed <= 40]) / roads_dist
-  res$road_60[i] = sum(road_dists[local_roads$maxspeed > 40]) / roads_dist
-
-  res$road_primary[i] = sum(infra_dists[grep(pattern = "primary", x = local_infra$highway)]) / roads_dist
-  res$road_secondary[i] = sum(infra_dists[grep(pattern = "secondary", x = local_infra$highway)]) / roads_dist
-  res$road_tertiary[i] = sum(infra_dists[grep(pattern = "tertiary", x = local_infra$highway)]) / roads_dist
-  res$road_cycleway[i] = sum(infra_dists[grep(pattern = "cycleway", x = local_infra$highway)]) / roads_dist
-  res$road_path[i] = sum(infra_dists[grep(pattern = "path|pedestrian|track|footway", x = local_infra$highway)]) / roads_dist
-
-  # todo: add breakdown by speed for primary
-  # todo:
-
-  res$road_primary[i] = sum(infra_dists[grep(pattern = "primary", x = local_infra$highway)]) / roads_dist
-  res$road_primary[i] = sum(infra_dists[local_roads$highway == "secondary"]) / roads_dist
-
-  # Along B road
+  res$infra_40 = sum(local_infra$busy40)
+  res$infra_60 = sum(local_infra$busy60)
+#   # Along a busy (> 30 mph) road without infrastructure
+#   res$road_20[i] = sum(road_dists[local_roads$maxspeed < 30]) / roads_dist
+#   res$road_30[i] = sum(road_dists[local_roads$maxspeed == 30]) / roads_dist
+#   res$road_40[i] = sum(road_dists[local_roads$maxspeed > 30 & local_roads$maxspeed <= 40]) / roads_dist
+#   res$road_60[i] = sum(road_dists[local_roads$maxspeed > 40]) / roads_dist
+#
+#   res$road_primary[i] = sum(infra_dists[grep(pattern = "primary", x = local_infra$highway)]) / roads_dist
+#   res$road_secondary[i] = sum(infra_dists[grep(pattern = "secondary", x = local_infra$highway)]) / roads_dist
+#   res$road_tertiary[i] = sum(infra_dists[grep(pattern = "tertiary", x = local_infra$highway)]) / roads_dist
+#   res$road_cycleway[i] = sum(infra_dists[grep(pattern = "cycleway", x = local_infra$highway)]) / roads_dist
+#   res$road_path[i] = sum(infra_dists[grep(pattern = "path|pedestrian|track|footway", x = local_infra$highway)]) / roads_dist
+#
+#   # todo: add breakdown by speed for primary
+#   # todo:
+#
+#   res$road_primary[i] = sum(infra_dists[grep(pattern = "primary", x = local_infra$highway)]) / roads_dist
+#   res$road_primary[i] = sum(infra_dists[local_roads$highway == "secondary"]) / roads_dist
+#
+#   # Along B road
 
 }
 summary(res)
