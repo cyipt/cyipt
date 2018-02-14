@@ -12,8 +12,8 @@ There will be a substantial practical component that can contribute to CPD objec
 ## Agenda
 
 - Arrival and set-up: 10:00 - 10:15
-- An introduction to the CyIPT project: 10:15 - 10:30
 - Overview of the data landscape supporting LCWIPs: 10:30 - 10:40
+- An introduction to the CyIPT project: 10:15 - 10:30
 - Overview of tools supporting LCWIPs: 10:40 - 11:00
 
 **Refreshments and networking: 11:00 - 11:30**
