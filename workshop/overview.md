@@ -3,7 +3,7 @@
 ## Introduction
 
 The Government is urging highway authorities in England (outside London) to develop Local Cycling Infrastructure Plans (LCWIPs), as part of its Cycling and Walking Investment Strategy (CWIS).
-A range of new datasets and tools can inform these plans, to ensure that they are evidence-based, cost-effective and prioritised such that the infrastructure that goes in first is the infrastructure that is most urgently needed.
+In essence, this involves planning comprehensive local walking and cycling networks and developing a prioritised work programme, to help secure the required funding. A range of new datasets and tools is available to inform the cycling aspects of LCWIP planning and prioritisation, to ensure they are evidence-based and cost-effective, thereby maximising the benefits of an authority’s early investments in cycle-friendly infrastructure.  This in turn will help build public and political support for sustained investment over time.
 
 This workshop will provide an overview of new open access datasets and freely available tools that can help with the process based on work conducted as part of the DfT-funded Cycling Infrastructure Prioritisation Toolkit (CyIPT).
 The workshop will provide information about how the CyIPT and existing tools such as the Propensity to Cycle Tool (PCT) can assist with the LCWIP process.
