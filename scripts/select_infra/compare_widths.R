@@ -317,7 +317,7 @@ for(b in 1:length(regions)){
         }else if(wd > 1){
           osm$widthstatus[e] <- "More than sufficient width"
         }else if(wd <= 1 & wd >= -1 ){
-          osm$widthstatus[e] <- "Approximately sufficient width"
+          osm$widthstatus[e] <- "About sufficient width"
         }else if(wd < -1 & wd >= -2 ){
           osm$widthstatus[e] <- "Width Constrained"
         }else if(wd < -2){
