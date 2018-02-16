@@ -333,7 +333,7 @@ CREATE TABLE veh_VehTo (
 
 COPY veh_VehTo FROM '/home/malcolm/lookup/veh_VehTo.csv'  csv HEADER;
 
-ALTER TABLE veh_To OWNER to cyipt;
+ALTER TABLE veh_VehTo OWNER to cyipt;
 
 
 

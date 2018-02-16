@@ -6,7 +6,10 @@ tmap_mode("view")
 library(caret)
 library(tidyverse)
 library(sf)
-load("../cyipt-bigdata/uptake-files/uptake-files-all.Rds") # generated from historic-uptake-data.R
+
+# load files
+sel_infra = readRDS("../cyipt-bigdata/uptake-files/sel_infra.Rds")
+old_infra = readRDS("../cyipt-bigdata/uptake-files/old_infra_wgs.Rds")
 l = readRDS("../cyipt-bigdata/uptake-files/l.Rds")
 names(l)
 
@@ -21,9 +24,11 @@ res_names = c("infra_length", "infra_length_prop", "infra_avwidth", "infra_date"
               "infra_cycleway", "infra_primary", "infra_secondary", "infra_tertiary",
               "infra_segregated", "infra_unsegregated", "infra_residential",
               "infra_footway", "infra_shared_use_footpath", "infra_lit", "infra_asphalt",
-              "road_busy",
-              "road_20", "road_30", "road_40", "road_60",
-              "road_primary", "road_secondary", "road_tertiary", "road_cycleway", "road_path")
+              "infra_40", "infra_60"
+              # "road_busy",
+              # "road_20", "road_30", "road_40", "road_60",
+              # "road_primary", "road_secondary", "road_tertiary", "road_cycleway", "road_path"
+              )
 
 res = data.frame(matrix(nrow = nrow(l), ncol = length(res_names)))
 names(res) = res_names
@@ -32,11 +37,11 @@ i = 2
 for(i in 1:nrow(l)) {
 
   local_infra = old_infra[sel_infra[[i]],]
-  local_roads_busy = ways_busy_no_infra[sel_busy[[i]],]
-  local_roads = local_roads_busy # change this line to when running on full UK dataset: local_roads = ways_uk[sel_busy[[i]],]
-  busy_dists = as.numeric(st_length(local_roads_busy))
-  road_dists = as.numeric(st_length(local_roads))
-  roads_dist = sum(road_dists)
+  # local_roads_busy = ways_busy_no_infra[sel_busy[[i]],]
+  # local_roads = local_roads_busy # change this line to when running on full UK dataset: local_roads = ways_uk[sel_busy[[i]],]
+  # busy_dists = as.numeric(st_length(local_roads_busy))
+  # road_dists = as.numeric(st_length(local_roads))
+  # roads_dist = sum(road_dists)
 
   infra_dists = as.numeric(st_length(local_infra))
   dist_infra = sum(infra_dists)
@@ -64,29 +69,32 @@ for(i in 1:nrow(l)) {
   res$infra_lit[i] = sum(infra_dists[local_infra$lit == "yes"], na.rm = T) / dist_infra
   res$infra_asphalt[i] = sum(infra_dists[local_infra$surface == "asphalt"], na.rm = T) / dist_infra
 
-  res$road_busy[i] = sum(busy_dists) / (l$dist[i] * 1000)
+  # res$road_busy[i] = sum(busy_dists) / (l$dist[i] * 1000)
 
-  # Along a busy (> 30 mph) road without infrastructure
-  res$road_20[i] = sum(road_dists[local_roads$maxspeed < 30]) / roads_dist
-  res$road_30[i] = sum(road_dists[local_roads$maxspeed == 30]) / roads_dist
-  res$road_40[i] = sum(road_dists[local_roads$maxspeed > 30 & local_roads$maxspeed <= 40]) / roads_dist
-  res$road_60[i] = sum(road_dists[local_roads$maxspeed > 40]) / roads_dist
-
-  res$road_primary[i] = sum(infra_dists[grep(pattern = "primary", x = local_infra$highway)]) / roads_dist
-  res$road_secondary[i] = sum(infra_dists[grep(pattern = "secondary", x = local_infra$highway)]) / roads_dist
-  res$road_tertiary[i] = sum(infra_dists[grep(pattern = "tertiary", x = local_infra$highway)]) / roads_dist
-  res$road_cycleway[i] = sum(infra_dists[grep(pattern = "cycleway", x = local_infra$highway)]) / roads_dist
-  res$road_path[i] = sum(infra_dists[grep(pattern = "path|pedestrian|track|footway", x = local_infra$highway)]) / roads_dist
-
-  # todo: add breakdown by speed for primary
-  # todo:
-
-  res$road_primary[i] = sum(infra_dists[grep(pattern = "primary", x = local_infra$highway)]) / roads_dist
-  res$road_primary[i] = sum(infra_dists[local_roads$highway == "secondary"]) / roads_dist
-
-  # Along B road
+  res$infra_40 = sum(local_infra$busy40)
+  res$infra_60 = sum(local_infra$busy60)
+#   # Along a busy (> 30 mph) road without infrastructure
+#   res$road_20[i] = sum(road_dists[local_roads$maxspeed < 30]) / roads_dist
+#   res$road_30[i] = sum(road_dists[local_roads$maxspeed == 30]) / roads_dist
+#   res$road_40[i] = sum(road_dists[local_roads$maxspeed > 30 & local_roads$maxspeed <= 40]) / roads_dist
+#   res$road_60[i] = sum(road_dists[local_roads$maxspeed > 40]) / roads_dist
+#
+#   res$road_primary[i] = sum(infra_dists[grep(pattern = "primary", x = local_infra$highway)]) / roads_dist
+#   res$road_secondary[i] = sum(infra_dists[grep(pattern = "secondary", x = local_infra$highway)]) / roads_dist
+#   res$road_tertiary[i] = sum(infra_dists[grep(pattern = "tertiary", x = local_infra$highway)]) / roads_dist
+#   res$road_cycleway[i] = sum(infra_dists[grep(pattern = "cycleway", x = local_infra$highway)]) / roads_dist
+#   res$road_path[i] = sum(infra_dists[grep(pattern = "path|pedestrian|track|footway", x = local_infra$highway)]) / roads_dist
+#
+#   # todo: add breakdown by speed for primary
+#   # todo:
+#
+#   res$road_primary[i] = sum(infra_dists[grep(pattern = "primary", x = local_infra$highway)]) / roads_dist
+#   res$road_primary[i] = sum(infra_dists[local_roads$highway == "secondary"]) / roads_dist
+#
+#   # Along B road
 
 }
+res$infra_length_prop[res$infra_length_prop > 1] = 1
 summary(res)
 res[is.na(res)] <- 0
 # sanity checks on lines ----
@@ -94,7 +102,7 @@ sum(l$all01)
 sum(l$all11)
 sum(l$all01 * l$pcycle01) / sum(l$all01)
 sum(l$all11 * l$pcycle11) / sum(l$all11)
-l = l %>% mutate(p_uptake = pcycle11 - pcycle01)
+l = l %>% mutate(p_uptake = pcycle11 - pcycle01) %>%
 l = bind_cols(l, res)
 # summary(l$o %in% z$geo_code)
 # summary(l$d %in% z$geo_code)
@@ -103,18 +111,19 @@ qtm(l[l$pcycle01 > 0.3,]) +
 qtm(l[l$pcycle11 > 0.3,])
 qtm(l %>% top_n(n = 200, wt = infra_length), basemaps = c("OpenStreetMap.BlackAndWhite", "Thunderforest.OpenCycleMap"), lines.col = "black")
 
+# remove list cols for model
+l = select(l, -contains("geom"), -osm_lookup)
 
 psimple = l$pcycle01 * l$all11 # simple model
 m_all_lm = lm(p_uptake ~ dist + infra_length + infra_cycleway + infra_avwidth +
                 infra_primary + infra_secondary + infra_tertiary + infra_residential +
                 infra_segregated + infra_unsegregated + infra_shared_use_footpath +
-                infra_asphalt + road_busy + infra_lit, data = l, weights = all11)
-m = lm(p_uptake ~ dist * infra_length + infra_length +
-         infra_primary + infra_secondary + infra_residential +
-         road_busy, data = l, weights = all11)
-m2 = lm(p_uptake ~ infra_length_prop +
-         infra_primary + infra_secondary + infra_residential +
-         road_busy, data = l, weights = all11)
+                infra_asphalt + infra_lit, data = l, weights = all11)
+m = lm(p_uptake ~ dist * infra_length +
+         infra_primary + infra_secondary + infra_residential,
+         data = l, weights = all11)
+m2 = lm(p_uptake ~ infra_primary + infra_secondary + infra_residential,
+        data = l, weights = all11)
 saveRDS(m, "m.Rds")
 saveRDS(m2, "m2.Rds")
 p_lm = predict(m, l)
@@ -125,28 +134,39 @@ summary(m)
 summary(m2)
 sum(psimple)
 sum(p)
+# predict uptake under scenario of change
+l_new = mutate(l, infra_length = dist, infra_primary = 1, infra_prop = 1)
+uptake_new = (predict(m, l_new) + l$pcycle01) * l$all11
+sum(uptake_new) / sum(l$all11)
+sum(psimple) / sum(l$all11) # a 1% increase...
+sum(uptake_new) / sum(l$all11)
+
 # install.packages("xgboost")
 library(xgboost)
-train = select(l, p_uptake, all11, dist, infra_length, infra_cycleway,
-                 infra_primary, infra_secondary, infra_tertiary, infra_residential,
-                 infra_segregated, road_busy) %>%
+train = select(l, p_uptake, all11, infra_length, infra_length_prop, infra_cycleway,
+               infra_primary, infra_secondary, infra_tertiary, infra_residential
+               # ,infra_footway, infra_shared_use_footpath, infra_segregated, infra_unsegregated
+               ) %>%
   st_set_geometry(NULL) %>%
   as.matrix()
-m = xgboost(train[, -(1:2)], train[, 1], weight = train[, 2], nrounds = 100)
-saveRDS(m, "m-xgboost.Rds")
-p_perc = predict(m, train[, -c(1:2)])
+mxg = xgboost(train[, -(1:2)], train[, 1], weight = train[, 2], nrounds = 10)
+saveRDS(mxg, "m-xgboost.Rds")
+p_perc = predict(mxg, train[, -c(1:2)])
 p = (p_perc + l$pcycle01) * l$all11
 summary(train)
-train_new = train
 # to test very simple scenarios of change
-train_new[, 3] = 6000
-train_new[, 4] = 1
-p_new = (predict(m, train_new[, -c(1:2)]) + l$pcycle01) * l$all11
+train_new = select(l_new, p_uptake, all11, infra_length, infra_length_prop, infra_cycleway,
+                   infra_primary, infra_secondary, infra_tertiary, infra_residential
+                   # ,infra_footway, infra_shared_use_footpath, infra_segregated, infra_unsegregated
+                   ) %>%
+  st_set_geometry(NULL) %>%
+  as.matrix()
+p_new = (predict(mxg, train_new[, -c(1:2)]) + l$pcycle01) * l$all11
 sum(psimple)
-sum(p) # similar
-sum(p_new)
+sum(p) / sum(l$all11)
+sum(p_new) / sum(l$all11) # 2 % point increase
 
-xgb.plot.importance(xgb.importance(feature_names = colnames(train)[-(1:2)], model = m))
+xgb.plot.importance(xgb.importance(feature_names = colnames(train)[-(1:2)], model = mxg))
 cor(l$pcycle11 * l$all11, p)^2
 cor(l$all11 * l$pcycle11, psimple)^2
 
