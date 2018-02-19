@@ -76,14 +76,17 @@ z = z[region_shape, ]
 # od_01_new = readRDS("../cyoddata/od_01_new.Rds")
 # l_joined = left_join(rf11, od_01_new) %>%
 #   na.omit()
-rf_b = l_joined$geometry_rf %>%
-  st_transform(27700) %>%
-  st_buffer(dist = infra_buff_dist, nQuadSegs = 3) %>%
-  st_transform(4326) # time consuming
-saveRDS(rf_b$geometry, "../cyipt-bigdata/uptake-files/rf_b.Rds")
+# rf_b = l_joined$geometry_rf %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = infra_buff_dist, nQuadSegs = 3) %>%
+#   st_transform(4326) # time consuming
+# saveRDS(rf_b, "../cyipt-bigdata/uptake-files/rf_b.Rds")
+# l_joined$geometry_rfb = rf_b
+# plot(l_joined$geometry[1])
+# plot(l_joined$geometry_rf[1], add = T)
+# plot(l_joined$geometry_rfb[1], add = T)
 # saveRDS(l_joined, "../cyipt-bigdata/uptake-files/l_joined.Rds")
 l_joined = readRDS("../cyipt-bigdata/uptake-files/l_joined.Rds")
-rf_b
 l = l_joined[l_joined$all11 >= min_od_sample & l_joined$all01 >= min_od_sample, ]
 sum(l$all11) # 7 million ppl (500k when 500+, 2m when 200)
 ways_busy_no_infra = readRDS("../cyipt-bigdata/ways_busy_no_infra.Rds") # load all intersections with fastest
