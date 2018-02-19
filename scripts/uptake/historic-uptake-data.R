@@ -12,7 +12,8 @@ library(sf)
 
 # Parameters ----
 # region_name = "Bristol" # for doing locally (not used)
-min_od_sample = 100 # lower bound to subset routes (for testing)
+min_od_sample = 500 # lower bound to subset routes (for testing)
+infra_buff_dist = 10 # distance in metres for osm tag linking
 
 # read-in data ----
 z = msoa2011_vsimple %>%
@@ -75,8 +76,14 @@ z = z[region_shape, ]
 # od_01_new = readRDS("../cyoddata/od_01_new.Rds")
 # l_joined = left_join(rf11, od_01_new) %>%
 #   na.omit()
+rf_b = l_joined$geometry_rf %>%
+  st_transform(27700) %>%
+  st_buffer(dist = infra_buff_dist, nQuadSegs = 3) %>%
+  st_transform(4326) # time consuming
+saveRDS(rf_b$geometry, "../cyipt-bigdata/uptake-files/rf_b.Rds")
 # saveRDS(l_joined, "../cyipt-bigdata/uptake-files/l_joined.Rds")
 l_joined = readRDS("../cyipt-bigdata/uptake-files/l_joined.Rds")
+rf_b
 l = l_joined[l_joined$all11 >= min_od_sample & l_joined$all01 >= min_od_sample, ]
 sum(l$all11) # 7 million ppl (500k when 500+, 2m when 200)
 ways_busy_no_infra = readRDS("../cyipt-bigdata/ways_busy_no_infra.Rds") # load all intersections with fastest
@@ -98,14 +105,21 @@ saveRDS(l, "../cyipt-bigdata/uptake-files/l.Rds")
 # old_infra = td # rely on td data for now...
 # todo: add a bit with all ways, not just busy (40mph+ ones)
 # ways_uk = ...
-ways_busy = filter(ways_uk, maxspeed > 30)
+# ways_busy = filter(ways_uk, maxspeed > 30)
 
 old_infra_all = readRDS("../cyipt-securedata/uptakemodel/infra_historic.Rds") # supercedes previous version
 old_infra = filter(old_infra_all, date > "2001-01-01", date < "2011-01-01")
-# old_infra1 = old_infra[1:999, ]
+old_infra = old_infra[l$geometry_rf, , op = st_is_within_distance()]
+
+sel_ways_infra = unique(unlist(l$osm_lookup))
+ways_intersect_pct = ways_uk[sel_ways_infra, ]
+
+
+
+plot(ways_intersect_pct$geometry[1:999]) # sanity check
 old_infra_buffer = st_buffer(old_infra, 10, nQuadSegs = 4) # use old_infra1 for testing
-ways_within = ways_busy[old_infra_buffer, , op = st_within] # excludes crossing busy roads
-busy_lookup = st_contains(old_infra_buffer, ways_busy)
+ways_within = ways_intersect_pct[old_infra_buffer, , op = st_within] # excludes crossing busy roads
+ways_lookup = st_contains(old_infra_buffer, ways_busy)
 attributes(busy_lookup) = NULL
 old_infra$busy_lookup = busy_lookup
 old_infra[220, ]
@@ -159,12 +173,6 @@ b500 = readRDS("../cyipt-bigdata/b500.Rds")
 b200 = readRDS("../cyipt-bigdata/b200.Rds")
 b100 = readRDS("../cyipt-bigdata/b100.Rds")
 b50 = readRDS("../cyipt-bigdata/b50.Rds")
-
-rf_b = l$geometry_rf %>%
-  st_transform(27700) %>%
-  st_buffer(dist = 50, nQuadSegs = 2) %>%
-  st_transform(4326) # time consuming
-saveRDS(rf_b, "../cyipt-bigdata/uptake-files/rf_b.Rds")
 
 sel_infra = st_contains(rf_b, old_infra_wgs) # tried initially with intersects...
 attributes(sel_infra) <- NULL
