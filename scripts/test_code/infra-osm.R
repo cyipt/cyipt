@@ -42,7 +42,7 @@ qtm(x) +
   qtm(xb) +
   qtm(y)
 
-j1 = st_join(x = x, y = y, join = st_is_within_distance, dist = 10) # returns 3 results
+# j1 = st_join(x = x, y = y, join = st_is_within_distance, dist = 10) # returns 3 results
 x$maxspeed = aggregate(y[c("maxspeed")], xb, FUN = mean)$maxspeed
 most_common = function(x) {
   ux <- unique(x)

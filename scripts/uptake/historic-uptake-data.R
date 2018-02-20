@@ -12,8 +12,10 @@ library(sf)
 
 # Parameters ----
 # region_name = "Bristol" # for doing locally (not used)
-min_od_sample = 500 # lower bound to subset routes (for testing)
-infra_buff_dist = 10 # distance in metres for osm tag linking
+# Note: there were 6403 schemes (1 in 6) st_within a 10 m buffer of the 13k lines with min_od_sample = 100
+# and infra_buff_dist = 10
+min_od_sample = 100 # lower bound to subset routes (for testing)
+osm_link_dist = 5 # distance in metres for osm tag linking
 
 # read-in data ----
 z = msoa2011_vsimple %>%
@@ -76,26 +78,33 @@ z = z[region_shape, ]
 # od_01_new = readRDS("../cyoddata/od_01_new.Rds")
 # l_joined = left_join(rf11, od_01_new) %>%
 #   na.omit()
-# rf_b = l_joined$geometry_rf %>%
+# rf_b10 = l_joined$geometry_rf %>%
 #   st_transform(27700) %>%
-#   st_buffer(dist = infra_buff_dist, nQuadSegs = 3) %>%
+#   st_buffer(dist = 10, nQuadSegs = 3) %>%
 #   st_transform(4326) # time consuming
-# saveRDS(rf_b, "../cyipt-bigdata/uptake-files/rf_b.Rds")
-# l_joined$geometry_rfb = rf_b
+# saveRDS(rf_b, "../cyipt-bigdata/uptake-files/rf_b10.Rds")
+# rf_b200 = l_joined$geometry_rf %>%
+#   st_transform(27700) %>%
+#   st_buffer(dist = 200, nQuadSegs = 3) %>%
+#   st_transform(4326)
+# saveRDS(rf_b200, "../cyipt-bigdata/uptake-files/rf_b200.Rds")
 # plot(l_joined$geometry[1])
 # plot(l_joined$geometry_rf[1], add = T)
 # plot(l_joined$geometry_rfb[1], add = T)
 # saveRDS(l_joined, "../cyipt-bigdata/uptake-files/l_joined.Rds")
+rf_b = readRDS("../cyipt-bigdata/uptake-files/rf_b10.Rds") # can use different buffers
 l_joined = readRDS("../cyipt-bigdata/uptake-files/l_joined.Rds")
+l_joined$geometry_rfb = rf_b
 l = l_joined[l_joined$all11 >= min_od_sample & l_joined$all01 >= min_od_sample, ]
-sum(l$all11) # 7 million ppl (500k when 500+, 2m when 200)
-ways_busy_no_infra = readRDS("../cyipt-bigdata/ways_busy_no_infra.Rds") # load all intersections with fastest
+sum(l$all11) # 4 million ppl when min_od_sample = 100 (500k when 500+, 2m when 200)
+# ways_busy_no_infra = readRDS("../cyipt-bigdata/ways_busy_no_infra.Rds") # load all intersections with fastest
 # read-in data generate by uptake_2001_2011.R
 ways_uk <- readRDS("../cyipt-securedata/uptakemodel/osm_clean.Rds")
+ways_uk_wgs = st_transform(ways_uk, 4326)
 # check osm data
 qtm(l$geometry[1]) +
-  qtm(ways_uk$geometry[l$osm_lookup[[1]]])
-saveRDS(l, "../cyipt-bigdata/uptake-files/l.Rds")
+  qtm(ways_uk$geometry[l$osm_lookup[[1]]]) +
+  qtm(l$geometry_rfb[1])
 
 # road net and old-infra data ----
 # td = st_read("../td/dft-england-cycling-data-2011.geojson")
@@ -112,40 +121,103 @@ saveRDS(l, "../cyipt-bigdata/uptake-files/l.Rds")
 
 old_infra_all = readRDS("../cyipt-securedata/uptakemodel/infra_historic.Rds") # supercedes previous version
 old_infra = filter(old_infra_all, date > "2001-01-01", date < "2011-01-01")
-old_infra = old_infra[l$geometry_rf, , op = st_is_within_distance()]
+old_infra_wgs = st_transform(old_infra, 4326)
+old_infra = old_infra_wgs[l$geometry_rfb, , op = st_within] # uncomment either line
+# old_infra = old_infra_wgs[l$geometry_rf, , op = st_intersects] # st_within also possible
+old_infra_buff = old_infra %>%
+  st_transform(27700) %>%
+  st_buffer(dist = osm_link_dist, nQuadSegs = 3)
 
+# Assign OSM elements to OD pairs
 sel_ways_infra = unique(unlist(l$osm_lookup))
 ways_intersect_pct = ways_uk[sel_ways_infra, ]
+ways_intersect_wgs = st_transform(ways_intersect_pct, 4326)
+ways_intersect_infra = ways_intersect_pct[old_infra_buff, ]
+sel_within = st_contains(l$geometry_rfb[1:3], ways_intersect_wgs)
+saveRDS(Old_infra_clean, "../cyipt-bigdata/uptake-files/old_infra_clean.Rds")
 
+# sanity test
+plot(l$geometry[1])
+plot(ways_intersect_wgs$geometry[sel_within[[1]]], add = T)
+osm_lookup_unlisted = unique(unlist(osm_lookup))
 
+# sanity check
+osm_lookup[1:99]
+n = 94
+x = old_infra[n, ]
+xb = old_infra_buff[n, ]
+y = ways_intersect_infra[osm_lookup[[n]], ]
+qtm(x, lines.col = "green", lines.lwd = 5) +
+  qtm(xb) +
+  qtm(y)
 
-plot(ways_intersect_pct$geometry[1:999]) # sanity check
-old_infra_buffer = st_buffer(old_infra, 10, nQuadSegs = 4) # use old_infra1 for testing
-ways_within = ways_intersect_pct[old_infra_buffer, , op = st_within] # excludes crossing busy roads
-ways_lookup = st_contains(old_infra_buffer, ways_busy)
-attributes(busy_lookup) = NULL
-old_infra$busy_lookup = busy_lookup
-old_infra[220, ]
-qtm(ways_within, basemaps = c("Thunderforest.OpenCycleMap", "OpenStreetMap.BlackAndWhite"))
-saveRDS(ways_within, "../cyipt-bigdata/uptake-files/ways_within.Rds")
+infra_maxspeed = aggregate(ways_intersect_infra[c("maxspeed")], old_infra_buff, FUN = mean)$maxspeed
+summary(infra_maxspeed)
+most_common = function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))] }
 
-# add new busy routes data to old_infra
-old_infra$busy40 = NA
-old_infra$busy60 = NA
-for(i in 1:nrow(old_infra)) {
-  # test: works
-  # ways_local = ways_busy[old_infra$busy_lookup[[220]], ]
-  # plot(ways_local$geometry)
-  # plot(old_infra$geometry[220], add = T)
-  ways_local = ways_busy[old_infra$busy_lookup[[i]], ]
-  dists_local = as.numeric(st_length(ways_local$geometry))
-  old_infra$busy40[i] = sum(dists_local[ways_local$maxspeed == 40])
-  old_infra$busy60[i] = sum(dists_local[ways_local$maxspeed == 60])
+# scaling it ----
+old_infra$maxspeed = infra_maxspeed
+# old_infra$aadt = aggregate(ways_intersect_infra[c("aadt")], old_infra_buff, FUN = median)$aadt # not present
+summary(as.factor(old_infra$cycleway))
+clean_cycleway = function(ways, cycleway_vars = c("cycleway.left", "cycleway.right"), newvar = "cycleway") {
+  if(is.null(ways[[newvar]])) {
+    ways[[newvar]] = NA
+  }
+  ways[[newvar]][is.na(ways[[newvar]])] = ways[[cycleway_vars[1]]][is.na(ways[[newvar]])]
+  ways[[newvar]][is.na(ways[[newvar]])] = ways[[cycleway_vars[2]]][is.na(ways[[newvar]])]
+  ways
 }
-summary(old_infra$busy40)
-summary(old_infra$busy60)
-old_infra_wgs = st_transform(old_infra, 4326)
-saveRDS(old_infra_wgs, "../cyipt-bigdata/uptake-files/old_infra_wgs.Rds")
+clean_highway_path = function(ways, path_vars = "bridleway|footway|path|pedestrian|track", newvar = "highway") {
+  ways[[newvar]][grepl(path_vars, ways$highway)] = "path"
+  ways
+}
+Old_infra_clean = clean_cycleway(old_infra)
+Old_infra_clean = clean_highway_path(Old_infra_clean)
+summary(Old_infra_clean$highway)
+summary(as.factor(old_infra$cycleway))
+summary(as.factor(Old_infra_clean$cycleway))
+Old_infra_clean$cycleway[is.na(Old_infra_clean$cycleway)] = "no"
+
+left.clean = aggregate(ways_intersect_infra[c("cycleway.left")], old_infra_buff, FUN = most_common)$cycleway.left
+summary(as.factor(left.clean)) # majority: no - add new infra? no - may be added after 2011 - commenting next line
+# Old_infra_clean$cycleway[is.na(Old_infra_clean$cycleway)] = left.clean[is.na(Old_infra_clean$cycleway)]
+
+qtm(Old_infra_clean[1:99, ], lines.col = "maxspeed", lines.lwd = 3)
+qtm(Old_infra_clean[1:99, ], lines.col = "cycleway", lines.lwd = 3)
+
+infra_lookup = st_contains(l$geometry_rfb, Old_infra_clean)
+attributes(infra_lookup) = NULL
+infra_lookup_all = unique(unlist(infra_lookup))
+l$infra_lookup = infra_lookup
+Old_infra_clean$dist = as.numeric(st_length(Old_infra_clean))
+summary(Old_infra_clean$dist)
+
+saveRDS(l, "../cyipt-bigdata/uptake-files/l.Rds")
+saveRDS(Old_infra_clean, "../cyipt-bigdata/uptake-files/old_infra_clean.Rds")
+
+# sanity check
+qtm(l[1:999, ], basemaps = c("Thunderforest.OpenCycleMap", "OpenStreetMap.BlackAndWhite")) +
+  qtm(Old_infra_clean[ unlist(l$infra_lookup[1:999]), ], lines.col = "green", lines.lwd = 5)
+
+# # add new busy routes data to old_infra
+# old_infra$busy40 = NA
+# old_infra$busy60 = NA
+# for(i in 1:nrow(old_infra)) {
+#   # test: works
+#   # ways_local = ways_busy[old_infra$busy_lookup[[220]], ]
+#   # plot(ways_local$geometry)
+#   # plot(old_infra$geometry[220], add = T)
+#   ways_local = ways_busy[old_infra$busy_lookup[[i]], ]
+#   dists_local = as.numeric(st_length(ways_local$geometry))
+#   old_infra$busy40[i] = sum(dists_local[ways_local$maxspeed == 40])
+#   old_infra$busy60[i] = sum(dists_local[ways_local$maxspeed == 60])
+# }
+# summary(old_infra$busy40)
+# summary(old_infra$busy60)
+#
+# saveRDS(old_infra_wgs, "../cyipt-bigdata/uptake-files/old_infra_wgs.Rds")
 
 # b1000 = old_infra %>%
 #   st_transform(27700) %>%
@@ -172,14 +244,14 @@ saveRDS(old_infra_wgs, "../cyipt-bigdata/uptake-files/old_infra_wgs.Rds")
 #   st_buffer(dist = 100, nQuadSegs = 2) %>%
 #   st_transform(4326) # time consuming
 # saveRDS(b50, "../cyipt-bigdata/b50.Rds")
-b500 = readRDS("../cyipt-bigdata/b500.Rds")
-b200 = readRDS("../cyipt-bigdata/b200.Rds")
-b100 = readRDS("../cyipt-bigdata/b100.Rds")
-b50 = readRDS("../cyipt-bigdata/b50.Rds")
+# b500 = readRDS("../cyipt-bigdata/b500.Rds")
+# b200 = readRDS("../cyipt-bigdata/b200.Rds")
+# b100 = readRDS("../cyipt-bigdata/b100.Rds")
+# b50 = readRDS("../cyipt-bigdata/b50.Rds")
 
-sel_infra = st_contains(rf_b, old_infra_wgs) # tried initially with intersects...
-attributes(sel_infra) <- NULL
-saveRDS(sel_infra, "../cyipt-bigdata/uptake-files/sel_infra.Rds")
+# sel_infra = st_contains(rf_b, old_infra_wgs) # tried initially with intersects...
+# attributes(sel_infra) <- NULL
+# saveRDS(sel_infra, "../cyipt-bigdata/uptake-files/sel_infra.Rds")
 # sel_busy = st_intersects(rf_b, ways_busy_no_infra)
 # todo: add sel_ways with all ways accross UK
 
