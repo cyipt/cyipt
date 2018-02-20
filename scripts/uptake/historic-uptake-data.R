@@ -15,7 +15,7 @@ library(sf)
 # Note: there were 6403 schemes (1 in 6) st_within a 10 m buffer of the 13k lines with min_od_sample = 100
 # and infra_buff_dist = 10
 min_od_sample = 100 # lower bound to subset routes (for testing)
-osm_link_dist = 5 # distance in metres for osm tag linking
+osm_link_dist = 10 # distance in metres for osm tag linking
 
 # read-in data ----
 z = msoa2011_vsimple %>%
@@ -133,8 +133,7 @@ sel_ways_infra = unique(unlist(l$osm_lookup))
 ways_intersect_pct = ways_uk[sel_ways_infra, ]
 ways_intersect_wgs = st_transform(ways_intersect_pct, 4326)
 ways_intersect_infra = ways_intersect_pct[old_infra_buff, ]
-sel_within = st_contains(l$geometry_rfb[1:3], ways_intersect_wgs)
-saveRDS(Old_infra_clean, "../cyipt-bigdata/uptake-files/old_infra_clean.Rds")
+sel_within = st_contains(l$geometry_rfb, ways_intersect_wgs)
 
 # sanity test
 plot(l$geometry[1])
@@ -196,6 +195,9 @@ summary(Old_infra_clean$dist)
 
 saveRDS(l, "../cyipt-bigdata/uptake-files/l.Rds")
 saveRDS(Old_infra_clean, "../cyipt-bigdata/uptake-files/old_infra_clean.Rds")
+saveRDS(ways_intersect_wgs, "../cyipt-bigdata/uptake-files/ways_intersect_wgs.Rds")
+saveRDS(sel_within, "../cyipt-bigdata/uptake-files/sel_within.Rds")
+
 
 # sanity check
 qtm(l[1:999, ], basemaps = c("Thunderforest.OpenCycleMap", "OpenStreetMap.BlackAndWhite")) +
