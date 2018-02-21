@@ -23,15 +23,15 @@ sum(old_infra$dist) / 1000 # 1400 km
 
 # sanity test ----
 # l$infra_lookup[1:99]
-i = 993
+i = 11
 local_infra = old_infra[l$infra_lookup[[i]],]
 infra_dists = local_infra$dist
 local_roads = ways_intersect_wgs[sel_within[[i]], ]
 
-qtm(l$geometry_rfb[i]) +
-  qtm(l[i, ]) +
-  qtm(local_infra, lines.col = "green") +
-  qtm(local_roads, lines.col = "maxspeed")
+# qtm(l$geometry_rfb[i]) +
+#   qtm(l[i, ]) +
+#   qtm(local_infra, lines.col = "green") +
+#   qtm(local_roads, lines.col = "maxspeed")
 
 # generate exposure measures per route ----
 # create table to hold results
@@ -158,7 +158,8 @@ m_inter = lm(p_uptake ~ infra_length +
             infra_length : infra_highway.path +
             infra_length : infra_10 + infra_length : infra_20 +
             infra_length : infra_30 +
-            infra_length : infra_40 + infra_length : infra_60 + road_dist +
+            infra_length : infra_40 + infra_length : infra_60 +
+            # road_dist +
             road_dist : road_40 + road_dist : road_60 + road_dist : road_cycleway,
           data = l, weights = all11)
 summary(m_inter)
@@ -202,15 +203,17 @@ train_no_road = select(l, p_uptake, all11, dist, infra_length,
                  infra_highway.residential, infra_highway.path,
                  infra_20, infra_30, infra_40, infra_60) %>%
   as.matrix()
-train = select(l, p_uptake, all11,
+train = select(l, p_uptake, all11, dist, infra_length_prop,
                infra_cycleway.lane, infra_highway.cycleway,
                infra_highway.primary, infra_highway.secondary, infra_highway.tertiary,
                infra_highway.residential, infra_highway.path,
                infra_20, infra_30, infra_40, infra_60,
-               road_40, road_60,
-               road_cycleway) %>%
+               # road_20,
+               road_30,
+               road_40,
+               road_60) %>%
   as.matrix()
-mxg = xgboost(train[, -(1:2)], train[, 1], weight = train[, 2], nrounds = 10)
+mxg = xgboost(train[, -(1:2)], train[, 1], weight = train[, 2], nrounds = 10, params = list(booster = "gblinear"))
 saveRDS(mxg, "m-xgboost.Rds")
 summary(train)
 # to test very simple scenarios of change

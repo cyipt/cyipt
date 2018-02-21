@@ -14,7 +14,7 @@ library(sf)
 # region_name = "Bristol" # for doing locally (not used)
 # Note: there were 6403 schemes (1 in 6) st_within a 10 m buffer of the 13k lines with min_od_sample = 100
 # and infra_buff_dist = 10
-min_od_sample = 50 # lower bound to subset routes (for testing)
+min_od_sample = 500 # lower bound to subset routes (for testing)
 osm_link_dist = 10 # distance in metres for osm tag linking
 
 # read-in data ----
@@ -134,18 +134,20 @@ ways_intersect_pct = ways_uk[sel_ways_infra, ]
 ways_intersect_wgs = st_transform(ways_intersect_pct, 4326)
 ways_intersect_infra = ways_intersect_pct[old_infra_buff, ]
 sel_within = st_contains(l$geometry_rfb, ways_intersect_wgs)
+attributes(sel_within) = NULL
+l$osm_lookup = sel_within
 
 # sanity test
 plot(l$geometry[1])
 plot(ways_intersect_wgs$geometry[sel_within[[1]]], add = T)
-osm_lookup_unlisted = unique(unlist(osm_lookup))
+osm_lookup_unlisted = unique(unlist(l$osm_lookup))
 
 # sanity check
-osm_lookup[1:99]
+l$osm_lookup[1:99]
 n = 94
 x = old_infra[n, ]
 xb = old_infra_buff[n, ]
-y = ways_intersect_infra[osm_lookup[[n]], ]
+y = ways_intersect_wgs[l$osm_lookup[[n]], ]
 qtm(x, lines.col = "green", lines.lwd = 5) +
   qtm(xb) +
   qtm(y)
@@ -199,9 +201,9 @@ saveRDS(ways_intersect_wgs, "../cyipt-bigdata/uptake-files/ways_intersect_wgs.Rd
 saveRDS(sel_within, "../cyipt-bigdata/uptake-files/sel_within.Rds")
 
 
-# sanity check
-qtm(l[1:999, ], basemaps = c("Thunderforest.OpenCycleMap", "OpenStreetMap.BlackAndWhite")) +
-  qtm(Old_infra_clean[ unlist(l$infra_lookup[1:999]), ], lines.col = "green", lines.lwd = 5)
+# # sanity check
+# qtm(l[1:999, ], basemaps = c("Thunderforest.OpenCycleMap", "OpenStreetMap.BlackAndWhite")) +
+#   qtm(Old_infra_clean[ unlist(l$infra_lookup[1:999]), ], lines.col = "green", lines.lwd = 5)
 
 # # add new busy routes data to old_infra
 # old_infra$busy40 = NA
