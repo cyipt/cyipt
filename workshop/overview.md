@@ -1,5 +1,7 @@
 # Prioritising cycling infrastructure: new tools and datasets for the LCWIP process
 
+https://www.eventbrite.co.uk/e/prioritising-cycling-infrastructure-new-tools-and-datasets-for-the-lcwip-tickets-43401849099
+
 ## Introduction
 
 The Government is urging highway authorities in England (outside London) to develop Local Cycling Infrastructure Plans (LCWIPs), as part of its Cycling and Walking Investment Strategy (CWIS).
