@@ -14,7 +14,7 @@ library(sf)
 # region_name = "Bristol" # for doing locally (not used)
 # Note: there were 6403 schemes (1 in 6) st_within a 10 m buffer of the 13k lines with min_od_sample = 100
 # and infra_buff_dist = 10
-min_od_sample = 100 # lower bound to subset routes (for testing)
+min_od_sample = 50 # lower bound to subset routes (for testing)
 osm_link_dist = 10 # distance in metres for osm tag linking
 
 # read-in data ----
