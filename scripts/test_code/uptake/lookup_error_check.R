@@ -7,7 +7,7 @@ routes <- readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyipt-secu
 osm <- readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyipt-securedata/uptakemodel/osm_clean.Rds")
 buffer <- readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyipt-securedata/uptakemodel/rf_buff.Rds")
 
-# range distpalcement
+# range distplacement (find the lines on either side)
 
 line.number <- 61368
 range.neg <- 2
@@ -23,7 +23,7 @@ plot(routes.sub$geometry[c(1:range.neg,(range.neg+2):nrow(routes.sub))], col = "
 plot(routes.sub$geometry[(range.neg+1)], col = "green", lwd = 3, add = T)
 plot(osm.sub$geometry, col = "blue", add = T)
 
-# fixed displacement
+# fixed displacement (find just one line dispalced by X rows)
 
 line.number <- 84542
 displace <- 0
