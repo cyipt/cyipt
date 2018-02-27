@@ -2,10 +2,16 @@ DROP TABLE IF EXISTS junctions;
 DROP INDEX IF EXISTS junctions_gindx;
 
 CREATE TABLE IF NOT EXISTS junctions (
-		osmid INT PRIMARY KEY,
-		ncollisions INT NULL,
-		bikeCas INT NULL,
-		totalCas INT NULL,
+		osmid BIGINT PRIMARY KEY,
+		ncollisionsSlight INT NULL,
+		ncollisionsSerious INT NULL,
+		ncollisionsFatal INT NULL,
+		bikeCasSlight INT NULL,
+		bikeCasSerious INT NULL,
+		bikeCasFatal INT NULL,
+		totalCasSlight INT NULL,
+		totalCasSerious INT NULL,
+		totalCasFatal INT NULL,
 		totalVeh INT NULL,
 		region VARCHAR(255) NULL,
 		geotext GEOMETRY NOT NULL
