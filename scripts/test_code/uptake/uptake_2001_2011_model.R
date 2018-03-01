@@ -4,6 +4,7 @@ library(tidyr)
 
 routeinfra <- readRDS("../cyipt-securedata/uptakemodel/route_infra_BeforeAfter.Rds")
 rf01_11 <- readRDS("../cyipt-securedata/uptakemodel/routes01_11_withlookup.Rds")
+rf01_11$length <- as.numeric(st_length(rf01_11))
 
 names(rf01_11)
 
@@ -607,15 +608,175 @@ rm(cycleway01,cycleway11,path01,path11,
    trunk30_N01,trunk30_I01,trunk30_N11,trunk30_I11,
    trunk40_N01,trunk40_I01,trunk40_N11,trunk40_I11)
 
-rm(names_01,names_11,i,id, summary.columns, result)
+rm(names_01,names_11,i,id, result)
 
-routes.final <- as.data.frame(rf01_11[,c("id","all11","bicycle11","all01","bicycle01")])
+routes.final <- as.data.frame(rf01_11[,c("id","all11","bicycle11","all01","bicycle01","length")])
 routes.final$geometry <- NULL
 
 routes.final <- left_join(routes.final, routes, by = c("id" = "id"))
 
 rm(routeinfra, route.summary, infra_01, infra_11, rf01_11)
 
+# comare the route lenght to the component lengths
+summary.columns.names <- c("cycleway01","cycleway11","path01","path11",
+                     "other20_N01","other20_I01","other20_N11","other20_I11",
+                     "other30_N01","other30_I01","other30_N11","other30_I11",
+                     "other40_N01","other40_I01","other40_N11","other40_I11",
+                     "motorway01","motorway11",
+                     "primary20_N01","primary20_I01","primary20_N11","primary20_I11",
+                     "primary30_N01","primary30_I01","primary30_N11","primary30_I11",
+                     "primary40_N01","primary40_I01","primary40_N11","primary40_I11",
+                     "residential20_N01","residential20_I01","residential20_N11","residential20_I11",
+                     "residential30_N01","residential30_I01","residential30_N11","residential30_I11",
+                     "residential40_N01","residential40_I01","residential40_N11","residential40_I11",
+                     "secondary20_N01","secondary20_I01","secondary20_N11","secondary20_I11",
+                     "secondary30_N01","secondary30_I01","secondary30_N11","secondary30_I11",
+                     "secondary40_N01","secondary40_I01","secondary40_N11","secondary40_I11",
+                     "tertiary20_N01","tertiary20_I01","tertiary20_N11","tertiary20_I11",
+                     "tertiary30_N01","tertiary30_I01","tertiary30_N11","tertiary30_I11",
+                     "tertiary40_N01","tertiary40_I01","tertiary40_N11","tertiary40_I11",
+                     "trunk20_N01","trunk20_I01","trunk20_N11","trunk20_I11",
+                     "trunk30_N01","trunk30_I01","trunk30_N11","trunk30_I11",
+                     "trunk40_N01","trunk40_I01","trunk40_N11","trunk40_I11"
+)
+
+routes.final$lengthSums <- rowSums(routes.final[,summary.columns.names], na.rm=TRUE)
+routes.final$lengthratios <- routes.final$lengthSums / routes.final$length
+
+hist(routes.final$lengthratios, breaks = 0:75)
+plot(routes.final$lengthratios)
+
+# calcualte propotions
+
+routes.final$Pcycleway01 <- routes.final$cycleway01 / routes.final$length
+routes.final$Pcycleway11 <- routes.final$cycleway11 / routes.final$length
+routes.final$Ppath01 <- routes.final$path01 / routes.final$length
+routes.final$Ppath11 <- routes.final$path11 / routes.final$length
+routes.final$Pother20_N01 <- routes.final$other20_N01 / routes.final$length
+routes.final$Pother20_I01 <- routes.final$other20_I01 / routes.final$length
+routes.final$Pother20_N11 <- routes.final$other20_N11 / routes.final$length
+routes.final$Pother20_I11 <- routes.final$other20_I11 / routes.final$length
+routes.final$Pother30_N01 <- routes.final$other30_N01 / routes.final$length
+routes.final$Pother30_I01 <- routes.final$other30_I01 / routes.final$length
+routes.final$Pother30_N11 <- routes.final$other30_N11 / routes.final$length
+routes.final$Pother30_I11 <- routes.final$other30_I11 / routes.final$length
+routes.final$Pother40_N01 <- routes.final$other40_N01 / routes.final$length
+routes.final$Pother40_I01 <- routes.final$other40_I01 / routes.final$length
+routes.final$Pother40_N11 <- routes.final$other40_N11 / routes.final$length
+routes.final$Pother40_I11 <- routes.final$other40_I11 / routes.final$length
+routes.final$Pmotorway01 <- routes.final$motorway01 / routes.final$length
+routes.final$Pmotorway11 <- routes.final$motorway11 / routes.final$length
+routes.final$Pprimary20_N01 <- routes.final$primary20_N01 / routes.final$length
+routes.final$Pprimary20_I01 <- routes.final$primary20_I01 / routes.final$length
+routes.final$Pprimary20_N11 <- routes.final$primary20_N11 / routes.final$length
+routes.final$Pprimary20_I11 <- routes.final$primary20_I11 / routes.final$length
+routes.final$Pprimary30_N01 <- routes.final$primary30_N01 / routes.final$length
+routes.final$Pprimary30_I01 <- routes.final$primary30_I01 / routes.final$length
+routes.final$Pprimary30_N11 <- routes.final$primary30_N11 / routes.final$length
+routes.final$Pprimary30_I11 <- routes.final$primary30_I11 / routes.final$length
+routes.final$Pprimary40_N01 <- routes.final$primary40_N01 / routes.final$length
+routes.final$Pprimary40_I01 <- routes.final$primary40_I01 / routes.final$length
+routes.final$Pprimary40_N11 <- routes.final$primary40_N11 / routes.final$length
+routes.final$Pprimary40_I11 <- routes.final$primary40_I11 / routes.final$length
+routes.final$Presidential20_N01 <- routes.final$residential20_N01 / routes.final$length
+routes.final$Presidential20_I01 <- routes.final$residential20_I01 / routes.final$length
+routes.final$Presidential20_N11 <- routes.final$residential20_N11 / routes.final$length
+routes.final$Presidential20_I11 <- routes.final$residential20_I11 / routes.final$length
+routes.final$Presidential30_N01 <- routes.final$residential30_N01 / routes.final$length
+routes.final$Presidential30_I01 <- routes.final$residential30_I01 / routes.final$length
+routes.final$Presidential30_N11 <- routes.final$residential30_N11 / routes.final$length
+routes.final$Presidential30_I11 <- routes.final$residential30_I11 / routes.final$length
+routes.final$Presidential40_N01 <- routes.final$residential40_N01 / routes.final$length
+routes.final$Presidential40_I01 <- routes.final$residential40_I01 / routes.final$length
+routes.final$Presidential40_N11 <- routes.final$residential40_N11 / routes.final$length
+routes.final$Presidential40_I11 <- routes.final$residential40_I11 / routes.final$length
+routes.final$Psecondary20_N01 <- routes.final$secondary20_N01 / routes.final$length
+routes.final$Psecondary20_I01 <- routes.final$secondary20_I01 / routes.final$length
+routes.final$Psecondary20_N11 <- routes.final$secondary20_N11 / routes.final$length
+routes.final$Psecondary20_I11 <- routes.final$secondary20_I11 / routes.final$length
+routes.final$Psecondary30_N01 <- routes.final$secondary30_N01 / routes.final$length
+routes.final$Psecondary30_I01 <- routes.final$secondary30_I01 / routes.final$length
+routes.final$Psecondary30_N11 <- routes.final$secondary30_N11 / routes.final$length
+routes.final$Psecondary30_I11 <- routes.final$secondary30_I11 / routes.final$length
+routes.final$Psecondary40_N01 <- routes.final$secondary40_N01 / routes.final$length
+routes.final$Psecondary40_I01 <- routes.final$secondary40_I01 / routes.final$length
+routes.final$Psecondary40_N11 <- routes.final$secondary40_N11 / routes.final$length
+routes.final$Psecondary40_I11 <- routes.final$secondary40_I11 / routes.final$length
+routes.final$Ptertiary20_N01 <- routes.final$tertiary20_N01 / routes.final$length
+routes.final$Ptertiary20_I01 <- routes.final$tertiary20_I01 / routes.final$length
+routes.final$Ptertiary20_N11 <- routes.final$tertiary20_N11 / routes.final$length
+routes.final$Ptertiary20_I11 <- routes.final$tertiary20_I11 / routes.final$length
+routes.final$Ptertiary30_N01 <- routes.final$tertiary30_N01 / routes.final$length
+routes.final$Ptertiary30_I01 <- routes.final$tertiary30_I01 / routes.final$length
+routes.final$Ptertiary30_N11 <- routes.final$tertiary30_N11 / routes.final$length
+routes.final$Ptertiary30_I11 <- routes.final$tertiary30_I11 / routes.final$length
+routes.final$Ptertiary40_N01 <- routes.final$tertiary40_N01 / routes.final$length
+routes.final$Ptertiary40_I01 <- routes.final$tertiary40_I01 / routes.final$length
+routes.final$Ptertiary40_N11 <- routes.final$tertiary40_N11 / routes.final$length
+routes.final$Ptertiary40_I11 <- routes.final$tertiary40_I11 / routes.final$length
+routes.final$Ptrunk20_N01 <- routes.final$trunk20_N01 / routes.final$length
+routes.final$Ptrunk20_I01 <- routes.final$trunk20_I01 / routes.final$length
+routes.final$Ptrunk20_N11 <- routes.final$trunk20_N11 / routes.final$length
+routes.final$Ptrunk20_I11 <- routes.final$trunk20_I11 / routes.final$length
+routes.final$Ptrunk30_N01 <- routes.final$trunk30_N01 / routes.final$length
+routes.final$Ptrunk30_I01 <- routes.final$trunk30_I01 / routes.final$length
+routes.final$Ptrunk30_N11 <- routes.final$trunk30_N11 / routes.final$length
+routes.final$Ptrunk30_I11 <- routes.final$trunk30_I11 / routes.final$length
+routes.final$Ptrunk40_N01 <- routes.final$trunk40_N01 / routes.final$length
+routes.final$Ptrunk40_I01 <- routes.final$trunk40_I01 / routes.final$length
+routes.final$Ptrunk40_N11 <- routes.final$trunk40_N11 / routes.final$length
+routes.final$Ptrunk40_I11 <- routes.final$trunk40_I11 / routes.final$length
+
+# get the change
+
+routes.final$Ccycleway    <- routes.final$Pcycleway11   - routes.final$Pcycleway01
+routes.final$Cpath        <- routes.final$Ppath11       - routes.final$Ppath01
+routes.final$Cmotorway    <- routes.final$Pmotorway11   - routes.final$Pmotorway01
+
+routes.final$Cother20_N   <- routes.final$Pother20_N11  - routes.final$Pother20_N01
+routes.final$Cother20_I   <- routes.final$Pother20_I11  - routes.final$Pother20_I01
+routes.final$Cother30_N   <- routes.final$Pother30_N11  - routes.final$Pother30_N01
+routes.final$Cother30_I   <- routes.final$Pother30_I11  - routes.final$Pother30_I01
+routes.final$Cother40_N   <- routes.final$Pother40_N11  - routes.final$Pother40_N01
+routes.final$Cother40_I   <- routes.final$Pother40_I11  - routes.final$Pother40_I01
+
+routes.final$Cprimary20_N   <- routes.final$Pprimary20_N11  - routes.final$Pprimary20_N01
+routes.final$Cprimary20_I   <- routes.final$Pprimary20_I11  - routes.final$Pprimary20_I01
+routes.final$Cprimary30_N   <- routes.final$Pprimary30_N11  - routes.final$Pprimary30_N01
+routes.final$Cprimary30_I   <- routes.final$Pprimary30_I11  - routes.final$Pprimary30_I01
+routes.final$Cprimary40_N   <- routes.final$Pprimary40_N11  - routes.final$Pprimary40_N01
+routes.final$Cprimary40_I   <- routes.final$Pprimary40_I11  - routes.final$Pprimary40_I01
+
+routes.final$Cresidential20_N   <- routes.final$Presidential20_N11  - routes.final$Presidential20_N01
+routes.final$Cresidential20_I   <- routes.final$Presidential20_I11  - routes.final$Presidential20_I01
+routes.final$Cresidential30_N   <- routes.final$Presidential30_N11  - routes.final$Presidential30_N01
+routes.final$Cresidential30_I   <- routes.final$Presidential30_I11  - routes.final$Presidential30_I01
+routes.final$Cresidential40_N   <- routes.final$Presidential40_N11  - routes.final$Presidential40_N01
+routes.final$Cresidential40_I   <- routes.final$Presidential40_I11  - routes.final$Presidential40_I01
+
+routes.final$Csecondary20_N   <- routes.final$Psecondary20_N11  - routes.final$Psecondary20_N01
+routes.final$Csecondary20_I   <- routes.final$Psecondary20_I11  - routes.final$Psecondary20_I01
+routes.final$Csecondary30_N   <- routes.final$Psecondary30_N11  - routes.final$Psecondary30_N01
+routes.final$Csecondary30_I   <- routes.final$Psecondary30_I11  - routes.final$Psecondary30_I01
+routes.final$Csecondary40_N   <- routes.final$Psecondary40_N11  - routes.final$Psecondary40_N01
+routes.final$Csecondary40_I   <- routes.final$Psecondary40_I11  - routes.final$Psecondary40_I01
+
+routes.final$Ctertiary20_N   <- routes.final$Ptertiary20_N11  - routes.final$Ptertiary20_N01
+routes.final$Ctertiary20_I   <- routes.final$Ptertiary20_I11  - routes.final$Ptertiary20_I01
+routes.final$Ctertiary30_N   <- routes.final$Ptertiary30_N11  - routes.final$Ptertiary30_N01
+routes.final$Ctertiary30_I   <- routes.final$Ptertiary30_I11  - routes.final$Ptertiary30_I01
+routes.final$Ctertiary40_N   <- routes.final$Ptertiary40_N11  - routes.final$Ptertiary40_N01
+routes.final$Ctertiary40_I   <- routes.final$Ptertiary40_I11  - routes.final$Ptertiary40_I01
+
+routes.final$Ctrunk20_N   <- routes.final$Ptrunk20_N11  - routes.final$Ptrunk20_N01
+routes.final$Ctrunk20_I   <- routes.final$Ptrunk20_I11  - routes.final$Ptrunk20_I01
+routes.final$Ctrunk30_N   <- routes.final$Ptrunk30_N11  - routes.final$Ptrunk30_N01
+routes.final$Ctrunk30_I   <- routes.final$Ptrunk30_I11  - routes.final$Ptrunk30_I01
+routes.final$Ctrunk40_N   <- routes.final$Ptrunk40_N11  - routes.final$Ptrunk40_N01
+routes.final$Ctrunk40_I   <- routes.final$Ptrunk40_I11  - routes.final$Ptrunk40_I01
+
+
 saveRDS(routes.final,"../cyipt-securedata/uptakemodel/route_infra_final.Rds")
 saveRDS(routes.final,"N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyipt-securedata/uptakemodel/route_infra_final.Rds")
+
 
