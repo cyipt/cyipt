@@ -632,7 +632,7 @@ get.infrachange <- function(x){
 ##########################################################
 #Parallel
 m = 1 #Start
-n = nrow(osm.final) #End
+n = nrow(rf01_11) #End
 
 start <- Sys.time()
 fun <- function(cl){
