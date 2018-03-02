@@ -123,6 +123,8 @@ if(file.exists("../cyipt-securedata/uptakemodel/infra_td.Rds")){
 # Step 6: Find the OSM roads that intersect the buffered routes
 if(file.exists("../cyipt-securedata/uptakemodel/osm_rf_contains_5m.Rds")){
   inter <- readRDS("../cyipt-securedata/uptakemodel/osm_rf_contains_5m.Rds")
+  rf_buff <- readRDS("../cyipt-securedata/uptakemodel/rf_buff.Rds")
+  osm <- readRDS("../cyipt-securedata/uptakemodel/osm_clean.Rds")
 }else{
   osm_id <- osm[,"id"]
   rf_buff_id <- rf_buff[,"id"]
@@ -287,7 +289,7 @@ inter.unique <- unique(inter.unique)
 inter.unique <- inter.unique[order(inter.unique)]
 
 osm.onroutes <- osm[inter.unique,]
-#bounds <- readRDS("../cyipt-bigdata/osm-raw/Bristol/bounds.Rds")
+bounds <- readRDS("../cyipt-bigdata/osm-raw/Bristol/bounds.Rds")
 
 #infra.historic.changed <- infra.historic[!is.na(infra.historic$date),]
 infra.historic.changed <- infra.historic # keep so we can find the post 2011 infra and ignore
@@ -300,19 +302,28 @@ infra.historic.changed <- infra.historic # keep so we can find the post 2011 inf
 
 ######
 # Find the changing infrastrucutre that is near the osm routes
-osm.onroutes.buffer <- st_parallel(sf_df = osm.onroutes, sf_func = st_buffer, n_cores = 6, dist = 30, nQuadSegs = 2)
-inter.historic <- st_parallel(sf_df = osm.onroutes.buffer, sf_func = st_intersects, n_cores = 6, y = infra.historic.changed)
-inter.historic.unique <- unlist(inter.historic)
-inter.historic.unique <- unique(inter.historic.unique)
-inter.historic.unique <- inter.historic.unique[order(inter.historic.unique)]
 
-infra.historic.onroute <- infra.historic.changed[inter.historic.unique,]
+if(file.exists("../cyipt-securedata/uptakemodel/infra_historic_onroutes.Rds")){
+  infra.historic.onroute <- readRDS("../cyipt-securedata/uptakemodel/infra_historic_onroutes.Rds")
 
+}else{
+  osm.onroutes.buffer <- st_parallel(sf_df = osm.onroutes, sf_func = st_buffer, n_cores = 6, dist = 30, nQuadSegs = 2)
+  inter.historic <- st_parallel(sf_df = osm.onroutes.buffer, sf_func = st_intersects, n_cores = 6, y = infra.historic.changed)
+  inter.historic.unique <- unlist(inter.historic)
+  inter.historic.unique <- unique(inter.historic.unique)
+  inter.historic.unique <- inter.historic.unique[order(inter.historic.unique)]
 
-#qtm(osm.onroutes[bounds,], lines.lwd = 5, lines.col = "blue") +
+  infra.historic.onroute <- infra.historic.changed[inter.historic.unique,]
+
+  saveRDS(infra.historic.onroute,"../cyipt-securedata/uptakemodel/infra_historic_onroutes.Rds")
+  #qtm(osm.onroutes[bounds,], lines.lwd = 5, lines.col = "blue") +
   #qtm(osm.onroutes.buffer[bounds,], fill = NULL) +
-#  qtm(infra.historic.changed[bounds,], lines.lwd = 3, lines.col = "red") +
-#  qtm(infra.historic.onroute[bounds,], lines.lwd = 3, lines.col = "green")
+  #  qtm(infra.historic.changed[bounds,], lines.lwd = 3, lines.col = "red") +
+  #  qtm(infra.historic.onroute[bounds,], lines.lwd = 3, lines.col = "green")
+
+}
+
+
 
 # clean up
 rm(infra.change, infra.historic, infra.historic.changed, infra.td, osm, inter.historic, inter.historic.unique)
@@ -321,34 +332,52 @@ rm(infra.change, infra.historic, infra.historic.changed, infra.td, osm, inter.hi
 ###################################
 # Step 8: Join the hisotric infrastrucutre onto the osm networks
 # now use a tighter buffer looking for exact matches
-osm.onroutes.buffer <- st_parallel(sf_df = osm.onroutes, sf_func = st_buffer, n_cores = 6, dist = 20, nQuadSegs = 2)
-osm.onroutes2 <- st_join(osm.onroutes.buffer, infra.historic.onroute, join = st_intersects, largest = TRUE)
 
-qtm(osm.onroutes2[bounds,], fill = "highway.y", borders = NULL, alpha = 1) +
-  qtm(infra.historic.onroute[bounds,], lines.lwd = 2, lines.col = "green")
+if(file.exists("../cyipt-securedata/uptakemodel/osm_onroutes_withchange.Rds")){
+  osm.final <- readRDS("../cyipt-securedata/uptakemodel/osm_onroutes_withchange.Rds")
+}else{
+  osm.onroutes.buffer <- st_parallel(sf_df = osm.onroutes, sf_func = st_buffer, n_cores = 6, dist = 20, nQuadSegs = 2)
+  osm.onroutes2 <- st_join(osm.onroutes.buffer, infra.historic.onroute, join = st_intersects, largest = TRUE)
 
-osm.final <- osm.onroutes2
-osm.final <- osm.final[order(match(osm.final$idnew,osm.onroutes$idnew)),]
-summary(osm.final$idnew == osm.onroutes$idnew)
-osm.final$geometry <- osm.onroutes$geometry
+  qtm(osm.onroutes2[bounds,], fill = "highway.y", borders = NULL, alpha = 1) +
+    qtm(infra.historic.onroute[bounds,], lines.lwd = 2, lines.col = "green")
 
-saveRDS(osm.final,"../cyipt-securedata/uptakemodel/osm_onroutes_withchange.Rds")
+  osm.final <- osm.onroutes2
+  osm.final <- osm.final[order(match(osm.final$idnew,osm.onroutes$idnew)),]
+  summary(osm.final$idnew == osm.onroutes$idnew)
+  osm.final$geometry <- osm.onroutes$geometry
+
+  saveRDS(osm.final,"../cyipt-securedata/uptakemodel/osm_onroutes_withchange.Rds")
+}
 
 #redo the inter for the new osm dataset
-inter2 <- st_parallel(sf_df = rf_buff, sf_func = st_contains, n_cores = 4, y = osm.final)
-saveRDS(inter2,"../cyipt-securedata/uptakemodel/osm_onroutes_rf_inter.Rds")
+if(file.exists("../cyipt-securedata/uptakemodel/osm_onroutes_rf_inter.Rds")){
+  inter2 <- readRDS("../cyipt-securedata/uptakemodel/osm_onroutes_rf_inter.Rds")
+}else{
+  #inter2 <- st_parallel(sf_df = rf_buff, sf_func = st_contains, n_cores = 4, y = osm.final)
+  inter2 <- st_contains(rf_buff, osm.final)
+  saveRDS(inter2,"../cyipt-securedata/uptakemodel/osm_onroutes_rf_inter.Rds")
+}
+
 names(osm.final)
 
-# recorder the routes
-rf01_11 <- rf01_11[order(match(rf01_11$id,rf_buff$id)),]
-summary(rf01_11$id == rf_buff$id)
+if(file.exists("../cyipt-securedata/uptakemodel/routes01_11_withlookup.Rds")){
+  rf01_11 <- readRDS("../cyipt-securedata/uptakemodel/routes01_11_withlookup.Rds")
+}else{
+  # recorder the routes
+  rf01_11 <- rf01_11[order(match(rf01_11$id,rf_buff$id)),]
+  summary(rf01_11$id == rf_buff$id)
+  rf01_11$osmids <- inter2
+  saveRDS(rf01_11,"../cyipt-securedata/uptakemodel/routes01_11_withlookup.Rds")
+}
 
-rf01_11$osmids <- inter2
-saveRDS(rf01_11,"../cyipt-securedata/uptakemodel/routes01_11_withlookup.Rds")
 
-rf01_11 <- readRDS("../cyipt-securedata/uptakemodel/routes01_11_withlookup.Rds")
+#samity checks
+n = sample(1:nrow(rf01_11),1)
+qtm(rf01_11$geometry[n], lines.lwd = 4, lines.col = "red") +
+  qtm(osm.final[rf01_11$osmids[[n]],], lines.lwd = 4 , lines.col = "green")# +
+#  qtm(rf_buff$geometry[n])
 
-summary(rf01_11$id == rf_buff$id)
 
 
 #summarise the osm data
@@ -587,10 +616,10 @@ for(i in 1:nrow(osm.final)){
   osm.final$cycleway_11[i] <- result
 }
 
-osm.final$length <- as.numeric(st_length(osm.final))
-
 saveRDS(osm.final,"../cyipt-securedata/uptakemodel/osm_onroutes_withchange_0111.Rds")
 saveRDS(osm.final,"N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyipt-securedata/uptakemodel/osm_onroutes_withchange_0111.Rds")
+
+osm.final$length <- as.numeric(st_length(osm.final))
 
 #Clean the Highway Tags
 
@@ -638,7 +667,7 @@ start <- Sys.time()
 fun <- function(cl){
   parLapply(cl, m:n, get.infrachange)
 }
-cl <- makeCluster(5) #make clusert and set number of cores
+cl <- makeCluster(6) #make clusert and set number of cores
 clusterEvalQ(cl, {library(sf); library(dplyr)})
 clusterExport(cl=cl, varlist=c("osm.final", "rf01_11"), envir=environment())
 respar <- fun(cl)
@@ -654,74 +683,6 @@ saveRDS(respar,"N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyipt-secured
 
 
 
-#qtm(osm.final[1:10000,], lines.col = "highway.y", lines.lwd = 5) +
-#  qtm(infra.historic.onroute, lines.lwd = 1, lines.col = "black")
-
-
-##############################
-# Readback in the routes
-
-#rf01_11 <- readRDS("../cyipt-securedata/uptakemodel/routes01_11.Rds")
-#summary(rf01_11$id == rf_buff$id)
-
-#rf01_11$osm_ids <- inter
-#rm(rf_buff)
-
-####################################
-# Sanity Check
-#n = 70000
-#qtm(rf01_11[n,], lines.col = "blue", lines.lwd = 5 ) +
-#  qtm(osm[rf01_11$osm_ids[[n]], ], lines.lwd = 3, lines.col = "red")
-
-
-
-
-
-
-#osm$idnew <- 1:nrow(osm)
-#osm2 <- st_join(osm, infra.historic, largest = TRUE)
-#summary(duplicated(osm2$idnew))
-#foo <- osm2[osm2$idnew %in% osm2$idnew[duplicated(osm2$idnew)],]
-#qtm(foo[c(1,2),]) +
-# qtm(infra.historic)
-
-
-
-
-
-
-
-
-
-###################################
-# Step 9: Subset the OSM to only the parts that intersect with the routes
-
-#list the osmids
-#foo <- inter[1:5]
-#inter.unique <- unlist(foo)
-#inter.unique <- unique(inter.unique)
-
-#qtm(rf_buff[1,], fill = NULL) +
-#  qtm(osm[inter[[1]],], lines.col = "red", lines.lwd = 4)
-
-#osm
-
-
-
-#foo <- st_parallel(sf_df = rf_buff[1:10, ], sf_func = st_intersects, n_cores = 6, y = osm)
-#foo2 <- do.call("c", foo)
-#foo3 <- unique(foo2)
-#qtm(osm[foo3,])
-
-
-##################################
-# Step 5: For each PCT route Summariase the infrastructure
-
-# create a single aggregate variaible in the osm
-
-#osm$infra_summary <- NA
-
-#names(osm)
 
 
 
