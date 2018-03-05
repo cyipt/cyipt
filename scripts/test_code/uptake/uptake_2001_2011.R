@@ -636,8 +636,9 @@ osm.final$highway_11[osm.final$highway_11 %in% c("unclassified", "service","livi
 #summarise Infrastrucutre change for each route
 
 get.infrachange <- function(x){
-  route <- rf01_11[x,]
-  osm_sub <- osm.final[route$osmids[[1]],]
+  id.tmp <- rf01_11$id[x]
+  route <- rf01_11$osmids[[x]]
+  osm_sub <- osm.final[route,]
   osm_sub <- as.data.frame(osm_sub)
   osm_sub <- osm_sub[,c("highway_01","highway_11","maxspeed_01","maxspeed_11","cycleway_01","cycleway_11","length")]
 
@@ -652,7 +653,7 @@ get.infrachange <- function(x){
   result <- list()
   result[[1]] <- as.data.frame(osm_summary01)
   result[[2]] <- as.data.frame(osm_summary11)
-  attr(result,'routeID') <- route$id[1]
+  attr(result,'routeID') <- id.tmp
   return(result)
 }
 

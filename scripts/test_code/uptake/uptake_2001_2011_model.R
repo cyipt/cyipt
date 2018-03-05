@@ -144,8 +144,7 @@ if(TRUE){
                    "other 70 no 2001",
                    "other 50 no 2001")
 
-  other40_I01 <- c("other 60 lane 2001",
-                   "other 70 track 2001")
+  other40_I01 <- c("other 60 lane 2001")
 
   other40_N11 <- c("other 40 no 2011",
                    "other 40 share_busway 2011",
@@ -154,10 +153,7 @@ if(TRUE){
                    "other 60 share_busway 2011",
                    "other 70 no 2011")
 
-  other40_I11 <- c("other 60 lane 2011",
-                   "other 70 track 2011")
-
-
+  other40_I11 <- c("other 60 lane 2011")
 
   motorway01 <- c("motorway 30 no 2001",
                   "motorway 40 no 2001",
@@ -475,9 +471,9 @@ if(TRUE){
   routes$other30_I11 <- rowSums(routes[,other30_I11], na.rm=TRUE)
 
   routes$other40_N01 <- rowSums(routes[,other40_N01], na.rm=TRUE)
-  routes$other40_I01 <- rowSums(routes[,other40_I01], na.rm=TRUE)
+  routes$other40_I01 <- routes[,other40_I01]
   routes$other40_N11 <- rowSums(routes[,other40_N11], na.rm=TRUE)
-  routes$other40_I11 <- rowSums(routes[,other40_I11], na.rm=TRUE)
+  routes$other40_I11 <- routes[,other40_I11]
 
   routes$motorway01 <- rowSums(routes[,motorway01], na.rm=TRUE)
   routes$motorway11 <- rowSums(routes[,motorway11], na.rm=TRUE)
@@ -585,6 +581,7 @@ if(TRUE){
 
   routes <- routes[,names(routes)[!names(routes) %in% summary.columns]]
   names(routes)[order(names(routes))]
+  names(route)[names(routes) %in% names(route.summary)]
 }
 
 rm(cycleway01,cycleway11,path01,path11,
@@ -643,7 +640,7 @@ summary.columns.names <- c("cycleway01","cycleway11","path01","path11",
 routes.final$lengthSums <- rowSums(routes.final[,summary.columns.names], na.rm=TRUE)
 routes.final$lengthratios <- routes.final$lengthSums / routes.final$length
 
-hist(routes.final$lengthratios, breaks = 0:75)
+hist(routes.final$lengthratios, seq(0,3.5,0.1))
 plot(routes.final$lengthratios)
 
 # calcualte propotions
