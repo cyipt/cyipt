@@ -46,7 +46,12 @@ message(paste0(Sys.time()," Combining Regions into master file "))
 #osm.all <- do.call("rbind",regions.list)
 junc.all <- bind_rows(regions.list)
 
-
+#check for duplicate ids
+summary(duplicated(junc.all$osmid))
+junc.all <- junc.all[!duplicated(junc.all$osmid),]
+options("scipen"=100, "digits"=4)
+junc.all$osmid <- as.character(junc.all$osmid)
+junc.all$osmid[43887]
 
 #Save Out
 

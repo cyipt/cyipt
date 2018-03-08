@@ -70,7 +70,7 @@ splitmulti <- function(x,from,to){
 #Calcualte Widths
 width_estimate <- function(x){
   x$area <- as.numeric(st_area(x))
-  x$perimeter <- as.numeric(st_length(x))
+  x$perimeter <- as.numeric(st_length(st_cast(x, "MULTILINESTRING")))
   res <- mapply(FUN = width_apply,x$area, x$perimeter, SIMPLIFY = FALSE)
   return(res)
 }

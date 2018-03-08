@@ -106,7 +106,7 @@ for(b in 1:length(regions)){
       respar <- bind_rows(respar)
       end <- Sys.time()
       if(verbose){message(paste0("Did ",n-m + 1," collisions in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))}
-      rm(n,m,cl,grid_osm,start,end)
+      rm(n,m,cl,grid_osm,start,end,fun)
       ##################################################
 
       #Join togther data
@@ -155,7 +155,7 @@ for(b in 1:length(regions)){
         saveRDS(osm,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-lines-colisions.Rds"))
         saveRDS(junc,paste0("../cyipt-bigdata/osm-prep/",regions[b],"/osm-junctions.Rds"))
       }
-      rm(osm,acc.junc,acc.lines,junc,respar,acc)
+      rm(osm,acc.junc,acc.lines,junc,respar,acc, grid_acc, grid_junc)
 
     }
 
