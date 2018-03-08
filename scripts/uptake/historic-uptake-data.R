@@ -22,7 +22,7 @@ z = msoa2011_vsimple %>%
   select(geo_code = msoa11cd)
 # if using aggregating zones
 region_shape = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
-# region_shape = filter(region_shape, ttwa11nm == region_name)
+region_shape = filter(region_shape, grepl("Cambr", ttwa11nm))
 region_shape = st_buffer(region_shape, dist = 0) # for all of UK
 # qtm(region_shape)
 
@@ -112,7 +112,7 @@ qtm(l$geometry[1]) +
 # summary(td_type)
 # td_p = td[td_type == "POINT", ]
 # summary(td_p)
-# # plot(td_p$geometry)
+# plot(td_p$geometry)
 # td = td[td_type == "LINESTRING", ]
 # old_infra = td # rely on td data for now...
 # todo: add a bit with all ways, not just busy (40mph+ ones)

@@ -14,18 +14,19 @@ There will be a substantial practical component that can contribute to CPD objec
 ## Agenda
 
 - Arrival and set-up: 10:00 - 10:15
-- Overview of the data landscape supporting LCWIPs: 10:15 - 10:30
-- An introduction to the CyIPT project: 10:30 - 10:40
-- Overview of tools supporting LCWIPs: 10:40 - 11:00
+- Overview of the landscape of tools supporting LCWIPs (Kaylisha Archer, DfT): 10:15 - 10:30
+- What about walking? Tools and policies for delivering on the W in LCWIP (Becki Cox, Living Streets): 10:30 - 10:45 
+- How to design and build good walking and cycling infrastructure (John Parkin, University of West of England): 10:45 - 11:00
 
 **Refreshments and networking: 11:00 - 11:30**
 
-- A practical, interactive demonstration of the CyIPT: 11:30 - 12:30
-- Testing CyIPT results in your local area: 12:30 - 13:00
+- An introduction to the CyIPT project (Robin Lovelace): 11:30 - 11:45
+- An interactive demonstration of the CyIPT (Malcolm Morgan): 11:45 - 12:30
+- How can the CyIPT help prioritise investments - a case study (TBC): 12:30 - 13:00
 
 **Lunch: 13:00 - 14:00**
 
-- How can the CyIPT help prioritise investments - a case study of Bristol:  14:00 - 14:30
-- Practical workshop to help inform local cycling plans: 14:30 - 16:00
-- Feedback on the available tools, discussion and next steps: 16:00 - 16:30
+- Practical workshop to help inform local cycling plans: 14:00 - 15:30
+- Feedback on CyIPT results in your local area: 15:30 - 16:00
+- Discussion of tools and next steps: 16:00 - 16:30
 
