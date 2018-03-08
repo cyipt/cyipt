@@ -116,10 +116,18 @@ for(b in 1:length(regions)){
         #Dump Unneded Data
         schemes <- schemes[,c("group_id","costTotal","Recommended")]
 
-        #Summarise
-        schemes <- schemes %>%
-          group_by(group_id) %>%
-          summarise(costTotal = sum(costTotal), type = Recommended[which.max(table(Recommended))] )
+        if(nrow(schemes) > 0){
+          #Summarise
+          schemes <- schemes %>%
+            group_by(group_id) %>%
+            summarise(costTotal = sum(costTotal), type = Recommended[which.max(table(Recommended))] )
+        }else{
+          message("Only very small upgrades were found, no schemes have been constructed")
+          osm$group_id <- NA
+          schemes <- 0
+        }
+
+
 
 
 
