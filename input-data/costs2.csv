@@ -533,3 +533,19 @@ Minor Road - Cycling Allowed 1 share_busway no 0,Segregated Cycle Track,One Way,
 Trunk Road - Cycling Allowed 0 no track 0,Cycle Lanes,One Way,downgrade,0
 Residential Road - Cycling Allowed 1 share_busway lane 0,Cycle Street,One Way,downgrade,0
 Main Road - Cycling Allowed 0 lane no 0,Cycle Lanes with light segregation,Two Way,upgrade (one side),370
+Residential Road - Cycling Allowed 0 lane track 0,None,Two Way,downgrade,0
+Main Road - Cycling Allowed 1 share_busway share_busway 1,Cycle Lanes,One Way,no change,0
+Trunk Road - Cycling Allowed 0 no lane 0,Stepped Cycle Tracks,One Way - Two Way Cycling,upgrade (both sides),960
+Main Road Link - Cycling Allowed 0 track track 0,None,Two Way,downgrade,0
+Minor Road - Cycling Allowed 0 track lane 0,None,One Way,downgrade,0
+Main Road Link - Cycling Allowed 0 no no 0,Segregated Cycle Track,Two Way,upgrade (both sides),1450
+Main Road - Cycling Allowed 0 lane track 0,Cycle Lanes,One Way - Two Way Cycling,downgrade,0
+Main Road - Cycling Allowed 0 track no 0,Cycle Lanes,One Way - Two Way Cycling,upgrade (one side),180
+Main Road - Cycling Allowed 0 no track 0,Stepped Cycle Tracks,One Way,upgrade (one side),480
+Residential Road - Cycling Allowed 0 no lane 0,Cycle Lanes with light segregation,One Way - Two Way Cycling,upgrade (both sides),740
+Main Road - Cycling Allowed 2 share_busway lane 0,Cycle Lanes,Two Way,no change,0
+Residential Road - Cycling Allowed 0 lane no 0,Cycle Lanes with light segregation,One Way,upgrade (both sides),740
+Main Road - Cycling Allowed 0 track lane 0,Stepped Cycle Tracks,One Way - Two Way Cycling,upgrade (one side),480
+Minor Road - Cycling Allowed 0 lane track 0,Cycle Street,One Way - Two Way Cycling,downgrade,0
+Main Road - Cycling Allowed 0 lane lane 0,Cycle Lanes,One Way - Two Way Cycling,no change,0
+Trunk Road Link - Cycling Allowed 1 share_busway no 0,Stepped Cycle Tracks,Two Way,upgrade (both sides),960
