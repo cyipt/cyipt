@@ -19,7 +19,7 @@ z = msoa2011_vsimple %>%
   select(geo_code = msoa11cd)
 # if using aggregating zones
 region_shape = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
-# region_shape = filter(region_shape, ttwa11nm == region_name)
+region_shape = filter(region_shape, grepl("Cambr", ttwa11nm))
 region_shape = st_buffer(region_shape, dist = 0) # for all of UK
 # qtm(region_shape)
 
@@ -87,21 +87,22 @@ qtm(l$geometry[1]) +
   qtm(ways_uk$geometry[l$osm_lookup[[1]]])
 saveRDS(l, "../cyipt-bigdata/uptake-files/l.Rds")
 
-# road net and old-infra data ----
+# # road net and old-infra data ----
 # td = st_read("../td/dft-england-cycling-data-2011.geojson")
 # td_type = st_geometry_type(td)
 # summary(td_type)
 # td_p = td[td_type == "POINT", ]
 # summary(td_p)
-# # plot(td_p$geometry)
+# plot(td_p$geometry)
 # td = td[td_type == "LINESTRING", ]
 # old_infra = td # rely on td data for now...
-# todo: add a bit with all ways, not just busy (40mph+ ones)
-# ways_uk = ...
-ways_busy = filter(ways_uk, maxspeed > 30)
+# # todo: add a bit with all ways, not just busy (40mph+ ones)
+# # ways_uk = ...
+# ways_busy = filter(ways_uk, maxspeed > 30)
 
 old_infra_all = readRDS("../cyipt-securedata/uptakemodel/infra_historic.Rds") # supercedes previous version
 old_infra = filter(old_infra_all, date > "2001-01-01", date < "2011-01-01")
+old_infra_wgs = old_infra
 # old_infra1 = old_infra[1:999, ]
 old_infra_buffer = st_buffer(old_infra, 10, nQuadSegs = 4) # use old_infra1 for testing
 ways_within = ways_busy[old_infra_buffer, , op = st_within] # excludes crossing busy roads
