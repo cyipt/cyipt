@@ -20,9 +20,11 @@ There will be a substantial practical component that can contribute to CPD objec
 
 **Refreshments and networking: 11:00 - 11:30**
 
-- An introduction to the CyIPT project (Robin Lovelace): 11:30 - 11:45
-- An interactive demonstration of the CyIPT (Malcolm Morgan): 11:45 - 12:30
-- How can the CyIPT help prioritise investments - a case study (TBC): 12:30 - 13:00
+- An overview of the PCT (Robin Lovelace): 11:30 - 11:45
+- An overview of the CyIPT project (Robin Lovelace): 11:45 - 12:00
+- An interactive demonstration of the CyIPT (Malcolm Morgan): 12:00 - 12:30
+- How can the CyIPT help prioritise investments - a case study (Zsolt Schuller): 12:30 - 12:50
+- Questions and answer (12:50 - 13:00)
 
 **Lunch: 13:00 - 14:00**
 
