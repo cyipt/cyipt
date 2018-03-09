@@ -100,8 +100,8 @@ evaluate.schemes <- function(j){
 
   pct.scheme <- pct[scheme.pct_ids,]
 
-  message(paste0(" Got to lapply for ",j," variaibles are ",paste(ls(), collapse = " ")," objects are ",paste(objects(), collapse = " ")))
-  message(paste0("there are ",nrow(pct.scheme)," rows in pct.scheme beffore the lappy in",j))
+  #message(paste0(" Got to lapply for ",j," variaibles are ",paste(ls(), collapse = " ")," objects are ",paste(objects(), collapse = " ")))
+  #message(paste0("there are ",nrow(pct.scheme)," rows in pct.scheme beffore the lappy in",j))
 
   #For each route get the length of on road and off road infa
   infrachange <- lapply(1:nrow(pct.scheme), get.infrachange, pct.scheme = pct.scheme, j = j, scheme.osm_ids = scheme.osm_ids)
