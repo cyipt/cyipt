@@ -15,26 +15,6 @@ library(parallel)
 source("R/functions.R")
 tmap_mode("view")
 
-#osm <- readRDS(paste0("../cyipt-bigdata/osm-prep/",region,"/osm-lines.Rds"))
-
-
-#Settings now come from master file
-#skip <- FALSE #Skip Files that already have PCT values
-#ncores <- 4 #number of cores to use in parallel processing
-#overwrite <- FALSE #Overwrite or create new file
-
-#Functions
-get.exposure <- function(c){
-  route.pct.id <- (1:nrow(pct))[pct$ID == pct.scheme$ID[c] ]
-  route.osmids <- unique(pct2osm[[route.pct.id]])
-  route.osmids <- route.osmids[route.osmids %in% scheme.osm_ids]
-  route.osm <- osm[route.osmids,]
-  result <- data.frame(ID = as.character(pct.scheme$ID[c]),
-                       lengthOffRoad = sum(route.osm$length[route.osm$Recommended %in% c("Stepped Cycle Tracks","Segregated Cycle Track","Cycle Lane on Path","Segregated Cycle Track on Path")]),
-                       lengthOnRoad = sum(route.osm$length[route.osm$Recommended %in% c("Cycle Street","Cycle Lanes","Cycle Lanes with light segregation")])
-  )
-  return(result)
-}
 
 # Variaibles in the model
 
@@ -47,7 +27,9 @@ modelvars <- c("cycleway","path",
 
 
 # infra change
-get.infrachange <- function(x){
+get.infrachange <- function(x, pct.scheme, j, scheme.osm_ids){
+
+  message(paste0(" Got inside get.infrachange for ",j," ",x))
   route.pct.id <- (1:nrow(pct))[pct$ID == pct.scheme$ID[x] ]
   route.length <- pct$length[pct$ID == pct.scheme$ID[x]]
 
@@ -107,17 +89,67 @@ get.infrachange <- function(x){
   #message(paste0("done ",x))
   return(route.change)
 
+}
+
+
+evaluate.schemes <- function(j){
+
+  #Get the roads in the schemes
+  scheme.osm_ids <- osm$id[osm$group_id == j] # get the osm ids for this scheme
+  scheme.pct_ids <- unique(unlist(osm2pct[scheme.osm_ids])) # get the pct ids for this scheme
+
+  pct.scheme <- pct[scheme.pct_ids,]
+
+  message(paste0(" Got to lapply for ",j," variaibles are ",paste(ls(), collapse = " ")," objects are ",paste(objects(), collapse = " ")))
+  message(paste0("there are ",nrow(pct.scheme)," rows in pct.scheme beffore the lappy in",j))
+
+  #For each route get the length of on road and off road infa
+  infrachange <- lapply(1:nrow(pct.scheme), get.infrachange, pct.scheme = pct.scheme, j = j, scheme.osm_ids = scheme.osm_ids)
+  infrachange <- bind_rows(infrachange)
+
+  pct.scheme <- left_join(pct.scheme, infrachange, by = c("ID" = "id"))
+
+  # New Route CHange Method
+
+  #prep matrix for xgboost
+  pct.scheme.mat <- as.data.frame(pct.scheme[,c(paste0("F", modelvars),"length","av_incline","percycle01")])
+  pct.scheme.mat$geometry <- NULL
+  pct.scheme.mat$rf_avslope_perc <- pct.scheme.mat$av_incline
+  pct.scheme.mat$av_incline <- NULL
+  pct.scheme.mat <- as.matrix(pct.scheme.mat)
+
+  pct.scheme$percycleAfter <- round(predict(object = model, pct.scheme.mat),3)
+  pct.scheme$cycleAfter <- pct.scheme$percycleAfter * pct.scheme$all_16p
+
+  uptake <- data.frame(scheme = j, census = sum(pct.scheme$pct.census), model.future = round(sum(pct.scheme$cycleAfter),0))
+
+  pct.scheme$schemeID <- j
+
+
+
+  pct.scheme <- as.data.frame(pct.scheme)
+  pct.scheme$geometry <- NULL
+  pct.scheme <- pct.scheme[,c("ID","schemeID","percycleAfter","cycleAfter","Fcycleway","Fpath",
+                              "Fmain20_N","Fmain20_I","Fmain30_N","Fmain30_I","Fmain40_N","Fmain40_I",
+                              "Fresidential20_N","Fresidential20_I","Fresidential30_N","Fresidential30_I","Fresidential40_N","Fresidential40_I",
+                              "Ftrunk20_N","Ftrunk30_N","Ftrunk30_I","Ftrunk40_N","Ftrunk40_I")]
+
+
+  result <- list()
+  result[[1]] <- uptake
+  result[[2]] <- pct.scheme
+
+  return(result)
 
 }
 
 
 
 
+
 #List folders
-#regions <- list.dirs(path = "../cyipt-bigdata/osm-raw", full.names = FALSE) # Now get regions from the master file
-#regions <- regions[2:length(regions)]
 regions <- regions.todo
-#regions <- "Bristol"
+
 
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes.Rds"))){
@@ -194,6 +226,8 @@ for(b in 1:length(regions)){
       #get the list of scheme_nos
       scheme_nos <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes.Rds"))
 
+
+
       if(all(c("sf","data.frame") %in% class(scheme_nos))){
         scheme_nos <- unique(scheme_nos$group_id)
         scheme_nos <- scheme_nos[!is.na(scheme_nos)]
@@ -203,96 +237,43 @@ for(b in 1:length(regions)){
         osm$group_id[is.na(osm$group_id)] <- 0 # repalce NAs with 0 scheme number
 
         # Loop over schemes
-        uptake.list <- list()
-        uptake.route.list <- list()
-
-        for(j in scheme_nos){
-
-          #Get the roads in the schemes
-          scheme.osm_ids <- osm$id[osm$group_id == j] # get the osm ids for this scheme
-          scheme.pct_ids <- unique(unlist(osm2pct[scheme.osm_ids])) # get the pct ids for this scheme
-
-          pct.scheme <- pct[scheme.pct_ids,]
-
-          #For each route get the length of on road and off road infa
-          #print(Sys.time())
-          #infrachange <- lapply(1:nrow(pct.scheme), get.infrachange)
-          #infrachange <- bind_rows(infrachange)
-          #print(Sys.time())
-
-          #parallel only 2x faster so need better optimisation
-
-          ##########################################################
-          #Parallel
-          m = 1 #Start
-          n = nrow(pct.scheme) #End
-
-          start <- Sys.time()
-          fun <- function(cl){
-            parLapply(cl, m:n, get.infrachange)
-          }
-          cl <- makeCluster(ncores) #make clusert and set number of cores
-          clusterEvalQ(cl, {library(sf); library(dplyr) })
-          clusterExport(cl=cl, varlist=c("pct", "pct.scheme","osm","pct2osm","scheme.osm_ids","j","modelvars"), envir=environment())
-          infrachange <- fun(cl)
-          stopCluster(cl)
-          infrachange <- bind_rows(infrachange)
-          end <- Sys.time()
-          if(verbose){message(paste0("Did ",n-m + 1," routes in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))}
-          rm(n,m,cl,start,end,fun)
-          ##################################################
-
-          pct.scheme <- left_join(pct.scheme, infrachange, by = c("ID" = "id"))
-
-          # New Route CHange Method
-
-          #prep matrix for xgboost
-          pct.scheme.mat <- as.data.frame(pct.scheme[,c(paste0("F", modelvars),"length","av_incline","percycle01")])
-          pct.scheme.mat$geometry <- NULL
-          pct.scheme.mat$rf_avslope_perc <- pct.scheme.mat$av_incline
-          pct.scheme.mat$av_incline <- NULL
-          pct.scheme.mat <- as.matrix(pct.scheme.mat)
-
-          pct.scheme$percycleAfter <- round(predict(object = model, pct.scheme.mat),3)
-          pct.scheme$cycleAfter <- pct.scheme$percycleAfter * pct.scheme$all_16p
-          #pct.scheme$uptake <- pct.scheme$percycleAfter * pct.scheme$all_16p
-
-          #foo <- as.data.frame(pct.scheme[,c("ID","pct.census","all_16p","perincrease","uptake")])
-          #foo$geometry <- NULL
-
-          uptake <- data.frame(scheme = j, census = sum(pct.scheme$pct.census), model.future = round(sum(pct.scheme$cycleAfter),0))
-
-          pct.scheme$schemeID <- j
 
 
-          uptake.list[[j]] <- uptake
+        ##########################################################
+        #Parallel
 
-          pct.scheme <- as.data.frame(pct.scheme)
-          pct.scheme$geometry <- NULL
-          pct.scheme <- pct.scheme[,c("ID","schemeID","percycleAfter","cycleAfter","Fcycleway","Fpath",
-                                      "Fmain20_N","Fmain20_I","Fmain30_N","Fmain30_I","Fmain40_N","Fmain40_I",
-                                      "Fresidential20_N","Fresidential20_I","Fresidential30_N","Fresidential30_I","Fresidential40_N","Fresidential40_I",
-                                      "Ftrunk20_N","Ftrunk30_N","Ftrunk30_I","Ftrunk40_N","Ftrunk40_I")]
+        start <- Sys.time()
+        fun <- function(cl){
+          parLapply(cl, scheme_nos, evaluate.schemes)
+        }
+        cl <- makeCluster(ncores, outfile = paste0("parlog-",Sys.Date(),".txt")) #make clusert and set number of cores
+        clusterEvalQ(cl, {library(dplyr) })
+        #clusterExport(cl=cl, varlist=c("pct","osm","pct2osm","osm2pct","modelvars"), envir=environment())
+        clusterExport(cl=cl, varlist=c("pct","osm","pct2osm","osm2pct","modelvars","model") )
+        clusterExport(cl=cl, c('get.infrachange') )
+        respar <- fun(cl)
+        stopCluster(cl)
+        end <- Sys.time()
+        if(verbose){message(paste0("Did ",length(scheme_nos)," schemes in ",round(difftime(end,start,units = "secs"),2)," seconds, in parallel mode at ",Sys.time()))}
+        rm(cl,start,end,fun)
+        ##################################################
 
-          uptake.route.list[[j]] <- pct.scheme
+        uptake <- list()
+        uptake.route <- list()
 
-
-          rm(pct.scheme, pct.scheme.mat, uptake, scheme.osm_ids, scheme.pct_ids)
-          #rm(pct.scheme, pct.scheme.mat, uptake, cor, scheme.osm_ids, scheme.pct_ids)
-
-          message(paste0("Done scheme ",j," at ",Sys.time()))
-
+        for(i in 1:length(respar)){
+          uptake[[i]] <- respar[[i]][[1]]
+          uptake.route[[i]] <- respar[[i]][[2]]
         }
 
-        uptake.fin <- bind_rows(uptake.list)
+        uptake <- bind_rows(uptake)
+        uptake.route <- bind_rows(uptake.route)
 
-        uptake.fin$change <- uptake.fin$model.future - uptake.fin$census
-        uptake.fin$per <- round(uptake.fin$change / uptake.fin$census * 100, 2)
-
-        uptake.route <- bind_rows(uptake.route.list)
+        uptake$change <- uptake$model.future - uptake$census
+        uptake$per <- round(uptake$change / uptake$census * 100, 2)
 
 
-        saveRDS(uptake.fin,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))
+        saveRDS(uptake,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))
         saveRDS(uptake.route,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/route-uptake.Rds"))
 
         rm(osm,model, osm2pct, pct2osm, scheme_nos)
