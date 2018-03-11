@@ -1,7 +1,8 @@
 library(xgboost)
 library(dplyr)
 library(sf)
-
+min_cycle = 1
+min_all = 10
 
 rf <- readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyoddata/rf.Rds")
 rf_sf <- st_as_sf(rf)
@@ -30,12 +31,28 @@ routes$Puptake <- routes$percycle11 - routes$percycle01
 #remove the NAs
 routes[is.na(routes)] <- 0
 
-
-routes.sub <- routes[routes$bicycle01 >= 1 & routes$all01 > 20,]
+sel_mincycle = routes$bicycle01 >= min_cycle & routes$all01 >= min_all &
+  routes$bicycle11 >= min_cycle & routes$all11 >= min_all
+summary(sel_mincycle)
+routes.sub <- routes[sel_mincycle,]
 routes.train <- sample_frac(routes.sub, 0.5)
 routes.test <- routes.sub[!routes.sub$id %in% routes.train$id,]
 
+# simple linear models
+summary(routes.sub)
+m1 = lm(Puptake ~ length + rf_avslope_perc + Fresidential20_N + Fcycleway, data =  routes.test)
+summary(m1)
+
+# explore feature importance with xgboost
+train = select(routes.sub, -Puptake, -id, -contains("cycl")) %>%
+  as.matrix()
+colnames(train)
+w = routes.sub$all11 + routes.sub$all01 / 2
+mx1 = xgboost(data = train, label = routes.sub$Puptake, weight = w, nrounds = 50,
+              params = list(booster = "gblinear"))
 summary(routes.sub$Puptake)
+importance <- xgb.importance(model = mx1, feature_names = colnames(train))
+xgb.plot.importance(importance , top_n = 50)
 
 #remove unwanted varaibles
 #mat <- as.matrix(routes.sub[,names(routes.sub)[!names(routes.sub) %in%
@@ -47,7 +64,8 @@ summary(routes.sub$Puptake)
 
 #force variables
 
-vars.tokeep <- c(names(routes)[grep("F",names(routes))],"length","rf_avslope_perc","percycle01")
+vars.tokeep <- c(names(routes)[grep("F",names(routes))],"length","rf_avslope_perc")
+
 
 #vars.tokeep <- names(routes)[!names(routes.sub) %in% c("id","all11","bicycle11","all01","bicycle01","Puptake","lengthSums","lengthratios")]
 
@@ -65,7 +83,6 @@ mat.train <- as.matrix(routes.train[,vars.tokeep])
 mat.test <- as.matrix(routes.test[,vars.tokeep])
 
 
-
 mat.train <- xgb.DMatrix(data = mat.train, label=routes.train$percycle11)
 mat.test <- xgb.DMatrix(data = mat.test, label=routes.test$percycle11)
 
@@ -76,12 +93,13 @@ model <- xgb.train(data = mat.train,
                  watchlist=watchlist,
                  eval.metric = "error",
                  eval.metric = "logloss",
-                 objective = "reg:linear",
+                 # objective = "reg:linear",
                  #nthread = 6,
                  #params = list(booster = "gblinear"),
                  nrounds = 500,
                  early_stopping_rounds = 10,
-                 verbose = 1)
+                 verbose = 1,
+                 weight = routes.train$all01 + routes.train$all11)
 
 #mat.all <- mat.all <- as.matrix(routes.sub[,colnames(mat)])
 message(paste0("Correlation with train data = ", round(cor(predict(object = model, mat.train), routes.train$percycle11)^2,4) ))
@@ -93,6 +111,7 @@ xgb.plot.importance(importance , top_n = 50)
 plot(sample_frac(data.frame(actual = routes.test$percycle11, predicted = predict(object = model, mat.test)), 0.1), col = "green")
 points(sample_frac(data.frame(actual = routes.train$percycle11, predicted = predict(object = model, mat.train)), 0.1), col = "blue")
 abline(a = 0, b = 1, col = "Red", lwd = 2)
+
 
 
 
