@@ -3,9 +3,14 @@ library(dplyr)
 library(sf)
 
 
-rf <- readRDS("../ROBIN/cyoddata/rf.Rds")
-rf <- st_as_sf(rf)
-rf <- as.data.frame(rf)
+rf <- readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyoddata/rf.Rds")
+rf_sf <- st_as_sf(rf)
+
+# sanity test of line E02000274 - E02000524
+rf_test = filter(rf_sf, id == "E02000274 E02000524")
+mapview::mapview(rf_test) # passed
+
+rf <- as.data.frame(rf_sf)
 rf <- rf[,c("id","rf_avslope_perc","rf_time_min","e_dist_km")]
 head(rf)
 
@@ -43,7 +48,6 @@ summary(routes.sub$Puptake)
 #force variables
 
 vars.tokeep <- c(names(routes)[grep("F",names(routes))],"length","rf_avslope_perc","percycle01")
-vars.tokeep <- vars.tokeep[vars.tokeep != "Puptake"]
 
 #vars.tokeep <- names(routes)[!names(routes.sub) %in% c("id","all11","bicycle11","all01","bicycle01","Puptake","lengthSums","lengthratios")]
 
