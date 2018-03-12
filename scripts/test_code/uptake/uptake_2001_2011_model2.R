@@ -1,5 +1,25 @@
 # new version with simpler groupings
 
+# no prefix = absolute length in m by year
+# P prefix = proportional lenght by year
+# C prefix = absolute length change in m
+# F prefix = propotional change
+
+##
+# years
+# 01 = 2001
+# 11 = 2011
+
+# cycle infra
+# I = road side cycle infra
+# N = no cycle infra
+
+## speeds
+
+# 20 = 20mph or less
+# 30 = 21 - 39 mph
+# 40 = 40+ mph
+
 
 # read in data
 library(dplyr)
