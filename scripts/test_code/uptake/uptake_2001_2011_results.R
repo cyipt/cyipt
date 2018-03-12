@@ -21,6 +21,7 @@ routes$Puptake <- routes$percycle11 - routes$percycle01
 routes[is.na(routes)] <- 0
 
 # total length of changed infra:
+# Description: all non-negative 'good' changes in infrastructure - routes_infra_length
 routes_infra_change = routes %>%
   select(matches("C", ignore.case = F)) %>%
   select(-contains("N", ignore.case = F))
@@ -33,6 +34,7 @@ routes$routes_infra_length = routes_infraC
 cor(routes$Puptake, routes$routes_infra_length) # negative correlation (unexpected)
 
 # find percentage on roads with different speeds:
+# description: the % of routes on any road type with different speeds
 # 20- mph
 routes_pspeeds20 = routes %>%
   select(matches("20")) %>%
@@ -59,6 +61,7 @@ summary(routes_pspeed40)
 routes$routes_pspeed40 = routes_pspeed40
 
 # find percentage on change with different speeds:
+# description: the % change in routes on any road type with different speed lims
 # 20- mph
 routes_fspeeds20 = routes %>%
   select(matches("20")) %>%
@@ -143,6 +146,7 @@ m3 = lm(Puptake ~ length + rf_avslope_perc + routes_infra_length : routes_pspeed
           routes_infra_length : routes_pspeed30 + routes_infra_length : routes_pspeed40 + Fcycleway : Pcycleway11, data =  routes.sub)
 m4 = lm(Puptake ~ length + rf_avslope_perc + routes_infra_length : routes_pspeed20 +
           routes_infra_length : routes_pspeed30 + routes_infra_length : routes_pspeed40 + Pcycleway11, data =  routes.sub)
+# simple model of interaction between infra distance and uptake
 m5 = lm(Puptake ~ length + rf_avslope_perc + routes_infra_length : routes_pspeed20
         + routes_infra_length : routes_pspeed30 +
         + routes_infra_length : routes_pspeed40, data =  routes.sub)
