@@ -149,7 +149,9 @@ bounds <- bounds[bounds$ttwa11nm %in% regions.todo,]
 
 #Columns to keep
 colcheck <- c("osm_id","name",
-              #"FIXME","abutters","access","access.backward","access.conditional","access.motor_vehicle","addr.city",
+              #"FIXME","abutters",
+              "access",
+              #"access.backward","access.conditional","access.motor_vehicle","addr.city",
               #"addr.housename","addr.housenumber","addr.interpolation","addr.postcode","addr.street","agricultural","alt_name","ambulance","amenity","area","attraction",
               "bicycle","bicycle.oneway","bridge",
               #"bridge.movable","bridge.name","bridge.ref","bridge_ref","bridgemaster","building","bus",
