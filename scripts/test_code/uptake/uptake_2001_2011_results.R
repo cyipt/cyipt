@@ -7,18 +7,28 @@ min_all = 20
 # load and preprocess data ----
 rf_sp <- readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyoddata/rf.Rds")
 rf_sf <- st_as_sf(rf_sp)
+rf_cents = st_centroid(rf_sf)
 rf <- as.data.frame(rf_sf)
 rf <- rf[,c("id","rf_avslope_perc","rf_time_min","e_dist_km")]
 head(rf)
-routes <- readRDS("../cyipt-securedata/uptakemodel/route_infra_final2.Rds")
-routes <- left_join(routes, rf, by = c("id" = "id"))
-routes$all01[is.na(routes$all01)] <- 0
-routes$bicycle01[is.na(routes$bicycle01)] <- 0
-routes$percycle01 <- routes$bicycle01 / routes$all01
-routes$percycle11 <- routes$bicycle11 / routes$all11
-routes$changecommuters <- (routes$all11 - routes$all01) / routes$all01
-routes$Puptake <- routes$percycle11 - routes$percycle01
-routes[is.na(routes)] <- 0
+routes_orig <- readRDS("../cyipt-securedata/uptakemodel/route_infra_final2.Rds")
+routes_orig$all01[is.na(routes_orig$all01)] <- 0
+routes_orig$bicycle01[is.na(routes_orig$bicycle01)] <- 0
+routes_orig$percycle01 <- routes_orig$bicycle01 / routes_orig$all01
+routes_orig$percycle11 <- routes_orig$bicycle11 / routes_orig$all11
+routes_orig$changecommuters <- (routes_orig$all11 - routes_orig$all01) / routes_orig$all01
+routes_orig$Puptake <- routes_orig$percycle11 - routes_orig$percycle01
+routes_orig[is.na(routes_orig)] <- 0
+
+routes <- left_join(routes_orig, rf, by = c("id" = "id"))
+
+
+
+# get region data
+wpz_orig = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
+wpz = select(wpz_orig, ttwa11nm)
+rf_cents = st_join(rf_cents, wpz)
+head(rf_cents)
 
 # total length of changed infra:
 # Description: all non-negative 'good' changes in infrastructure - routes_infra_length
