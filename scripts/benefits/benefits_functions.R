@@ -160,13 +160,12 @@ cyipt.health.inputs <- function(){
 
 cyipt.health <- function(uptake, d_onfoot, disthealth){
 
-  health.inputs <- cyipt.health.inputs()
+  gender_split <- matrix(c(16,39,13,5,1,4,16,5,1,0), ncol = 2)
 
-  gender_split <- health.inputs[[1]]
-  gender_speed <- health.inputs[[2]]
-  walking_speed <- health.inputs[[3]]
-  gender_mortality <- health.inputs[[4]]
-  gender_YLL <- health.inputs[[5]]
+  gender_speed <- matrix(c(6.12,9.12,8.91,7.48,7.99,4.45,7.22,7.07,5.99,4.2), ncol = 2)
+  walking_speed <- matrix(c(2.55,2.74,2.62,2.49,2.11,2.53,2.6,2.49,2.35,2.04), ncol = 2)
+  gender_mortality <- matrix(c(4.1949E-04,1.1833E-03,6.2669E-03,2.4591E-02,1.1471E-01,3.1919E-04,7.1164E-04,4.1887E-03,1.6686E-02,9.9484E-02), ncol = 2)
+  gender_YLL <- matrix(c(47.71,34.06,23.73,15.13,5.78,48.00,33.55,23.73,14.34,5.78), ncol = 2)
 
 
   years <- 0:20
