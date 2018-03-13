@@ -105,11 +105,14 @@ evaluate.schemes <- function(j){
   #infrachange <- bind_rows(infrachange)
 
   pct.scheme$percycleAfter <- infrachange
-  pct.scheme$cycleAfter <- pct.scheme$percycleAfter * pct.scheme$all_16p
+  pct.scheme$cycleAfter <- round(pct.scheme$percycleAfter * pct.scheme$all_16p,2)
   pct.scheme$uptake <- pct.scheme$cycleAfter - pct.scheme$pct.census
   #pct.scheme$schemeID <- j
 
   #Uptake Sanity Checks
+
+  ### don allow negative uptake
+  pct.scheme$uptake[pct.scheme$uptake < 0] <- 0
 
   # Check 1: Cannot increase cycling above the total number of people or below the number of cyclists
   pct.scheme$uptake <- ifelse(pct.scheme$uptake > (pct.scheme$all_16p - pct.scheme$pct.census), (pct.scheme$all_16p - pct.scheme$pct.census) ,pct.scheme$uptake)
@@ -310,12 +313,12 @@ for(b in 1:length(regions)){
 
         schemes$benefitTotal <- schemes$absenteeism_benefit + schemes$health_benefit + schemes$accidents_benefit + schemes$noise_benefit + schemes$ghg_benefit + schemes$congestion_benefit + schemes$indirecttax_benefit + schemes$timesaving_benefit
         schemes$benefitCost <- schemes$benefitTotal / schemes$costTotal
-        qtm(schemes, lines.col = "benefitCost", lines.lwd = 3)
+        #qtm(schemes, lines.col = "benefitCost", lines.lwd = 3)
 
         saveRDS(schemes,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))
         #saveRDS(uptake.route,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/route-uptake.Rds"))
 
-        rm(osm,model, osm2pct, pct2osm, scheme_nos)
+        rm(osm, osm2pct, pct2osm, scheme_nos)
       }else{
         message(paste0("No schemes for ",regions[b]))
       }
