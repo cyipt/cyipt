@@ -24,7 +24,7 @@ get.infrachange <- function(x, pct.scheme, j, scheme.osm_ids){
   route.length <- pct$length[pct$ID == pct.scheme$ID[x]]
 
   route.osmids <- unique(pct2osm[[route.pct.id]])
-  route.osmids <- route.osmids[route.osmids %in% scheme.osm_ids]
+  route.osmids.inscheme <- route.osmids[route.osmids %in% scheme.osm_ids]
   route.osm <- osm[route.osmids,]
   #qtm(route.osm) +
   #  qtm(pct.scheme[x,], lines.col = "blue")
@@ -116,7 +116,7 @@ evaluate.schemes <- function(j){
   pct.scheme.mat <- as.matrix(pct.scheme.mat)
 
   #pct.scheme$percycleAfter <- round(predict(object = model, pct.scheme.mat),3)
-  pct.scheme$percycleAfter <- (pct.scheme$pct.census / pct.scheme$all_16p) * 2
+  pct.scheme$percycleAfter <- (pct.scheme$pct.census / pct.scheme$all_16p) * 1.18
   pct.scheme$cycleAfter <- pct.scheme$percycleAfter * pct.scheme$all_16p
 
   pct.scheme$uptake <- pct.scheme$cycleAfter - pct.scheme$pct.census
@@ -343,7 +343,7 @@ for(b in 1:length(regions)){
         # sort the schemes by size
         # this means the slowest ones are done first and maximises the load balancing
         schemes$schemeSize <- sapply(schemes$group_id,scheme.size)
-        #schemes <- schemes[order(-schemes$schemeSize),]
+        schemes <- schemes[order(-schemes$schemeSize),]
 
         scheme_nos <- schemes$group_id
 
