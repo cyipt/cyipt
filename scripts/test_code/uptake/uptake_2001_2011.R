@@ -76,10 +76,20 @@ if(file.exists("../cyipt-securedata/uptakemodel/osm_clean.Rds")){
 # Step 3: Buffer the Routes
 if(file.exists("../cyipt-securedata/uptakemodel/rf_buff.Rds")){
   rf_buff <- readRDS("../cyipt-securedata/uptakemodel/rf_buff.Rds")
+  rf_buff <- rf_buff[order(match(rf_buff$id,rf01_11$id)),]
 }else{
   rf_buff <- st_parallel(sf_df = rf01_11, sf_func = st_buffer, n_cores = 6, dist = 5, nQuadSegs = 2)
   saveRDS(rf_buff,"../cyipt-securedata/uptakemodel/rf_buff.Rds")
 }
+
+
+#Sanity check
+summary(rf_buff$id == rf01_11$id)
+rnumbs <- runif(10,1,nrow(rf_buff))
+qtm(rf01_11[rnumbs,], lines.lwd = 5, lines.col = "red") +
+  qtm(rf_buff[rnumbs,])
+
+
 
 #################################
 # Step 4: get the historic infrastrucutre data
