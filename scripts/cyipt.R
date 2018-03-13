@@ -10,11 +10,11 @@
 #Regions are selected using the file  ../cyipt/input-data/RegionsToDo.csv
 #To do a region just put y in the do column of this csv file
 
-skip <- TRUE #Should the code skip regions that have already been done?
+skip <- FALSE #Should the code skip regions that have already been done?
 overwrite <- TRUE #Some stages overwrite existing files, for example by adding an extra column of data
                    #Note that not overwriting may cause later stagest to fail if they expect earlier stages
                    #resutls to be in the starting file
-ncores <- 6 #Some functions use parallel processing how many clusters should be run?
+ncores <- 7 #Some functions use parallel processing how many clusters should be run?
 verbose <- TRUE #Get extra messages and information
 all.regions <- TRUE #Ignore the regions to do file and do all regions
 
@@ -83,7 +83,7 @@ source("scripts/select_infra/compare_widths.R")
 source("scripts/select_infra/make_schemes2.R")
 
 #Step 10: Get Uptakes and Benfits
-source("scripts/uptake/uptake_benefits2.R")
+source("scripts/uptake/uptake_benefits_choicemodel.R")
 
 
 #Step LAST: Export for DB
