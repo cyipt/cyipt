@@ -1,6 +1,7 @@
 library(xgboost)
 library(tidyverse)
 library(sf)
+library(plotly)
 min_cycle = 0
 min_all = 20
 
@@ -10,6 +11,7 @@ rf_sf <- st_as_sf(rf_sp)
 rf_cents = st_centroid(rf_sf)
 rf <- as.data.frame(rf_sf)
 rf <- rf[,c("id","rf_avslope_perc","rf_time_min","e_dist_km")]
+
 head(rf)
 routes_orig <- readRDS("../cyipt-securedata/uptakemodel/route_infra_final2.Rds")
 routes_orig$all01[is.na(routes_orig$all01)] <- 0
@@ -19,16 +21,16 @@ routes_orig$percycle11 <- routes_orig$bicycle11 / routes_orig$all11
 routes_orig$changecommuters <- (routes_orig$all11 - routes_orig$all01) / routes_orig$all01
 routes_orig$Puptake <- routes_orig$percycle11 - routes_orig$percycle01
 routes_orig[is.na(routes_orig)] <- 0
-
-routes <- left_join(routes_orig, rf, by = c("id" = "id"))
-
-
-
 # get region data
 wpz_orig = readRDS("../cyipt-bigdata/boundaries/TTWA/TTWA_England.Rds")
 wpz = select(wpz_orig, ttwa11nm)
-rf_cents = st_join(rf_cents, wpz)
-head(rf_cents)
+rf_centsj = st_join(rf_cents, wpz)
+head(rf_centsj)
+rf_centsj = rf_centsj[!duplicated(rf_centsj$id), ]
+summary(rf_centsj$id == rf$id)
+rf$wpz = rf_centsj$ttwa11nm
+
+routes <- left_join(routes_orig, rf, by = c("id" = "id")) # add wpz and other vars to routes
 
 # total length of changed infra:
 # Description: all non-negative 'good' changes in infrastructure - routes_infra_length
@@ -97,6 +99,30 @@ routes_fspeed40 = rowSums(routes_fspeeds40)
 summary(routes_fspeed40)
 routes$routes_fspeed40 = routes_fspeed40
 
+# identify areas with high levels of uptake and infra
+summarise(routes, uptake = mean(percycle11) - mean(percycle01),
+            infra_length = sum(routes_infra_length))
+wpz_uptake = group_by(routes, wpz) %>%
+  summarise(uptake = (mean(percycle11) - mean(percycle01)) * 100,
+            infra_length = sum(routes_infra_length) / 1000000,
+            pcycle = sum(bicycle11) / sum(all11))
+top_n(wpz_uptake, n = 10, wt = uptake)
+sel_wpz = wpz_uptake$uptake > quantile(wpz_uptake$uptake)[4] &
+  wpz_uptake$infra_length > quantile(wpz_uptake$infra_length)[4]
+wpz_uptake$name = wpz_uptake$wpz
+wpz_uptake$name[!sel_wpz] = ""
+p1 = ggplot(wpz_uptake, aes(infra_length, uptake)) +
+  geom_abline(slope = 0, intercept = quantile(wpz_uptake$uptake)[4]) +
+  geom_vline(xintercept = quantile(wpz_uptake$infra_length)[4]) +
+  geom_point(aes(color = pcycle)) +
+  ggrepel::geom_text_repel(aes(label = name), color = "blue") +
+  xlab("Length of infrastructure built (1000 km)") +
+  ylab("Increase in cycling (% point)")
+p1
+ggsave(p1, filename = "figures/wpz-uptake.png")
+ggplotly(p1)
+cor(wpz_uptake$infra_length, wpz_uptake$uptake)^2
+
 # sanity test of line E02000274 - E02000524
 rf_test = filter(rf_sf, id == "E02000274 E02000524")
 mapview::mapview(rf_test) # passed
@@ -143,8 +169,10 @@ xgb.plot.importance(importance , top_n = 10)
 # run on full dataset ----
 sel_mincycle = routes$bicycle01 >= min_cycle & routes$all01 >= min_all &
   routes$bicycle11 >= 5
+sel_region = routes$wpz %in% wpz_uptake$name & routes$wpz != "London"
 summary(sel_mincycle)
-routes.sub <- routes[sel_mincycle,]
+summary(sel_region)
+routes.sub <- routes[sel_region, ]
 routes.train <- sample_frac(routes.sub, 0.5)
 routes.test <- routes.sub[!routes.sub$id %in% routes.train$id,]
 
@@ -215,18 +243,7 @@ rs = seq(0, 0.5, 0.1)
 map(rs, ~ calc_up)
 
 
-#remove unwanted varaibles
-#mat <- as.matrix(routes.sub[,names(routes.sub)[!names(routes.sub) %in%
-                                                # c("id",
-                                                   #"all11","bicycle11","all01","bicycle01",
-                                                 #  "Puptake","lengthSums","lengthratios")] ])
-#mat <- mat[,c(colnames(mat)[grep("C",colnames(mat))],"length","rf_avslope_perc")]
-#mat <- mat[,colnames(mat)[!colnames(mat) %in% c("Cmotorway","Ctrunk20_I","Cother40_I")] ]
-
-#force variables
-
 vars.tokeep <- c(names(routes)[grep("F",names(routes))],"length","rf_avslope_perc")
-
 
 #vars.tokeep <- names(routes)[!names(routes.sub) %in% c("id","all11","bicycle11","all01","bicycle01","Puptake","lengthSums","lengthratios")]
 
@@ -273,10 +290,5 @@ plot(sample_frac(data.frame(actual = routes.test$percycle11, predicted = predict
 points(sample_frac(data.frame(actual = routes.train$percycle11, predicted = predict(object = model, mat.train)), 0.1), col = "blue")
 abline(a = 0, b = 1, col = "Red", lwd = 2)
 
-
-
-
 print("End")
 
-
-saveRDS(model,"../cyipt/input-data/m5.Rds")
