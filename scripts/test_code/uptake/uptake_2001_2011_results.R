@@ -99,7 +99,7 @@ routes_fspeed40 = rowSums(routes_fspeeds40)
 summary(routes_fspeed40)
 routes$routes_fspeed40 = routes_fspeed40
 
-# identify areas with high levels of uptake and infra
+# identify areas with high levels of uptake and infra ----
 summarise(routes, uptake = mean(percycle11) - mean(percycle01),
             infra_length = sum(routes_infra_length))
 wpz_uptake = group_by(routes, wpz) %>%
@@ -130,7 +130,10 @@ mapview::mapview(rf_test) # passed
 # check infra in routes with high levels of uptake ----
 rf_sfj = inner_join(rf_sf, routes, by = "id")
 rfu = rf_sfj %>% filter(Puptake > 0.1 & all11 >= 20 & all01 >= 20)
+rf_carshort = rf_sfj %>% filter(e_dist_km.y < 4 & car_driver >= 100 &
+                                  grepl(pattern = "Lee|Yor", wpz))
 # mapview::mapview(rfu)
+mapview::mapview(rf_carshort, color = "red")
 # routes with high levels of uptake have:
 mean(rfu$routes_pspeed20) / mean(routes$routes_pspeed20) # more 20mph roads in high uptake routes (expected)
 mean(rfu$routes_fspeed20) / mean(routes$routes_fspeed20) # less routes changed to 20 (unexpected)
@@ -168,15 +171,19 @@ xgb.plot.importance(importance , top_n = 10)
 
 # run on full dataset ----
 sel_mincycle = routes$bicycle01 >= min_cycle & routes$all01 >= min_all &
-  routes$bicycle11 >= 5
+  routes$bicycle11 >= min_cycle
 sel_region = routes$wpz %in% wpz_uptake$name & routes$wpz != "London"
 summary(sel_mincycle)
 summary(sel_region)
-routes.sub <- routes[sel_region, ]
+routes.sub <- routes[sel_region & sel_mincycle, ]
+sum(routes.sub$all11)
+cor(routes.sub$routes_infra_length, routes.sub$Puptake) # p
+cor(routes$routes_infra_length, routes$Puptake)
 routes.train <- sample_frac(routes.sub, 0.5)
 routes.test <- routes.sub[!routes.sub$id %in% routes.train$id,]
+saveRDS(routes.sub, "../cyipt-securedata/uptakemodel/route_infra_sub_rl.Rds")
 
-# simple linear model
+# simple linear models
 summary(routes.sub)
 m1 = lm(Puptake ~ length + rf_avslope_perc + routes_pspeed20 + routes_pspeed30 + routes_pspeed40 + Fcycleway, data =  routes.sub)
 m2 = lm(Puptake ~ length + rf_avslope_perc + routes_fspeed20 + routes_fspeed30 + routes_fspeed40 + Fcycleway, data =  routes.sub)
@@ -206,7 +213,33 @@ mean(routes.sub$Puptake) # ~ 1% increase in cycling...
 # routes.sub_vars = select(routes.sub, -Puptake, -id, -contains("bicycle"), -contains("percycle11"), -contains("all"),
 #                -contains("changecom"), -contains("P"))
 # % on busy
-routes.sub_vars = select(routes.sub, contains("routes_"))
+names(routes.sub)
+
+# gain understanding of feature importance for all vars
+routes.sub_vars = select_if(routes.sub, is.numeric) %>%
+  select(-bicycle11, -Puptake, -percycle11, -contains("all"), -percycle01, -bicycle01)
+names(routes.sub_vars)
+train = routes.sub_vars %>%
+  as.matrix()
+w = routes.sub$all11 + routes.sub$all01 / 2
+mx1 = xgboost(data = train, label = routes.sub$Puptake, weight = w, nrounds = 50)
+importance <- xgb.importance(model = mx1, feature_names = colnames(train))
+xgb.plot.importance(importance , top_n = 40)
+
+message(paste0("Correlation with train data = ", round(cor(predict(object = mx1, train), routes.sub$Puptake)^2, 4)))
+
+# experiments of cycling uptake with this model:
+train_infra = routes.sub_vars %>%
+  mutate(Pmain40_N = 0, routes_pspeed20 = 1) %>%
+  as.matrix()
+uptake_infra = predict(object = mx1, train_infra)
+message(paste0("This scenario results in an average of a ",
+               round((mean(uptake_infra) - mean(routes.sub$Puptake)) * 100, 1),
+               " percentage point increase in cycling"))
+
+routes.sub_vars = select(routes.sub, contains("routes_"), length, matches("F", ignore.case = F),
+                         contains("rf"))
+names(routes.sub_vars)
 train = routes.sub_vars %>%
   as.matrix()
 colnames(train)
@@ -215,33 +248,73 @@ mx1 = xgboost(data = train, label = routes.sub$Puptake, weight = w, nrounds = 10
 mx2 = xgboost(data = train, label = routes.sub$Puptake, weight = w, nrounds = 10,
               params = list(booster = "gblinear")) # garbage results
 importance <- xgb.importance(model = mx1, feature_names = colnames(train))
-xgb.plot.importance(importance , top_n = 10)
+importance2 <- xgb.importance(model = mx2, feature_names = colnames(train))
+xgb.plot.importance(importance, top_n = 30)
+xgb.plot.importance(importance2)
 
 message(paste0("Correlation with train data = ", round(cor(predict(object = mx1, train), routes.sub$Puptake)^2, 4)))
 
-# experiments of cycling uptake with this model:
+# experiments of cycling uptake ----
 train_infra = routes.sub_vars %>%
-  mutate(Pmain40_N = 0) %>%
+  # mutate(percycle01 = 0.10) %>%
+  # mutate(Pmain40_N = 0, routes_pspeed20 = 1) %>%
   as.matrix()
 uptake_infra = predict(object = mx1, train_infra)
+
 message(paste0("This scenario results in an average of a ",
                round((mean(uptake_infra) - mean(routes.sub$Puptake)) * 100, 1),
                " percentage point increase in cycling"))
 
-calc_up = function(x) {
-  train_infra = select(routes.sub, -Puptake, -id, -contains("cycl"), -contains("all"), -contains("changecom")) %>%
-    mutate(Pmain20_I01 = Pmain20_I01 + x) %>%
-    as.matrix()
-  uptake_infra = predict(object = mx1, train_infra)
-  round((mean(uptake_infra) - mean(routes.sub$Puptake)) * 100, 1)
+calc_up = function(param = "routes_pspeed20", value = 0.1, train, mx1) {
+  train[, param] = train[, param] + value
+  uptake_infra = predict(object = mx1, train)
+  (mean(uptake_infra) - mean(routes.sub$Puptake)) * 100
 }
-calc_up(-0.2)
-
+calc_up(param = "routes_pspeed20", value = 0, train, mx1)
+calc_up(param = "routes_pspeed20", value = 0.1, train, mx1)
+calc_up(param = "routes_pspeed20", value = 0.3, train, mx1)
 
 # explore relationships with individual variables
-rs = seq(0, 0.5, 0.1)
-map(rs, ~ calc_up)
+rs = seq(-0.3, 0.3, 0.05)
+param = "routes_pspeed20"
+v = map_dbl(rs, function(x) calc_up(param = param, value = x, train, mx1))
+res_df1 = data_frame(param = param, value = rs, uptake = v)
+param = "rf_avslope_perc"
+v = map_dbl(rs, function(x) calc_up(param = param, value = x, train, mx1))
+res_df3 = data_frame(param = param, value = rs, uptake = v)
+res = rbind(res_df1, res_df3)
+ggplot(res, aes(value, uptake)) + geom_point(aes(color = param))
 
+# linear model with non-linear elements and interactions
+ml1 = lm(Puptake ~ routes_infra_length, data = routes.sub)
+ml1 = lm(Puptake ~
+           routes_infra_length +
+           # I(routes_infra_length^2) + I(routes_infra_length^3) +
+           routes_infra_length : rf_avslope_perc +
+           # routes_infra_length : I(rf_avslope_perc^0.5) +
+           routes_infra_length : Fcycleway +
+           routes_infra_length : routes_pspeed20 +
+           routes_infra_length : I(routes_pspeed20^2) +
+           # routes_infra_length : routes_pspeed20 +
+           routes_infra_length : routes_pspeed30 +
+           routes_infra_length : routes_pspeed40, data =  routes.sub)
+# summary(m5)
+summary(ml1)
+
+# install.packages("jtools")
+jtools::interact_plot(ml1, pred = routes_infra_length, modx = routes_pspeed20)
+jtools::interact_plot(ml1, pred = routes_infra_length, modx = routes_pspeed30)
+jtools::interact_plot(ml1, pred = routes_infra_length, modx = routes_pspeed40)
+jtools::interact_plot(ml1, pred = routes_infra_length, modx = Fcycleway)
+# explore impact of change in infra distance
+routes.infra_test = select_if(routes.sub, is.numeric) %>% summarise_all(mean)
+n = 50
+routes.infra_test = routes.infra_test[rep(1, n), ]
+routes.infra_test$routes_infra_length = (1:n) * 100
+p = predict(ml1, routes.infra_test)
+plot(routes.infra_test$routes_infra_length, p)
+# test for bristol infra scenario
+saveRDS(ml1, file = "../cyipt-securedata/uptakemodel/ml1.Rds")
 
 vars.tokeep <- c(names(routes)[grep("F",names(routes))],"length","rf_avslope_perc")
 
