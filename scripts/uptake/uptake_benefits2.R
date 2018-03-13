@@ -81,6 +81,13 @@ get.infrachange <- function(x, pct.scheme, j, scheme.osm_ids){
 
 }
 
+scheme.size <- function(j){
+  #Get the roads in the schemes
+  scheme.osm_ids <- osm$id[osm$group_id == j] # get the osm ids for this scheme
+  scheme.pct_ids <- unique(unlist(osm2pct[scheme.osm_ids])) # get the pct ids for this scheme
+  return(length(scheme.pct_ids))
+}
+
 
 evaluate.schemes <- function(j){
 
@@ -108,7 +115,8 @@ evaluate.schemes <- function(j){
   pct.scheme.mat$av_incline <- NULL
   pct.scheme.mat <- as.matrix(pct.scheme.mat)
 
-  pct.scheme$percycleAfter <- round(predict(object = model, pct.scheme.mat),3)
+  #pct.scheme$percycleAfter <- round(predict(object = model, pct.scheme.mat),3)
+  pct.scheme$percycleAfter <- (pct.scheme$pct.census / pct.scheme$all_16p) * 2
   pct.scheme$cycleAfter <- pct.scheme$percycleAfter * pct.scheme$all_16p
 
   pct.scheme$uptake <- pct.scheme$cycleAfter - pct.scheme$pct.census
@@ -257,14 +265,14 @@ regions <- regions.todo
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes.Rds"))){
     #Check if Uptake values exist
-    if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/pct-up.Rds")) & skip){
+    if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds")) & skip){
       message(paste0("Uptake numbers already calcualted for ",regions[b]," so skipping"))
     }else{
       message(paste0("Getting uptake values for ",regions[b]," at ",Sys.time()))
 
       #Get file
       osm <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))
-      model <- readRDS("../cyipt/input-data/m5.Rds")
+      model <- readRDS("../cyipt/input-data/m6.Rds")
 
 
       # Get PCT Data
@@ -332,16 +340,14 @@ for(b in 1:length(regions)){
 
 
       if(all(c("sf","data.frame") %in% class(schemes))){
-        scheme_nos <- unique(schemes$group_id)
-        scheme_nos <- scheme_nos[!is.na(scheme_nos)]
-        scheme_nos <- scheme_nos[order(scheme_nos)]
+        # sort the schemes by size
+        # this means the slowest ones are done first and maximises the load balancing
+        schemes$schemeSize <- sapply(schemes$group_id,scheme.size)
+        #schemes <- schemes[order(-schemes$schemeSize),]
 
+        scheme_nos <- schemes$group_id
 
         osm$group_id[is.na(osm$group_id)] <- 0 # repalce NAs with 0 scheme number
-
-        # Loop over schemes
-
-        #foo <- evaluate.schemes(1)
         ##########################################################
         #Parallel
 
