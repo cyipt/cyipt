@@ -278,8 +278,8 @@ for(b in 1:length(regions)){
         cl <- makeCluster(ncores, outfile = paste0("parlog-",Sys.Date(),".txt")) #make clusert and set number of cores
         clusterEvalQ(cl, {library(dplyr) })
         #clusterExport(cl=cl, varlist=c("pct","osm","pct2osm","osm2pct","modelvars"), envir=environment())
-        clusterExport(cl=cl, varlist=c("pct","osm","pct2osm","osm2pct") )
-        clusterExport(cl=cl, c('get.uptake','cyipt.accident','cyipt.airquality','cyipt.congestion',
+        clusterExport(cl=cl, varlist=c("pct","osm","pct2osm","osm2pct","model") )
+        clusterExport(cl=cl, c('get.infrachange','cyipt.accident','cyipt.airquality','cyipt.congestion',
                                'cyipt.greenhousegases','cyipt.greenhousegases','cyipt.health',
                                'cyipt.health.inputs','cyipt.indirecttax','cyipt.jounreyquality',
                                'cyipt.noise','cyipt.presentvalue','cyipt.timesaving') )
