@@ -1,7 +1,7 @@
 library(tidyverse)
 library(sf)
 
-m = readRDS("../cyipt-securedata/uptakemodel/ml1.Rds")
+ml1 = readRDS("N:/Earth&Environment/Research/ITS/Research-1/CyIPT/cyipt-securedata/uptakemodel/ml1.Rds")
 min_cycle = 0
 min_all = 20
 
@@ -28,6 +28,7 @@ routes <- left_join(routes_orig, rf, by = c("id" = "id")) # add wpz and other va
 routes_infra_change = routes %>%
   select(matches("C", ignore.case = F)) %>%
   select(-contains("N", ignore.case = F))
+names(routes_infra_change)
 summary(routes_infra_change)
 routes_infra_change_pos = mutate_all(routes_infra_change, .funs = funs(ifelse(. < 0, 0, .)))
 summary(routes_infra_change_pos)
@@ -66,5 +67,11 @@ routes.infra_test = select_if(routes, is.numeric) %>% summarise_all(mean)
 n = 50
 routes.infra_test = routes.infra_test[rep(1, n), ]
 routes.infra_test$routes_infra_length = (1:n) * 100
+
+routes.infra_test <- routes.infra_test[,c("routes_infra_length","rf_avslope_perc","Fcycleway","routes_pspeed20","routes_pspeed30","routes_pspeed40")]
+
+
 p = predict(ml1, routes.infra_test)
 plot(routes.infra_test$routes_infra_length, p)
+
+summary(ml1)
