@@ -295,6 +295,7 @@ for(b in 1:length(regions)){
 
         schemes$benefitTotal <- schemes$absenteeism_benefit + schemes$health_benefit + schemes$accidents_benefit + schemes$noise_benefit + schemes$ghg_benefit + schemes$congestion_benefit + schemes$indirecttax_benefit + schemes$timesaving_benefit
         schemes$benefitCost <- schemes$benefitTotal / schemes$costTotal
+
         #qtm(schemes, lines.col = "benefitCost", lines.lwd = 3)
 
         saveRDS(schemes,paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake_alt.Rds"))
