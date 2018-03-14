@@ -7,9 +7,9 @@ regions <- regions.todo
 #Read In Each File and Combine
 regions.list <- list()
 for(b in 1:length(regions)){
-  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes-simplified.Rds"))){
+  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))){
     #Get file
-    schemes <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/schemes-simplified.Rds"))
+    schemes <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))
 
     if("data.frame" %in% class(schemes)){
       print(nrow(schemes))
@@ -17,6 +17,8 @@ for(b in 1:length(regions)){
         schemes$region <- regions[b]
         print(paste0("Region Missing from ", regions[b]))
       }
+
+      schemes$length <- as.numeric(st_length(schemes))
 
       schemes <- st_transform(schemes, 4326) #convert to lat lngs for leaflet mapping
       names(schemes) <- str_replace_all(names(schemes),"[[:punct:]]","") #Remove punctuation from names for POSTGIS
@@ -49,10 +51,27 @@ for(b in 1:length(regions)){
 rm(b,regions)
 
 #Bind all the regions toghter
-schemes.all <- do.call("rbind",regions.list)
+#schemes.all <- do.call("rbind",regions.list)
+schemes.all <- bind_rows(regions.list)
 
 #Add masrster ID column
 schemes.all$idGlobal <- 1:nrow(schemes.all)
+
+#compute extra variables
+schemes.all$costperperson <- schemes.all$costTotal / schemes.all$uptake
+schemes.all$ncyclebefore <- schemes.all$pctcensus
+schemes.all$ncycleafter <- round(schemes.all$pctcensus + schemes.all$uptake,0)
+schemes.all$change <- round(schemes.all$uptake,0)
+schemes.all$per <- round(schemes.all$uptake / schemes.all$pctcensus * 100,1)
+schemes.all$ndrivebefore <- 0
+schemes.all$ndriveafter <- 0
+schemes.all$carkmbefore  <- 0
+schemes.all$carkmafter  <- 0
+schemes.all$carkm  <- schemes.all$distDriveChange
+schemes.all$totalBen  <- schemes.all$benefitTotal
+schemes.all$cost  <- schemes.all$costTotal
+schemes.all$costBenRatio  <- round(schemes.all$benefitCost,2)
+schemes.all$qualitybenefit <- 0
 
 #Reorder columns
 schemes.all <- schemes.all[,c("idGlobal","groupid","region","costTotal","costperperson","ncyclebefore","ncycleafter",
