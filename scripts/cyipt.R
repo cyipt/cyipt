@@ -14,7 +14,7 @@ skip <- FALSE #Should the code skip regions that have already been done?
 overwrite <- TRUE #Some stages overwrite existing files, for example by adding an extra column of data
                    #Note that not overwriting may cause later stagest to fail if they expect earlier stages
                    #resutls to be in the starting file
-ncores <- 7 #Some functions use parallel processing how many clusters should be run?
+ncores <- 3 #Some functions use parallel processing how many clusters should be run?
 verbose <- TRUE #Get extra messages and information
 all.regions <- TRUE #Ignore the regions to do file and do all regions
 
@@ -45,7 +45,7 @@ if(!all.regions){
 }else{
   regions.todo <- regions.todo$region
 }
-#regions.todo <- "Bristol" # Manually Force a Region
+# regions.todo <- "Bristol" # Manually Force a Region
 
 message("CyIPT will run for the following regions:")
 print(regions.todo)
