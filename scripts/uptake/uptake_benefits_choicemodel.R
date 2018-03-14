@@ -58,8 +58,8 @@ get.uptake <- function(x, pct.scheme, j, scheme.osm_ids){
   route.before$utilityTotal <- route.before$minutes * route.before$utilityBefore
 
   #summarise infra after
-  route.after <- route.osm[,c("id","minutes","utilityBefore","utilityAfter")]
-  route.after$inscheme <- ifelse(route.after$id %in% scheme.osm_ids,TRUE,FALSE)
+  route.after <- route.osm[,c("id","minutes","utilityBefore","utilityAfter","group_id")]
+  route.after$inscheme <- ifelse(route.after$group_id == j,TRUE,FALSE)
   route.after$utilityTotal <- ifelse(route.after$inscheme,route.after$minutes * route.after$utilityAfter, route.after$minutes * route.after$utilityBefore)
 
   #get the total utility of the route
@@ -68,7 +68,13 @@ get.uptake <- function(x, pct.scheme, j, scheme.osm_ids){
 
   # calcualte the proprtion increase in cycling
 
-  pcycle.before.weighted <- cycle.before / (0.4 * all.before)
+  #pcycle.before.weighted <- cycle.before / (0.4 * all.before)
+  if(cycle.before == 0){
+    pcycle.before.weighted <- 0.01
+  }else{
+    pcycle.before.weighted <- cycle.before / (0.4 * all.before)
+  }
+
   #if(pcycle.before.weighted > 1){
   #  pcycle.before.weighted <- 1
   #}
