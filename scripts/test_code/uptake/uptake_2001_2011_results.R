@@ -329,6 +329,8 @@ mean(pcycle_normalised)
 mean(p)
 mean(pcycle_normalised * p) # overall pcycle unaffected
 plot(distance, pcycle_normalised)
+pcycle_normalised[pcycle_normalised > 1] = 1
+plot(distance, pcycle_normalised)
 p_distance_supressed = p * pcycle_normalised
 plot(routes.sub$length, p_distance_supressed)
 
