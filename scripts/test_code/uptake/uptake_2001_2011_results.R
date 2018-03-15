@@ -302,6 +302,7 @@ ml1 = lm(Puptake ~
 summary(ml1)
 
 # install.packages("jtools")
+jtools::interact_plot(ml1, pred = routes_infra_length, modx = rf_avslope_perc)
 jtools::interact_plot(ml1, pred = routes_infra_length, modx = routes_pspeed20)
 jtools::interact_plot(ml1, pred = routes_infra_length, modx = routes_pspeed30)
 jtools::interact_plot(ml1, pred = routes_infra_length, modx = routes_pspeed40)
@@ -313,7 +314,26 @@ routes.infra_test = routes.infra_test[rep(1, n), ]
 routes.infra_test$routes_infra_length = (1:n) * 100
 p = predict(ml1, routes.infra_test)
 plot(routes.infra_test$routes_infra_length, p)
-# test for bristol infra scenario
+# test for existing data infra scenario
+p = predict(ml1, newdata = routes.sub)
+# issue: uptake unaffected by distance
+plot(routes.sub$length, p)
+cor(routes.sub$length, p)
+# solution: reduce uptake on long trips
+distance = routes.sub$length / 1000
+logit_pcycle = -3.894 + (-0.5872 * distance) + (1.832 * sqrt(distance) ) + (0.007956 * distance^2)
+pcycle_pct = boot::inv.logit(logit_pcycle)
+mean(pcycle_pct)
+pcycle_normalised = pcycle_pct * (1 / mean(pcycle_pct))
+mean(pcycle_normalised)
+mean(p)
+mean(pcycle_normalised * p) # overall pcycle unaffected
+plot(distance, pcycle_normalised)
+pcycle_normalised[pcycle_normalised > 1] = 1
+plot(distance, pcycle_normalised)
+p_distance_supressed = p * pcycle_normalised
+plot(routes.sub$length, p_distance_supressed)
+
 saveRDS(ml1, file = "../cyipt-securedata/uptakemodel/ml1.Rds")
 
 vars.tokeep <- c(names(routes)[grep("F",names(routes))],"length","rf_avslope_perc")
