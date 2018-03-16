@@ -6,7 +6,13 @@
 #NOTE: THIS OVERRIGHTS EXISTING FILES RATHER THAN CREATING NEW FILES
 #############################################
 
-
+distancedecay <- function(x){
+  x <- x / 1000
+  logit <- -3.894 + (-0.5872 * x) + (1.832 * sqrt(x) ) + (0.007956 * x^2)
+  logit <- exp(logit) / (1 + exp(logit))
+  logit <- logit / 0.08240397
+  return(logit)
+}
 
 
 
@@ -43,7 +49,7 @@ get.infrachange <- function(x, pct.scheme, j, scheme.osm_ids){
 
   #calucalte variaibles
   totalLength <- sum(route.osm$length)
-  result <- data.frame(id = pct.id, routes_infra_length = NA, Fcycleway  = NA, routes_pspeed20 = NA, routes_pspeed30 = NA, routes_pspeed40 = NA)
+  result <- data.frame(id = pct.id, routes_infra_length = NA, Fcycleway  = NA, routes_pspeed20 = NA, routes_pspeed30 = NA, routes_pspeed40 = NA, stringsAsFactors = F)
   result$routes_infra_length <- sum(route.osm$length[route.osm$inscheme])
   result$Fcycleway <- sum(route.osm$length[route.osm$inscheme & route.osm$Recommended %in% c("Segregated Cycle Track")]) / totalLength
   result$routes_pspeed20 <- sum(route.osm$length[route.osm$maxspeedAfter == 20]) / totalLength
@@ -81,9 +87,14 @@ evaluate.schemes <- function(j){
   pct.scheme <- left_join(pct.scheme, infrachange, by = c("ID" = "id"))
 
   pct.scheme$ppi <- predict(model, pct.scheme)
+  # weight increase by length
+  pct.scheme$weight <- distancedecay(pct.scheme$length)
+  pct.scheme$ppi <- pct.scheme$ppi * pct.scheme$weight
+
   pct.scheme$percycleAfter <- pct.scheme$percycle01 + pct.scheme$ppi
   pct.scheme$cycleAfter <- round(pct.scheme$percycleAfter * pct.scheme$all_16p,2)
   pct.scheme$uptake <- pct.scheme$cycleAfter - pct.scheme$pct.census
+  #sum(pct.scheme$uptake)
   #pct.scheme$schemeID <- j
 
   #Uptake Sanity Checks
@@ -95,6 +106,8 @@ evaluate.schemes <- function(j){
   pct.scheme$uptake <- ifelse(pct.scheme$uptake > (pct.scheme$all_16p - pct.scheme$pct.census), (pct.scheme$all_16p - pct.scheme$pct.census) ,pct.scheme$uptake)
   pct.scheme$uptake <- ifelse((pct.scheme$uptake < 0) & (- pct.scheme$uptake  > pct.scheme$pct.census), (-pct.scheme$pct.census) ,pct.scheme$uptake)
   #hist(pct.scheme$uptake)
+
+  #sum(pct.scheme$uptake)
 
   #################################################
   # Benefits Section
@@ -144,7 +157,9 @@ evaluate.schemes <- function(j){
   #message(paste0(Sys.time()," 6"))
   #Health Benefits
   healthbens <- mapply(cyipt.health, pct.scheme$uptake, pct.scheme$d_onfoot, pct.scheme$disthealth, SIMPLIFY = F)
-  healthbens <- bind_rows(healthbens)
+  healthbens <- do.call(rbind,healthbens)
+  healthbens <- as.data.frame(healthbens)
+  names(healthbens) = c("absenteeism_benefit", "health_deathavoided", "health_benefit")
   pct.scheme <- cbind.data.frame(pct.scheme, healthbens)
   rm(healthbens)
 
@@ -282,7 +297,7 @@ for(b in 1:length(regions)){
         clusterExport(cl=cl, c('get.infrachange','cyipt.accident','cyipt.airquality','cyipt.congestion',
                                'cyipt.greenhousegases','cyipt.greenhousegases','cyipt.health',
                                'cyipt.health.inputs','cyipt.indirecttax','cyipt.jounreyquality',
-                               'cyipt.noise','cyipt.presentvalue','cyipt.timesaving') )
+                               'cyipt.noise','cyipt.presentvalue','cyipt.timesaving','distancedecay') )
         respar <- fun(cl)
         stopCluster(cl)
         respar <- bind_rows(respar)
