@@ -76,6 +76,23 @@ mean(pcycle_pct)
 weighted.mean(pcycle_pct, p)
 p_pcycle = p * pcycle_pct
 pcycle_normalised = pcycle_pct / (mean(p_pcycle) / mean(p))
+pcycle_normalised_max = pcycle_pct / max(pcycle_pct)
+
+distance2 <- distance ** 2
+distance3 <- distance ** 3
+distance4 <- distance ** 4
+distancem1 <- 1 / distance
+
+model <- lm(pcycle_pct ~ distance + distance2 + distance3 + distance4 + log(distance) + distancem1 )
+summary(model)
+plot(distance, pcycle_normalised_max, ylim = c(0, 1))
+points(distance, predict(object = model, newdata = data.frame(distance = distance, distance2 = distance2, distance3 = distance3, distance4 = distance4, distancem1 = distancem1)), col = "blue")
+
+res <- data.frame(length = distance, up = pcycle_normalised_max)
+res <- sample_frac(res,0.1)
+write.csv(res,"distancedecay.csv")
+
+
 pcycle_normalised_truncated = pcycle_normalised
 pcycle_normalised_truncated[pcycle_normalised_truncated > 1] = 1
 mean(p)
@@ -93,6 +110,7 @@ pcycle_linear = dd_linear(distance, dd_start = 3, dd_end = 20)
 plot(distance, pcycle_normalised, ylim = c(0, 3))
 points(distance, pcycle_normalised_truncated, col = "blue")
 points(distance, pcycle_linear, col = "green")
+points(distance, pcycle_normalised_max, col = "red")
 p_distance_supressed = p * pcycle_linear
 mean(p_distance_supressed)
 mean(p)
