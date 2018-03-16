@@ -194,7 +194,7 @@ for(a in 1:length(regions)){
       ##################################################################
       #Step 5: footways
 
-      osm$sidewalk[is.na(osm$sidewalk) | !(osm$sidewalk %in% c("left","right","both","no","none","separate"))] <- "no"
+      osm$sidewalk[!is.na(osm$sidewalk) & !(osm$sidewalk %in% c("left","right","both","no","none","separate"))] <- "no"
 
       for(j in 1:nrow(osm)){
         if(osm$highway[j] %in% c("bridleway","corridor", "construction","cycleway","demolished","escalator","footway","path","pedestrian","steps","track")){
