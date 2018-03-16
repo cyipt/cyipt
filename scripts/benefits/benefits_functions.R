@@ -168,18 +168,20 @@ cyipt.health <- function(uptake, d_onfoot, disthealth){
   gender_YLL <- matrix(c(47.71,34.06,23.73,15.13,5.78,48.00,33.55,23.73,14.34,5.78), ncol = 2)
 
 
-  years <- 0:20
-  dis <- (1/1.015) ** years
-  discount <- data.frame(year = years, discount = dis )
-  rm(years,dis)
+  #years <- 0:20
+  #dis <- (1/1.015) ** years
+  #discount <- data.frame(year = years, discount = dis )
+  #rm(years,dis)
 
 
   ########################################
 
 
   # create results tables
-  results <- data.frame(absenteeism_benefit = NA, health_deathavoided = NA, health_benefit = NA , stringsAsFactors = F)
+  #results <- data.frame(absenteeism_benefit = NA, health_deathavoided = NA, health_benefit = NA , stringsAsFactors = F)
+  results <- matrix(c(0.1,0.1,0.1), ncol = 3)
 
+  #microbenchmark(data.frame(absenteeism_benefit = NA))
 
   # Physical Activity
   # Based on http://www.cedar.iph.cam.ac.uk/blog/dft-tag-cedar-010917/
@@ -259,8 +261,8 @@ cyipt.health <- function(uptake, d_onfoot, disthealth){
   #walk_health_benefits$benefits <- walk_health_benefits$discount * sum(walk_yearslost) * 60000 # Value of a startical life in 2012
   walk_health_benefits <- sum(walk_yearslost) * 60000 # Value of a startical life in 2012
 
-  results$health_deathavoided <- sum(cycle_deathsavoided) + sum(walk_deathsincrease)
-  results$health_benefit <- cycle_health_benefits + walk_health_benefits
+  results[,2] <- sum(cycle_deathsavoided) + sum(walk_deathsincrease)
+  results[,3] <- cycle_health_benefits + walk_health_benefits
 
   ###############################################
   # Absenteeism
@@ -285,7 +287,7 @@ cyipt.health <- function(uptake, d_onfoot, disthealth){
   cycle_absenteeism <-  sum(cycle_extraexercies)  * 245.0373 # 245.0373 =  6.8 * 0.25 * 19.27 * 7.48
   walk_absenteeism <-  sum(walk_lessexercies)  * 245.0373
 
-  results$absenteeism_benefit <- cycle_absenteeism - walk_absenteeism
+  results[,1] <- cycle_absenteeism - walk_absenteeism
 
   return(results)
 }
