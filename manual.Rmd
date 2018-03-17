@@ -1,0 +1,35 @@
+---
+title: "The Cycling Infrastructure Prioritisation Toolkit: Manual"
+subtitle: Version 0.3
+author: "The CyIPT team"
+date: '`r Sys.Date()`'
+toc: true
+output:
+  # word_document: default
+  pdf_document:
+    includes:
+      in_header: vignettes/header.tex
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Introduction
+
+The Cycling Infrastructure Prioritisation Toolkit (CyIPT) is a research project based at the University of Leeds and funded by the Department for Transport (DFT).  The purpose of CyIPT is to develop methods and tools to assist in the design and planning of new cycling infrastructure.  CyIPT is currently (as of March 2018) a working prototype.  Therefore, any recommendations produced by CyIPT should be subjected to independent assessment before making investment decisions.
+
+## Feedback
+
+CyIPT is a publicly accessible research project based on open source software. As such we welcome feedback from the community.
+The code is hosted on GitHub, a platform for software development and collaboration that also provides and excellent forum for discussing issues and providing feedback as follows:
+
+- Feedback on CyIPT Results and Methods: [github.com/cyipt/cyipt/issues](https://github.com/cyipt/cyipt/issues) 
+- Feedback on CyIPT website and user interface: [github.com/cyipt/cyipt-website](https://github.com/cyipt/cyipt-website/issues)
+
+## CyIPT Team
+
+- Dr Robin Lovelace, University of Leeds
+- Dr Malcolm Morgan, University of Leeds
+- Prof John Parking, University of the West of England
+- Martin Lucas-Smith, CycleStreets
