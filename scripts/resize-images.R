@@ -41,7 +41,7 @@ batch_resize = function(dir, sizes = c(large = 800, medium = 460, small = 240, t
     for(i in seq_along(f)) {
       original_image = magick::image_read(f[i])
       w = geometry_size_pixels(width = sizes[j])
-      new_image = image_resize(raw_image, geometry = w)
+      new_image = image_resize(original_image, geometry = w)
       image_write(image = new_image, path = new_path[i])
     }
   }
