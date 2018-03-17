@@ -31,5 +31,5 @@ The code is hosted on GitHub, a platform for software development and collaborat
 
 - Dr Robin Lovelace, University of Leeds
 - Dr Malcolm Morgan, University of Leeds
-- Prof John Parking, University of the West of England
+- Prof John Parkin, University of the West of England
 - Martin Lucas-Smith, CycleStreets
