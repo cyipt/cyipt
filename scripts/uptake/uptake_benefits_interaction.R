@@ -19,27 +19,17 @@ distancedecay <- function(x){
 # infra change
 get.infrachange <- function(x, pct.scheme, j, scheme.osm_ids){
 
-  #message(paste0(" Got inside get.infrachange for ",j," ",x))
-  pct.id <- as.character(pct.scheme$ID[x])
-  route.pct.id <- (1:nrow(pct))[pct$ID == pct.id ]
-  route.length <- pct$length[pct$ID == pct.id]
-  cycle.before <- pct$pct.census[pct$ID == pct.id]
-  all.before <- pct$all_16p[pct$ID == pct.id]
+  #get the pct line of intrest
+  pct.sub <- pct.scheme[x,]
+  pct.id <- as.character(pct.sub$ID[1])
+  route.pct.id <- as.integer(rownames(pct.sub)[1])
+  route.length <- pct.sub$length[1]
+  cycle.before <- pct.sub$pct.census[1]
+  all.before <- pct.sub$all_16p[1]
 
   route.osmids <- unique(pct2osm[[route.pct.id]])
   route.osmids.inscheme <- route.osmids[route.osmids %in% scheme.osm_ids]
   route.osm <- osm[route.osmids,]
-  #qtm(route.osm) +
-  #  qtm(pct.scheme[x,], lines.col = "blue")
-
-
-
-  #route.osm <- as.data.frame(route.osm)
-  #route.osm <- route.osm[,c("id","highway","cycleway","maxspeed","Recommended","length")]
-
-  # summarise infrastrucutre before
-  #route.before <- route.osm[,c("id","minutes","utilityBefore")]
-  #route.before$utilityTotal <- route.before$minutes * route.before$utilityBefore
 
   #summarise infra after
   #route.after <- route.osm[,c("id","minutes","utilityBefore","utilityAfter")]
@@ -77,9 +67,6 @@ evaluate.schemes <- function(j){
 
   pct.scheme <- pct[scheme.pct_ids,]
 
-  #message(paste0(" Got to lapply for ",j," variaibles are ",paste(ls(), collapse = " ")," objects are ",paste(objects(), collapse = " ")))
-  #message(paste0("there are ",nrow(pct.scheme)," rows in pct.scheme beffore the lappy in",j))
-
   #For each route get the length of on road and off road infa
   infrachange <- lapply(1:nrow(pct.scheme), get.infrachange, pct.scheme = pct.scheme, j = j, scheme.osm_ids = scheme.osm_ids)
   infrachange <- bind_rows(infrachange)
@@ -94,8 +81,6 @@ evaluate.schemes <- function(j){
   pct.scheme$percycleAfter <- pct.scheme$percycle01 + pct.scheme$ppi
   pct.scheme$cycleAfter <- round(pct.scheme$percycleAfter * pct.scheme$all_16p,2)
   pct.scheme$uptake <- pct.scheme$cycleAfter - pct.scheme$pct.census
-  #sum(pct.scheme$uptake)
-  #pct.scheme$schemeID <- j
 
   #Uptake Sanity Checks
 
@@ -105,9 +90,6 @@ evaluate.schemes <- function(j){
   # Check 1: Cannot increase cycling above the total number of people or below the number of cyclists
   pct.scheme$uptake <- ifelse(pct.scheme$uptake > (pct.scheme$all_16p - pct.scheme$pct.census), (pct.scheme$all_16p - pct.scheme$pct.census) ,pct.scheme$uptake)
   pct.scheme$uptake <- ifelse((pct.scheme$uptake < 0) & (- pct.scheme$uptake  > pct.scheme$pct.census), (-pct.scheme$pct.census) ,pct.scheme$uptake)
-  #hist(pct.scheme$uptake)
-
-  #sum(pct.scheme$uptake)
 
   #################################################
   # Benefits Section
@@ -136,8 +118,6 @@ evaluate.schemes <- function(j){
   pct.scheme$d_onfoot <- pct.scheme$p_onfoot * pct.scheme$uptake
   pct.scheme$d_other <- pct.scheme$p_other * pct.scheme$uptake
 
-
-
   # Calcualt Distance for Health Purposes
   pct.scheme$disthealth <- pct.scheme$length * 1.9 / 1609.34 # convert to miles * 1.9 (two way weighting factor)
 
@@ -154,7 +134,6 @@ evaluate.schemes <- function(j){
   pct.scheme$distWalk.Change <- pct.scheme$distWalk.After - pct.scheme$distWalk.Before
   pct.scheme$distDrive.Change <- pct.scheme$distDrive.After - pct.scheme$distDrive.Before
 
-  #message(paste0(Sys.time()," 6"))
   #Health Benefits
   healthbens <- mapply(cyipt.health, pct.scheme$uptake, pct.scheme$d_onfoot, pct.scheme$disthealth, SIMPLIFY = F)
   healthbens <- do.call(rbind,healthbens)
@@ -163,7 +142,6 @@ evaluate.schemes <- function(j){
   pct.scheme <- cbind.data.frame(pct.scheme, healthbens)
   rm(healthbens)
 
-  #message(paste0(Sys.time()," 7"))
   # Accident Benefits
   pct.scheme$accidents_benefit <- cyipt.accident(pct.scheme$distDrive.Change)
 
@@ -178,7 +156,6 @@ evaluate.schemes <- function(j){
   pct.scheme <- cbind.data.frame(pct.scheme, ghgbens)
   rm(ghgbens)
 
-
   # Congenstion Benefits
   pct.scheme$congestion_benefit <- cyipt.congestion(pct.scheme$distDrive.Change)
 
@@ -192,7 +169,6 @@ evaluate.schemes <- function(j){
   # Jounrey Quality Benefit
   #Temporairly disabled
   pct.scheme$quality_benefit <- cyipt.jounreyquality()
-
 
   #Count changin in the driving modes
   pct.scheme$d_motorist <- pct.scheme$d_carorvan + pct.scheme$d_motorcycle + pct.scheme$d_taxi
@@ -211,12 +187,10 @@ evaluate.schemes <- function(j){
   #Convert Extrapolate over Multiple Years
   benefits_final <- as.data.frame(t(c(cyipt.presentvalue(pct.scheme.summary.benefits, 10, 3.5),pct.scheme.summary.nonbenefits) ))
   names(benefits_final) <- c(benefits_list,nonbenefits_list)
-  #rm(pct.scheme.summary,benefits_list)
+
 
   benefits_final$scheme_no <- j
   return(benefits_final)
-  #message(paste0("Done Scheme ",j," at ",Sys.time()))
-
 
 }
 
@@ -267,6 +241,8 @@ for(b in 1:length(regions)){
       pct <- pct[,c("ID","length","av_incline","all_16p","pct.census","underground","train","bus","taxi","motorcycle","carorvan","passenger","onfoot","other","percycle01")]
       pct$rf_avslope_perc <- pct$av_incline
       pct$av_incline <- NULL
+
+      rownames(pct) <- 1:nrow(pct)
 
 
       #get the list of scheme_nos
