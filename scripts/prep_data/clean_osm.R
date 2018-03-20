@@ -1,5 +1,46 @@
 #Clean Up OSM Description
 
+#functions
+
+cyipt.clean.speeds <- function(maxspeed, highway){
+  if(!is.na(maxspeed)){
+    # maxspeed given clean up an return number
+    # remove the mph
+    maxspeed <- sub(pattern = "mph", replacement = "", x = maxspeed, ignore.case = TRUE)
+    maxspeed <- sub(pattern = " ", replacement = "", x = maxspeed, ignore.case = TRUE)
+    if(maxspeed %in% c("5","10","15","20","25","30","35","40","45","50","55","60","70")){
+      maxspeed <- as.integer(maxspeed)
+    }else{
+      # some other string set to NA
+      maxspeed <- as.integer(NA)
+    }
+
+  }
+
+  #Check again ang guess if needed
+  if(is.na(maxspeed)){
+    # maxspeed not given guess
+    if(highway %in% c("motorway","motorway_link")){
+      maxspeed <- 70
+    }else if(highway %in% c("trunk","trunk_link","bus_guideway")) {
+      maxspeed <- 60
+    }else if(highway %in% c("primary","residential","road","primary_link","secondary","secondary_link","tertiary","tertiary_link")){
+      maxspeed <- 30
+    }else if(highway == "service" ){
+      maxspeed <- 20
+    }else if(highway %in% c("path","bridleway","construction","cycleway","demolished","escalator","footway","living_street","steps","track","unclassified","pedestrian")){
+      maxspeed <- 10
+    }else{
+      maxspeed <- 60
+    }
+
+  }
+  return(maxspeed)
+
+}
+
+
+
 #code
 regions <- regions.todo
 
@@ -142,54 +183,7 @@ for(a in 1:length(regions)){
       #############################################################################################
       #Step 4: Guess Road Speed if one not provided
 
-
-      for(b in 1:nrow(osm)){
-        if(is.na(osm$maxspeed[b])){
-          type <- osm$highway[b]
-          if(type %in% c("motorway","motorway_link")){
-            osm$maxspeed[b] <- 70
-          }else if(type %in% c("trunk","trunk_link","bus_guideway")) {
-            osm$maxspeed[b] <- 60
-          }else if(type %in% c("primary","residential","road","primary_link","secondary","secondary_link","tertiary","tertiary_link")){
-            osm$maxspeed[b] <- 30
-          }else if(type == "service" ){
-            osm$maxspeed[b] <- 20
-          }else if(type %in% c("path","bridleway","construction","cycleway","demolished","escalator","footway","living_street","steps","track","unclassified","pedestrian")){
-            osm$maxspeed[b] <- 10
-          }else{
-            osm$maxspeed[b] <- 60
-          }
-        }
-      }
-      rm(b,type)
-
-      for(i in 1:nrow(osm)){
-        if(osm$maxspeed[i] == "70 mph" | osm$maxspeed[i] == "70" ){
-          osm$maxspeed[i] <- 70
-        }else if(osm$maxspeed[i] == "60 mph"| osm$maxspeed[i] == "60" ){
-          osm$maxspeed[i] <- 60
-        }else if(osm$maxspeed[i] == "50 mph"| osm$maxspeed[i] == "50" ){
-          osm$maxspeed[i] <- 50
-        }else if(osm$maxspeed[i] == "40 mph"| osm$maxspeed[i] == "40" ){
-          osm$maxspeed[i] <- 40
-        }else if(osm$maxspeed[i] == "30 mph"| osm$maxspeed[i] == "30" ){
-          osm$maxspeed[i] <- 30
-        }else if(osm$maxspeed[i] == "20 mph"| osm$maxspeed[i] == "20" ){
-          osm$maxspeed[i] <- 20
-        }else if(osm$maxspeed[i] == "10 mph"| osm$maxspeed[i] == "10" ){
-          osm$maxspeed[i] <- 10
-        }else if(osm$maxspeed[i] == "15 mph"| osm$maxspeed[i] == "15" ){
-          osm$maxspeed[i] <- 15
-        }else if(osm$maxspeed[i] == "5 mph"| osm$maxspeed[i] == "5" ){
-          osm$maxspeed[i] <- 5
-        }else{
-          osm$maxspeed[i] <- 30
-        }
-      }
-      rm(i)
-
-      #convert to number
-      osm$maxspeed <- as.integer(osm$maxspeed)
+      osm$maxspeed <- mapply(cyipt.clean.speeds, maxspeed = osm$maxspeed, highway = osm$highway, SIMPLIFY = T, USE.NAMES = F)
 
       ##################################################################
       #Step 5: footways
