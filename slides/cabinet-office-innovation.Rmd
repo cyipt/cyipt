@@ -1,5 +1,5 @@
 ---
-title: 'Open data and software to guide investment in sustainable transport'
+title: 'Open tools to guide investment in sustainable transport'
 subtitle: "from infrastructure to behaviour change"
 author: "Robin Lovelace, LIDA and ITS, for Cabinet Office Open Innovation Team"
 date: "`r Sys.Date()`. Slides: [rpubs.com/RobinLovelace](http://rpubs.com/RobinLovelace/258956)."
@@ -123,10 +123,9 @@ logit_pcycle = -3.9 + (-0.59 * distance) + (1.8 * sqrt(distance) ) + (0.008 * di
 
 ## At low geographic resolution
 
-- Clear link between infrastructure and uptake 
-- But not consistent everywhere
+- Clear link between infrastructure and uptake, but inconsistent
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=FALSE, out.width="70%"}
 knitr::include_graphics("../../cyipt-website/images/ttwa-uptake.png")
 ```
 
@@ -164,12 +163,12 @@ knitr::include_graphics("../../cyipt-website/images/ttwa-uptake.png")
 ## F-statistic: 3.799 on 2 and 906 DF,  p-value: 0.02274
 ```
 
-## How to model future scenarios of infrastructure change?
+## How to model infrastructure -> cycling? | Where to build what?
 
-See https://www.cyipt.bike (password protected)
+See: https://www.cyipt.bike (password protected)
 
-```{r, echo=FALSE}
-knitr::include_graphics("../../cyipt-website/images/recommended.png")
+```{r, echo=FALSE, fig.show='hold', out.width="50%"}
+knitr::include_graphics(c("../../cyipt-website/images/infrastructure/large/lightsegregation.jpg", "../../cyipt-website/images/recommended.png"))
 ```
 
 
