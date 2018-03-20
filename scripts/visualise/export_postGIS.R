@@ -44,6 +44,11 @@ message(paste0(Sys.time()," Combining Regions into master file "))
 #osm.all <- do.call("rbind",regions.list)
 osm.all <- bind_rows(regions.list)
 
+message(paste0(Sys.time()," Making Final Corrections "))
+
+#change osmids to intergers
+osm.all$osmid <- as.integer(osm.all$osmid)
+
 #Add masrster ID column
 osm.all$idGlobal <- 1:nrow(osm.all)
 
@@ -57,26 +62,27 @@ roadtypes <- roadtypes[,c("rtid","roadtype","onewaysummary","sidewalk","cycleway
 
 
 #Add rtid and remove data
-osm.all$rtid <- NA
-
-for(i in 1:nrow(osm.all)){
-  sub <- roadtypes$rtid[roadtypes$roadtype == osm.all$roadtype[i] &
-                     roadtypes$onewaysummary == osm.all$onewaysummary[i] &
-                     roadtypes$sidewalk == osm.all$sidewalk[i] &
-                     roadtypes$cyclewayleft == osm.all$cyclewayleft[i] &
-                     roadtypes$lanespsvforward == osm.all$lanespsvforward[i] &
-                     roadtypes$lanesforward == osm.all$lanesforward[i] &
-                     roadtypes$lanesbackward == osm.all$lanesbackward[i] &
-                     roadtypes$lanespsvbackward == osm.all$lanespsvbackward[i] &
-                     roadtypes$cyclewayright == osm.all$cyclewayright[i]
-                  ]
-  if(length(sub) == 1){
-    osm.all$rtid[i] <- sub
-  }else{
+cyipt.roadtypes <- function(i){
+  osm.sub <- osm.all[i,]
+  sub <- roadtypes$rtid[roadtypes$roadtype == osm.sub$roadtype[1] &
+                          roadtypes$onewaysummary == osm.sub$onewaysummary[1] &
+                          roadtypes$sidewalk == osm.sub$sidewalk[1] &
+                          roadtypes$cyclewayleft == osm.sub$cyclewayleft[1] &
+                          roadtypes$lanespsvforward == osm.sub$lanespsvforward[1] &
+                          roadtypes$lanesforward == osm.sub$lanesforward[1] &
+                          roadtypes$lanesbackward == osm.sub$lanesbackward[1] &
+                          roadtypes$lanespsvbackward == osm.sub$lanespsvbackward[1] &
+                          roadtypes$cyclewayright == osm.sub$cyclewayright[1]
+                        ]
+  if(length(sub) != 1){
     message(paste0("Error on line ",i," there where ",length(sub)," matches"))
+    stop()
   }
-
+  return(sub)
 }
+
+osm.all$rtid <- sapply(1:nrow(osm.all), cyipt.roadtypes)
+
 osm.all <- osm.all[,names(osm.all)[!names(osm.all) %in% c("roadtype","onewaysummary","sidewalk","cyclewayleft","lanespsvforward","lanesforward","lanesbackward","lanespsvbackward","cyclewayright")]]
 
 #Clean Up Numerics to Intergers
