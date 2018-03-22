@@ -24,11 +24,11 @@ cyipt.clean.speeds <- function(maxspeed, highway){
       maxspeed <- 70
     }else if(highway %in% c("trunk","trunk_link","bus_guideway")) {
       maxspeed <- 60
-    }else if(highway %in% c("primary","residential","road","primary_link","secondary","secondary_link","tertiary","tertiary_link")){
+    }else if(highway %in% c("primary","residential","road","primary_link","secondary","secondary_link","tertiary","tertiary_link","unclassified")){
       maxspeed <- 30
     }else if(highway == "service" ){
       maxspeed <- 20
-    }else if(highway %in% c("path","bridleway","construction","cycleway","demolished","escalator","footway","living_street","steps","track","unclassified","pedestrian")){
+    }else if(highway %in% c("path","bridleway","construction","cycleway","demolished","escalator","footway","living_street","steps","track","pedestrian")){
       maxspeed <- 10
     }else{
       maxspeed <- 60
