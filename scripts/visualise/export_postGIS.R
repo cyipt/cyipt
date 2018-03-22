@@ -1,11 +1,18 @@
 regions <- regions.todo
 regions.list <- list()
+date.raw <- list()
+date.recc <- list()
 
 for(b in 1:length(regions)){
   if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))){
     #Get file
     osm <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds"))
     message(paste0(Sys.time()," Processing ",regions[b]," with ",nrow(osm)," lines"))
+
+    #Get file info
+    date.recc[[b]] <- as.Date(file.mtime(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/osm-lines.Rds")))
+    date.raw[[b]] <- as.Date(file.mtime(paste0("../cyipt-bigdata/osm-raw/",regions[b],"/osm-lines.Rds")))
+
     #print(nrow(osm))
     if(!"region" %in% names(osm)){
       osm$region <- regions[b]
@@ -36,13 +43,17 @@ for(b in 1:length(regions)){
     message(paste0("Input File Missing for ",regions[b]," at ",Sys.time()))
   }
 }
-rm(b,regions)
+
+
+updates <- data.frame(regions = regions, raw =  do.call("c", date.raw), recc = do.call("c", date.recc))
+rm(b,regions, date.raw, date.recc)
 
 message(paste0(Sys.time()," Combining Regions into master file "))
 
 #Bind all the regions toghter
 #osm.all <- do.call("rbind",regions.list)
 osm.all <- bind_rows(regions.list)
+rm(regions.list)
 
 message(paste0(Sys.time()," Making Final Corrections "))
 
@@ -64,12 +75,12 @@ roadtypes <- roadtypes[,c("rtid","roadtype","onewaysummary","sidewalk","cycleway
 #Add rtid and remove data
 cyipt.roadtypes <- function(i){
   osm.sub <- osm.all[i,]
-  sub <- roadtypes$rtid[roadtypes$roadtype == osm.sub$roadtype[1] &
+ sub <- roadtypes$rtid[roadtypes$roadtype == osm.sub$roadtype[1] &
                           roadtypes$onewaysummary == osm.sub$onewaysummary[1] &
                           roadtypes$sidewalk == osm.sub$sidewalk[1] &
-                          roadtypes$cyclewayleft == osm.sub$cyclewayleft[1] &
-                          roadtypes$lanespsvforward == osm.sub$lanespsvforward[1] &
-                          roadtypes$lanesforward == osm.sub$lanesforward[1] &
+                         roadtypes$cyclewayleft == osm.sub$cyclewayleft[1] &
+                         roadtypes$lanespsvforward == osm.sub$lanespsvforward[1] &
+                         roadtypes$lanesforward == osm.sub$lanesforward[1] &
                           roadtypes$lanesbackward == osm.sub$lanesbackward[1] &
                           roadtypes$lanespsvbackward == osm.sub$lanespsvbackward[1] &
                           roadtypes$cyclewayright == osm.sub$cyclewayright[1]
@@ -80,8 +91,12 @@ cyipt.roadtypes <- function(i){
   }
   return(sub)
 }
+microbenchmark::microbenchmark(bar <- sapply(1:nrow(osm.all), cyipt.roadtypes), times = 1)
 
-osm.all$rtid <- sapply(1:nrow(osm.all), cyipt.roadtypes)
+microbenchmark::microbenchmark(foo <- left_join(osm.all, roadtypes, by = c("roadtype" = "roadtype", "onewaysummary" = "onewaysummary","sidewalk" = "sidewalk","cyclewayleft" = "cyclewayleft","lanespsvforward" = "lanespsvforward","lanesforward" = "lanesforward","lanesbackward" = "lanesbackward","lanespsvbackward" = "lanespsvbackward","cyclewayright" = "cyclewayright")), times = 1)
+
+
+
 
 osm.all <- osm.all[,names(osm.all)[!names(osm.all) %in% c("roadtype","onewaysummary","sidewalk","cyclewayleft","lanespsvforward","lanesforward","lanesbackward","lanespsvbackward","cyclewayright")]]
 
