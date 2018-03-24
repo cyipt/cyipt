@@ -15,35 +15,60 @@ bibliography: /home/robin/allrefs.bib
 
 ## Outline
 
-- Context 
+- Context: harnessing data for transport planning
 - The Propensity to Cycle Tool (PCT)
 - The Cycling Infrastructure Prioritisation Toolkit (CyIPT)
-- Research directions
 
 # Introduction
 
 ## How to transition to active cities? From this...
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=FALSE, out.width="50%", fig.cap="Source: [Brent Toderian](https://twitter.com/BrentToderian)"}
 knitr::include_graphics("https://pbs.twimg.com/media/DOH94nXUIAAgcll.jpg")
 ```
 
 ## To this?
 
-```{r, echo=FALSE, out.width="100%"}
-knitr::include_graphics("https://bicycledutch.files.wordpress.com/2013/03/amsterdam.jpg")
+```{r, echo=FALSE, out.width="70%", fig.cap="Source: [Brent Toderian](https://twitter.com/BrentToderian)"}
+knitr::include_graphics("https://pbs.twimg.com/media/DJaWCo0U8AAzQGW.jpg:large")
 ```
+
+## With available resources
+
+```{r, echo=FALSE, out.width="30%", fig.cap="Source: [Brent Toderian](https://twitter.com/BrentToderian)"}
+knitr::include_graphics("https://pbs.twimg.com/media/DDhLUr7VwAIp2_a.jpg:large")
+```
+
 
 ## Context 'evidence overload'?
 
-```{r, echo=FALSE, out.width="80%"}
+```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics("https://larrycuban.files.wordpress.com/2015/02/data-overload-2.jpg")
 ```
 
 > - Challenge: operationalise data
 > - Challenge: make locally specific
 
-## The Propensity to Cycle Tool - see [w](http://npct0.vs.mythic-beasts.com/shiny_interface/?r=west-yorkshire)[ww.pct.bike](www.pct.bike)
+## Data for walking and cycling investment
+
+> - Travel behaviour data
+> - Route network data
+> - Existing infrastructure (road widths, traffic, future possibilities)
+> - Road safety data
+> - Air pollution data
+> - Crowdsourced data
+
+## The international dimension
+
+```{r, out.width="70%", fig.cap="~200 km cycle network in Seville, Spain. Source: WHO report at [ATFutures/who](https://github.com/ATFutures/who)", echo=FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/ATFutures/who/master/fig/sevnet2.png")
+```
+
+> - Not a UK-specific issue, but benefits of country-specific tools
+
+# The Propensity to Cycle Tool (PCT)
+
+## What can the PCT do? - see [w](http://npct0.vs.mythic-beasts.com/shiny_interface/?r=west-yorkshire)[ww.pct.bike](www.pct.bike)
 
 ```{r, echo=FALSE, fig.cap="The front page of the open source, open access Propensity to Cycle Tool (PCT).", out.width="80%"}
 knitr::include_graphics("~/npct/pct-team/figures/pct-frontpage.png")
@@ -55,13 +80,13 @@ knitr::include_graphics("~/npct/pct-team/figures/pct-frontpage.png")
 > - 3 years in the making
 > - Origins go back further
 > - "An algorithm to decide where to build next"!
-> - 2018: Internationalisation and wider collaborations?  
+> - Internationalisation of methods (World Health Organisation funded project)
  
 ```{r, echo=FALSE, out.width="100%"}
 knitr::include_graphics("https://github.com/npct/pct-team/blob/master/figures/pct-metalogo.png?raw=true")
 ```
  
-## The academic landscape [see @lovelace_propensity_2017]
+## The research landscape [see @lovelace_propensity_2017]
 
 ```{r, echo=FALSE, out.width="70%"}
 knitr::include_graphics("../figures/jtlu-paper-front-page.png")
@@ -100,17 +125,17 @@ knitr::include_graphics("~/npct/pct-team/figures/front-page-leeds-pct-demo.png")
 - 12 month project funded by DfT's Innovation Challenge Fund (ICF)
 - Aim: tackle the challenge that cycling uptake is often limited by infrastructural barriers which could be remediated cost-effectively, yet investment is often spent on less cost-effective interventions, based on assessment of only a few options.
 
-- Diverse team:
+- Project team:
     - Robin Lovelace (University of Leeds)
     - Malcolm Morgan (University of Leeds)
     - John Parkin (University of West of England)
     - Martin Lucas-Smith (Cyclestreets.net)
     - Adrian Lord (Phil Jones Associates)
 
-## Tookit design
 
 ```{r, echo=FALSE, out.width="100%"}
-knitr::include_graphics("../figures/schematic-flow-diagram.png")
+## Tookit design
+# knitr::include_graphics("../figures/schematic-flow-diagram.png")
 ```
 
 ## Modelling cycling uptake
@@ -121,10 +146,9 @@ knitr::include_graphics("../figures/schematic-flow-diagram.png")
 - There is much existing work on this
 - But none that is 'operationalisable'
 
-> - A $64,000 question
+> - How to operationalise available data?
 
-
-## At low geographic resolution
+## Data on infrastructure-uptake at a regional level
 
 - Clear link between infrastructure and uptake
 
@@ -132,15 +156,21 @@ knitr::include_graphics("../figures/schematic-flow-diagram.png")
 knitr::include_graphics("../../cyipt-website/images/ttwa-uptake.png")
 ```
 
-## Breakthrough datasets: DfT TD, 2001 OD data
+## New datasets:
+
+> - DfT's Transport Direct data
+> - 2001 OD data (manipulated and joined with 2011 data)
 
 ![](https://github.com/cyipt/cyipt/raw/master/historic-uptake_files/figure-markdown_strict/unnamed-chunk-2-5.png)
 
+
+
+```{r, echo=FALSE}
+# model <- readRDS("../cyipt-securedata/uptakemodel/ml1.Rds")
+# summary(model)
+# jtools::interact_plot(model = model, pred = routes_infra_length, modx = routes_pspeed20)
 ## Detecting a signal from the noise
-
-> - Very simple model of uptake (Bristol):
-
-```
+# > - Very simple model of uptake (Bristol):
 ## lm(formula = p_uptake ~ dist + exposure, data = l, weights = all11)
 ## Coefficients:
 ##               Estimate Std. Error t value Pr(>|t|)    
@@ -155,7 +185,7 @@ knitr::include_graphics("../../cyipt-website/images/ttwa-uptake.png")
 ## F-statistic: 3.799 on 2 and 906 DF,  p-value: 0.02274
 ```
 
-## What does CyIPT add? | Evidence on where to build what
+## Operationalising the data
 
 See: https://www.cyipt.bike (password protected)
 
@@ -163,35 +193,21 @@ See: https://www.cyipt.bike (password protected)
 knitr::include_graphics(c("../../cyipt-website/images/infrastructure/large/lightsegregation.jpg", "../../cyipt-website/images/recommended.png"))
 ```
 
-## Open source software for open innovation: stplanr
+## Wider context: Open source tools
 
-**stplanr** lives here: https://github.com/ropensci/stplanr
+- Online interfaces reduce barriers
+- But there are benefits of running analysis locally
+- Various software options, including:
 
-Package can be installed from CRAN or GitHub (see the package's
-[README](https://github.com/Robinlovelace/stplanr) for details),
-it can be loaded in with `library()`:
+> - QGIS mapping software
+> - sDNA QGIS plugin
+> - R (see [upcoming course](https://www.cdrc.ac.uk/events/r-transport-applications-handling-big-data-spatial-world/) 26th - 27th April)
+> - Key feature of CyIPT and PCT:
+> - Open source and provides open data downloads
 
-```{r, eval=FALSE}
-install.packages("stplanr") # stable CRAN version
-# devtools::install_github("ropensci/stplanr") # dev version
-```
+<!-- **stplanr** lives here: https://github.com/ropensci/stplanr -->
 
-
-<!-- ## Abstract I -->
-
-<!-- This talk will provide an overview of the work that Robin Lovelace and Malcolm Morgan (ITS) have been doing as part of their Department for Transport funded projects on the Propensity to Cycle Tool (PCT, which has become part of UK government policy in the [Cycling and Walking Infrastructure Strategy](https://www.gov.uk/government/publications/cycling-and-walking-investment-strategy)) and follow-on work on the Cycling Infrastructure Prioritisation Toolkit (CyIPT). -->
-<!-- Although strong evidence shows that infrastructure usually precedes (and to some extent causes) behaviour change the starting point of the talk will be behaviour: how do people currently get around and how could it be different, based on the fundamentals of route distance and hilliness. -->
-<!-- Robin will demonstrate the PCT in action, talk about the R package **stplanr** that he developed to develop it, and outline plans for a globally scalable transport planning toolkit that builds on the PCT work. -->
-
-<!-- ## Abstract II -->
-
-<!-- Following this high-level overview Malcolm will zoom into the detail: How the CyIPT identifies the best places for infrastructure change and what that infrastructure should be. He will also talk about the advanced programming techniques needed to process such complex geospatial network data at city to national levels.  -->
-
-<!-- There is a clear linkage between the behaviour and infrastructure focci of Robin and Malcolm's talks that will become aparent as the seminar progresses. -->
-
-<!-- Links to check before the talk: -->
-
-## A model of cycling uptake
+## Modelling cycling uptake
 
 ```{r, echo=FALSE}
 knitr::include_graphics("~/npct/pct-team/flow-model/dd-anna.jpg")
@@ -207,9 +223,9 @@ $$
 logit_pcycle = -3.9 + (-0.59 * distance) + (1.8 * sqrt(distance) ) + (0.008 * distance^2)
 ```
 
-## Thanks + links!
+## Links:
 
 - The PCT in action: http://www.pct.bike/
-- A prototype of the CyIPT: http://cyipt.bike/
+- The CyIPT: http://cyipt.bike/
 - A paper on the PCT (Lovelace et al 2017): https://www.jtlu.org/index.php/jtlu/article/view/862
-- An article explaining **stplanr** (for people interested in the tech): https://cran.r-project.org/web/packages/stplanr/vignettes/introducing-stplanr.html
+- An article explaining R for transport planning with **stplanr**: [cran.r-project.org](https://cran.r-project.org/web/packages/stplanr/vignettes/introducing-stplanr.html)
