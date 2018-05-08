@@ -1,0 +1,101 @@
+---
+title: 'Open tools to guide investment in sustainable transport'
+subtitle: "from behaviour change targets (PCT) to infrastructure (CyIPT)"
+author: "Robin Lovelace, Leeds Institute for Data Analytics and ITS, `@robinlovelace`"
+date: "Presented in Parliament for the APPCG, `r Sys.Date()`."
+output:
+  ioslides_presentation:
+    transition: slower
+widescreen: true
+logo: ../figures/its-logo-square.png
+bibliography: /home/robin/allrefs.bib
+---
+
+<!-- Plan: 15 minute presentation building on pct work and mlCars stuff -->
+
+## Outline
+
+- Context 
+- The Propensity to Cycle Tool
+- Tools to prioritise infrastucture
+
+## The scale of the challenge, from this...
+
+```{r, echo=FALSE, out.width="50%", fig.cap="Source: [Brent Toderian](https://twitter.com/BrentToderian)"}
+knitr::include_graphics("https://pbs.twimg.com/media/DOH94nXUIAAgcll.jpg")
+```
+
+## Towards cycling being the natural choice
+
+```{r, echo=FALSE, out.width="70%", fig.cap="Source: [Brent Toderian](https://twitter.com/BrentToderian)"}
+knitr::include_graphics("https://pbs.twimg.com/media/DJaWCo0U8AAzQGW.jpg:large")
+```
+
+## Problem: evidence overload
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("https://larrycuban.files.wordpress.com/2015/02/data-overload-2.jpg")
+```
+
+> - Problem is operationalising this data [@lovelace_propensity_2017]
+> - Needs to be provided in a format that can be acted on at the local level
+
+## The Propensity to Cycle Tool - see [w](http://npct0.vs.mythic-beasts.com/shiny_interface/?r=west-yorkshire)[ww.pct.bike](www.pct.bike)
+
+Included in Cycling and Walking Infrastructure Strategy (CWIS)
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("~/npct/pct-team/figures/front-page-leeds-pct-demo.png")
+```
+
+## The importance of infrastructure
+
+- Clear link between infrastructure and uptake between 2001 and 2011
+
+```{r, echo=FALSE, out.width="70%"}
+knitr::include_graphics("../../cyipt-website/images/ttwa-uptake.png")
+```
+
+## How to model infrastructure: CyIPT
+
+- Cycling Infrastructure Prioritisation Toolkit simulates cycle infrastructure schemes across the country
+- Interactive tool for planners: [www.cyipt.bike](https://www.cyipt.bike) (password protected)
+
+```{r, echo=FALSE, fig.show='hold', out.width="50%"}
+knitr::include_graphics(c("../../cyipt-website/images/infrastructure/large/lightsegregation.jpg", "../../cyipt-website/images/recommended.png"))
+```
+
+## Next steps
+
+> - Phase III PCT: Schools layer, training, 'near market' scenario
+> - Phase II of CyIPT: make publicly accessible
+> - Crowd-sourcing (active): Cycle safety, a 'Space for Cycling Toolkit'
+> - Crowd-sourcing (passive): updated OD data, all modes, road surface quality data (See.Sense data shown below - topic of new PhD)
+> - Integration of walking and cycling tools with sDNA [@cooper_testing_2018]
+
+```{r, echo=FALSE, out.width="60%", fig.show='hold'}
+knitr::include_graphics(c("https://raw.githubusercontent.com/FasterByBike/FasterByBike/master/figures/heatmap-see.png"))
+# "https://ars.els-cdn.com/content/image/1-s2.0-S0968090X14000059-gr4.jpg"
+```
+
+
+<!-- ## Abstract I -->
+
+<!-- This talk will provide an overview of the work that Robin Lovelace and Malcolm Morgan (ITS) have been doing as part of their Department for Transport funded projects on the Propensity to Cycle Tool (PCT, which has become part of UK government policy in the [Cycling and Walking Infrastructure Strategy](https://www.gov.uk/government/publications/cycling-and-walking-investment-strategy)) and follow-on work on the Cycling Infrastructure Prioritisation Toolkit (CyIPT). -->
+<!-- Although strong evidence shows that infrastructure usually precedes (and to some extent causes) behaviour change the starting point of the talk will be behaviour: how do people currently get around and how could it be different, based on the fundamentals of route distance and hilliness. -->
+<!-- Robin will demonstrate the PCT in action, talk about the R package **stplanr** that he developed to develop it, and outline plans for a globally scalable transport planning toolkit that builds on the PCT work. -->
+
+<!-- ## Abstract II -->
+
+<!-- Following this high-level overview Malcolm will zoom into the detail: How the CyIPT identifies the best places for infrastructure change and what that infrastructure should be. He will also talk about the advanced programming techniques needed to process such complex geospatial network data at city to national levels.  -->
+
+<!-- There is a clear linkage between the behaviour and infrastructure focci of Robin and Malcolm's talks that will become aparent as the seminar progresses. -->
+
+<!-- Links to check before the talk: -->
+
+## Links + references
+
+> - Contact: r.lovelace@leeds.ac.uk or `@robinlovelace`
+
+- The PCT in action: http://www.pct.bike/
+- A prototype of the CyIPT: http://cyipt.bike/
