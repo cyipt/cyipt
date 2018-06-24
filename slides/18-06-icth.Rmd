@@ -271,9 +271,18 @@ m@map
 knitr::include_graphics("https://raw.githubusercontent.com/ATFutures/who/master/fig/accra-flow1-interactive.png")
 ```
 
-## Demo of Active Transport Toolkit
+## Demo of Active Transport Toolkit in Accra
 
-<iframe src="http://35.233.61.182/roads/"></iframe> 
+<iframe src="http://35.233.61.182/"></iframe> 
+
+## Demo of PCT approach in Minnesota | Data source: [gisdata.mn.gov](https://gisdata.mn.gov/dataset/us-mn-state-metc-society-tbi-transit-onboard2016)
+
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics("../figures/minnesota.png")
+```
+
+> - Interactive version: http://rpubs.com/RobinLovelace/399660
+
 
 ## Next steps
 
@@ -283,7 +292,7 @@ knitr::include_graphics("https://raw.githubusercontent.com/ATFutures/who/master/
 > - Must be a conversation
 
 ```{r, echo=FALSE, out.width="60%", fig.show='hold'}
-knitr::include_graphics(c("https://raw.githubusercontent.com/FasterByBike/FasterByBike/master/figures/heatmap-see.png"))
+# knitr::include_graphics(c("https://raw.githubusercontent.com/FasterByBike/FasterByBike/master/figures/heatmap-see.png"))
 # "https://ars.els-cdn.com/content/image/1-s2.0-S0968090X14000059-gr4.jpg"
 ```
 
@@ -293,3 +302,4 @@ knitr::include_graphics(c("https://raw.githubusercontent.com/FasterByBike/Faster
 
 - The PCT in action: http://www.pct.bike/
 - A prototype of the CyIPT: http://cyipt.bike/
+- Resource on R for transport: http://geocompr.robinlovelace.net/transport.html
