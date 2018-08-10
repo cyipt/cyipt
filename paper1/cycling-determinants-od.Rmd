@@ -24,64 +24,68 @@ abstract: |
   Conclusions: Newly available data, combined with emerging high performance and open source statistical software, mean that large natural experiments on the impact of new infrastructure on mode choice can now be performed at the national level using geographically detailed data at the origin-destination level. This has the potential to make the prioritisation of new infrastructure much more evidence-based and holds the promise of allowing a-priori benefit-cost estimates to be automated to support transport planners to enable a rapid transition away from fossil fuels and towards healthy travel patterns across the world, in urban and rural areas alike.
 
 bibliography: references.bib
-output:
-  rticles::elsevier_article:
-        number_sections: yes
+# output:
+#   rticles::elsevier_article:
+#         number_sections: yes
+output: github_document
 ---
 
-# Preliminary info {-}
+<!-- # Preliminary info {-} -->
 
-- Target journal: transport and health: 
-- "3000–6000 words"
+<!-- - Target journal: transport and health:  -->
+<!-- - "3000–6000 words" -->
 
-# Introduction
+<!-- # Introduction -->
 
-The benefits of cycling for everyday trips are now well-established.
-Uptake of active transport has been shown to improve health and environmental outcomes across a wide range of measures, notably x, y and z.
-Cycling in particular has the potential to transform transport systems in densly populated urban areas because of the mode's speed and and thermodynamic efficiency compared to walking:
-a much higher proportion of motorised trips currently made by motorised modes could be replaced by cycling than by walking.
-The benefits of cycling uptake increase dramatically when new cycle trips replace trips that would have otherwise been made by car 
+<!-- The benefits of cycling for everyday trips are now well-established. -->
+<!-- Uptake of active transport has been shown to improve health and environmental outcomes across a wide range of measures, notably x, y and z. -->
+<!-- Cycling in particular has the potential to transform transport systems in densly populated urban areas because of the mode's speed and and thermodynamic efficiency compared to walking: -->
+<!-- a much higher proportion of motorised trips currently made by motorised modes could be replaced by cycling than by walking. -->
+<!-- The benefits of cycling uptake increase dramatically when new cycle trips replace trips that would have otherwise been made by car  -->
 
-- Policy context and need [@celis-morales_association_2017]
+<!-- - Policy context and need [@celis-morales_association_2017] -->
 
-- The fact it builds on the PCT [@lovelace_propensity_2017]
+<!-- - The fact it builds on the PCT [@lovelace_propensity_2017] -->
 
-- Natural experiments with before/after [@heinen_changes_2015] [@prins_causal_2016]
-    
-- Impact on safety: [@reynolds_impact_2009]
+<!-- - Natural experiments with before/after [@heinen_changes_2015] [@prins_causal_2016] -->
 
-- Categorisations of research into cycling/infrastructure relationship. Target group / trip type (commuting) / dependent variable / geographic level (person, area, school - suggested) - table
+<!-- - Impact on safety: [@reynolds_impact_2009] -->
+
+<!-- - Categorisations of research into cycling/infrastructure relationship. Target group / trip type (commuting) / dependent variable / geographic level (person, area, school - suggested) - table -->
 
 
 
-## Area-level studies
+<!-- ## Area-level studies -->
 
-[@parkin_estimation_2008]
+<!-- [@parkin_estimation_2008] -->
 
-## Organisational level studies
+<!-- ## Organisational level studies -->
 
-## Route level studies
+<!-- ## Route level studies -->
 
-In route level studies the main variable is at the route level.
-Typically these studies involve a single new cycle path being constructed and the resulting change in behaviour being observed.
-There is very strong evidence that *existing* cyclists respond to new routes [@heesch_evaluation_2016].
+<!-- In route level studies the main variable is at the route level. -->
+<!-- Typically these studies involve a single new cycle path being constructed and the resulting change in behaviour being observed. -->
+<!-- There is very strong evidence that *existing* cyclists respond to new routes [@heesch_evaluation_2016]. -->
 
-## Individual-level studies
+<!-- ## Individual-level studies -->
 
-- [@heinen_does_2017; @heinen_role_2011]
-    
+<!-- - [@heinen_does_2017; @heinen_role_2011] -->
 
-# Data and methods
 
-# Computation
+<!-- # Data and methods -->
 
-The method described in the previous section was implemented in the statistical programming language R [@rcoreteam_language_2017].
+<!-- # Computation -->
 
-- Description of the historic uptake script
-- Rerunning with different parameters for sensitivity tests
+<!-- The method described in the previous section was implemented in the statistical programming language R [@rcoreteam_language_2017]. -->
 
-# Results
+<!-- - Description of the historic uptake script -->
+<!-- - Rerunning with different parameters for sensitivity tests -->
 
-# Conclusions
+<!-- # Results -->
+
+<!-- # Conclusions -->
+
+[@kahlmeier_health_2017]
 
 # References {#references .unnumbered}
+
