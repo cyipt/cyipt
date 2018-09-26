@@ -88,7 +88,7 @@ for(b in 1:length(regions)){
       names(pct.all) <- c("ID","pct.census","pct.gov","pct.gen","pct.dutch","pct.ebike","pct.total","geometry")
 
       #Performacne Tweak, Preallocate object to a grid to reduce processing time
-      grid <- st_make_grid(osm, n = c(500,500), "polygons")
+      grid <- st_make_grid(osm, n = c(500,500), what = "polygons")
       grid_pct2grid <- st_intersects(pct.all, grid) # Which grids is each pct line in?
       grid_grid2osm <- st_intersects(grid, osm)# for each grid which osm lines cross it
 

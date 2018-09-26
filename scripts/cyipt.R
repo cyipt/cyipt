@@ -10,7 +10,7 @@
 #Regions are selected using the file  ../cyipt/input-data/RegionsToDo.csv
 #To do a region just put y in the do column of this csv file
 
-skip <- FALSE #Should the code skip regions that have already been done?
+skip <- TRUE #Should the code skip regions that have already been done?
 overwrite <- TRUE #Some stages overwrite existing files, for example by adding an extra column of data
                    #Note that not overwriting may cause later stagest to fail if they expect earlier stages
                    #resutls to be in the starting file
@@ -45,8 +45,8 @@ if(!all.regions){
 }else{
   regions.todo <- regions.todo$region
 }
-#regions.todo <- "London" # Manually Force a Region
-regions.todo <- regions.todo[regions.todo != "London"] # Force out a region
+#regions.todo <- "Bristol" # Manually Force a Region
+#regions.todo <- regions.todo[regions.todo != "London"] # Force out a region
 
 message("CyIPT will run for the following regions:")
 print(regions.todo)
@@ -90,7 +90,7 @@ source("scripts/uptake/uptake_benefits_interaction.R")
 #Step LAST: Export for DB
 source("scripts/visualise/export_postGIS.R")
 source("scripts/visualise/export_schemes.R")
-
+source("scripts/visualise/export_junctions.R")
 
 
 

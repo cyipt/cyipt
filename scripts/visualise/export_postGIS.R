@@ -73,29 +73,7 @@ roadtypes <- roadtypes[,c("rtid","roadtype","onewaysummary","sidewalk","cycleway
 
 
 #Add rtid and remove data
-cyipt.roadtypes <- function(i){
-  osm.sub <- osm.all[i,]
- sub <- roadtypes$rtid[roadtypes$roadtype == osm.sub$roadtype[1] &
-                          roadtypes$onewaysummary == osm.sub$onewaysummary[1] &
-                          roadtypes$sidewalk == osm.sub$sidewalk[1] &
-                         roadtypes$cyclewayleft == osm.sub$cyclewayleft[1] &
-                         roadtypes$lanespsvforward == osm.sub$lanespsvforward[1] &
-                         roadtypes$lanesforward == osm.sub$lanesforward[1] &
-                          roadtypes$lanesbackward == osm.sub$lanesbackward[1] &
-                          roadtypes$lanespsvbackward == osm.sub$lanespsvbackward[1] &
-                          roadtypes$cyclewayright == osm.sub$cyclewayright[1]
-                        ]
-  if(length(sub) != 1){
-    message(paste0("Error on line ",i," there where ",length(sub)," matches"))
-    stop()
-  }
-  return(sub)
-}
-microbenchmark::microbenchmark(bar <- sapply(1:nrow(osm.all), cyipt.roadtypes), times = 1)
-
-microbenchmark::microbenchmark(foo <- left_join(osm.all, roadtypes, by = c("roadtype" = "roadtype", "onewaysummary" = "onewaysummary","sidewalk" = "sidewalk","cyclewayleft" = "cyclewayleft","lanespsvforward" = "lanespsvforward","lanesforward" = "lanesforward","lanesbackward" = "lanesbackward","lanespsvbackward" = "lanespsvbackward","cyclewayright" = "cyclewayright")), times = 1)
-
-
+osm.all <- left_join(osm.all, roadtypes, by = c("roadtype" = "roadtype", "onewaysummary" = "onewaysummary","sidewalk" = "sidewalk","cyclewayleft" = "cyclewayleft","lanespsvforward" = "lanespsvforward","lanesforward" = "lanesforward","lanesbackward" = "lanesbackward","lanespsvbackward" = "lanespsvbackward","cyclewayright" = "cyclewayright"))
 
 
 osm.all <- osm.all[,names(osm.all)[!names(osm.all) %in% c("roadtype","onewaysummary","sidewalk","cyclewayleft","lanespsvforward","lanesforward","lanesbackward","lanespsvbackward","cyclewayright")]]
@@ -133,5 +111,5 @@ message(paste0(Sys.time()," Saving CSV Files "))
 #Save Out
 write.csv(roadtypes,"../cyipt-bigdata/forDB/roadtypes.csv", row.names = F, na = "")
 write.csv(osm.all,"../cyipt-bigdata/forDB/roads.csv", row.names = F, na = "")
-
+write.csv(updates,"../cyipt-bigdata/forDB/updates.csv", row.names = F, na = "")
 
