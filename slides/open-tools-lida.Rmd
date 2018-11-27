@@ -85,18 +85,7 @@ knitr::include_graphics("https://larrycuban.files.wordpress.com/2015/02/data-ove
 ## A case study of an actionable tool: [w](http://npct0.vs.mythic-beasts.com/shiny_interface/?r=west-yorkshire)[ww.pct.bike](www.pct.bike)
 
 ```{r, echo=FALSE, fig.cap="The front page of the open source, open access Propensity to Cycle Tool (PCT).", out.width="80%"}
-knitr::include_graphics("~/npct/pct-team/figures/pct-frontpage.png")
-```
-
----
-
-## Give it a spin online
-
-- See http://www.pct.bike/
-- And https://www.cyipt.bike
-
-```{r}
-knitr::include_graphics("../figures/cyipt-website-mm-lines.png")
+knitr::include_graphics("https://raw.githubusercontent.com/npct/pct-team/master/figures/pct-frontpage.png")
 ```
 
 ---
@@ -234,10 +223,23 @@ tmap_leaflet(m2)
 
 ## Ensuring impact
 
-See https://twitter.com/robinlovelace/status/907261128354488320
+<!-- See https://twitter.com/robinlovelace/status/907261128354488320 -->
 
-<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Scenario of cycling infrastructure in Leeds: <a href="https://t.co/FqehV7kAjc">https://t.co/FqehV7kAjc</a> Prelim. cost: ~£120m (without junction remodelling) for 157 km. <a href="https://twitter.com/hashtag/CyIPT?src=hash&amp;ref_src=twsrc%5Etfw">#CyIPT</a> <a href="https://t.co/OHqC8axut5">pic.twitter.com/OHqC8axut5</a></p>&mdash; Robin Lovelace (robinlovelace) <a href="https://twitter.com/robinlovelace/status/907261128354488320?ref_src=twsrc%5Etfw">September 11, 2017</a></blockquote>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<!-- <blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Scenario of cycling infrastructure in Leeds: <a href="https://t.co/FqehV7kAjc">https://t.co/FqehV7kAjc</a> Prelim. cost: ~£120m (without junction remodelling) for 157 km. <a href="https://twitter.com/hashtag/CyIPT?src=hash&amp;ref_src=twsrc%5Etfw">#CyIPT</a> <a href="https://t.co/OHqC8axut5">pic.twitter.com/OHqC8axut5</a></p>&mdash; Robin Lovelace (robinlovelace) <a href="https://twitter.com/robinlovelace/status/907261128354488320?ref_src=twsrc%5Etfw">September 11, 2017</a></blockquote> -->
+<!-- <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
+
+--
+
+> The ‘Propensity to Cycle Tool’ shows that if residents of Greater Manchester were as likely to cycle as the Dutch we would increase commuter journeys ten-fold, leaving room on the road for people who had to drive. This level of cycling would lead to an estimated £1 billion per year saving to individuals and the local economy because of the resulting health benefits. (British Cycling’s chief executive, Julie Harrington, November 2017 see [britishcycling.org.uk](https://www.britishcycling.org.uk/campaigning/article/20171102-campaigning-news-British-Cycling-responds-to-Mayor-of-Greater-Manchester-Andy-Burham-s--congestion-conversation--0))
+
+--
+
+~ 3 months later...
+
+--
+
+> City cycling czar Chris Boardman has unveiled plans for a thousand miles of interlinked bike and walking lanes across Greater Manchester. Dubbed ‘Beelines’, the game-changing 10-year, £1.5bn proposal includes 75 miles of segregated cycle lanes similar to those found in Holland and Denmark ([Manchester Evening News](https://www.manchestereveningnews.co.uk/news/greater-manchester-news/cycling-walking-lanes-greater-manchester-14832995))
+
 
 ---
 
@@ -256,7 +258,7 @@ knitr::include_graphics("https://raw.githubusercontent.com/npct/pct-team/master/
 
 ## Links + references
 
-> - Contact: project info@cyipt.bike, me: r.lovelace@leeds.ac.uk
+> - Contact: r.lovelace@leeds.ac.uk or [`@robinlovelace`](https://twitter.com/robinlovelace)
 
 - If you want to code in R 4 transport, start here: https://geocompr.robinlovelace.net/spatial-class.html
 - The PCT in action: http://www.pct.bike/
