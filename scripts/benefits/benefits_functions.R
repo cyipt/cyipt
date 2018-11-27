@@ -362,6 +362,9 @@ cyipt.airquality <- function(x){
 
 cyipt.greenhousegases <- function(distDrive.Change){
 
+  # convert to km
+  distDrive.Change = distDrive.Change / 1000
+
   #Data
   pdiesel <- 0.39 #Proportion of diesel cars https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/608374/vehicle-licensing-statistics-2016.pdf
   velo <- 48 # average speed assumed to be 30 mph

@@ -7,9 +7,9 @@ regions <- regions.todo
 #Read In Each File and Combine
 regions.list <- list()
 for(b in 1:length(regions)){
-  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))){
+  if(file.exists(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake_alt.Rds"))){
     #Get file
-    schemes <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake.Rds"))
+    schemes <- readRDS(paste0("../cyipt-bigdata/osm-recc/",regions[b],"/scheme-uptake_alt.Rds"))
 
     if("data.frame" %in% class(schemes)){
       print(nrow(schemes))
@@ -63,11 +63,11 @@ schemes.all$ncyclebefore <- schemes.all$pctcensus
 schemes.all$ncycleafter <- round(schemes.all$pctcensus + schemes.all$uptake,0)
 schemes.all$change <- round(schemes.all$uptake,0)
 schemes.all$per <- round(schemes.all$uptake / schemes.all$pctcensus * 100,1)
-schemes.all$ndrivebefore <- 0
-schemes.all$ndriveafter <- 0
-schemes.all$carkmbefore  <- 0
-schemes.all$carkmafter  <- 0
-schemes.all$carkm  <- schemes.all$distDriveChange
+#schemes.all$ndrivebefore <- 0
+schemes.all$ndriveafter <- round(schemes.all$ndriveafter,0)
+schemes.all$carkmbefore  <- round(schemes.all$distDriveBefore / 1000,0)
+schemes.all$carkmafter  <- round(schemes.all$distDriveAfter / 1000,0)
+schemes.all$carkm  <- schemes.all$distDriveChange / 1000
 schemes.all$totalBen  <- schemes.all$benefitTotal
 schemes.all$cost  <- schemes.all$costTotal
 schemes.all$costBenRatio  <- round(schemes.all$benefitCost,2)

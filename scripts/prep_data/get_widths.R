@@ -300,7 +300,7 @@ for(b in 1:length(regions)){
       #Performacne Tweak, Preallocate object to a gid to reduce processing time
       os_cent <- st_centroid(os)
       osm_cent <- st_centroid(osm)
-      grid <- st_make_grid(osm, n = c(100,100), "polygons")
+      grid <- st_make_grid(osm, n = c(100,100), what = "polygons")
       grid_osm <- st_intersects(osm_cent, grid)
       grid_os <- st_intersects(grid, os_cent)
       rm(grid, os_cent, osm_cent)

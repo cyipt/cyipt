@@ -118,6 +118,10 @@ evaluate.schemes <- function(j){
   pct.scheme$d_onfoot <- pct.scheme$p_onfoot * pct.scheme$uptake
   pct.scheme$d_other <- pct.scheme$p_other * pct.scheme$uptake
 
+  # calcualte change in driver numbers
+  pct.scheme$ndrivebefore <- pct.scheme$carorvan
+  pct.scheme$ndriveafter <- pct.scheme$carorvan - pct.scheme$d_carorvan
+
   # Calcualt Distance for Health Purposes
   pct.scheme$disthealth <- pct.scheme$length * 1.9 / 1609.34 # convert to miles * 1.9 (two way weighting factor)
 
@@ -175,7 +179,7 @@ evaluate.schemes <- function(j){
   benefits_list <- c("absenteeism_benefit", "health_benefit",
                      "accidents_benefit","airquality_benefit","noise_benefit","ghg_benefit",
                      "congestion_benefit","indirecttax_benefit", "timesaving_benefit")
-  nonbenefits_list <- c("all_16p","pct.census","uptake","d_onfoot","d_motorist","distCycle.Change","distWalk.Change","distDrive.Change",
+  nonbenefits_list <- c("all_16p","pct.census","uptake","d_onfoot","d_motorist","distCycle.Change","distWalk.Change","ndrivebefore","ndriveafter","distDrive.Before","distDrive.After","distDrive.Change",
                         "health_deathavoided","co2saved")
   #Summarise All the Benefits
   pct.scheme.summary <- pct.scheme[,c(nonbenefits_list,benefits_list)]

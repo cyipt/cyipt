@@ -79,7 +79,7 @@ for(b in 1:length(regions)){
       junc <- readRDS(paste0("../cyipt-bigdata/osm-raw/",regions[b],"/osm-junction-points.Rds"))
 
       #Performacne Tweak, Preallocate object to a gid to reduce processing time
-      grid <- st_make_grid(osm, n = c(100,100), "polygons")
+      grid <- st_make_grid(osm, n = c(100,100), what = "polygons")
       st_crs(grid) <- st_crs(osm)
       grid_osm <- st_intersects(grid, osm) # for each grid which osm lines cross it
       grid_junc <- st_intersects(grid, junc) # for each grid which osm lines cross it

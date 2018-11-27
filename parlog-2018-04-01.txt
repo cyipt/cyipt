@@ -1,0 +1,5580 @@
+starting worker pid=3392 on localhost:11506 at 00:04:00.297
+starting worker pid=6912 on localhost:11506 at 00:04:00.469
+starting worker pid=4356 on localhost:11506 at 00:04:00.657
+starting worker pid=1580 on localhost:11506 at 00:04:00.825
+starting worker pid=9172 on localhost:11506 at 00:04:00.997
+starting worker pid=13248 on localhost:11506 at 00:04:01.184
+starting worker pid=2716 on localhost:11506 at 00:04:01.356
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=12616 on localhost:11506 at 00:04:09.403
+starting worker pid=13388 on localhost:11506 at 00:04:09.591
+starting worker pid=10520 on localhost:11506 at 00:04:09.763
+starting worker pid=17036 on localhost:11506 at 00:04:09.935
+starting worker pid=13912 on localhost:11506 at 00:04:10.106
+starting worker pid=5848 on localhost:11506 at 00:04:10.290
+starting worker pid=12780 on localhost:11506 at 00:04:10.462
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=8196 on localhost:11506 at 00:04:15.385
+starting worker pid=14964 on localhost:11506 at 00:04:15.557
+starting worker pid=17712 on localhost:11506 at 00:04:15.745
+starting worker pid=8756 on localhost:11506 at 00:04:15.917
+starting worker pid=12784 on localhost:11506 at 00:04:16.089
+starting worker pid=15368 on localhost:11506 at 00:04:16.260
+starting worker pid=2396 on localhost:11506 at 00:04:16.446
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=12460 on localhost:11506 at 00:04:33.968
+starting worker pid=8240 on localhost:11506 at 00:04:34.140
+starting worker pid=1852 on localhost:11506 at 00:04:34.312
+starting worker pid=8592 on localhost:11506 at 00:04:34.484
+starting worker pid=5380 on localhost:11506 at 00:04:34.656
+starting worker pid=18332 on localhost:11506 at 00:04:34.828
+starting worker pid=2880 on localhost:11506 at 00:04:35.012
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' wapackage 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=16332 on localhost:11506 at 00:04:56.576
+starting worker pid=15992 on localhost:11506 at 00:04:56.748
+starting worker pid=16484 on localhost:11506 at 00:04:56.920
+starting worker pid=10668 on localhost:11506 at 00:04:57.108
+starting worker pid=3720 on localhost:11506 at 00:04:57.279
+starting worker pid=16984 on localhost:11506 at 00:04:57.451
+starting worker pid=1120 on localhost:11506 at 00:04:57.623
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+s built under R version 3.4.2 
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=4104 on localhost:11506 at 00:05:08.616
+starting worker pid=5092 on localhost:11506 at 00:05:08.782
+starting worker pid=12520 on localhost:11506 at 00:05:08.972
+starting worker pid=8676 on localhost:11506 at 00:05:09.144
+starting worker pid=13864 on localhost:11506 at 00:05:09.316
+starting worker pid=6544 on localhost:11506 at 00:05:09.484
+starting worker pid=13012 on localhost:11506 at 00:05:09.671
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' wapackage 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=11200 on localhost:11506 at 00:05:11.891
+starting worker pid=7264 on localhost:11506 at 00:05:12.063
+starting worker pid=17776 on localhost:11506 at 00:05:12.235
+starting worker pid=1648 on localhost:11506 at 00:05:12.422
+starting worker pid=17356 on localhost:11506 at 00:05:12.591
+starting worker pid=13276 on localhost:11506 at 00:05:12.762
+starting worker pid=14532 on localhost:11506 at 00:05:12.950
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=6364 on localhost:11506 at 00:05:19.550
+starting worker pid=6800 on localhost:11506 at 00:05:19.722
+starting worker pid=3092 on localhost:11506 at 00:05:19.894
+starting worker pid=13868 on localhost:11506 at 00:05:20.066
+starting worker pid=17932 on localhost:11506 at 00:05:20.238
+starting worker pid=10848 on localhost:11506 at 00:05:20.425
+starting worker pid=6408 on localhost:11506 at 00:05:20.597
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=2568 on localhost:11506 at 00:06:59.440
+starting worker pid=13532 on localhost:11506 at 00:06:59.627
+starting worker pid=12936 on localhost:11506 at 00:06:59.799
+starting worker pid=17288 on localhost:11506 at 00:06:59.971
+starting worker pid=2104 on localhost:11506 at 00:07:00.171
+starting worker pid=16816 on localhost:11506 at 00:07:00.343
+starting worker pid=9364 on localhost:11506 at 00:07:00.515
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' wapackage 'dplyr' was built under Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=15476 on localhost:11506 at 00:07:03.632
+starting worker pid=5976 on localhost:11506 at 00:07:03.804
+starting worker pid=16032 on localhost:11506 at 00:07:03.976
+starting worker pid=17844 on localhost:11506 at 00:07:04.163
+starting worker pid=1844 on localhost:11506 at 00:07:04.335
+starting worker pid=8004 on localhost:11506 at 00:07:04.507
+starting worker pid=15004 on localhost:11506 at 00:07:04.679
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=8492 on localhost:11506 at 00:07:20.584
+starting worker pid=16872 on localhost:11506 at 00:07:20.768
+starting worker pid=17116 on localhost:11506 at 00:07:20.940
+starting worker pid=14000 on localhost:11506 at 00:07:21.112
+starting worker pid=8908 on localhost:11506 at 00:07:21.296
+starting worker pid=11908 on localhost:11506 at 00:07:21.467
+starting worker pid=1880 on localhost:11506 at 00:07:21.639
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=15596 on localhost:11506 at 00:07:54.031
+starting worker pid=13380 on localhost:11506 at 00:07:54.200
+starting worker pid=10812 on localhost:11506 at 00:07:54.372
+starting worker pid=17228 on localhost:11506 at 00:07:54.559
+starting worker pid=13500 on localhost:11506 at 00:07:54.734
+starting worker pid=6488 on localhost:11506 at 00:07:54.903
+starting worker pid=10196 on localhost:11506 at 00:07:55.075
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=15108 on localhost:11506 at 00:09:16.023
+starting worker pid=12452 on localhost:11506 at 00:09:16.210
+starting worker pid=18028 on localhost:11506 at 00:09:16.382
+starting worker pid=15172 on localhost:11506 at 00:09:16.551
+starting worker pid=17148 on localhost:11506 at 00:09:16.722
+starting worker pid=12444 on localhost:11506 at 00:09:16.910
+starting worker pid=13928 on localhost:11506 at 00:09:17.082
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' wapackage 'dplyr' was built under Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=17348 on localhost:11506 at 00:09:20.060
+starting worker pid=760 on localhost:11506 at 00:09:20.232
+starting worker pid=14920 on localhost:11506 at 00:09:20.404
+starting worker pid=2976 on localhost:11506 at 00:09:20.575
+starting worker pid=2472 on localhost:11506 at 00:09:20.760
+starting worker pid=5188 on localhost:11506 at 00:09:20.931
+starting worker pid=7736 on localhost:11506 at 00:09:21.103
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=18076 on localhost:11506 at 00:09:51.904
+starting worker pid=6336 on localhost:11506 at 00:09:52.076
+starting worker pid=18092 on localhost:11506 at 00:09:52.247
+starting worker pid=17648 on localhost:11506 at 00:09:52.416
+starting worker pid=9368 on localhost:11506 at 00:09:52.603
+starting worker pid=2484 on localhost:11506 at 00:09:52.775
+starting worker pid=14832 on localhost:11506 at 00:09:52.947
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=684 on localhost:11506 at 00:09:54.959
+starting worker pid=12136 on localhost:11506 at 00:09:55.131
+starting worker pid=4464 on localhost:11506 at 00:09:55.303
+starting worker pid=11652 on localhost:11506 at 00:09:55.471
+starting worker pid=15796 on localhost:11506 at 00:09:55.659
+starting worker pid=5776 on localhost:11506 at 00:09:55.831
+starting worker pid=14680 on localhost:11506 at 00:09:56.002
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' wapackage 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=9600 on localhost:11506 at 00:09:58.598
+starting worker pid=8812 on localhost:11506 at 00:09:58.770
+starting worker pid=16916 on localhost:11506 at 00:09:58.942
+starting worker pid=10208 on localhost:11506 at 00:09:59.114
+starting worker pid=5604 on localhost:11506 at 00:09:59.286
+starting worker pid=1912 on localhost:11506 at 00:09:59.473
+starting worker pid=4764 on localhost:11506 at 00:09:59.645
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=17224 on localhost:11506 at 00:10:12.961
+starting worker pid=11400 on localhost:11506 at 00:10:13.133
+starting worker pid=10896 on localhost:11506 at 00:10:13.320
+starting worker pid=4676 on localhost:11506 at 00:10:13.492
+starting worker pid=3364 on localhost:11506 at 00:10:13.672
+starting worker pid=14420 on localhost:11506 at 00:10:13.833
+starting worker pid=4624 on localhost:11506 at 00:10:14.020
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=7948 on localhost:11506 at 00:10:34.298
+starting worker pid=11032 on localhost:11506 at 00:10:34.469
+starting worker pid=15248 on localhost:11506 at 00:10:34.641
+starting worker pid=6368 on localhost:11506 at 00:10:34.813
+starting worker pid=18212 on localhost:11506 at 00:10:34.985
+starting worker pid=6084 on localhost:11506 at 00:10:35.157
+starting worker pid=14656 on localhost:11506 at 00:10:35.344
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=10752 on localhost:11506 at 00:10:58.805
+starting worker pid=14188 on localhost:11506 at 00:10:58.993
+starting worker pid=11708 on localhost:11506 at 00:10:59.165
+starting worker pid=14212 on localhost:11506 at 00:10:59.336
+starting worker pid=13268 on localhost:11506 at 00:10:59.508
+starting worker pid=10544 on localhost:11506 at 00:10:59.680
+starting worker pid=8044 on localhost:11506 at 00:10:59.868
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=1860 on localhost:11506 at 00:12:12.796
+starting worker pid=1080 on localhost:11506 at 00:12:12.968
+starting worker pid=12236 on localhost:11506 at 00:12:13.140
+starting worker pid=1324 on localhost:11506 at 00:12:13.312
+starting worker pid=13112 on localhost:11506 at 00:12:13.495
+starting worker pid=15600 on localhost:11506 at 00:12:13.667
+starting worker pid=5960 on localhost:11506 at 00:12:13.839
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=14352 on localhost:11506 at 00:12:34.979
+starting worker pid=13316 on localhost:11506 at 00:12:35.151
+starting worker pid=9492 on localhost:11506 at 00:12:35.335
+starting worker pid=424 on localhost:11506 at 00:12:35.507
+starting worker pid=8268 on localhost:11506 at 00:12:35.679
+starting worker pid=18192 on localhost:11506 at 00:12:35.851
+starting worker pid=12704 on localhost:11506 at 00:12:36.038
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=2800 on localhost:11506 at 00:13:10.999
+starting worker pid=10672 on localhost:11506 at 00:13:11.170
+starting worker pid=16164 on localhost:11506 at 00:13:11.342
+starting worker pid=17616 on localhost:11506 at 00:13:11.514
+starting worker pid=17952 on localhost:11506 at 00:13:11.701
+starting worker pid=2004 on localhost:11506 at 00:13:11.870
+starting worker pid=9268 on localhost:11506 at 00:13:12.042
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=8832 on localhost:11506 at 00:13:15.621
+starting worker pid=8456 on localhost:11506 at 00:13:15.793
+starting worker pid=6444 on localhost:11506 at 00:13:15.964
+starting worker pid=12572 on localhost:11506 at 00:13:16.136
+starting worker pid=15040 on localhost:11506 at 00:13:16.324
+starting worker pid=15488 on localhost:11506 at 00:13:16.496
+starting worker pid=8820 on localhost:11506 at 00:13:16.668
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=10952 on localhost:11506 at 00:13:20.432
+starting worker pid=12388 on localhost:11506 at 00:13:20.604
+starting worker pid=772 on localhost:11506 at 00:13:20.776
+starting worker pid=8912 on localhost:11506 at 00:13:20.948
+starting worker pid=11832 on localhost:11506 at 00:13:21.120
+starting worker pid=15908 on localhost:11506 at 00:13:21.308
+starting worker pid=17216 on localhost:11506 at 00:13:21.479
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' wapackage 'dplyr' was built under Warning message:
+Warning message:
+rsion 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=14296 on localhost:11506 at 00:13:24.589
+starting worker pid=17392 on localhost:11506 at 00:13:24.776
+starting worker pid=412 on localhost:11506 at 00:13:24.948
+starting worker pid=9628 on localhost:11506 at 00:13:25.120
+starting worker pid=12516 on localhost:11506 at 00:13:25.292
+starting worker pid=5904 on localhost:11506 at 00:13:25.479
+starting worker pid=16676 on localhost:11506 at 00:13:25.651
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=9172 on localhost:11506 at 00:13:32.819
+starting worker pid=6772 on localhost:11506 at 00:13:33.003
+starting worker pid=2680 on localhost:11506 at 00:13:33.175
+starting worker pid=17360 on localhost:11506 at 00:13:33.350
+starting worker pid=13592 on localhost:11506 at 00:13:33.522
+starting worker pid=13704 on localhost:11506 at 00:13:33.710
+starting worker pid=11940 on localhost:11506 at 00:13:33.882
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=10180 on localhost:11506 at 00:14:16.607
+starting worker pid=8756 on localhost:11506 at 00:14:16.794
+starting worker pid=8900 on localhost:11506 at 00:14:16.966
+starting worker pid=1020 on localhost:11506 at 00:14:17.138
+starting worker pid=6968 on localhost:11506 at 00:14:17.325
+starting worker pid=13164 on localhost:11506 at 00:14:17.497
+starting worker pid=3352 on localhost:11506 at 00:14:17.669
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=2756 on localhost:11506 at 00:14:22.920
+starting worker pid=7908 on localhost:11506 at 00:14:23.085
+starting worker pid=14460 on localhost:11506 at 00:14:23.257
+starting worker pid=2228 on localhost:11506 at 00:14:23.444
+starting worker pid=8124 on localhost:11506 at 00:14:23.616
+starting worker pid=16988 on localhost:11506 at 00:14:23.788
+starting worker pid=10696 on localhost:11506 at 00:14:23.975
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=10468 on localhost:11506 at 00:14:26.166
+starting worker pid=16932 on localhost:11506 at 00:14:26.353
+starting worker pid=7068 on localhost:11506 at 00:14:26.525
+starting worker pid=2752 on localhost:11506 at 00:14:26.697
+starting worker pid=12264 on localhost:11506 at 00:14:26.869
+starting worker pid=8472 on localhost:11506 at 00:14:27.041
+starting worker pid=16240 on localhost:11506 at 00:14:27.228
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=1996 on localhost:11506 at 00:14:29.744
+starting worker pid=15744 on localhost:11506 at 00:14:29.932
+starting worker pid=14504 on localhost:11506 at 00:14:30.104
+starting worker pid=5092 on localhost:11506 at 00:14:30.275
+starting worker pid=6544 on localhost:11506 at 00:14:30.447
+starting worker pid=8084 on localhost:11506 at 00:14:30.635
+starting worker pid=13856 on localhost:11506 at 00:14:30.807
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=8956 on localhost:11506 at 00:14:36.948
+starting worker pid=16376 on localhost:11506 at 00:14:37.120
+starting worker pid=14448 on localhost:11506 at 00:14:37.307
+starting worker pid=13276 on localhost:11506 at 00:14:37.479
+starting worker pid=17884 on localhost:11506 at 00:14:37.648
+starting worker pid=3492 on localhost:11506 at 00:14:37.835
+starting worker pid=11312 on localhost:11506 at 00:14:38.007
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=8892 on localhost:11506 at 00:18:34.907
+starting worker pid=11404 on localhost:11506 at 00:18:35.094
+starting worker pid=4420 on localhost:11506 at 00:18:35.263
+starting worker pid=7848 on localhost:11506 at 00:18:35.435
+starting worker pid=10156 on localhost:11506 at 00:18:35.622
+starting worker pid=13812 on localhost:11506 at 00:18:35.794
+starting worker pid=13076 on localhost:11506 at 00:18:35.966
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' wapackage 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=10540 on localhost:11506 at 00:19:42.721
+starting worker pid=10320 on localhost:11506 at 00:19:42.893
+starting worker pid=3268 on localhost:11506 at 00:19:43.065
+starting worker pid=5944 on localhost:11506 at 00:19:43.237
+starting worker pid=12668 on localhost:11506 at 00:19:43.421
+starting worker pid=13588 on localhost:11506 at 00:19:43.593
+starting worker pid=1968 on localhost:11506 at 00:19:43.765
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=11444 on localhost:11506 at 00:20:00.395
+starting worker pid=14940 on localhost:11506 at 00:20:00.583
+starting worker pid=18352 on localhost:11506 at 00:20:00.755
+starting worker pid=15180 on localhost:11506 at 00:20:00.926
+starting worker pid=12636 on localhost:11506 at 00:20:01.110
+starting worker pid=6104 on localhost:11506 at 00:20:01.282
+starting worker pid=14592 on localhost:11506 at 00:20:01.454
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=12624 on localhost:11506 at 00:20:04.850
+starting worker pid=3248 on localhost:11506 at 00:20:05.022
+starting worker pid=12092 on localhost:11506 at 00:20:05.206
+starting worker pid=10988 on localhost:11506 at 00:20:05.378
+starting worker pid=7732 on localhost:11506 at 00:20:05.550
+starting worker pid=11964 on localhost:11506 at 00:20:05.724
+starting worker pid=1720 on localhost:11506 at 00:20:05.911
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=17996 on localhost:11506 at 00:20:12.411
+starting worker pid=6488 on localhost:11506 at 00:20:12.583
+starting worker pid=15440 on localhost:11506 at 00:20:12.755
+starting worker pid=12412 on localhost:11506 at 00:20:12.927
+starting worker pid=3320 on localhost:11506 at 00:20:13.099
+starting worker pid=4292 on localhost:11506 at 00:20:13.286
+starting worker pid=16756 on localhost:11506 at 00:20:13.458
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=9348 on localhost:11506 at 00:20:21.605
+starting worker pid=9232 on localhost:11506 at 00:20:21.777
+starting worker pid=15240 on localhost:11506 at 00:20:21.949
+starting worker pid=17112 on localhost:11506 at 00:20:22.136
+starting worker pid=18084 on localhost:11506 at 00:20:22.308
+starting worker pid=12528 on localhost:11506 at 00:20:22.480
+starting worker pid=17384 on localhost:11506 at 00:20:22.668
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=18144 on localhost:11506 at 00:20:39.558
+starting worker pid=2196 on localhost:11506 at 00:20:39.729
+starting worker pid=3256 on localhost:11506 at 00:20:39.901
+starting worker pid=14920 on localhost:11506 at 00:20:40.073
+starting worker pid=14628 on localhost:11506 at 00:20:40.261
+starting worker pid=14840 on localhost:11506 at 00:20:40.433
+starting worker pid=8736 on localhost:11506 at 00:20:40.604
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=17604 on localhost:11506 at 00:20:43.707
+starting worker pid=2368 on localhost:11506 at 00:20:43.879
+starting worker pid=17324 on localhost:11506 at 00:20:44.051
+starting worker pid=16108 on localhost:11506 at 00:20:44.239
+starting worker pid=9368 on localhost:11506 at 00:20:44.410
+starting worker pid=14832 on localhost:11506 at 00:20:44.582
+starting worker pid=13980 on localhost:11506 at 00:20:44.754
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=14048 on localhost:11506 at 00:20:57.068
+starting worker pid=6292 on localhost:11506 at 00:20:57.240
+starting worker pid=1568 on localhost:11506 at 00:20:57.411
+starting worker pid=14116 on localhost:11506 at 00:20:57.583
+starting worker pid=17260 on localhost:11506 at 00:20:57.768
+starting worker pid=14796 on localhost:11506 at 00:20:57.940
+starting worker pid=13936 on localhost:11506 at 00:20:58.112
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=2532 on localhost:11506 at 00:21:14.611
+starting worker pid=15468 on localhost:11506 at 00:21:14.783
+starting worker pid=5604 on localhost:11506 at 00:21:14.967
+starting worker pid=12804 on localhost:11506 at 00:21:15.139
+starting worker pid=14688 on localhost:11506 at 00:21:15.310
+starting worker pid=5436 on localhost:11506 at 00:21:15.482
+starting worker pid=5572 on localhost:11506 at 00:21:15.670
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+ from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=16104 on localhost:11506 at 00:21:22.859
+starting worker pid=1464 on localhost:11506 at 00:21:23.047
+starting worker pid=7876 on localhost:11506 at 00:21:23.219
+starting worker pid=7220 on localhost:11506 at 00:21:23.391
+starting worker pid=12260 on localhost:11506 at 00:21:23.562
+starting worker pid=17224 on localhost:11506 at 00:21:23.734
+starting worker pid=1848 on localhost:11506 at 00:21:23.921
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=5140 on localhost:11506 at 00:21:28.705
+starting worker pid=1396 on localhost:11506 at 00:21:28.877
+starting worker pid=2912 on localhost:11506 at 00:21:29.049
+starting worker pid=14128 on localhost:11506 at 00:21:29.221
+starting worker pid=9496 on localhost:11506 at 00:21:29.392
+starting worker pid=16072 on localhost:11506 at 00:21:29.576
+starting worker pid=15628 on localhost:11506 at 00:21:29.748
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=17468 on localhost:11506 at 00:21:32.765
+starting worker pid=6368 on localhost:11506 at 00:21:32.937
+starting worker pid=18212 on localhost:11506 at 00:21:33.105
+starting worker pid=8880 on localhost:11506 at 00:21:33.277
+starting worker pid=17552 on localhost:11506 at 00:21:33.465
+starting worker pid=2748 on localhost:11506 at 00:21:33.637
+starting worker pid=10064 on localhost:11506 at 00:21:33.808
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=13412 on localhost:11506 at 00:21:38.294
+starting worker pid=17480 on localhost:11506 at 00:21:38.466
+starting worker pid=4312 on localhost:11506 at 00:21:38.638
+starting worker pid=1252 on localhost:11506 at 00:21:38.810
+starting worker pid=10164 on localhost:11506 at 00:21:38.982
+starting worker pid=9964 on localhost:11506 at 00:21:39.166
+starting worker pid=14004 on localhost:11506 at 00:21:39.338
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=6004 on localhost:11506 at 00:21:45.390
+starting worker pid=14212 on localhost:11506 at 00:21:45.562
+starting worker pid=17060 on localhost:11506 at 00:21:45.734
+starting worker pid=1956 on localhost:11506 at 00:21:45.905
+starting worker pid=3236 on localhost:11506 at 00:21:46.093
+starting worker pid=17696 on localhost:11506 at 00:21:46.261
+starting worker pid=5196 on localhost:11506 at 00:21:46.433
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=3332 on localhost:11506 at 00:21:51.696
+starting worker pid=15600 on localhost:11506 at 00:21:51.883
+starting worker pid=2324 on localhost:11506 at 00:21:52.055
+starting worker pid=8720 on localhost:11506 at 00:21:52.227
+starting worker pid=8988 on localhost:11506 at 00:21:52.399
+starting worker pid=8524 on localhost:11506 at 00:21:52.571
+starting worker pid=1604 on localhost:11506 at 00:21:52.758
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=6888 on localhost:11506 at 00:22:02.190
+starting worker pid=13084 on localhost:11506 at 00:22:02.358
+starting worker pid=2148 on localhost:11506 at 00:22:02.530
+starting worker pid=13552 on localhost:11506 at 00:22:02.718
+starting worker pid=2644 on localhost:11506 at 00:22:02.890
+starting worker pid=12812 on localhost:11506 at 00:22:03.062
+starting worker pid=15164 on localhost:11506 at 00:22:03.233
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=14192 on localhost:11506 at 00:22:43.020
+starting worker pid=16016 on localhost:11506 at 00:22:43.208
+starting worker pid=16020 on localhost:11506 at 00:22:43.380
+starting worker pid=9248 on localhost:11506 at 00:22:43.552
+starting worker pid=4736 on localhost:11506 at 00:22:43.724
+starting worker pid=7768 on localhost:11506 at 00:22:43.907
+starting worker pid=17624 on localhost:11506 at 00:22:44.079
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=9184 on localhost:11506 at 00:22:49.964
+starting worker pid=12424 on localhost:11506 at 00:22:50.136
+starting worker pid=9540 on localhost:11506 at 00:22:50.315
+starting worker pid=6444 on localhost:11506 at 00:22:50.484
+starting worker pid=15040 on localhost:11506 at 00:22:50.656
+starting worker pid=13032 on localhost:11506 at 00:22:50.828
+starting worker pid=2956 on localhost:11506 at 00:22:51.012
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=12240 on localhost:11506 at 00:22:53.541
+starting worker pid=428 on localhost:11506 at 00:22:53.713
+starting worker pid=7044 on localhost:11506 at 00:22:53.897
+starting worker pid=14924 on localhost:11506 at 00:22:54.069
+starting worker pid=4852 on localhost:11506 at 00:22:54.241
+starting worker pid=8068 on localhost:11506 at 00:22:54.428
+starting worker pid=13248 on localhost:11506 at 00:22:54.600
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' wapackage 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=8844 on localhost:11506 at 00:22:59.188
+starting worker pid=5192 on localhost:11506 at 00:22:59.376
+starting worker pid=15768 on localhost:11506 at 00:22:59.547
+starting worker pid=11772 on localhost:11506 at 00:22:59.719
+starting worker pid=92 on localhost:11506 at 00:22:59.891
+starting worker pid=7328 on localhost:11506 at 00:23:00.063
+starting worker pid=268 on localhost:11506 at 00:23:00.251
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=12780 on localhost:11506 at 00:23:38.151
+starting worker pid=18300 on localhost:11506 at 00:23:38.323
+starting worker pid=15840 on localhost:11506 at 00:23:38.498
+starting worker pid=14036 on localhost:11506 at 00:23:38.670
+starting worker pid=10184 on localhost:11506 at 00:23:38.857
+starting worker pid=16808 on localhost:11506 at 00:23:39.029
+starting worker pid=4432 on localhost:11506 at 00:23:39.201
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=10432 on localhost:11506 at 00:23:49.717
+starting worker pid=10712 on localhost:11506 at 00:23:49.905
+starting worker pid=16940 on localhost:11506 at 00:23:50.077
+starting worker pid=13204 on localhost:11506 at 00:23:50.248
+starting worker pid=2812 on localhost:11506 at 00:23:50.420
+starting worker pid=12324 on localhost:11506 at 00:23:50.608
+starting worker pid=10828 on localhost:11506 at 00:23:50.779
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=11940 on localhost:11506 at 00:23:54.408
+starting worker pid=13572 on localhost:11506 at 00:23:54.579
+starting worker pid=18188 on localhost:11506 at 00:23:54.751
+starting worker pid=10780 on localhost:11506 at 00:23:54.923
+starting worker pid=8748 on localhost:11506 at 00:23:55.107
+starting worker pid=10256 on localhost:11506 at 00:23:55.279
+starting worker pid=15368 on localhost:11506 at 00:23:55.451
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' wapackage 'dplyr' was built under Warning message:
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=3260 on localhost:11506 at 00:24:12.150
+starting worker pid=10876 on localhost:11506 at 00:24:12.322
+starting worker pid=15572 on localhost:11506 at 00:24:12.494
+starting worker pid=7908 on localhost:11506 at 00:24:12.681
+starting worker pid=14460 on localhost:11506 at 00:24:12.853
+starting worker pid=17912 on localhost:11506 at 00:24:13.025
+starting worker pid=1120 on localhost:11506 at 00:24:13.197
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' wapackage 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+starting worker pid=1616 on localhost:11506 at 00:24:17.373
+starting worker pid=10668 on localhost:11506 at 00:24:17.561
+starting worker pid=3484 on localhost:11506 at 00:24:17.733
+starting worker pid=15516 on localhost:11506 at 00:24:17.905
+starting worker pid=12264 on localhost:11506 at 00:24:18.077
+starting worker pid=7068 on localhost:11506 at 00:24:18.261
+starting worker pid=13012 on localhost:11506 at 00:24:18.432
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' wapackage 'dplyr' was built under R version 3.4.2 
+Warning message:
+Warning message:
+s built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+package 'dplyr' was built under R version 3.4.2 
+Warning message:
+package 'dplyr' was built under R version 3.4.2 
