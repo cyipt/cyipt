@@ -1,0 +1,3 @@
+Compile using:
+
+knitr::knit("slides/18-06-ccac.Rmd", output = "slides/18-06-ccac.html")
